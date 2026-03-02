@@ -1,0 +1,223 @@
+/**
+ * @fileoverview Cart Resource Route (/cart)
+ *
+ * @description
+ * Resource route that handles all cart mutations via form submissions.
+ * No UI component - cart is accessed via the cart drawer (aside) only.
+ * Handles all cart operations:
+ * - Add/update/remove line items
+ * - Apply discount codes
+ * - Apply/remove gift cards
+ * - Update buyer identity
+ * - Add order notes
+ * - Custom unified promo code handler
+ *
+ * @url-pattern /cart (resource route - no UI)
+ *
+ * @architecture
+ * Action-Based Mutations:
+ * - Cart operations are handled via form submissions from CartForm components
+ * - CartForm.getFormInput extracts action and inputs
+ * - Results include cart data and any errors
+ *
+ * Data Loading:
+ * - Loader provides cart data for resource requests
+ * - Cart drawer gets data from root loader
+ *
+ * @actions
+ * - LinesAdd: Add products to cart
+ * - LinesUpdate: Change quantities
+ * - LinesRemove: Remove items
+ * - DiscountCodesUpdate: Apply discount codes
+ * - GiftCardCodesUpdate: Apply gift cards (replace all)
+ * - GiftCardCodesAdd: Append gift card codes (2026.1.0+)
+ * - GiftCardCodesRemove: Remove gift cards
+ * - BuyerIdentityUpdate: Set customer info
+ * - NoteUpdate: Add order notes
+ * - CustomPromoCodeApply: Unified promo handler
+ *
+ * @related
+ * - CartMain.tsx - Cart drawer UI
+ * - CartSummary.tsx - Order totals and checkout
+ * - CartLineItem.tsx - Individual cart item
+ * - AddToCartButton.tsx - Triggers LinesAdd action
+ * - Aside.tsx - Cart drawer container
+ */
+
+import {data, type HeadersFunction} from "react-router";
+import type {Route} from "./+types/cart";
+import type {CartQueryDataReturn} from "@shopify/hydrogen";
+import {CartForm} from "@shopify/hydrogen";
+
+// =============================================================================
+// HEADERS
+// =============================================================================
+
+export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;
+
+export async function action({request, context}: Route.ActionArgs) {
+    const {cart} = context;
+
+    const formData = await request.formData();
+
+    const {action, inputs} = CartForm.getFormInput(formData);
+
+    if (!action) {
+        throw new Error("No action provided");
+    }
+
+    let status = 200;
+    let result: CartQueryDataReturn;
+
+    switch (action) {
+        case CartForm.ACTIONS.LinesAdd:
+            result = await cart.addLines(inputs.lines);
+            break;
+        case CartForm.ACTIONS.LinesUpdate:
+            result = await cart.updateLines(inputs.lines);
+            break;
+        case CartForm.ACTIONS.LinesRemove:
+            result = await cart.removeLines(inputs.lineIds);
+            break;
+        case CartForm.ACTIONS.BuyerIdentityUpdate: {
+            result = await cart.updateBuyerIdentity({
+                ...inputs.buyerIdentity
+            });
+            break;
+        }
+        case CartForm.ACTIONS.NoteUpdate: {
+            const note = String(formData.get("note") || "");
+            result = await cart.updateNote(note);
+            break;
+        }
+        case CartForm.ACTIONS.DiscountCodesUpdate: {
+            const formDiscountCode = inputs.discountCode;
+
+            // User inputted discount code
+            const discountCodes = (formDiscountCode ? [formDiscountCode] : []) as string[];
+
+            // Combine discount codes already applied on cart
+            discountCodes.push(...inputs.discountCodes);
+
+            result = await cart.updateDiscountCodes(discountCodes);
+            break;
+        }
+        case CartForm.ACTIONS.GiftCardCodesUpdate: {
+            const formGiftCardCode = inputs.giftCardCode;
+
+            // User inputted gift card code
+            const giftCardCodes = (formGiftCardCode ? [formGiftCardCode] : []) as string[];
+
+            // Combine gift card codes already applied on cart
+            giftCardCodes.push(...inputs.giftCardCodes);
+
+            result = await cart.updateGiftCardCodes(giftCardCodes);
+            break;
+        }
+        case CartForm.ACTIONS.GiftCardCodesAdd: {
+            const giftCardCodes = inputs.giftCardCodes as string[];
+            result = await cart.addGiftCardCodes(giftCardCodes);
+            break;
+        }
+        case CartForm.ACTIONS.GiftCardCodesRemove: {
+            const appliedGiftCardIds = inputs.giftCardCodes as string[];
+            result = await cart.removeGiftCardCodes(appliedGiftCardIds);
+            break;
+        }
+        case "CustomPromoCodeApply": {
+            // Unified promo code: tries discount first, then gift card
+            const promoCode = String(formData.get("promoCode") || "").trim();
+
+            // Parse the JSON arrays from form data
+            let existingDiscountCodes: string[] = [];
+            let existingGiftCardCodes: string[] = [];
+            try {
+                const discountCodesStr = formData.get("discountCodes");
+                const giftCardCodesStr = formData.get("giftCardCodes");
+                if (discountCodesStr) {
+                    const parsed = JSON.parse(String(discountCodesStr));
+                    if (Array.isArray(parsed)) existingDiscountCodes = parsed as string[];
+                }
+                if (giftCardCodesStr) {
+                    const parsed = JSON.parse(String(giftCardCodesStr));
+                    if (Array.isArray(parsed)) existingGiftCardCodes = parsed as string[];
+                }
+            } catch {
+                // Fallback to empty arrays if parsing fails
+            }
+
+            if (!promoCode) {
+                // No code entered - just return current discount codes state
+                result = await cart.updateDiscountCodes(existingDiscountCodes);
+                break;
+            }
+
+            // Step 1: Try as discount code first
+            const discountResult = await cart.updateDiscountCodes([promoCode, ...existingDiscountCodes]);
+
+            // Check if the code was applied successfully as a discount
+            const discountApplied = discountResult.cart?.discountCodes?.some(
+                code => code.code.toLowerCase() === promoCode.toLowerCase() && code.applicable
+            );
+
+            if (discountApplied) {
+                // Success as discount code
+                result = discountResult;
+                break;
+            }
+
+            // Step 2: Not a valid discount - remove it from discount codes and try as gift card
+            // First, remove the invalid discount code we just added
+            await cart.updateDiscountCodes(existingDiscountCodes);
+
+            // Try as gift card
+            const giftCardResult = await cart.updateGiftCardCodes([promoCode, ...existingGiftCardCodes]);
+
+            // Return the gift card result - if invalid, it will have userErrors
+            // The frontend will handle displaying appropriate error messages
+            result = giftCardResult;
+            break;
+        }
+        default:
+            throw new Error(`${action} cart action is not defined`);
+    }
+
+    const cartId = result?.cart?.id;
+    const headers = cartId ? cart.setCartId(result.cart.id) : new Headers();
+    const {cart: cartResult, errors, warnings} = result;
+
+    const redirectTo = formData.get("redirectTo") ?? null;
+    if (typeof redirectTo === "string") {
+        status = 303;
+        headers.set("Location", redirectTo);
+    }
+
+    return data(
+        {
+            cart: cartResult,
+            errors,
+            warnings,
+            analytics: {
+                cartId
+            }
+        },
+        {status, headers}
+    );
+}
+
+export async function loader({context}: Route.LoaderArgs) {
+    const {cart} = context;
+    return await cart.get();
+}
+
+// =============================================================================
+// NO UI COMPONENT
+// =============================================================================
+
+/**
+ * Resource route - returns 404 if accessed directly.
+ * Cart is only accessible via the cart drawer (aside).
+ */
+export default function Cart() {
+    throw new Response("Not Found", {status: 404});
+}

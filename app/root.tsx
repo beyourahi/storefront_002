@@ -1,0 +1,679 @@
+/**
+ * @fileoverview Root Application Component and Layout
+ *
+ * @description
+ * The root of the React application tree. This file defines:
+ * - HTML document structure (Layout component)
+ * - Root data loading (critical + deferred data pattern)
+ * - Global context providers (WishlistProvider, SiteContentProvider, Analytics)
+ * - Error boundary with offline support
+ * - SEO meta tags and PWA configuration
+ *
+ * This is the first React component rendered for every page. All routes
+ * render inside the <Outlet /> within this component.
+ *
+ * @architecture
+ * Component Hierarchy:
+ * - Layout (HTML shell with head/body)
+ *   - App (Context providers + PageLayout)
+ *     - SiteContentProvider (Brand/theme data)
+ *       - WishlistProvider (Wishlist state)
+ *         - Analytics.Provider (Shopify analytics)
+ *           - PageLayout (Header/Footer)
+ *             - Outlet (Route content)
+ *
+ * Data Loading Pattern:
+ * - Critical data: Blocks render (header, menu, theme)
+ * - Deferred data: Streams in (cart, footer, suggestions)
+ *
+ * @performance
+ * - shouldRevalidate optimizes navigation (avoids refetching root data)
+ * - Theme is persisted to localStorage for offline page styling
+ * - Cart suggestions are deferred to not block initial render
+ *
+ * @pwa
+ * - PWA meta tags for installability
+ * - Service worker registration
+ * - Offline page theme injection
+ * - Network status indicator
+ *
+ * @dependencies
+ * - @shopify/hydrogen - Analytics, SEO, nonce management
+ * - react-router - Routing primitives
+ * - ~/lib/context - Site content and wishlist contexts
+ *
+ * @related
+ * - entry.server.tsx - Calls this for SSR
+ * - entry.client.tsx - Hydrates this component
+ * - PageLayout.tsx - Main layout component
+ * - tailwind.css - Theme CSS variables
+ */
+
+import {useEffect} from "react";
+import {Analytics, getShopAnalytics, useNonce, getSeoMeta} from "@shopify/hydrogen";
+import {
+    Outlet,
+    useRouteError,
+    isRouteErrorResponse,
+    type ShouldRevalidateFunction,
+    Links,
+    Meta,
+    Scripts,
+    ScrollRestoration,
+    useRouteLoaderData
+} from "react-router";
+import type {Route} from "./+types/root";
+import {Toaster} from "~/components/ui/sonner";
+// Note: favicon.svg is still used as fallback in the favicon[.]ico route
+// The dynamic route handles Shopify metaobject → static fallback chain
+import {FOOTER_QUERY, HEADER_QUERY, MENU_COLLECTIONS_QUERY} from "~/lib/fragments";
+import {extractPopularSearchTerms} from "~/lib/popularSearches";
+import {parseShippingConfig, type ShippingConfig} from "~/lib/shipping";
+import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
+import {STORE_CREDIT_BALANCE_QUERY} from "~/graphql/customer-account/StoreCreditQueries";
+import tailwindCss from "./styles/tailwind.css?url";
+import {PageLayout} from "./components/PageLayout";
+import {OfflineAwareErrorPage} from "./components/OfflineAwareErrorPage";
+import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
+import {GtmScript} from "~/components/GtmScript";
+import {GoogleTagManager} from "~/components/GoogleTagManager";
+import type {CartSuggestionProductFragment, MenuCollectionsQuery} from "storefrontapi.generated";
+import {SEO_CONFIG, truncateDescription} from "~/lib/seo";
+import {SITE_CONTENT_QUERY, THEME_SETTINGS_QUERY} from "~/lib/metaobject-queries";
+import {parseSiteContent} from "~/lib/metaobject-parsers";
+import {SiteContentProvider} from "~/lib/site-content-context";
+import {WishlistProvider} from "~/lib/wishlist-context";
+import {generateTheme} from "~/lib/theme-utils";
+import {saveThemeToStorage, updateOfflinePageCache, getThemeFromStorage} from "~/lib/theme-storage";
+import type {GeneratedTheme} from "types";
+import {ServiceWorkerRegistration} from "~/components/ServiceWorkerRegistration";
+import {NetworkStatusIndicator} from "~/components/NetworkStatusIndicator";
+import {ServiceWorkerUpdateBanner} from "~/components/pwa/ServiceWorkerUpdateBanner";
+import {OpenInAppButton} from "~/components/pwa/OpenInAppButton";
+import {withTimeoutAndFallback, TIMEOUT_DEFAULTS} from "~/lib/promise-utils";
+
+export type RootLoader = typeof loader;
+
+/**
+ * Root meta function - provides base SEO for the entire site
+ * Child routes can override by using getSeoMeta with their own data
+ */
+export const meta: Route.MetaFunction = ({data}) => {
+    const shop = data?.header?.shop;
+    // Truncate description to SEO-friendly length (max 155 chars)
+    const description = truncateDescription(
+        shop?.brand?.shortDescription || shop?.description || SEO_CONFIG.defaultDescription
+    );
+
+    // Get theme color from brand colors (primary background - first in array)
+    const themeColor = shop?.brand?.colors?.primary?.[0]?.background ?? "#000000";
+
+    const seoMeta =
+        getSeoMeta({
+            title: shop?.name || SEO_CONFIG.siteName,
+            titleTemplate: `%s | ${shop?.name || SEO_CONFIG.siteName}`,
+            description,
+            url: SEO_CONFIG.siteUrl,
+            media: shop?.brand?.coverImage?.image?.url
+                ? {
+                      url: shop.brand.coverImage.image.url,
+                      width: shop.brand.coverImage.image.width,
+                      height: shop.brand.coverImage.image.height,
+                      type: "image"
+                  }
+                : undefined
+        }) ?? [];
+
+    return [
+        ...seoMeta,
+        // PWA meta tags
+        {name: "theme-color", content: themeColor},
+        {name: "apple-mobile-web-app-capable", content: "yes"},
+        {name: "apple-mobile-web-app-status-bar-style", content: "default"},
+        {name: "apple-mobile-web-app-title", content: shop?.name || SEO_CONFIG.siteName},
+        {name: "mobile-web-app-capable", content: "yes"},
+        {name: "format-detection", content: "telephone=no"}
+    ];
+};
+
+/**
+ * This is important to avoid re-fetching root queries on sub-navigations
+ */
+export const shouldRevalidate: ShouldRevalidateFunction = ({formMethod, currentUrl, nextUrl}) => {
+    // revalidate when a mutation is performed e.g add to cart, login...
+    if (formMethod && formMethod !== "GET") return true;
+
+    // revalidate when manually revalidating via useRevalidator
+    if (currentUrl.toString() === nextUrl.toString()) return true;
+
+    // Defaulting to no revalidation for root loader data to improve performance.
+    // When using this feature, you risk your UI getting out of sync with your server.
+    // Use with caution. If you are uncomfortable with this optimization, update the
+    // line below to `return defaultShouldRevalidate` instead.
+    // For more details see: https://remix.run/docs/en/main/route/should-revalidate
+    return false;
+};
+
+/**
+ * The main and reset stylesheets are added in the Layout component
+ * to prevent a bug in development HMR updates.
+ *
+ * This avoids the "failed to execute 'insertBefore' on 'Node'" error
+ * that occurs after editing and navigating to another page.
+ *
+ * It's a temporary fix until the issue is resolved.
+ * https://github.com/remix-run/remix/issues/9242
+ */
+export function links() {
+    return [
+        // Preconnect for performance
+        {rel: "preconnect", href: "https://cdn.shopify.com"},
+        {rel: "preconnect", href: "https://shop.app"},
+        {rel: "preconnect", href: "https://fonts.googleapis.com"},
+        {rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" as const},
+        // Note: Google Fonts link is now dynamically generated in Layout from metaobject theme settings
+        // Favicon - dynamic route that redirects to Shopify CDN or static fallback
+        {rel: "icon", href: "/favicon.ico"},
+        // PWA manifest (dynamic route)
+        {rel: "manifest", href: "/manifest.webmanifest"},
+        // Apple Touch Icon (dynamic route that redirects to actual icon)
+        {rel: "apple-touch-icon", href: "/apple-touch-icon.png"}
+    ];
+}
+
+export async function loader(args: Route.LoaderArgs) {
+    // Start fetching non-critical data without blocking time to first byte
+    const deferredData = loadDeferredData(args);
+
+    // Await the critical data required to render initial state of the page
+    const criticalData = await loadCriticalData(args);
+
+    const {storefront, env} = args.context;
+
+    return {
+        ...deferredData,
+        ...criticalData,
+        publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
+        gtmContainerId: env.PUBLIC_GTM_CONTAINER_ID || "",
+        shop: getShopAnalytics({
+            storefront,
+            publicStorefrontId: env.PUBLIC_STOREFRONT_ID
+        }),
+        consent: {
+            checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
+            storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
+            withPrivacyBanner: false,
+            // localize the privacy banner
+            country: args.context.storefront.i18n.country,
+            language: args.context.storefront.i18n.language
+        }
+    };
+}
+
+/**
+ * Load data necessary for rendering content above the fold. This is the critical data
+ * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
+ */
+async function loadCriticalData({context}: Route.LoaderArgs) {
+    const {dataAdapter} = context;
+
+    const [header, menuCollectionsData, shopData, blogData, siteContentData, themeSettingsData] = await Promise.all([
+        // Header - navigation menu and shop brand info (real-time, no cache)
+        dataAdapter.query(HEADER_QUERY, {
+            cache: dataAdapter.CacheNone(),
+            variables: {
+                headerMenuHandle: "main-menu"
+            }
+        }),
+        // Menu collections with product counts (real-time, no cache)
+        dataAdapter.query(MENU_COLLECTIONS_QUERY, {
+            cache: dataAdapter.CacheNone()
+        }),
+        // Shipping config (real-time, no cache)
+        dataAdapter.query(SHOP_SHIPPING_CONFIG_QUERY, {
+            cache: dataAdapter.CacheNone()
+        }),
+        // Blog existence check (real-time, no cache)
+        dataAdapter.query(HAS_BLOG_QUERY, {
+            cache: dataAdapter.CacheNone()
+        }),
+        // Site content - brand name, announcements, social links (real-time, no cache)
+        dataAdapter.query(SITE_CONTENT_QUERY, {
+            cache: dataAdapter.CacheNone()
+        }),
+        // Theme settings - colors and fonts (real-time, no cache)
+        dataAdapter.query(THEME_SETTINGS_QUERY, {
+            cache: dataAdapter.CacheNone()
+        })
+    ]);
+
+    // Parse shipping config from shop metafields
+    // Always use BDT for this store
+    const shippingConfig = parseShippingConfig(shopData?.shop?.freeShippingThreshold?.value, "BDT");
+
+    // Process collections to compute product counts (only available products)
+    // Filter out collections with no available products
+    const menuCollections = menuCollectionsData.collections.nodes
+        .map((collection: any) => ({
+            id: collection.id,
+            handle: collection.handle,
+            title: collection.title,
+            productsCount: collection.products.nodes.filter((p: any) => p.availableForSale).length,
+            image: collection.image
+        }))
+        .filter((collection: any) => collection.productsCount > 0);
+
+    // Count all available products for "All" link
+    const totalProductCount = menuCollectionsData.allProducts.nodes.filter(
+        (p: any) => p.availableForSale && p.variants.nodes.some((v: any) => v.availableForSale)
+    ).length;
+
+    // Count discounted products for "SALE" link
+    const discountCount = countDiscountedProducts(menuCollectionsData.allProducts.nodes as LightweightProduct[]);
+
+    // Extract popular search terms from product titles and collections
+    const allProducts = menuCollectionsData.allProducts.nodes.map((p: any) => ({
+        title: p.title,
+        productType: p.productType,
+        availableForSale: p.availableForSale
+    }));
+    const collectionData = menuCollectionsData.collections.nodes.map((c: any) => ({
+        title: c.title,
+        handle: c.handle
+    }));
+    const popularSearchTerms = extractPopularSearchTerms(allProducts, collectionData);
+
+    // Check if there's at least one blog article
+    const hasBlog = (blogData?.articles?.nodes?.length ?? 0) > 0;
+
+    // Parse site content from metaobjects (site_settings + theme_settings only)
+    // UI content uses FALLBACK_* constants directly from fallback-data.ts (80/20 simplification)
+    const siteContent = parseSiteContent(siteContentData, themeSettingsData);
+
+    // Generate dynamic theme from theme_settings metaobject (fonts + colors)
+    const generatedTheme: GeneratedTheme | null = generateTheme(
+        siteContent.themeConfig.colors,
+        siteContent.themeConfig.fonts
+    );
+
+    return {
+        header,
+        menuCollections,
+        totalProductCount,
+        discountCount,
+        popularSearchTerms,
+        shippingConfig,
+        hasBlog,
+        siteContent,
+        generatedTheme
+    };
+}
+
+/**
+ * Load data for rendering content below the fold. This data is deferred and will be
+ * fetched after the initial page load. If it's unavailable, the page should still 200.
+ * Make sure to not throw any errors here, as it will cause the page to 500.
+ *
+ * IMPORTANT: All deferred promises are wrapped with timeout and fallback handling
+ * to prevent infinite loading states. Without this protection, if any promise hangs
+ * (network issues, stale cart IDs, API unavailability), the UI would show a skeleton
+ * forever. Users would need to manually clear browser cache to recover.
+ *
+ * @see PageLayout.tsx - Uses Promise.all() on [cart, isLoggedIn, hasStoreCredit]
+ * @see lib/promise-utils.ts - withTimeoutAndFallback implementation
+ */
+function loadDeferredData({context}: Route.LoaderArgs) {
+    const {dataAdapter, customerAccount, cart} = context;
+
+    // Footer menu - deferred, below the fold (real-time, no cache)
+    const footer = dataAdapter
+        .query(FOOTER_QUERY, {
+            cache: dataAdapter.CacheNone(),
+            variables: {
+                footerMenuHandle: "footer"
+            }
+        })
+        .catch((error: Error) => {
+            console.error(error);
+            return null;
+        });
+
+    // Cart suggestion products - deferred (real-time, no cache)
+    const cartSuggestions: Promise<CartSuggestionProductFragment[] | null> = dataAdapter
+        .query(CART_SUGGESTIONS_QUERY, {
+            cache: dataAdapter.CacheNone()
+        })
+        .then((response: any) => {
+            if (!response?.products?.nodes) return null;
+            // Filter only available products and return
+            return response.products.nodes.filter((p: CartSuggestionProductFragment) => p.availableForSale);
+        })
+        .catch((error: Error) => {
+            console.error("Failed to load cart suggestions:", error);
+            return null;
+        });
+
+    // Check if store credit is enabled (accounts exist) - only when logged in
+    // When store credit is disabled in Shopify admin, storeCreditAccounts returns empty array
+    const hasStoreCreditPromise: Promise<boolean> = customerAccount
+        .isLoggedIn()
+        .then(async isLoggedIn => {
+            if (!isLoggedIn) return false;
+            try {
+                const response = await customerAccount.query(STORE_CREDIT_BALANCE_QUERY, {
+                    variables: {language: customerAccount.i18n.language}
+                });
+                const accounts = response?.data?.customer?.storeCreditAccounts?.nodes ?? [];
+                return accounts.length > 0;
+            } catch {
+                return false;
+            }
+        })
+        .catch(() => false);
+
+    // =========================================================================
+    // TIMEOUT-PROTECTED DEFERRED DATA
+    // =========================================================================
+    // These promises are wrapped with timeouts to prevent infinite loading states.
+    // If any promise hangs (network issue, stale cart ID, API unavailable),
+    // it will resolve to a safe fallback after the timeout expires.
+    //
+    // Without this protection, Promise.all([cart, isLoggedIn, hasStoreCredit])
+    // in PageLayout.tsx would wait forever, causing permanent skeleton state.
+    // =========================================================================
+
+    // Cart data with 10 second timeout
+    // Falls back to null if API hangs (stale cart ID, network issues)
+    // This is the most critical promise - hung cart causes permanent loading
+    const cartWithTimeout = withTimeoutAndFallback(
+        cart.get(),
+        null, // Fallback: empty cart state
+        TIMEOUT_DEFAULTS.CART
+    );
+
+    // Auth status with 5 second timeout
+    // Falls back to false (logged out) if auth check hangs
+    const isLoggedInWithTimeout = withTimeoutAndFallback(
+        customerAccount.isLoggedIn(),
+        false, // Fallback: treat as logged out
+        TIMEOUT_DEFAULTS.AUTH
+    );
+
+    // Store credit with 5 second timeout (already has error handling above)
+    // Falls back to false if the check fails
+    const hasStoreCreditWithTimeout = withTimeoutAndFallback(
+        hasStoreCreditPromise,
+        false, // Fallback: no store credit
+        TIMEOUT_DEFAULTS.STORE_CREDIT
+    );
+
+    return {
+        cart: cartWithTimeout,
+        isLoggedIn: isLoggedInWithTimeout,
+        hasStoreCredit: hasStoreCreditWithTimeout,
+        footer,
+        cartSuggestions
+    };
+}
+
+/**
+ * Component for safe CSS injection
+ * CSS is generated server-side from validated OKLCH/HEX values, not user HTML input
+ */
+function ThemeStyleTag({css}: {css: string}) {
+    // CSS contains only CSS custom properties generated from validated color values
+    // Safe for inline injection as it's not user-generated HTML content
+    return <style>{css}</style>;
+}
+
+export function Layout({children}: {children?: React.ReactNode}) {
+    const nonce = useNonce();
+    const data = useRouteLoaderData<RootLoader>("root");
+    const generatedTheme = data?.generatedTheme;
+
+    return (
+        <html lang="en">
+            <head>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width,initial-scale=1" />
+                {/* PWA install capture - MUST be first script, loaded synchronously (no async/defer)
+                    to catch beforeinstallprompt event before React hydration on mobile browsers */}
+                <script src="/pwa-install-capture.js" nonce={nonce} />
+                {/* Dynamic Google Fonts - loaded BEFORE Tailwind for font-family availability */}
+                {generatedTheme?.googleFontsUrl && <link rel="stylesheet" href={generatedTheme.googleFontsUrl} />}
+                <link rel="stylesheet" href={tailwindCss}></link>
+                {/* Dynamic CSS variables - injected AFTER Tailwind to override defaults */}
+                {generatedTheme?.cssVariables && <ThemeStyleTag css={generatedTheme.cssVariables} />}
+                <Meta />
+                <Links />
+            </head>
+            <body>
+                {children}
+                <Toaster position="bottom-center" richColors />
+                <ScrollRestoration nonce={nonce} />
+                <Scripts nonce={nonce} />
+            </body>
+        </html>
+    );
+}
+
+export default function App() {
+    const data = useRouteLoaderData<RootLoader>("root");
+
+    // Persist theme to localStorage and update SW cache for offline page
+    // This ensures the offline page displays brand-consistent styling
+    // even when the network is unavailable and Shopify API can't be reached
+    useEffect(() => {
+        if (data?.generatedTheme) {
+            if (process.env.NODE_ENV === "development") {
+                // eslint-disable-next-line no-console -- intentional debug logging for theme saving
+                console.log("[ThemeSave] Saving theme to localStorage:", {
+                    hasCssVariables: !!data.generatedTheme.cssVariables,
+                    hasFonts: !!data.generatedTheme.fonts,
+                    hasGoogleFontsUrl: !!data.generatedTheme.googleFontsUrl,
+                    cssPreview: data.generatedTheme.cssVariables?.substring(0, 150)
+                });
+            }
+            saveThemeToStorage(data.generatedTheme);
+
+            // Update SW cache with themed /offline page (re-fetches with theme CSS baked in)
+            void updateOfflinePageCache();
+        }
+    }, [data?.generatedTheme]);
+
+    if (!data) {
+        return <Outlet />;
+    }
+
+    // Extract announcement texts from siteContent
+    // announcementBanner is now a string[] (list of single line texts from Shopify)
+    const announcementTexts = data.siteContent?.siteSettings?.announcementBanner || [];
+
+    return (
+        <SiteContentProvider siteContent={data.siteContent}>
+            <WishlistProvider>
+                <Analytics.Provider cart={data.cart} shop={data.shop} consent={data.consent}>
+                    <ServiceWorkerUpdateBanner />
+                    <NetworkStatusIndicator />
+                    <GtmScript gtmContainerId={data.gtmContainerId} />
+                    <PageLayout {...data} announcementTexts={announcementTexts}>
+                        <Outlet />
+                    </PageLayout>
+                    <GoogleTagManager />
+                    <ServiceWorkerRegistration />
+                    <OpenInAppButton variant="desktop-fixed" />
+                </Analytics.Provider>
+            </WishlistProvider>
+        </SiteContentProvider>
+    );
+}
+
+/**
+ * Component to inject cached theme from localStorage
+ * Used by ErrorBoundary to maintain brand styling when offline/error state
+ *
+ * This runs client-side only and injects:
+ * - CSS variables (colors, spacing)
+ * - Google Fonts link
+ */
+function CachedThemeInjector() {
+    useEffect(() => {
+        const theme = getThemeFromStorage();
+        if (!theme) return;
+
+        // Inject CSS variables
+        if (theme.cssVariables) {
+            const styleId = "error-boundary-theme";
+            let styleEl = document.getElementById(styleId) as HTMLStyleElement | null;
+            if (!styleEl) {
+                styleEl = document.createElement("style");
+                styleEl.id = styleId;
+                document.head.appendChild(styleEl);
+            }
+            styleEl.textContent = theme.cssVariables;
+        }
+
+        // Inject Google Fonts
+        if (theme.googleFontsUrl) {
+            const fontId = "error-boundary-fonts";
+            if (!document.getElementById(fontId)) {
+                const fontLink = document.createElement("link");
+                fontLink.id = fontId;
+                fontLink.rel = "stylesheet";
+                fontLink.href = theme.googleFontsUrl;
+                document.head.appendChild(fontLink);
+            }
+        }
+    }, []);
+
+    return null;
+}
+
+export function ErrorBoundary() {
+    const nonce = useNonce();
+    const error = useRouteError();
+    let errorMessage: string | undefined;
+    let errorStatus = 500;
+
+    if (isRouteErrorResponse(error)) {
+        errorMessage = error?.data?.message ?? error.data;
+        errorStatus = error.status;
+    } else if (error instanceof Error) {
+        errorMessage = error.message;
+    }
+
+    // Track error via analytics (SSR-safe, runs on client only)
+    const errorType = isRouteErrorResponse(error) ? "route_error" : "js_error";
+    if (typeof window !== "undefined") {
+        // Using setTimeout to ensure this runs after hydration
+        setTimeout(() => trackErrorBoundary(errorStatus, errorType, "root"), 0);
+    }
+
+    // Determine appropriate title based on status code
+    const title =
+        errorStatus === 404 ? "Page Not Found" : errorStatus >= 500 ? "Something Went Wrong" : "An Error Occurred";
+
+    return (
+        <html lang="en">
+            <head>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <title>{`${errorStatus} - ${title}`}</title>
+                <link rel="stylesheet" href={tailwindCss} />
+                <Meta />
+                <Links />
+            </head>
+            <body>
+                {/* CachedThemeInjector kept as progressive enhancement fallback */}
+                <CachedThemeInjector />
+                <OfflineAwareErrorPage statusCode={errorStatus} title={title} message={errorMessage} />
+                <Scripts nonce={nonce} />
+            </body>
+        </html>
+    );
+}
+
+// GraphQL query to fetch products for cart suggestions carousel
+const CART_SUGGESTIONS_QUERY = `#graphql
+  fragment CartSuggestionProduct on Product {
+    id
+    title
+    handle
+    availableForSale
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+      maxVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    compareAtPriceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    featuredImage {
+      id
+      url
+      altText
+      width
+      height
+    }
+    variants(first: 1) {
+      nodes {
+        id
+        title
+        availableForSale
+        selectedOptions {
+          name
+          value
+        }
+        price {
+          amount
+          currencyCode
+        }
+      }
+    }
+  }
+
+  query CartSuggestions(
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    products(first: 16, sortKey: BEST_SELLING) {
+      nodes {
+        ...CartSuggestionProduct
+      }
+    }
+  }
+` as const;
+
+// GraphQL query to fetch shop metafields for shipping configuration
+const SHOP_SHIPPING_CONFIG_QUERY = `#graphql
+  query ShopShippingConfig {
+    shop {
+      freeShippingThreshold: metafield(namespace: "custom", key: "free_shipping_threshold") {
+        value
+        type
+      }
+    }
+  }
+` as const;
+
+// GraphQL query to check if there are any blog articles
+const HAS_BLOG_QUERY = `#graphql
+  query HasBlog(
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    articles(first: 1) {
+      nodes {
+        id
+      }
+    }
+  }
+` as const;

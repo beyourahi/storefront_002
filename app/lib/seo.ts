@@ -1,0 +1,401 @@
+/**
+ * @fileoverview SEO Utilities and Schema.org Generator
+ *
+ * @description
+ * Provides comprehensive SEO functionality including:
+ * - Site-wide SEO configuration with fallback values
+ * - Schema.org JSON-LD generators for rich snippets
+ * - URL canonicalization and text formatting utilities
+ *
+ * @architecture
+ * SEO Data Sources (priority order):
+ * 1. Shopify metaobjects (site_settings) - Dynamic brand data
+ * 2. Shopify shop data (shop.brand) - Shop configuration
+ * 3. Fallback data (fallback-data.ts) - Static defaults
+ *
+ * Schema.org Types Generated:
+ * - Organization: Homepage (brand identity)
+ * - WebSite: Homepage (search action)
+ * - Product: Product detail pages
+ * - ItemList: Collection pages
+ * - BlogPosting: Blog article pages
+ * - FAQPage: FAQ page
+ *
+ * @seo-impact
+ * Rich snippets improve:
+ * - Click-through rates from search results
+ * - Search engine understanding of content
+ * - Featured snippet eligibility
+ *
+ * @dependencies
+ * - schema-dts - TypeScript types for schema.org
+ * - fallback-data.ts - Default SEO values
+ *
+ * @related
+ * - root.tsx - Uses getSeoMeta for base meta tags
+ * - products.$handle.tsx - Product schema generation
+ * - blogs.$blogHandle.$articleHandle.tsx - Article schema
+ * - collections.$handle.tsx - Collection schema
+ *
+ * @example
+ * ```tsx
+ * // In route meta function
+ * export const meta: Route.MetaFunction = ({data}) => {
+ *   const schema = generateProductSchema(data.product, data.selectedVariant);
+ *   return [
+ *     { title: data.product.title },
+ *     { 'script:ld+json': schema }
+ *   ];
+ * };
+ * ```
+ */
+
+import type {WithContext, Organization, WebSite, Product, ItemList, BlogPosting, FAQPage} from "schema-dts";
+import {
+    FALLBACK_BRAND_NAME,
+    FALLBACK_SITE_URL,
+    FALLBACK_SEO_TITLE,
+    FALLBACK_SEO_TITLE_SUFFIX,
+    FALLBACK_SEO_DESCRIPTION
+} from "./fallback-data";
+
+// Site-wide SEO configuration (uses centralized fallbacks, can be overridden with metaobject data)
+export const SEO_CONFIG = {
+    siteName: FALLBACK_BRAND_NAME,
+    siteUrl: FALLBACK_SITE_URL,
+    defaultTitle: FALLBACK_SEO_TITLE,
+    defaultDescription: FALLBACK_SEO_DESCRIPTION,
+    locale: "en_US",
+    twitterCardType: "summary_large_image" as const
+} as const;
+
+/**
+ * Get SEO config with dynamic brand name from metaobjects
+ * Call this to get SEO values that include the dynamic brand name
+ */
+export function getSeoConfig(brandName?: string) {
+    const name = brandName || FALLBACK_BRAND_NAME;
+    return {
+        ...SEO_CONFIG,
+        siteName: name,
+        defaultTitle: `${name} - ${FALLBACK_SEO_TITLE_SUFFIX}`
+    };
+}
+
+// Type for media in getSeoMeta
+export interface SeoMedia {
+    url: string;
+    type?: "image" | "video";
+    width?: number;
+    height?: number;
+    altText?: string;
+}
+
+// Type for shop data from Storefront API
+export interface ShopSeoData {
+    name: string;
+    description?: string | null;
+    primaryDomain?: {
+        url: string;
+    };
+    brand?: {
+        logo?: {
+            image?: {
+                url: string;
+                width?: number;
+                height?: number;
+            };
+        };
+        squareLogo?: {
+            image?: {
+                url: string;
+                width?: number;
+                height?: number;
+            };
+        };
+        coverImage?: {
+            image?: {
+                url: string;
+                width?: number;
+                height?: number;
+            };
+        };
+        shortDescription?: string | null;
+        slogan?: string | null;
+    };
+}
+
+/**
+ * Build canonical URL from path
+ */
+export function buildCanonicalUrl(path: string): string {
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+    return `${SEO_CONFIG.siteUrl}${cleanPath}`;
+}
+
+/**
+ * Truncate description to SEO-friendly length
+ * @param text - Text to truncate
+ * @param maxLength - Maximum length (default 155 for meta descriptions)
+ */
+export function truncateDescription(text: string | null | undefined, maxLength = 155): string {
+    if (!text) return "";
+    if (text.length <= maxLength) return text;
+    // Truncate at word boundary
+    const truncated = text.substring(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(" ");
+    return lastSpace > 0 ? truncated.substring(0, lastSpace) + "..." : truncated + "...";
+}
+
+/**
+ * Strip HTML tags from text
+ */
+export function stripHtml(html: string | null | undefined): string {
+    if (!html) return "";
+    return html.replace(/<[^>]*>/g, "").trim();
+}
+
+/**
+ * Format price for schema.org
+ */
+export function formatSchemaPrice(amount: string | number): string {
+    const num = typeof amount === "string" ? parseFloat(amount) : amount;
+    return num.toFixed(2);
+}
+
+/**
+ * Format date to ISO 8601 for schema.org
+ */
+export function formatSchemaDate(date: string | Date): string {
+    const d = typeof date === "string" ? new Date(date) : date;
+    return d.toISOString();
+}
+
+// ============================================
+// JSON-LD Schema Generators
+// ============================================
+
+/**
+ * Generate Organization schema for the homepage
+ * @param socialLinks - Array of social media URLs from site settings
+ */
+export function generateOrganizationSchema(
+    shop?: ShopSeoData | null,
+    socialLinks?: Array<{url: string}>
+): WithContext<Organization> {
+    return {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: shop?.name || SEO_CONFIG.siteName,
+        url: shop?.primaryDomain?.url || SEO_CONFIG.siteUrl,
+        logo: shop?.brand?.logo?.image?.url || shop?.brand?.squareLogo?.image?.url,
+        description: shop?.brand?.shortDescription || shop?.description || SEO_CONFIG.defaultDescription,
+        sameAs: socialLinks?.map(link => link.url).filter(Boolean) || []
+    };
+}
+
+/**
+ * Generate WebSite schema with search action
+ */
+export function generateWebsiteSchema(shop?: ShopSeoData | null): WithContext<WebSite> {
+    return {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: shop?.name || SEO_CONFIG.siteName,
+        url: shop?.primaryDomain?.url || SEO_CONFIG.siteUrl,
+        potentialAction: {
+            "@type": "SearchAction",
+            target: {
+                "@type": "EntryPoint",
+                urlTemplate: `${SEO_CONFIG.siteUrl}/search?q={search_term_string}`
+            },
+            "query-input": "required name=search_term_string"
+        } as any
+    };
+}
+
+/**
+ * Generate Product schema for product pages
+ */
+export function generateProductSchema(
+    product: {
+        title: string;
+        description?: string | null;
+        handle: string;
+        vendor?: string | null;
+        images?: {nodes: Array<{url: string; altText?: string | null}>};
+    },
+    variant?: {
+        sku?: string | null;
+        price?: {amount: string; currencyCode: string};
+        compareAtPrice?: {amount: string; currencyCode: string} | null;
+        availableForSale?: boolean;
+    } | null
+): WithContext<Product> {
+    const images = product.images?.nodes?.map(img => img.url) || [];
+
+    return {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.title,
+        description: stripHtml(product.description) || undefined,
+        image: images.length > 0 ? images : undefined,
+        sku: variant?.sku || undefined,
+        brand: product.vendor
+            ? {
+                  "@type": "Brand",
+                  name: product.vendor
+              }
+            : undefined,
+        offers: variant?.price
+            ? {
+                  "@type": "Offer",
+                  url: buildCanonicalUrl(`/products/${product.handle}`),
+                  priceCurrency: variant.price.currencyCode,
+                  price: formatSchemaPrice(variant.price.amount),
+                  availability: variant.availableForSale
+                      ? "https://schema.org/InStock"
+                      : "https://schema.org/OutOfStock",
+                  priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0] // 30 days
+              }
+            : undefined
+    };
+}
+
+/**
+ * Generate ItemList schema for collection pages
+ */
+export function generateCollectionSchema(
+    collection: {
+        title: string;
+        description?: string | null;
+        handle: string;
+    },
+    products?: Array<{
+        title: string;
+        handle: string;
+    }> | null
+): WithContext<ItemList> {
+    return {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: collection.title,
+        description: stripHtml(collection.description) || undefined,
+        numberOfItems: products?.length || 0,
+        itemListElement: products?.slice(0, 20).map((product, index) => ({
+            "@type": "ListItem" as const,
+            position: index + 1,
+            url: buildCanonicalUrl(`/products/${product.handle}`),
+            name: product.title
+        }))
+    };
+}
+
+/**
+ * Generate BlogPosting schema for article pages
+ * @param brandName - Optional brand name from metaobjects (defaults to SEO_CONFIG.siteName)
+ */
+export function generateBlogPostingSchema(
+    article: {
+        title: string;
+        excerpt?: string | null;
+        content?: string | null;
+        publishedAt?: string | null;
+        author?: {name?: string | null} | null;
+        image?: {url: string; width?: number | null; height?: number | null} | null;
+        handle: string;
+    },
+    blogHandle: string,
+    brandName?: string
+): WithContext<BlogPosting> {
+    const siteName = brandName || SEO_CONFIG.siteName;
+    return {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: article.title,
+        description: article.excerpt || undefined,
+        image: article.image?.url || undefined,
+        datePublished: article.publishedAt ? formatSchemaDate(article.publishedAt) : undefined,
+        dateModified: article.publishedAt ? formatSchemaDate(article.publishedAt) : undefined,
+        author: article.author?.name
+            ? {
+                  "@type": "Person",
+                  name: article.author.name
+              }
+            : {
+                  "@type": "Organization",
+                  name: siteName
+              },
+        publisher: {
+            "@type": "Organization",
+            name: siteName,
+            url: SEO_CONFIG.siteUrl
+        },
+        mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": buildCanonicalUrl(`/blogs/${blogHandle}/${article.handle}`)
+        }
+    };
+}
+
+/**
+ * Generate FAQPage schema
+ */
+export function generateFAQPageSchema(faqs: Array<{question: string; answer: string}>): WithContext<FAQPage> {
+    return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqs.map(faq => ({
+            "@type": "Question" as const,
+            name: faq.question,
+            acceptedAnswer: {
+                "@type": "Answer" as const,
+                text: faq.answer
+            }
+        }))
+    };
+}
+
+/**
+ * Extract brand name from root loader matches (for use in meta functions)
+ * This is a type-safe way to get the brand name from the root loader data
+ *
+ * @example
+ * export const meta: Route.MetaFunction = ({matches}) => {
+ *   const brandName = getBrandNameFromMatches(matches);
+ *   return [{ title: `Page Title | ${brandName}` }];
+ * };
+ */
+export function getBrandNameFromMatches(matches: Array<{id: string; data?: unknown} | undefined>): string {
+    const rootMatch = matches.find(m => m?.id === "root");
+    const rootData = rootMatch?.data as {siteContent?: {siteSettings?: {brandName?: string}}} | undefined;
+    return rootData?.siteContent?.siteSettings?.brandName || SEO_CONFIG.siteName;
+}
+
+/**
+ * Get default OG image from shop data or fallback
+ */
+export function getDefaultOgImage(shop?: ShopSeoData | null): SeoMedia | undefined {
+    const coverImage = shop?.brand?.coverImage?.image;
+    const logo = shop?.brand?.logo?.image;
+
+    if (coverImage?.url) {
+        return {
+            url: coverImage.url,
+            width: coverImage.width,
+            height: coverImage.height,
+            type: "image"
+        };
+    }
+
+    if (logo?.url) {
+        return {
+            url: logo.url,
+            width: logo.width,
+            height: logo.height,
+            type: "image"
+        };
+    }
+
+    return undefined;
+}
