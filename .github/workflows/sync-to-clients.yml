@@ -1,0 +1,14 @@
+name: Sync to all client repos
+
+on:
+    push:
+        branches: [main]
+
+jobs:
+    sync:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: ahmadnassri/action-template-repository-sync@v2
+              with:
+                  github-token: ${{ secrets.SYNC_TOKEN }}
+                  auto-merge: true
