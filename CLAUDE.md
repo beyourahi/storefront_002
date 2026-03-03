@@ -23,7 +23,17 @@ Direct commits to main only. Enables parallel AI development, eliminates branch 
 
 ## Project Overview
 
-High-performance Shopify Hydrogen storefront (React Router 7, Shopify Oxygen/Cloudflare Workers) with PWA, metaobject CMS, wishlist, blog, offline support. **Critical**: Import from `react-router`, NOT `@remix-run/react`.
+A **commercial Shopify Hydrogen template** built to be sold to multiple client brands across different niches. High-performance storefront (React Router 7, Shopify Oxygen/Cloudflare Workers) with PWA, metaobject CMS, wishlist, blog, offline support. **Critical**: Import from `react-router`, NOT `@remix-run/react`.
+
+### Dual Deployment Targets
+
+| Target                             | Purpose                         | Data Source                               |
+| ---------------------------------- | ------------------------------- | ----------------------------------------- |
+| **Shopify Oxygen**                 | Client production deployments   | Client's own Shopify store (no fallback)  |
+| **Cloudflare Workers + local dev** | Portfolio showcase + dev server | Fallback demo store + `fallback-data.ts`  |
+
+- On **Oxygen**: NEVER use the fallback store or `fallback-data.ts` — all data comes from the client's Shopify store
+- On **Cloudflare Workers** and during **local development**: ALWAYS use the fallback demo store for products and `fallback-data.ts` for non-product content
 
 ## Tech Stack
 
@@ -144,6 +154,22 @@ PUBLIC_STORE_DOMAIN=<store>.myshopify.com      # Required
 PUBLIC_STOREFRONT_API_TOKEN=<token>            # Required
 PUBLIC_GTM_CONTAINER_ID=GTM-XXXXXXX            # Optional
 ```
+
+**Fallback Demo Store (Cloudflare Workers, Local Dev, and Portfolio Showcase ONLY):**
+
+> ⚠️ Used during local development and Cloudflare Workers portfolio deployments. **NEVER use on Oxygen / client deployments.**
+
+```bash
+PUBLIC_STOREFRONT_API_TOKEN=586d8fd7c598fea7e1b97a8eff48ed49
+PUBLIC_STORE_DOMAIN=horcrux-demo-store.myshopify.com
+PUBLIC_CHECKOUT_DOMAIN=horcrux-demo-store.myshopify.com
+PRIVATE_STOREFRONT_API_TOKEN=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
+PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID=d59946cb-1d27-415f-bb8e-c8ea32ffb5eb
+PUBLIC_CUSTOMER_ACCOUNT_API_URL=https://shopify.com/66049638586
+SHOP_ID=66049638586
+```
+
+Non-product content falls back to `fallback-data.ts` in `app/lib/`. The `lib/data-source.ts` adapter selects Shopify vs. fallback based on env credentials.
 
 **Setup**: `npm install && npm run codegen && npm run dev`
 **Dev URL**: http://localhost:3000, hot reload enabled
