@@ -6,6 +6,7 @@ on:
 
 jobs:
     sync:
+        if: github.repository == 'beyourahi/storefront_002'
         runs-on: ubuntu-latest
         steps:
             - uses: ahmadnassri/action-template-repository-sync@v2
