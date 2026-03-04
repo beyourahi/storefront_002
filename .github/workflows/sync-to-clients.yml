@@ -12,4 +12,3 @@ jobs:
             - uses: ahmadnassri/action-template-repository-sync@v2
               with:
                   github-token: ${{ secrets.SYNC_TOKEN }}
-                  auto-merge: true
