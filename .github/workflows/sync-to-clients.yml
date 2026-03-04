@@ -12,3 +12,18 @@ jobs:
             - uses: ahmadnassri/action-template-repository-sync@v2
               with:
                   github-token: ${{ secrets.SYNC_TOKEN }}
+
+            - name: Auto-merge sync PRs in dependent repos
+              env:
+                  GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+              run: |
+                  gh pr list \
+                    --repo beyourahi/corvien \
+                    --author "github-actions[bot]" \
+                    --label "template-sync" \
+                    --json number \
+                    --jq '.[].number' | \
+                  xargs -I{} gh pr merge {} \
+                    --repo beyourahi/corvien \
+                    --squash \
+                    --auto
