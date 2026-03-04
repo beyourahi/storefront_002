@@ -2,6 +2,7 @@ on: [push, pull_request]
 
 jobs:
     template-sync:
+        if: github.repository == 'beyourahi/storefront_002'
         runs-on: ubuntu-latest
 
         steps:
