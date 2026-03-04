@@ -47,8 +47,15 @@ import {Button} from "~/components/ui/button";
 import {WifiOff} from "lucide-react";
 import {trackOfflinePageView} from "~/hooks/usePwaAnalytics";
 import {getThemeFromStorage} from "~/lib/theme-storage";
-import {FALLBACK_ERROR_CONTENT} from "~/lib/fallback-data";
 import type {GeneratedTheme} from "types";
+
+const FALLBACK_ERROR_CONTENT = {
+    offlineHeading: "You're Offline",
+    offlineMessage: "Please check your internet connection and try again.",
+    offlineRetry: "Retry",
+    offlineHome: "Return Home",
+    offlineTip: "Tip: Some pages you've visited before may still be available"
+} as const;
 
 /**
  * Hook to redirect to home if user is online

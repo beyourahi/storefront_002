@@ -31,14 +31,14 @@
  * - AnnouncementBanner.tsx - May show free shipping promotion
  */
 
-import {FALLBACK_FREE_SHIPPING_THRESHOLD, FALLBACK_CURRENCY_CODE} from "./fallback-data";
-
 export interface ShippingConfig {
     freeShippingThreshold: number | null;
     currencyCode: string;
 }
 
-// Re-export from centralized fallback data for backwards compatibility
+const FALLBACK_FREE_SHIPPING_THRESHOLD = 5000;
+const FALLBACK_CURRENCY_CODE = "USD";
+
 export const DEFAULT_FREE_SHIPPING_THRESHOLD = FALLBACK_FREE_SHIPPING_THRESHOLD;
 export const DEFAULT_CURRENCY_CODE = FALLBACK_CURRENCY_CODE;
 

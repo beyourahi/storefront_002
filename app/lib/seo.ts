@@ -51,13 +51,13 @@
  */
 
 import type {WithContext, Organization, WebSite, Product, ItemList, BlogPosting, FAQPage} from "schema-dts";
-import {
-    FALLBACK_BRAND_NAME,
-    FALLBACK_SITE_URL,
-    FALLBACK_SEO_TITLE,
-    FALLBACK_SEO_TITLE_SUFFIX,
-    FALLBACK_SEO_DESCRIPTION
-} from "./fallback-data";
+
+const FALLBACK_BRAND_NAME = "Your Store";
+const FALLBACK_SITE_URL = "https://example.com";
+const FALLBACK_SEO_TITLE_SUFFIX = "Quality Products";
+const FALLBACK_SEO_TITLE = `${FALLBACK_BRAND_NAME} | ${FALLBACK_SEO_TITLE_SUFFIX}`;
+const FALLBACK_SEO_DESCRIPTION =
+    "Quality products curated for the discerning shopper. Find items built to last, designed with purpose, and selected for their exceptional value.";
 
 // Site-wide SEO configuration (uses centralized fallbacks, can be overridden with metaobject data)
 export const SEO_CONFIG = {

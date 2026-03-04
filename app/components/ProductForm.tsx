@@ -66,7 +66,39 @@ import {
 } from "./SellingPlanSelector";
 import {ColorSwatch, hasSwatch} from "~/components/ui/color-swatch";
 import {hasSpecialTag} from "~/lib/product-tags";
-import {FALLBACK_PRODUCT_CONTENT} from "~/lib/fallback-data";
+
+const FALLBACK_PRODUCT_CONTENT = {
+    addToCartStandard: "Add to Bag",
+    addToCartPreorder: "Pre-Order",
+    addToCartSoldOut: "Sold Out",
+    addToCartSubscribe: "Subscribe",
+    addToCartOffline: "Unavailable Offline",
+    offlineHelperText: "Connect to the internet to add items to your bag",
+    selectFrequency: "Select delivery frequency",
+    stockInStock: "In Stock",
+    stockOutOfStock: "Out of Stock",
+    stockLowTemplate: "Only {quantity} left",
+    purchaseTypeLabel: "Purchase Type",
+    oneTimeLabel: "One-time purchase",
+    subscribeSaveLabel: "Subscribe & Save",
+    savePercentageTemplate: "Save {percent}%",
+    sizeGuideCta: "Size Guide",
+    quantityLabel: "Quantity",
+    tabDescription: "Description",
+    tabShipping: "Shipping",
+    tabReviews: "Reviews",
+    badgeNew: "New",
+    badgeSale: "Sale",
+    badgeBestseller: "Bestseller",
+    badgeClearance: "Clearance",
+    badgePremium: "Premium",
+    badgePreorder: "Pre-Order",
+    badgeLimited: "Limited Edition",
+    shareButtonLabel: "Share",
+    wishlistAddLabel: "Add to wishlist",
+    wishlistRemoveLabel: "Remove from wishlist",
+    relatedProductsTitle: "You might also like"
+} as const;
 
 type PurchaseType = "one-time" | "subscription";
 

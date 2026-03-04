@@ -47,7 +47,19 @@
 
 import {Link} from "react-router";
 import {Button} from "~/components/ui/button";
-import {FALLBACK_ERROR_CONTENT} from "~/lib/fallback-data";
+
+const FALLBACK_ERROR_CONTENT = {
+    notFoundHeading: "Page Not Found",
+    notFoundMessage: "The page you're looking for doesn't exist or has been moved.",
+    notFoundPrimaryCta: "Back to Home",
+    notFoundSecondaryCta: "Browse Collections",
+    serverErrorHeading: "Something Went Wrong",
+    serverErrorMessage: "We're experiencing technical difficulties. Please try again.",
+    serverErrorRetry: "Try Again",
+    serverErrorHome: "Return Home",
+    serverErrorContactPrefix: "Need help?",
+    serverErrorContactLink: "Contact Support"
+} as const;
 
 // ================================================================================
 // Type Definitions

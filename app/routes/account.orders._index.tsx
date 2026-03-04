@@ -50,7 +50,13 @@ import {PackageSearchIcon, ShoppingBagIcon, CalendarIcon, ClockIcon, SearchIcon,
 import {cn} from "~/lib/utils";
 import {getOrderStatusVariant, formatOrderStatus} from "~/lib/order-status";
 import {useMemo} from "react";
-import {FALLBACK_ACCOUNT_CONTENT} from "~/lib/fallback-data";
+
+const FALLBACK_ACCOUNT_CONTENT = {
+    emptyNoOrdersHeading: "No orders yet",
+    emptyNoOrdersMessage: "When you place an order, it will appear here",
+    actionShopNow: "Shop Now",
+    navDashboard: "Dashboard"
+} as const;
 
 // =============================================================================
 // GRAPHQL QUERIES

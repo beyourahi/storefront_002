@@ -70,8 +70,15 @@ import {cn} from "~/lib/utils";
 import {buildCanonicalUrl} from "~/lib/seo";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
-import {FALLBACK_POPULAR_SEARCHES} from "~/lib/fallback-data";
 import {sortWithPinnedFirst} from "~/lib/product-tags";
+
+const FALLBACK_POPULAR_SEARCHES = [
+    "new arrivals",
+    "best sellers",
+    "gift ideas",
+    "on sale",
+    "trending now"
+] as const;
 
 // =============================================================================
 // META FUNCTION

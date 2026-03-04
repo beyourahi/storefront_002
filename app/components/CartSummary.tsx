@@ -87,7 +87,42 @@ import {Textarea} from "~/components/ui/textarea";
 import {cn} from "~/lib/utils";
 import {qualifiesForFreeShipping, remainingForFreeShipping} from "~/lib/shipping";
 import {useNetworkStatus} from "~/hooks/useNetworkStatus";
-import {FALLBACK_CART_CONTENT, FALLBACK_UI_MESSAGES} from "~/lib/fallback-data";
+
+const FALLBACK_CART_CONTENT = {
+    cartDrawerTitle: "Your Bag",
+    cartPageTitle: "Shopping Bag",
+    itemCountSingular: "item",
+    itemCountPlural: "items",
+    emptyCartHeading: "Your bag is empty",
+    emptyCartCta: "Continue Shopping",
+    quantityLabel: "Quantity",
+    removeLabel: "Remove",
+    subtotalLabel: "Subtotal",
+    shippingLabel: "Shipping",
+    taxLabel: "Tax",
+    totalLabel: "Total",
+    taxShippingNotice: "Taxes and shipping calculated at checkout",
+    discountPlaceholder: "Enter discount code",
+    discountApplyButton: "Apply",
+    discountApplied: "Discount applied",
+    discountError: "Invalid discount code",
+    freeShippingLabel: "Free Shipping",
+    freeShippingUnlocked: "You've unlocked free shipping!",
+    freeShippingAwayTemplate: "{amount} away from free shipping",
+    freeShippingAlmost: "You're almost there!",
+    freeShippingCalculating: "Calculating...",
+    orderNotesPlaceholder: "Add a note to your order",
+    checkoutButton: "Checkout",
+    checkoutCalculating: "Calculating...",
+    checkoutOfflineWarning: "Connect to the internet to checkout",
+    storeCreditNotice: "Store credit will be applied at checkout",
+    closeButton: "Close",
+    suggestionsTitle: "Complete your look"
+} as const;
+
+const FALLBACK_UI_MESSAGES = {
+    loadingSaving: "Saving..."
+} as const;
 
 // =============================================================================
 // CART MUTATION STATE HOOK

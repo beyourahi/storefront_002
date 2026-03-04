@@ -29,8 +29,12 @@ import {useBrandAnimation, AnimatedBrandText} from "~/components/BrandAnimation"
 import {useSiteSettings} from "~/lib/site-content-context";
 import {useScreenSize, BREAKPOINTS} from "~/hooks/useScreenSize";
 import {truncateText} from "~/lib/utils";
-import {FALLBACK_HERO_MEDIA_CONFIG} from "~/lib/fallback-data";
 import type {HeroMedia} from "types";
+
+const FALLBACK_HERO_MEDIA_CONFIG: {type: "video" | "image"; videoSrc?: string; imageSrc?: string} = {
+    type: "video",
+    videoSrc: "/hero-video.mp4"
+};
 import type {HeroCollection} from "~/routes/_index";
 
 // ============================================================================

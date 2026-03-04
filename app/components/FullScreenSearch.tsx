@@ -82,8 +82,51 @@ import {ProductPrice} from "~/components/ProductPrice";
 import {getProductFontSizes, ProductItem} from "~/components/ProductItem";
 import {SEARCH_ENDPOINT} from "~/components/SearchFormPredictive";
 import {urlWithTrackingParams} from "~/lib/search";
-import {FALLBACK_POPULAR_SEARCHES, FALLBACK_SEARCH_CONTENT} from "~/lib/fallback-data";
 import type {MenuCollection, SearchProduct} from "types";
+
+const FALLBACK_POPULAR_SEARCHES = [
+    "new arrivals",
+    "best sellers",
+    "gift ideas",
+    "on sale",
+    "trending now"
+] as const;
+
+const FALLBACK_SEARCH_CONTENT = {
+    searchPlaceholder: "Search products...",
+    recentSearchesHeading: "Recent Searches",
+    popularSearchesHeading: "Popular Searches",
+    featuredCollectionsHeading: "Featured Collections",
+    clearAllButton: "Clear All",
+    emptyResultsHeading: "No results found",
+    emptyResultsMessageTemplate: "We couldn't find anything for \"{term}\"",
+    viewAllResults: "View All Results",
+    categoryProducts: "Products",
+    categoryCollections: "Collections",
+    categoryArticles: "Articles",
+    sortFeatured: "Featured",
+    sortPriceLowHigh: "Price: Low to High",
+    sortPriceHighLow: "Price: High to Low",
+    sortNewest: "Newest",
+    sortBestSelling: "Best Selling",
+    sortAToZ: "A to Z",
+    sortZToA: "Z to A",
+    filterByPrice: "Price",
+    filterByColor: "Color",
+    filterBySize: "Size",
+    filterAvailability: "Availability",
+    filterInStock: "In Stock",
+    resultsCountTemplate: "Showing {count} of {total} products",
+    loadMoreButton: "Load More",
+    loadingText: "Loading...",
+    gridViewLabel: "Grid view",
+    listViewLabel: "List view",
+    col2Label: "2 columns",
+    col3Label: "3 columns",
+    col4Label: "4 columns",
+    applyFilters: "Apply Filters",
+    clearFilters: "Clear Filters"
+} as const;
 import type {CategorizedSearchResult, SearchCollection, SearchArticle} from "~/routes/search";
 
 interface FullScreenSearchProps {

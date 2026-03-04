@@ -48,8 +48,31 @@ import {Button} from "~/components/ui/button";
 import {cn} from "~/lib/utils";
 import {useScrolled} from "~/lib/useScrolled";
 import {useSiteSettings} from "~/lib/site-content-context";
-import {FALLBACK_HEADER_MENU} from "~/lib/fallback-data";
 import {WishlistCount} from "~/components/WishlistCount";
+
+const FALLBACK_HEADER_MENU = {
+    id: "fallback-menu",
+    items: [
+        {
+            id: "menu-collections",
+            resourceId: null,
+            tags: [],
+            title: "Collections",
+            type: "HTTP",
+            url: "/collections",
+            items: []
+        },
+        {
+            id: "menu-blog",
+            resourceId: null,
+            tags: [],
+            title: "Blog",
+            type: "HTTP",
+            url: "/blogs",
+            items: []
+        }
+    ]
+} as const;
 import {useWishlistSafe} from "~/lib/wishlist-context";
 
 // =============================================================================

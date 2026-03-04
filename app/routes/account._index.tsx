@@ -81,7 +81,42 @@ import {
     type StoreCreditTransaction
 } from "~/graphql/customer-account/StoreCreditQueries";
 import {useSectionHeadings} from "~/lib/site-content-context";
-import {FALLBACK_ACCOUNT_CONTENT} from "~/lib/fallback-data";
+
+const FALLBACK_ACCOUNT_CONTENT = {
+    greetingMorning: "Good morning, {name}",
+    greetingMidday: "Good day, {name}",
+    greetingAfternoon: "Good afternoon, {name}",
+    greetingEvening: "Good evening, {name}",
+    greetingNight: "Good night, {name}",
+    greetingFallback: "Welcome back",
+    sectionRecentOrders: "Recent Orders",
+    sectionQuickActions: "Quick Actions",
+    sectionAccountStats: "Account Overview",
+    sectionRecentlyViewed: "Recently Viewed",
+    actionTrackOrders: "Track Orders",
+    actionShopNow: "Shop Now",
+    actionAddresses: "Addresses",
+    actionGetHelp: "Get Help",
+    actionEditProfile: "Edit Profile",
+    actionOrderHistory: "Order History",
+    statOrdersPlaced: "Orders Placed",
+    statSavedAddresses: "Saved Addresses",
+    statMemberSince: "Member Since",
+    emptyNoOrdersHeading: "No orders yet",
+    emptyNoOrdersMessage: "When you place an order, it will appear here",
+    emptyNoAddresses: "No saved addresses yet",
+    navDashboard: "Dashboard",
+    navOrders: "Orders",
+    navReturns: "Returns",
+    navWishlist: "Wishlist",
+    navAccountDetails: "Account Details",
+    logoutButton: "Sign Out",
+    saveButton: "Save Changes",
+    cancelButton: "Cancel",
+    viewAllOrders: "View All Orders",
+    storeCreditLabel: "Store Credit",
+    storeCreditAvailable: "Available Credit"
+} as const;
 
 export const meta: Route.MetaFunction = () => {
     return [{title: "Account Dashboard"}];
