@@ -188,8 +188,11 @@ export async function action({request, context}: Route.ActionArgs) {
 
     const redirectTo = formData.get("redirectTo") ?? null;
     if (typeof redirectTo === "string") {
-        status = 303;
-        headers.set("Location", redirectTo);
+        const destination = redirectTo === "__checkout_url__" ? (cartResult?.checkoutUrl ?? null) : redirectTo;
+        if (destination) {
+            status = 303;
+            headers.set("Location", destination);
+        }
     }
 
     return data(
