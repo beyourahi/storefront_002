@@ -409,7 +409,7 @@ export default function SubscriptionDetail() {
                                     <TableCell>
                                         <div className="flex items-center gap-4">
                                             {line.image && (
-                                                <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border">
+                                                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border">
                                                     <Image
                                                         data={line.image}
                                                         width={48}

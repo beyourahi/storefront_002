@@ -91,7 +91,7 @@ export function IosInstallInstructions({open, onDismiss, appName, appIcon}: IosI
                         {/* Step 1: Tap Share */}
                         <li className="flex items-start gap-3">
                             <span
-                                className="flex-shrink-0 size-7 rounded-full bg-primary text-primary-foreground
+                                className="shrink-0 size-7 rounded-full bg-primary text-primary-foreground
                                            flex items-center justify-center text-sm font-semibold"
                             >
                                 1
@@ -111,7 +111,7 @@ export function IosInstallInstructions({open, onDismiss, appName, appIcon}: IosI
                         {/* Step 2: Add to Home Screen */}
                         <li className="flex items-start gap-3">
                             <span
-                                className="flex-shrink-0 size-7 rounded-full bg-primary text-primary-foreground
+                                className="shrink-0 size-7 rounded-full bg-primary text-primary-foreground
                                            flex items-center justify-center text-sm font-semibold"
                             >
                                 2

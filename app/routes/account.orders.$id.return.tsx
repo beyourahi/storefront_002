@@ -308,7 +308,7 @@ function ReturnableItemCard({item}: {item: ReturnableItem}) {
                         <Checkbox id={`selected_${lineItem.id}`} name={`selected_${lineItem.id}`} value="true" />
                     </div>
                     {lineItem.image && (
-                        <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border">
+                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border">
                             <Image
                                 data={lineItem.image}
                                 width={64}
