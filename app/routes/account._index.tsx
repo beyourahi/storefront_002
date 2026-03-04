@@ -397,7 +397,7 @@ function WelcomeBanner({customer}: {customer: CustomerFragment}) {
 
     // Client-side only to avoid hydration mismatch
     // Use fallback greeting initially, then update with time-based greeting
-    const [greeting, setGreeting] = useState(accountContent.greetingFallback);
+    const [greeting, setGreeting] = useState<string>(accountContent.greetingFallback);
 
     useEffect(() => {
         const hour = new Date().getHours();

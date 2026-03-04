@@ -1,0 +1,17 @@
+# Cloudflare Workers local dev template (portfolio demo)
+# Copy to .dev.vars and set values for local wrangler dev.
+
+# Required secrets (do not commit real values)
+SESSION_SECRET=replace-with-32-char-random
+PRIVATE_STOREFRONT_API_TOKEN=replace-with-private-storefront-token
+
+# Public fallback demo store values
+PUBLIC_STOREFRONT_ID=
+PUBLIC_STOREFRONT_API_TOKEN=586d8fd7c598fea7e1b97a8eff48ed49
+PUBLIC_STORE_DOMAIN=horcrux-demo-store.myshopify.com
+PUBLIC_CHECKOUT_DOMAIN=horcrux-demo-store.myshopify.com
+PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID=d59946cb-1d27-415f-bb8e-c8ea32ffb5eb
+PUBLIC_CUSTOMER_ACCOUNT_API_URL=https://shopify.com/66049638586
+SHOP_ID=66049638586
+PUBLIC_GTM_CONTAINER_ID=
+IS_PORTFOLIO_DEMO=true

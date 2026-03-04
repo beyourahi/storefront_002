@@ -90,7 +90,7 @@ const FALLBACK_POPULAR_SEARCHES = [
     "gift ideas",
     "on sale",
     "trending now"
-] as const;
+];
 
 const FALLBACK_SEARCH_CONTENT = {
     searchPlaceholder: "Search products...",
