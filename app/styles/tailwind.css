@@ -915,7 +915,23 @@
     }
 
     a {
-        @apply text-foreground no-underline hover:cursor-pointer;
+        @apply text-foreground no-underline;
+    }
+
+    /* Keep pointer affordance scoped to real click targets, not generic layout containers. */
+    button:not(:disabled),
+    a[href],
+    label[for],
+    [role="button"]:not([aria-disabled="true"]),
+    [role="tab"]:not([aria-disabled="true"]),
+    [data-slot="button"]:not([aria-disabled="true"]),
+    input[type="submit"]:not(:disabled),
+    input[type="button"]:not(:disabled),
+    input[type="checkbox"]:not(:disabled),
+    input[type="radio"]:not(:disabled),
+    select:not(:disabled),
+    summary {
+        @apply cursor-pointer;
     }
 
     hr {
@@ -971,8 +987,13 @@
         @apply rounded bg-muted p-1 font-mono;
     }
 
-    button {
-        @apply cursor-pointer;
+    button:disabled,
+    input:disabled,
+    select:disabled,
+    textarea:disabled,
+    [aria-disabled="true"],
+    [data-disabled="true"] {
+        @apply cursor-not-allowed;
     }
 }
 

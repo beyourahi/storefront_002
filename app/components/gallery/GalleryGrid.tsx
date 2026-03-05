@@ -155,7 +155,7 @@ export function GalleryGrid({initialImages, pageInfo}: GalleryGridProps) {
                         <button
                             type="button"
                             onClick={retry}
-                            className="text-sm text-primary underline hover:no-underline"
+                            className="select-none text-sm text-primary underline hover:no-underline"
                         >
                             Try again
                         </button>

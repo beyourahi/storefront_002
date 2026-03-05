@@ -200,7 +200,7 @@ export function StickyMobileGetNow({
                 onClick={handleClick}
                 className={cn(
                     // Full width button with content at extremes
-                    "w-full min-h-14 inline-flex items-center justify-between px-6",
+                    "w-full min-h-14 inline-flex select-none items-center justify-between px-6",
                     // Primary styling
                     "bg-primary text-primary-foreground",
                     // Typography

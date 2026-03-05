@@ -256,7 +256,7 @@ function UnitToggle({
                     aria-pressed={currentUnit === unit.value}
                     className={cn(
                         // Base pill styling
-                        "inline-flex min-h-9 min-w-12 items-center justify-center rounded-full border-2 px-3 py-1.5 text-sm font-medium transition-all duration-200",
+                        "inline-flex min-h-9 min-w-12 select-none items-center justify-center rounded-full border-2 px-3 py-1.5 text-sm font-medium transition-all duration-200",
                         "active:scale-95",
                         // Active/inactive states - matches variant selector
                         currentUnit === unit.value

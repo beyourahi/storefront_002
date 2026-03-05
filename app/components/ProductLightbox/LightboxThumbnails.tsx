@@ -147,7 +147,7 @@ export function LightboxThumbnails({media, currentIndex, onSelect}: LightboxThum
                             className={cn(
                                 // Base sizing - responsive
                                 // Portrait 4:5 ratio thumbnails
-                                "relative shrink-0 w-12 h-15 md:w-14 md:h-[70px]",
+                                "relative shrink-0 w-12 h-15 select-none md:w-14 md:h-[70px]",
                                 "rounded-md overflow-hidden",
                                 // Transition for smooth state changes
                                 "transition-all duration-200",

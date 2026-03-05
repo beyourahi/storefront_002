@@ -163,7 +163,7 @@ function SharePlatformButton({
         <button
             type="button"
             className={cn(
-                "group inline-flex items-center justify-center gap-2 min-h-11 rounded-full border-2 border-primary bg-transparent px-3 sm:px-4 py-2",
+                "group inline-flex min-h-11 select-none items-center justify-center gap-2 rounded-full border-2 border-primary bg-transparent px-3 sm:px-4 py-2",
                 "text-primary font-medium transition-all duration-200",
                 "hover:bg-primary hover:text-primary-foreground active:scale-95",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -256,7 +256,7 @@ export function ProductShareButton({product, selectedVariant, className}: Produc
                 type="button"
                 onClick={handleShareClick}
                 className={cn(
-                    "inline-flex min-h-10 min-w-10 items-center justify-center rounded-full border-2 border-primary p-1.5 text-primary transition-all duration-200",
+                    "inline-flex min-h-10 min-w-10 select-none items-center justify-center rounded-full border-2 border-primary p-1.5 text-primary transition-all duration-200",
                     "hover:bg-primary hover:text-primary-foreground active:scale-95",
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                     className

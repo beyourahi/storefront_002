@@ -288,7 +288,7 @@ export function WishlistButton({
                 onClick={handleClick}
                 disabled={!isHydrated}
                 className={cn(
-                    "inline-flex min-h-10 min-w-10 items-center justify-center rounded-full border-2 border-primary p-1.5 transition-all duration-200",
+                    "inline-flex min-h-10 min-w-10 select-none items-center justify-center rounded-full border-2 border-primary p-1.5 transition-all duration-200",
                     "active:scale-95",
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -352,7 +352,7 @@ export function WishlistButton({
             disabled={!isHydrated}
             className={cn(
                 // Base styles
-                "rounded-full transition-all duration-200 ease-out",
+                "select-none rounded-full transition-all duration-200 ease-out",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 // Animation

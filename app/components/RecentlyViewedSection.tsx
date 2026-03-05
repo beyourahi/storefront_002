@@ -166,7 +166,7 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
                             <button
                                 type="button"
                                 onClick={() => setDialogOpen(true)}
-                                className="hidden rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground md:text-2xl sm:inline-flex"
+                                className="hidden select-none rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground md:text-2xl sm:inline-flex"
                             >
                                 Clear
                             </button>
@@ -211,7 +211,7 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
                         <button
                             type="button"
                             onClick={() => setDialogOpen(true)}
-                            className="rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                            className="select-none rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                         >
                             Clear
                         </button>
@@ -240,14 +240,14 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
                         <button
                             type="button"
                             onClick={() => setDialogOpen(false)}
-                            className="w-full rounded-full border-2 border-primary px-3 sm:px-4 py-2.5 font-sans text-base font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground sm:w-auto"
+                            className="w-full select-none rounded-full border-2 border-primary px-3 sm:px-4 py-2.5 font-sans text-base font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground sm:w-auto"
                         >
                             Keep History
                         </button>
                         <button
                             type="button"
                             onClick={handleClearHistory}
-                            className="w-full rounded-full bg-primary px-3 sm:px-4 py-2.5 font-sans text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto"
+                            className="w-full select-none rounded-full bg-primary px-3 sm:px-4 py-2.5 font-sans text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto"
                         >
                             Clear All
                         </button>

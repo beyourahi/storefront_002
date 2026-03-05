@@ -330,7 +330,7 @@ export function QuickAddSheet({product, open, onOpenChange, sizeChart}: QuickAdd
 
                                             // Pill button styling - consistent for all options
                                             const buttonClasses = cn(
-                                                "inline-flex min-h-10 items-center justify-center gap-2 rounded-full border-2 px-3 py-1.5 text-base font-medium transition-all duration-200",
+                                                "inline-flex min-h-10 select-none items-center justify-center gap-2 rounded-full border-2 px-3 py-1.5 text-base font-medium transition-all duration-200",
                                                 "active:scale-95",
                                                 isSelected
                                                     ? "border-primary bg-primary text-primary-foreground"
@@ -392,7 +392,7 @@ export function QuickAddSheet({product, open, onOpenChange, sizeChart}: QuickAdd
                                 <button
                                     type="button"
                                     onClick={() => void handleShare()}
-                                    className="flex min-h-10 min-w-10 items-center justify-center rounded-full border-2 border-primary text-primary transition-colors hover:bg-primary hover:text-primary-foreground active:scale-95"
+                                    className="flex min-h-10 min-w-10 select-none items-center justify-center rounded-full border-2 border-primary text-primary transition-colors hover:bg-primary hover:text-primary-foreground active:scale-95"
                                     aria-label="Share product"
                                 >
                                     <Share2 className="size-5" />
@@ -477,7 +477,7 @@ function QuickAddCartButton({
             onClick={handleAddToCart}
             disabled={isLoading || !variant.availableForSale}
             className={cn(
-                "w-full min-h-12 inline-flex items-center justify-between gap-4 rounded-full border-2 border-primary bg-transparent px-3 sm:px-4 py-2 text-lg font-medium text-primary transition-all duration-200",
+                "w-full min-h-12 inline-flex select-none items-center justify-between gap-4 rounded-full border-2 border-primary bg-transparent px-3 sm:px-4 py-2 text-lg font-medium text-primary transition-all duration-200",
                 "hover:bg-primary hover:text-primary-foreground active:bg-primary active:text-primary-foreground",
                 (isLoading || !variant.availableForSale) && "opacity-50 cursor-not-allowed"
             )}

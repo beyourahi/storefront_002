@@ -74,7 +74,7 @@ export function QuantitySelector({quantity, onQuantityChange, min = 1, max, clas
     const canIncrement = max === undefined || quantity < max;
 
     return (
-        <div className={cn("flex items-center justify-between rounded-full border-2 border-primary", className)}>
+        <div className={cn("flex select-none items-center justify-between rounded-full border-2 border-primary", className)}>
             <button
                 type="button"
                 onClick={handleDecrement}

@@ -283,7 +283,7 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
                                 type="button"
                                 onClick={handleOpenSearch}
                                 className={cn(
-                                    "w-full flex items-center mb-8 sm:hidden cursor-pointer",
+                                    "w-full flex select-none items-center mb-8 sm:hidden cursor-pointer",
                                     "bg-transparent border-0 border-b-2 border-primary/30",
                                     "text-xl font-serif text-primary/40",
                                     "py-3 text-left",

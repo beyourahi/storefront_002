@@ -171,7 +171,7 @@ function SheetContent({
                             // Positioning - responsive spacing
                             "absolute top-2 right-2 sm:top-3 sm:right-3",
                             // Touch-friendly sizing (44x44px minimum)
-                            "flex items-center justify-center size-10 sm:size-11",
+                            "flex select-none items-center justify-center size-10 sm:size-11",
                             // Styling
                             "rounded-full bg-muted/50 hover:bg-muted cursor-pointer",
                             "opacity-70 transition-all hover:opacity-100",

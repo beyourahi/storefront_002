@@ -72,7 +72,7 @@ function SelectTrigger({
             data-size={size}
             className={cn(
                 // Base styles
-                "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground flex w-fit items-center justify-between gap-2 rounded-md border bg-transparent whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
+                "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground flex w-fit select-none items-center justify-between gap-2 rounded-md border bg-transparent whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
                 // Responsive sizing: touch-friendly on mobile (44px), smaller on desktop
                 "px-3 py-2 text-base sm:text-sm",
                 // Height: h-11 (44px) mobile, h-10 tablet, h-9/h-8 desktop based on size
@@ -201,7 +201,7 @@ function SelectScrollUpButton({className, ...props}: React.ComponentProps<typeof
     return (
         <SelectPrimitive.ScrollUpButton
             data-slot="select-scroll-up-button"
-            className={cn("flex cursor-default items-center justify-center py-1", className)}
+            className={cn("flex cursor-pointer select-none items-center justify-center py-1", className)}
             {...props}
         >
             <ChevronUpIcon className="size-4" />
@@ -216,7 +216,7 @@ function SelectScrollDownButton({className, ...props}: React.ComponentProps<type
     return (
         <SelectPrimitive.ScrollDownButton
             data-slot="select-scroll-down-button"
-            className={cn("flex cursor-default items-center justify-center py-1", className)}
+            className={cn("flex cursor-pointer select-none items-center justify-center py-1", className)}
             {...props}
         >
             <ChevronDownIcon className="size-4" />

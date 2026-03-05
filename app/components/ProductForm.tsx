@@ -299,7 +299,7 @@ export function ProductForm({
                     type="button"
                     onClick={() => handlePurchaseTypeChange("one-time")}
                     className={cn(
-                        "flex flex-col items-start p-3 rounded-xl border-2 text-left transition-all",
+                        "flex select-none flex-col items-start p-3 rounded-xl border-2 text-left transition-all",
                         purchaseType === "one-time"
                             ? "border-primary bg-primary/5"
                             : "border-muted hover:border-primary/50"
@@ -318,7 +318,7 @@ export function ProductForm({
                     type="button"
                     onClick={() => handlePurchaseTypeChange("subscription")}
                     className={cn(
-                        "flex flex-col items-start p-3 rounded-xl border-2 text-left transition-all",
+                        "flex select-none flex-col items-start p-3 rounded-xl border-2 text-left transition-all",
                         purchaseType === "subscription"
                             ? "border-primary bg-primary/5"
                             : "border-muted hover:border-primary/50"
@@ -424,7 +424,7 @@ export function ProductForm({
                                 // Pill button styling - consistent for both swatch and non-swatch options
                                 // Reduced padding and text size for 320px viewport while maintaining 44px touch target
                                 const buttonClasses = cn(
-                                    "inline-flex min-h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-full border-2 px-2.5 sm:px-4 py-1.5 text-sm sm:text-base lg:text-lg font-medium transition-all duration-200",
+                                    "inline-flex min-h-11 select-none items-center justify-center gap-1.5 sm:gap-2 rounded-full border-2 px-2.5 sm:px-4 py-1.5 text-sm sm:text-base lg:text-lg font-medium transition-all duration-200",
                                     "active:scale-95",
                                     selected
                                         ? "border-primary bg-primary text-primary-foreground"

@@ -346,7 +346,7 @@ function CartLineQuantity({line, isPage, productTitle}: {line: CartLine; isPage:
     if (!isPage) {
         return (
             <div className="inline-flex items-center gap-1.5">
-                <div className="inline-flex items-center rounded-full border border-primary-foreground/40 bg-primary-foreground/5 backdrop-blur-sm">
+                <div className="inline-flex select-none items-center rounded-full border border-primary-foreground/40 bg-primary-foreground/5 backdrop-blur-sm">
                     <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
                         <button
                             type="submit"
@@ -391,7 +391,7 @@ function CartLineQuantity({line, isPage, productTitle}: {line: CartLine; isPage:
     // Touch targets: 44px minimum for mobile (size-11), 36px for desktop (sm:size-9)
     return (
         <div className="inline-flex items-center gap-1.5">
-            <div className="inline-flex items-center rounded-full border border-primary/50 bg-muted/30 shadow-sm">
+            <div className="inline-flex select-none items-center rounded-full border border-primary/50 bg-muted/30 shadow-sm">
                 <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
                     <button
                         type="submit"

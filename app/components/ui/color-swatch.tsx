@@ -252,7 +252,7 @@ export const ColorSwatchButton = forwardRef<HTMLButtonElement, ColorSwatchButton
             aria-pressed={selected}
             className={cn(
                 // Base button styles - circular, focusable
-                "inline-flex items-center justify-center rounded-full p-0.5",
+                "inline-flex select-none items-center justify-center rounded-full p-0.5",
                 // Transition
                 "transition-all duration-200",
                 // Hover effect - slight scale and shadow
