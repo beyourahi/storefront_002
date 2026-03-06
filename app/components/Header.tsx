@@ -13,7 +13,7 @@
  * - Navigation menu trigger
  * - Search activation
  * - User account access
- * - Wishlist with item count
+ * - Wishlist access
  * - Cart with item count badge
  *
  * @scroll-states
@@ -39,7 +39,6 @@
 import {Suspense} from "react";
 import {Await, NavLink, useAsyncValue, useLocation} from "react-router";
 import {type CartViewPayload, useAnalytics, useOptimisticCart} from "@shopify/hydrogen";
-import {Heart, Search, User} from "lucide-react";
 import type {CartApiQueryFragment} from "storefrontapi.generated";
 import type {HeaderProps, Viewport} from "types";
 import {useAside} from "~/components/Aside";
@@ -48,7 +47,6 @@ import {Button} from "~/components/ui/button";
 import {cn} from "~/lib/utils";
 import {useScrolled} from "~/lib/useScrolled";
 import {useSiteSettings} from "~/lib/site-content-context";
-import {WishlistCount} from "~/components/WishlistCount";
 
 const FALLBACK_HEADER_MENU = {
     id: "fallback-menu",
@@ -73,7 +71,6 @@ const FALLBACK_HEADER_MENU = {
         }
     ]
 } as const;
-import {useWishlistSafe} from "~/lib/wishlist-context";
 
 // =============================================================================
 // ROUTE CONFIGURATION
@@ -105,10 +102,10 @@ import {useWishlistSafe} from "~/lib/wishlist-context";
  *   - Empty + dark bg: border-light/60 text-light = 21:1 ✓
  *   - With items: bg-primary text-primary-foreground = 14.68:1 ✓
  *
- * ICON BUTTONS (User, Search, Heart icons):
- *   All icons inherit text color via [&_svg]:text-{color}
- *   Icon contrast = text contrast = 14.68:1 / 21:1 (WCAG AAA) ✓
- *   Touch targets: size-11 (44px) min - WCAG 2.5.5 compliant ✓
+ * TEXT ACTION BUTTONS (Menu, Shop all, Search, Wishlist, Account):
+ *   Text inherits the same light/primary colors as the header container
+ *   Contrast = 14.68:1 / 21:1 depending on route and scroll state (WCAG AAA) ✓
+ *   Touch targets: min-h-11 (44px) min - WCAG 2.5.5 compliant ✓
  *
  * ═══════════════════════════════════════════════════════════════════════════════
  */
@@ -126,7 +123,7 @@ function isDarkBackgroundRoute(pathname: string): boolean {
     );
 }
 
-export function Header({header, isLoggedIn, cart}: HeaderProps) {
+export function Header({header, cart}: HeaderProps) {
     const isScrolled = useScrolled(0);
     const {isHomePage} = useBrandAnimation();
     const location = useLocation();
@@ -219,7 +216,7 @@ export function Header({header, isLoggedIn, cart}: HeaderProps) {
                     <WishlistToggle />
                     {/* Account button - hidden on mobile, visible on sm+ screens */}
                     <div className="hidden sm:block">
-                        <AccountButton isLoggedIn={isLoggedIn} />
+                        <AccountButton />
                     </div>
                     <CartToggle cart={cart} isScrolled={isScrolled} useLightText={useLightText} />
                 </nav>
@@ -296,20 +293,18 @@ function MenuToggle({isScrolled}: {isScrolled: boolean}) {
     );
 }
 
-function AccountButton({isLoggedIn}: Pick<HeaderProps, "isLoggedIn">) {
+const HEADER_TEXT_ACTION_CLASSNAME =
+    "min-h-11 px-1.5 sm:px-4 text-sm sm:text-base font-medium cursor-pointer hover:bg-transparent hover:text-inherit";
+
+function AccountButton() {
     return (
         <Button
             variant="ghost"
-            size="icon-lg"
             asChild
-            className="size-11 sm:size-12 cursor-pointer hover:bg-transparent hover:text-inherit"
+            className={HEADER_TEXT_ACTION_CLASSNAME}
         >
-            <NavLink prefetch="viewport" to="/account" aria-label="Account">
-                <Suspense fallback={<User className="size-5 sm:size-6" />}>
-                    <Await resolve={isLoggedIn} errorElement={<User className="size-5 sm:size-6" />}>
-                        {() => <User className="size-5 sm:size-6" />}
-                    </Await>
-                </Suspense>
+            <NavLink prefetch="viewport" to="/account" aria-label="Account" className="hover:no-underline">
+                Account
             </NavLink>
         </Button>
     );
@@ -320,44 +315,24 @@ function SearchToggle() {
     return (
         <Button
             variant="ghost"
-            size="icon-lg"
             onClick={() => open("search")}
             aria-label="Search"
-            className="hidden sm:flex size-11 sm:size-12 cursor-pointer hover:bg-transparent hover:text-inherit"
+            className={cn("hidden sm:inline-flex", HEADER_TEXT_ACTION_CLASSNAME)}
         >
-            <Search className="size-5 sm:size-6" />
+            Search
         </Button>
     );
 }
 
 function WishlistToggle() {
-    const {count, isHydrated} = useWishlistSafe();
-    const hasItems = isHydrated && count > 0;
-
     return (
         <Button
             variant="ghost"
-            size="icon-lg"
             asChild
-            className="hidden sm:flex relative size-11 sm:size-12 cursor-pointer hover:bg-transparent group"
+            className={cn("hidden sm:inline-flex", HEADER_TEXT_ACTION_CLASSNAME)}
         >
-            <NavLink prefetch="viewport" to="/wishlist" aria-label="Wishlist">
-                <Heart
-                    className={cn(
-                        "size-5 sm:size-6 transition-all duration-300",
-                        // When has items: filled red heart with animations
-                        // Use ! to override parent [&_svg]:text-light/primary
-                        hasItems
-                            ? "fill-red-500! text-red-500! animate-heart-beat"
-                            : "fill-transparent text-muted-foreground",
-                        // Hover effect: scale up with glow
-                        "group-hover:scale-110",
-                        hasItems && "group-hover:animate-heart-glow",
-                        !hasItems && "group-hover:text-red-400!"
-                    )}
-                    strokeWidth={2}
-                />
-                <WishlistCount className="absolute -top-0.5 -right-0.5" />
+            <NavLink prefetch="viewport" to="/wishlist" aria-label="Wishlist" className="hover:no-underline">
+                Wishlist
             </NavLink>
         </Button>
     );
