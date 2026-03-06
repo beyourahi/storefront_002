@@ -42,6 +42,12 @@ import {type CartViewPayload, useAnalytics, useOptimisticCart} from "@shopify/hy
 import type {CartApiQueryFragment} from "storefrontapi.generated";
 import type {HeaderProps, Viewport} from "types";
 import {useAside} from "~/components/Aside";
+import {
+    HEADER_ACTION_LINK_RESET_CLASSNAME,
+    type HeaderActionState,
+    getHeaderMenuActionClassName,
+    getHeaderTextActionClassName
+} from "~/components/headerActionStyles";
 import {useBrandAnimation} from "~/components/BrandAnimation";
 import {Button} from "~/components/ui/button";
 import {cn} from "~/lib/utils";
@@ -103,7 +109,7 @@ const FALLBACK_HEADER_MENU = {
  *   - With items: bg-primary text-primary-foreground = 14.68:1 ✓
  *
  * TEXT ACTION BUTTONS (Menu, Shop all, Search, Wishlist, Account):
- *   Text inherits the same light/primary colors as the header container
+ *   Text color comes from getHeaderActionToneClassName() in headerActionStyles.ts
  *   Contrast = 14.68:1 / 21:1 depending on route and scroll state (WCAG AAA) ✓
  *   Touch targets: min-h-11 (44px) min - WCAG 2.5.5 compliant ✓
  *
@@ -132,6 +138,7 @@ export function Header({header, cart}: HeaderProps) {
     // Use light text on homepage or dark-background routes
     const isDarkBackground = isDarkBackgroundRoute(location.pathname);
     const useLightText = isHomePage || isDarkBackground;
+    const actionState = {isScrolled, useLightText};
 
     return (
         <header
@@ -159,27 +166,11 @@ export function Header({header, cart}: HeaderProps) {
             >
                 {/* Left side - Menu button and Shop all */}
                 <div className="flex items-center gap-0 sm:gap-1">
-                    <MenuToggle isScrolled={isScrolled} />
+                    <MenuToggle actionState={actionState} />
                     {/* All Products button - hidden on mobile, visible on sm+ screens */}
-                    <Button
-                        variant="ghost"
-                        asChild
-                        className={cn(
-                            // Hidden on mobile (accessible via menu), shown on tablet/desktop
-                            "hidden sm:inline-flex",
-                            // Responsive: smaller padding and text on mobile
-                            "min-h-11 px-1.5 sm:px-4 text-sm sm:text-base font-medium cursor-pointer hover:no-underline hover:text-inherit",
-                            isScrolled || useLightText ? "text-light" : "text-primary"
-                        )}
-                    >
-                        <NavLink
-                            prefetch="viewport"
-                            to="/collections/all-products"
-                            className="no-underline hover:no-underline"
-                        >
-                            Shop all
-                        </NavLink>
-                    </Button>
+                    <HeaderTextLink actionState={actionState} className="hidden sm:inline-flex" to="/collections/all-products">
+                        Shop all
+                    </HeaderTextLink>
                 </div>
 
                 {/* Center - Static brand text (only shown on non-home pages) */}
@@ -212,11 +203,11 @@ export function Header({header, cart}: HeaderProps) {
                 {/* Right side - Search, Wishlist, Account, Cart
                      Minimal gap at 320px (gap-0.5) to fit all elements, scales up at sm+ */}
                 <nav className="flex items-center gap-0.5 sm:gap-2 md:gap-3" role="navigation">
-                    <SearchToggle />
-                    <WishlistToggle />
+                    <SearchToggle actionState={actionState} />
+                    <WishlistToggle actionState={actionState} />
                     {/* Account button - hidden on mobile, visible on sm+ screens */}
                     <div className="hidden sm:block">
-                        <AccountButton />
+                        <AccountButton actionState={actionState} />
                     </div>
                     <CartToggle cart={cart} isScrolled={isScrolled} useLightText={useLightText} />
                 </nav>
@@ -273,7 +264,7 @@ export function HeaderMenu({
     );
 }
 
-function MenuToggle({isScrolled}: {isScrolled: boolean}) {
+function MenuToggle({actionState}: {actionState: HeaderActionState}) {
     const {open} = useAside();
     return (
         <Button
@@ -281,11 +272,11 @@ function MenuToggle({isScrolled}: {isScrolled: boolean}) {
             onClick={() => open("mobile")}
             aria-label="Open menu"
             // Ensure minimum 44x44px tap target for accessibility (WCAG 2.5.5)
-            className={cn(
-                "min-h-11 min-w-11 text-base font-medium hover:bg-transparent hover:text-inherit cursor-pointer",
+            className={getHeaderMenuActionClassName(
+                actionState,
                 // Mobile: extra right padding when scrolled, none when not scrolled
                 // Large screens (md+): no left padding when not scrolled
-                isScrolled ? "pl-2 pr-6 sm:pr-4" : "px-0 sm:px-4 md:pl-0"
+                actionState.isScrolled ? "pl-2 pr-6 sm:pr-4" : "px-0 sm:px-4 md:pl-0"
             )}
         >
             Menu
@@ -293,48 +284,57 @@ function MenuToggle({isScrolled}: {isScrolled: boolean}) {
     );
 }
 
-const HEADER_TEXT_ACTION_CLASSNAME =
-    "min-h-11 px-1.5 sm:px-4 text-sm sm:text-base font-medium cursor-pointer hover:bg-transparent hover:text-inherit";
-
-function AccountButton() {
+function HeaderTextLink({
+    actionState,
+    children,
+    className,
+    to
+}: {
+    actionState: HeaderActionState;
+    children: React.ReactNode;
+    className?: string;
+    to: string;
+}) {
     return (
         <Button
             variant="ghost"
             asChild
-            className={HEADER_TEXT_ACTION_CLASSNAME}
+            className={getHeaderTextActionClassName(actionState, className)}
         >
-            <NavLink prefetch="viewport" to="/account" aria-label="Account" className="hover:no-underline">
-                Account
+            <NavLink prefetch="viewport" to={to} className={HEADER_ACTION_LINK_RESET_CLASSNAME}>
+                {children}
             </NavLink>
         </Button>
     );
 }
 
-function SearchToggle() {
+function AccountButton({actionState}: {actionState: HeaderActionState}) {
+    return (
+        <HeaderTextLink actionState={actionState} to="/account">
+            Account
+        </HeaderTextLink>
+    );
+}
+
+function SearchToggle({actionState}: {actionState: HeaderActionState}) {
     const {open} = useAside();
     return (
         <Button
             variant="ghost"
             onClick={() => open("search")}
             aria-label="Search"
-            className={cn("hidden sm:inline-flex", HEADER_TEXT_ACTION_CLASSNAME)}
+            className={getHeaderTextActionClassName(actionState, "hidden sm:inline-flex")}
         >
             Search
         </Button>
     );
 }
 
-function WishlistToggle() {
+function WishlistToggle({actionState}: {actionState: HeaderActionState}) {
     return (
-        <Button
-            variant="ghost"
-            asChild
-            className={cn("hidden sm:inline-flex", HEADER_TEXT_ACTION_CLASSNAME)}
-        >
-            <NavLink prefetch="viewport" to="/wishlist" aria-label="Wishlist" className="hover:no-underline">
-                Wishlist
-            </NavLink>
-        </Button>
+        <HeaderTextLink actionState={actionState} className="hidden sm:inline-flex" to="/wishlist">
+            Wishlist
+        </HeaderTextLink>
     );
 }
 
