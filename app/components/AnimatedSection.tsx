@@ -15,7 +15,6 @@
  *
  * @components
  * - AnimatedSection: Main wrapper for animated content
- * - PageTransition: Full-page fade-in wrapper for route transitions
  * - StaggeredList: Container for staggered child animations
  *
  * @props
@@ -34,7 +33,6 @@
 
 import type {ReactNode, HTMLAttributes} from "react";
 import {useInView} from "~/hooks/useInView";
-import {usePageTransitionRuntime} from "~/lib/navigation-transitions";
 import {cn} from "~/lib/utils";
 
 // ============================================================================
@@ -132,34 +130,6 @@ export const AnimatedSection = ({
             )}
             style={{...style, ...staggerStyle}}
             {...props}
-        >
-            {children}
-        </div>
-    );
-};
-
-/**
- * Page wrapper component for route transition animations.
- * Wraps entire page content with a fade-in animation on mount.
- *
- * @example
- * export default function ProductPage() {
- *   return (
- *     <PageTransition>
- *       <div className="container">...</div>
- *     </PageTransition>
- *   );
- * }
- */
-export const PageTransition = ({children, className}: {children: ReactNode; className?: string}) => {
-    const {shouldAnimateFallbackTransition} = usePageTransitionRuntime();
-
-    return (
-        <div
-            className={cn(
-                shouldAnimateFallbackTransition && "animate-page-fade-in will-change-[transform,opacity]",
-                className
-            )}
         >
             {children}
         </div>

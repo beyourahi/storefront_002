@@ -390,183 +390,52 @@ export default function SubscriptionDetail() {
             )}
 
             <AnimatedSection animation="slide-up" threshold={0.1}>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-base">Subscription Items</CardTitle>
-                    <CardDescription>Products included in this subscription</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[50%]">Product</TableHead>
-                                <TableHead>Price</TableHead>
-                                <TableHead>Quantity</TableHead>
-                                <TableHead className="text-right">Total</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {subscription.lines.nodes.map(line => (
-                                <TableRow key={line.id}>
-                                    <TableCell>
-                                        <div className="flex items-center gap-4">
-                                            {line.image && (
-                                                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border">
-                                                    <Image
-                                                        data={line.image}
-                                                        width={48}
-                                                        height={48}
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                </div>
-                                            )}
-                                            <div>
-                                                <p className="font-medium">{line.title}</p>
-                                                {line.variantTitle && (
-                                                    <p className="text-sm text-muted-foreground">{line.variantTitle}</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Money data={line.currentPrice} />
-                                    </TableCell>
-                                    <TableCell>{line.quantity}</TableCell>
-                                    <TableCell className="text-right">
-                                        <Money data={line.lineDiscountedPrice} />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
-            </AnimatedSection>
-
-            <AnimatedSection animation="slide-up" threshold={0.1}>
-            <div className="grid gap-4 md:grid-cols-2">
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-base">Next Billing</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <p className="text-2xl font-semibold">
-                            {subscription.nextBillingDate
-                                ? new Date(subscription.nextBillingDate).toLocaleDateString()
-                                : "N/A"}
-                        </p>
-                        <p className="text-sm text-muted-foreground">{frequency}</p>
-                        {subscription.deliveryPrice && parseFloat(subscription.deliveryPrice.amount) > 0 && (
-                            <p className="text-sm text-muted-foreground">
-                                + <Money data={subscription.deliveryPrice} /> delivery
-                            </p>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base">Payment Status</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Badge variant={subscription.lastPaymentStatus === "SUCCEEDED" ? "default" : "secondary"}>
-                            {subscription.lastPaymentStatus ?? "N/A"}
-                        </Badge>
-                    </CardContent>
-                </Card>
-            </div>
-            </AnimatedSection>
-
-            {/* Upcoming Billing Cycles */}
-            {subscription.upcomingBillingCycles.nodes.length > 0 && (
-                <AnimatedSection animation="slide-up" threshold={0.1}>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base">Upcoming Billing Cycles</CardTitle>
-                        <CardDescription>Skip or restore upcoming deliveries</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-3">
-                            {subscription.upcomingBillingCycles.nodes.map(cycle => (
-                                <div
-                                    key={cycle.cycleIndex}
-                                    className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0"
-                                >
-                                    <div>
-                                        <p className="font-medium">
-                                            {new Date(cycle.billingAttemptExpectedDate).toLocaleDateString()}
-                                        </p>
-                                        <p className="text-sm text-muted-foreground">
-                                            Cycle #{cycle.cycleIndex + 1}
-                                            {cycle.skipped && " (Skipped)"}
-                                        </p>
-                                    </div>
-                                    <Form method="POST">
-                                        <input type="hidden" name="cycleIndex" value={cycle.cycleIndex} />
-                                        {cycle.skipped ? (
-                                            <Button
-                                                type="submit"
-                                                name="intent"
-                                                value={SUBSCRIPTION_ACTIONS.UNSKIP_CYCLE}
-                                                variant="outline"
-                                                size="sm"
-                                                disabled={isSubmitting}
-                                            >
-                                                Restore
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                type="submit"
-                                                name="intent"
-                                                value={SUBSCRIPTION_ACTIONS.SKIP_CYCLE}
-                                                variant="outline"
-                                                size="sm"
-                                                disabled={isSubmitting}
-                                            >
-                                                Skip
-                                            </Button>
-                                        )}
-                                    </Form>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-                </AnimatedSection>
-            )}
-
-            {/* Recent Orders */}
-            {subscription.orders.nodes.length > 0 && (
-                <AnimatedSection animation="fade" threshold={0.1}>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base">Recent Orders</CardTitle>
-                        <CardDescription>Orders generated from this subscription</CardDescription>
+                        <CardTitle className="text-base">Subscription Items</CardTitle>
+                        <CardDescription>Products included in this subscription</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Order</TableHead>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Status</TableHead>
+                                    <TableHead className="w-[50%]">Product</TableHead>
+                                    <TableHead>Price</TableHead>
+                                    <TableHead>Quantity</TableHead>
                                     <TableHead className="text-right">Total</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {subscription.orders.nodes.map(order => (
-                                    <TableRow key={order.id}>
+                                {subscription.lines.nodes.map(line => (
+                                    <TableRow key={line.id}>
                                         <TableCell>
-                                            <Link viewTransition to="/account/orders" className="font-medium hover:underline">
-                                                {order.name}
-                                            </Link>
+                                            <div className="flex items-center gap-4">
+                                                {line.image && (
+                                                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border">
+                                                        <Image
+                                                            data={line.image}
+                                                            width={48}
+                                                            height={48}
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <p className="font-medium">{line.title}</p>
+                                                    {line.variantTitle && (
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {line.variantTitle}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </TableCell>
-                                        <TableCell>{new Date(order.processedAt).toLocaleDateString()}</TableCell>
                                         <TableCell>
-                                            <Badge variant="outline">{order.fulfillmentStatus}</Badge>
+                                            <Money data={line.currentPrice} />
                                         </TableCell>
+                                        <TableCell>{line.quantity}</TableCell>
                                         <TableCell className="text-right">
-                                            <Money data={order.totalPrice} />
+                                            <Money data={line.lineDiscountedPrice} />
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -574,82 +443,216 @@ export default function SubscriptionDetail() {
                         </Table>
                     </CardContent>
                 </Card>
+            </AnimatedSection>
+
+            <AnimatedSection animation="slide-up" threshold={0.1}>
+                <div className="grid gap-4 md:grid-cols-2">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base">Next Billing</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            <p className="text-2xl font-semibold">
+                                {subscription.nextBillingDate
+                                    ? new Date(subscription.nextBillingDate).toLocaleDateString()
+                                    : "N/A"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">{frequency}</p>
+                            {subscription.deliveryPrice && parseFloat(subscription.deliveryPrice.amount) > 0 && (
+                                <p className="text-sm text-muted-foreground">
+                                    + <Money data={subscription.deliveryPrice} /> delivery
+                                </p>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base">Payment Status</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <Badge variant={subscription.lastPaymentStatus === "SUCCEEDED" ? "default" : "secondary"}>
+                                {subscription.lastPaymentStatus ?? "N/A"}
+                            </Badge>
+                        </CardContent>
+                    </Card>
+                </div>
+            </AnimatedSection>
+
+            {/* Upcoming Billing Cycles */}
+            {subscription.upcomingBillingCycles.nodes.length > 0 && (
+                <AnimatedSection animation="slide-up" threshold={0.1}>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base">Upcoming Billing Cycles</CardTitle>
+                            <CardDescription>Skip or restore upcoming deliveries</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-3">
+                                {subscription.upcomingBillingCycles.nodes.map(cycle => (
+                                    <div
+                                        key={cycle.cycleIndex}
+                                        className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0"
+                                    >
+                                        <div>
+                                            <p className="font-medium">
+                                                {new Date(cycle.billingAttemptExpectedDate).toLocaleDateString()}
+                                            </p>
+                                            <p className="text-sm text-muted-foreground">
+                                                Cycle #{cycle.cycleIndex + 1}
+                                                {cycle.skipped && " (Skipped)"}
+                                            </p>
+                                        </div>
+                                        <Form method="POST">
+                                            <input type="hidden" name="cycleIndex" value={cycle.cycleIndex} />
+                                            {cycle.skipped ? (
+                                                <Button
+                                                    type="submit"
+                                                    name="intent"
+                                                    value={SUBSCRIPTION_ACTIONS.UNSKIP_CYCLE}
+                                                    variant="outline"
+                                                    size="sm"
+                                                    disabled={isSubmitting}
+                                                >
+                                                    Restore
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    type="submit"
+                                                    name="intent"
+                                                    value={SUBSCRIPTION_ACTIONS.SKIP_CYCLE}
+                                                    variant="outline"
+                                                    size="sm"
+                                                    disabled={isSubmitting}
+                                                >
+                                                    Skip
+                                                </Button>
+                                            )}
+                                        </Form>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </AnimatedSection>
+            )}
+
+            {/* Recent Orders */}
+            {subscription.orders.nodes.length > 0 && (
+                <AnimatedSection animation="fade" threshold={0.1}>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base">Recent Orders</CardTitle>
+                            <CardDescription>Orders generated from this subscription</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Order</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right">Total</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {subscription.orders.nodes.map(order => (
+                                        <TableRow key={order.id}>
+                                            <TableCell>
+                                                <Link to="/account/orders" className="font-medium hover:underline">
+                                                    {order.name}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell>{new Date(order.processedAt).toLocaleDateString()}</TableCell>
+                                            <TableCell>
+                                                <Badge variant="outline">{order.fulfillmentStatus}</Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <Money data={order.totalPrice} />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
                 </AnimatedSection>
             )}
 
             <AnimatedSection animation="slide-up" threshold={0.1}>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-base">Manage Subscription</CardTitle>
-                    <CardDescription>Pause, resume, or cancel your subscription</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-wrap gap-3">
-                    {canPause && (
-                        <Form method="POST">
-                            <Button
-                                type="submit"
-                                name="intent"
-                                value={SUBSCRIPTION_ACTIONS.PAUSE}
-                                variant="secondary"
-                                disabled={isSubmitting}
-                            >
-                                Pause Subscription
-                            </Button>
-                        </Form>
-                    )}
-
-                    {canActivate && (
-                        <Form method="POST">
-                            <Button
-                                type="submit"
-                                name="intent"
-                                value={SUBSCRIPTION_ACTIONS.ACTIVATE}
-                                variant="default"
-                                disabled={isSubmitting}
-                            >
-                                Resume Subscription
-                            </Button>
-                        </Form>
-                    )}
-
-                    {canCancel && (
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="destructive" disabled={isSubmitting}>
-                                    Cancel Subscription
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-base">Manage Subscription</CardTitle>
+                        <CardDescription>Pause, resume, or cancel your subscription</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap gap-3">
+                        {canPause && (
+                            <Form method="POST">
+                                <Button
+                                    type="submit"
+                                    name="intent"
+                                    value={SUBSCRIPTION_ACTIONS.PAUSE}
+                                    variant="secondary"
+                                    disabled={isSubmitting}
+                                >
+                                    Pause Subscription
                                 </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This action cannot be undone. Once cancelled, you will no longer receive
-                                        shipments and will need to create a new subscription if you change your mind.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
-                                    <Form method="POST">
-                                        <AlertDialogAction
-                                            type="submit"
-                                            name="intent"
-                                            value={SUBSCRIPTION_ACTIONS.CANCEL}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                        >
-                                            Yes, Cancel Subscription
-                                        </AlertDialogAction>
-                                    </Form>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    )}
-                </CardContent>
-                <CardFooter>
-                    <Button variant="link" className="h-auto p-0" asChild>
-                        <Link viewTransition to="/account/subscriptions">← Back to Subscriptions</Link>
-                    </Button>
-                </CardFooter>
-            </Card>
+                            </Form>
+                        )}
+
+                        {canActivate && (
+                            <Form method="POST">
+                                <Button
+                                    type="submit"
+                                    name="intent"
+                                    value={SUBSCRIPTION_ACTIONS.ACTIVATE}
+                                    variant="default"
+                                    disabled={isSubmitting}
+                                >
+                                    Resume Subscription
+                                </Button>
+                            </Form>
+                        )}
+
+                        {canCancel && (
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive" disabled={isSubmitting}>
+                                        Cancel Subscription
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. Once cancelled, you will no longer receive
+                                            shipments and will need to create a new subscription if you change your
+                                            mind.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+                                        <Form method="POST">
+                                            <AlertDialogAction
+                                                type="submit"
+                                                name="intent"
+                                                value={SUBSCRIPTION_ACTIONS.CANCEL}
+                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                            >
+                                                Yes, Cancel Subscription
+                                            </AlertDialogAction>
+                                        </Form>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        )}
+                    </CardContent>
+                    <CardFooter>
+                        <Button variant="link" className="h-auto p-0" asChild>
+                            <Link to="/account/subscriptions">← Back to Subscriptions</Link>
+                        </Button>
+                    </CardFooter>
+                </Card>
             </AnimatedSection>
         </div>
     );

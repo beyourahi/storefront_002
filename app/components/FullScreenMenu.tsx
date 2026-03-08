@@ -230,7 +230,7 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
                         </Dialog.Close>
 
                         {/* Brand name - center */}
-                        <Link viewTransition
+                        <Link
                             to="/"
                             prefetch="viewport"
                             onClick={close}
@@ -475,7 +475,7 @@ function MenuLink({title, url, count, onNavigate, variant = "collection", stagge
     const staggerDelay = Math.min(staggerIndex, 8) * 50;
 
     return (
-        <Link viewTransition
+        <Link
             to={url}
             prefetch="viewport"
             onClick={onNavigate}

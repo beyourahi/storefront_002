@@ -32,7 +32,7 @@ import {RETURNS_AVAILABILITY_QUERY, checkReturnsEnabled} from "~/graphql/custome
 import {Card, CardContent} from "~/components/ui/card";
 import {Badge} from "~/components/ui/badge";
 import {Button} from "~/components/ui/button";
-import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {AuthRequiredFallback} from "~/components/AuthRequiredFallback";
 import {
     PackageX,
@@ -179,54 +179,52 @@ export default function ReturnsHistoryRoute() {
     const hasReturns = returns.length > 0;
 
     return (
-        <PageTransition>
-            <div className="space-y-10 md:space-y-14 lg:space-y-16">
-                {/* Page Header - Matches dashboard/orders/profile section headers */}
-                <AnimatedSection animation="hero" threshold={0.1}>
-                    <section className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
-                                    <RotateCcwIcon className="size-5 md:size-6 text-muted-foreground" />
-                                </div>
-                                <div>
-                                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-foreground tracking-tight my-0">
-                                        Returns History
-                                    </h1>
-                                    <p className="text-muted-foreground text-sm md:text-base mt-1">
-                                        Track and manage your return requests
-                                    </p>
-                                </div>
+        <div className="space-y-10 md:space-y-14 lg:space-y-16">
+            {/* Page Header - Matches dashboard/orders/profile section headers */}
+            <AnimatedSection animation="hero" threshold={0.1}>
+                <section className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
+                                <RotateCcwIcon className="size-5 md:size-6 text-muted-foreground" />
                             </div>
-                            {hasReturns && (
-                                <Button variant="link" asChild className="text-primary p-0 h-auto group hidden sm:flex">
-                                    <Link viewTransition
-                                        to="/account/orders"
-                                        className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
-                                    >
-                                        View Orders{" "}
-                                        <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
-                                    </Link>
-                                </Button>
-                            )}
+                            <div>
+                                <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-foreground tracking-tight my-0">
+                                    Returns History
+                                </h1>
+                                <p className="text-muted-foreground text-sm md:text-base mt-1">
+                                    Track and manage your return requests
+                                </p>
+                            </div>
                         </div>
-                    </section>
-                </AnimatedSection>
+                        {hasReturns && (
+                            <Button variant="link" asChild className="text-primary p-0 h-auto group hidden sm:flex">
+                                <Link
+                                    to="/account/orders"
+                                    className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
+                                >
+                                    View Orders{" "}
+                                    <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+                                </Link>
+                            </Button>
+                        )}
+                    </div>
+                </section>
+            </AnimatedSection>
 
-                {/* Returns List */}
-                <AnimatedSection animation="section" threshold={0.1} delay={100}>
-                    {returns.length === 0 ? (
-                        <ReturnsEmpty />
-                    ) : (
-                        <div className="grid gap-4 md:gap-5 md:grid-cols-2 lg:grid-cols-3">
-                            {returns.map((returnItem, index) => (
-                                <ReturnCard key={returnItem.id} returnItem={returnItem} index={index} />
-                            ))}
-                        </div>
-                    )}
-                </AnimatedSection>
-            </div>
-        </PageTransition>
+            {/* Returns List */}
+            <AnimatedSection animation="section" threshold={0.1} delay={100}>
+                {returns.length === 0 ? (
+                    <ReturnsEmpty />
+                ) : (
+                    <div className="grid gap-4 md:gap-5 md:grid-cols-2 lg:grid-cols-3">
+                        {returns.map((returnItem, index) => (
+                            <ReturnCard key={returnItem.id} returnItem={returnItem} index={index} />
+                        ))}
+                    </div>
+                )}
+            </AnimatedSection>
+        </div>
     );
 }
 
@@ -250,13 +248,13 @@ function ReturnsEmpty() {
                 {/* CTA buttons - primary action to view orders */}
                 <div className="flex flex-col sm:flex-row gap-3">
                     <Button asChild size="lg">
-                        <Link viewTransition to="/account/orders" className="gap-2">
+                        <Link to="/account/orders" className="gap-2">
                             <PackageSearchIcon className="size-4" />
                             View Orders
                         </Link>
                     </Button>
                     <Button asChild size="lg" variant="outline">
-                        <Link viewTransition to="/collections">Continue Shopping</Link>
+                        <Link to="/collections">Continue Shopping</Link>
                     </Button>
                 </div>
             </CardContent>
@@ -272,7 +270,7 @@ function ReturnCard({returnItem, index = 0}: {returnItem: ReturnWithOrder; index
     const totalQuantity = lineItems.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
-        <Link viewTransition
+        <Link
             to="/account/orders"
             className="group block no-underline animate-product-fade-in"
             style={{animationDelay: `${Math.min(index, 11) * 50}ms`}}

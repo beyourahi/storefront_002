@@ -177,7 +177,7 @@ export function ArticleCard({
      */
     if (variant === "compact") {
         return (
-            <Link viewTransition
+            <Link
                 to={articleUrl}
                 prefetch="viewport"
                 className={cn(
@@ -232,7 +232,7 @@ export function ArticleCard({
      */
     if (variant === "featured") {
         return (
-            <Link viewTransition
+            <Link
                 to={articleUrl}
                 prefetch="viewport"
                 className={cn("block no-underline group animate-product-fade-in cursor-pointer", className)}
@@ -307,7 +307,7 @@ export function ArticleCard({
      * - Scale effect on hover (105%)
      */
     return (
-        <Link viewTransition
+        <Link
             to={articleUrl}
             prefetch="viewport"
             className={cn("block no-underline group animate-product-fade-in cursor-pointer", className)}

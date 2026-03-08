@@ -219,7 +219,7 @@ function AccountNavLink({to, end, children}: {to: string; end?: boolean; childre
            - whitespace-nowrap: Ensures text stays on one line (critical for scroll)
            - Removed snap-start as we're not using scroll snap (matching CuratedCollections)
         */
-        <NavLink viewTransition
+        <NavLink
             to={to}
             end={end}
             className={cn("shrink-0", canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]")}
@@ -245,7 +245,11 @@ function AccountNavLink({to, end, children}: {to: string; end?: boolean; childre
                     <span
                         className={cn(
                             "absolute bottom-0 left-0 w-full h-0.5 bg-primary transition-transform duration-300 ease-out origin-left",
-                            isActive ? "scale-x-100" : canHover ? "scale-x-0 group-hover:scale-x-100" : "scale-x-100 opacity-45"
+                            isActive
+                                ? "scale-x-100"
+                                : canHover
+                                  ? "scale-x-0 group-hover:scale-x-100"
+                                  : "scale-x-100 opacity-45"
                         )}
                     />
                 </span>

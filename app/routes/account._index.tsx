@@ -55,7 +55,7 @@ import {Avatar, AvatarFallback} from "~/components/ui/avatar";
 import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel";
 import {ProductItem} from "~/components/ProductItem";
 import {Money} from "~/components/Money";
-import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {cn} from "~/lib/utils";
 import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
@@ -284,52 +284,50 @@ export default function AccountDashboard() {
     }
 
     return (
-        <PageTransition>
-            <div className="space-y-10 md:space-y-14 lg:space-y-16">
-                {/* Welcome Banner - Hero section with prominent greeting */}
-                <AnimatedSection animation="hero" threshold={0.1}>
-                    <WelcomeBanner customer={customer} />
-                </AnimatedSection>
+        <div className="space-y-10 md:space-y-14 lg:space-y-16">
+            {/* Welcome Banner - Hero section with prominent greeting */}
+            <AnimatedSection animation="hero" threshold={0.1}>
+                <WelcomeBanner customer={customer} />
+            </AnimatedSection>
 
-                {/* Store Credit Widget - Only shown when store credit is enabled in Shopify Admin
+            {/* Store Credit Widget - Only shown when store credit is enabled in Shopify Admin
                     When disabled, storeCreditAccounts returns empty array from Customer Account API */}
-                {isStoreCreditEnabled && (
-                    <AnimatedSection animation="slide-up" threshold={0.1} delay={50}>
-                        <StoreCreditWidget balance={storeCreditBalance} accounts={storeCreditAccounts} />
-                    </AnimatedSection>
-                )}
-
-                {/* Recent Orders Section - Primary actionable content */}
-                <AnimatedSection animation="section" threshold={0.1} delay={100}>
-                    <RecentOrdersSection orders={orders} />
-                </AnimatedSection>
-
-                {/* Quick Actions Grid - Navigation shortcuts */}
+            {isStoreCreditEnabled && (
                 <AnimatedSection animation="slide-up" threshold={0.1} delay={50}>
-                    <QuickActionsGrid />
+                    <StoreCreditWidget balance={storeCreditBalance} accounts={storeCreditAccounts} />
                 </AnimatedSection>
+            )}
 
-                {/* Account Stats - Engagement metrics */}
-                <AnimatedSection animation="fade" threshold={0.15} delay={100}>
-                    <AccountStats customer={customer} orderCount={orders?.nodes?.length ?? 0} />
-                </AnimatedSection>
+            {/* Recent Orders Section - Primary actionable content */}
+            <AnimatedSection animation="section" threshold={0.1} delay={100}>
+                <RecentOrdersSection orders={orders} />
+            </AnimatedSection>
 
-                {/* Recently Viewed Products - Personalized browsing history */}
-                <AnimatedSection animation="section" threshold={0.1}>
-                    <RecentlyViewedSection serverProducts={recentlyViewedProducts} allProducts={allProducts} />
-                </AnimatedSection>
+            {/* Quick Actions Grid - Navigation shortcuts */}
+            <AnimatedSection animation="slide-up" threshold={0.1} delay={50}>
+                <QuickActionsGrid />
+            </AnimatedSection>
 
-                {/* Recommended Products - Discovery section */}
-                <AnimatedSection animation="section" threshold={0.1}>
-                    <RecommendedSection products={recommendedProducts} />
-                </AnimatedSection>
+            {/* Account Stats - Engagement metrics */}
+            <AnimatedSection animation="fade" threshold={0.15} delay={100}>
+                <AccountStats customer={customer} orderCount={orders?.nodes?.length ?? 0} />
+            </AnimatedSection>
 
-                {/* Special Offers Banner - CTA and benefits */}
-                <AnimatedSection animation="scale" threshold={0.15}>
-                    <SpecialOffersBanner shippingConfig={shippingConfig} />
-                </AnimatedSection>
-            </div>
-        </PageTransition>
+            {/* Recently Viewed Products - Personalized browsing history */}
+            <AnimatedSection animation="section" threshold={0.1}>
+                <RecentlyViewedSection serverProducts={recentlyViewedProducts} allProducts={allProducts} />
+            </AnimatedSection>
+
+            {/* Recommended Products - Discovery section */}
+            <AnimatedSection animation="section" threshold={0.1}>
+                <RecommendedSection products={recommendedProducts} />
+            </AnimatedSection>
+
+            {/* Special Offers Banner - CTA and benefits */}
+            <AnimatedSection animation="scale" threshold={0.15}>
+                <SpecialOffersBanner shippingConfig={shippingConfig} />
+            </AnimatedSection>
+        </div>
     );
 }
 
@@ -604,7 +602,7 @@ function RecentOrdersSection({orders}: {orders: ReturnType<typeof useLoaderData<
                 </h2>
                 {hasOrders && (
                     <Button variant="link" asChild className="text-primary p-0 h-auto group">
-                        <Link viewTransition
+                        <Link
                             to="/account/orders"
                             className={cn(
                                 "flex items-center gap-1.5 transition-all duration-200",
@@ -613,10 +611,7 @@ function RecentOrdersSection({orders}: {orders: ReturnType<typeof useLoaderData<
                         >
                             {accountContent.viewAllOrders}{" "}
                             <ArrowRightIcon
-                                className={cn(
-                                    "size-4 transition-transform",
-                                    canHover && "group-hover:translate-x-0.5"
-                                )}
+                                className={cn("size-4 transition-transform", canHover && "group-hover:translate-x-0.5")}
                             />
                         </Link>
                     </Button>
@@ -643,9 +638,12 @@ function OrderCard({order}: {order: OrderNode}) {
     const displayStatus = fulfillmentStatus || order.financialStatus;
 
     return (
-        <Link viewTransition
+        <Link
             to="/account/orders"
-            className={cn("block no-underline", canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]")}
+            className={cn(
+                "block no-underline",
+                canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
+            )}
         >
             <Card
                 className={cn(
@@ -733,7 +731,10 @@ function OrderCard({order}: {order: OrderNode}) {
                     >
                         <span>View Details</span>
                         <ArrowRightIcon
-                            className={cn("size-4 transition-transform duration-200", canHover && "group-hover:translate-x-0.5")}
+                            className={cn(
+                                "size-4 transition-transform duration-200",
+                                canHover && "group-hover:translate-x-0.5"
+                            )}
                         />
                     </div>
                 </CardContent>
@@ -758,7 +759,7 @@ function EmptyOrders() {
                     {accountContent.emptyNoOrdersMessage}
                 </p>
                 <Button asChild size="lg">
-                    <Link viewTransition to="/collections">{accountContent.actionShopNow}</Link>
+                    <Link to="/collections">{accountContent.actionShopNow}</Link>
                 </Button>
             </CardContent>
         </Card>
@@ -826,7 +827,7 @@ function QuickActionsGrid() {
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
                 {actions.map((action, index) => (
-                    <Link viewTransition
+                    <Link
                         key={action.label}
                         to={action.href}
                         className={cn(
@@ -1085,7 +1086,7 @@ function RecentlyViewedSection({
                     {accountContent.sectionRecentlyViewed}
                 </h2>
                 <Button variant="link" asChild className="text-primary p-0 h-auto group">
-                    <Link viewTransition
+                    <Link
                         to="/collections"
                         className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
                     >
@@ -1131,7 +1132,7 @@ function RecommendedSection({products}: {products: CuratedProductFragment[]}) {
                     {recommendedTitle}
                 </h2>
                 <Button variant="link" asChild className="text-primary p-0 h-auto group">
-                    <Link viewTransition
+                    <Link
                         to="/collections/all-products"
                         className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
                     >
@@ -1202,7 +1203,7 @@ function SpecialOffersBanner({
                         size="lg"
                         className="bg-accent-foreground text-accent hover:bg-accent-foreground/90 shrink-0 shadow-lg"
                     >
-                        <Link viewTransition to="/collections">Shop Now</Link>
+                        <Link to="/collections">Shop Now</Link>
                     </Button>
                 </div>
             </div>

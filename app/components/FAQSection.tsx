@@ -82,7 +82,7 @@ export function FAQSection({faqItems, maxItems = 10, title = "Frequently Asked Q
                 <h2 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-medium text-primary mb-0">
                     {title}
                 </h2>
-                <Link viewTransition
+                <Link
                     to="/faq"
                     prefetch="viewport"
                     className="hidden md:inline-flex shrink-0 rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 font-sans text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground no-underline"
@@ -105,7 +105,7 @@ export function FAQSection({faqItems, maxItems = 10, title = "Frequently Asked Q
 
                     {/* Desktop CTA */}
                     {hasMoreItems && (
-                        <Link viewTransition
+                        <Link
                             to="/faq"
                             prefetch="viewport"
                             className="hidden lg:inline-flex mt-6 rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-sm lg:text-base font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground no-underline"
@@ -166,7 +166,7 @@ export function FAQSection({faqItems, maxItems = 10, title = "Frequently Asked Q
                         asChild
                         className="min-h-10 sm:min-h-12 px-6 sm:px-8 text-sm sm:text-base"
                     >
-                        <Link viewTransition to="/faq" prefetch="viewport">
+                        <Link to="/faq" prefetch="viewport">
                             View All FAQ
                         </Link>
                     </Button>

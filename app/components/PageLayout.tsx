@@ -302,7 +302,7 @@ function CartErrorFallback() {
                 </Button>
 
                 {/* Secondary: Continue shopping */}
-                <Link viewTransition
+                <Link
                     to="/collections/all-products"
                     onClick={close}
                     prefetch="viewport"

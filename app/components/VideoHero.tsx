@@ -279,7 +279,7 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
 
                         Touch target: min 44px height (py-3 = 12px × 2 + line-height ≈ 48px)
                         Mobile: wider padding and full-width option for better tap area */}
-                    <Link viewTransition
+                    <Link
                         to="/collections/all-products"
                         className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 md:gap-3 rounded-[var(--radius-pill-raw)] bg-primary border-2 border-primary px-4 sm:px-5 md:px-6 py-3 md:py-3.5 font-sans text-sm sm:text-base md:text-lg font-medium text-primary-foreground no-underline hover:no-underline transition-all duration-200 hover:bg-light hover:text-primary hover:border-light active:bg-light/90 active:border-light active:scale-[0.98] cursor-pointer"
                     >
@@ -294,7 +294,7 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                      Text: truncated collection.description > hardcoded text
                      CTA: hardcoded "Discover Yours"
                      Link: /collections/{handle} > /collections/all-products */}
-                <Link viewTransition
+                <Link
                     to={cardLink}
                     className="hidden md:flex absolute top-[65%] right-8 z-60 w-90 lg:w-105 h-auto rounded-2xl overflow-hidden bg-overlay-light-hover backdrop-blur-md border border-light/30 no-underline hover:no-underline group transition-all hover:bg-light/30 animate-bounce-slow will-change-transform motion-reduce:animate-none cursor-pointer"
                 >

@@ -137,77 +137,77 @@ export default function Policy() {
     return (
         <div className="min-h-dvh bg-primary  ">
             <AnimatedSection animation="fade" threshold={0.08}>
-            <section className="pt-32 sm:pt-36 md:pt-44 lg:pt-52 xl:pt-64 pb-12 sm:pb-16 md:pb-24 lg:pb-32">
-                <div className="px-4 sm:px-6 lg:px-8">
-                    <div>
-                        <div className="grid gap-8 sm:gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
-                            {/* Sticky Policy Heading */}
-                            <div className="lg:sticky lg:top-24 lg:self-start">
-                                <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-primary-foreground leading-none">
-                                    {policy.title.split(" ").slice(0, -1).join(" ")}
-                                    <br />
-                                    {policy.title.split(" ").slice(-1)[0]}
-                                </h1>
-                                <p className="mt-4 sm:mt-6 text-base sm:text-lg text-primary-foreground/70 leading-relaxed max-w-sm">
-                                    {getPolicyDescription(policy.handle, brandName) ||
-                                        `Read our ${policy.title.toLowerCase()} to understand your rights and our commitments.`}
-                                </p>
+                <section className="pt-32 sm:pt-36 md:pt-44 lg:pt-52 xl:pt-64 pb-12 sm:pb-16 md:pb-24 lg:pb-32">
+                    <div className="px-4 sm:px-6 lg:px-8">
+                        <div>
+                            <div className="grid gap-8 sm:gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
+                                {/* Sticky Policy Heading */}
+                                <div className="lg:sticky lg:top-24 lg:self-start">
+                                    <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-primary-foreground leading-none">
+                                        {policy.title.split(" ").slice(0, -1).join(" ")}
+                                        <br />
+                                        {policy.title.split(" ").slice(-1)[0]}
+                                    </h1>
+                                    <p className="mt-4 sm:mt-6 text-base sm:text-lg text-primary-foreground/70 leading-relaxed max-w-sm">
+                                        {getPolicyDescription(policy.handle, brandName) ||
+                                            `Read our ${policy.title.toLowerCase()} to understand your rights and our commitments.`}
+                                    </p>
 
-                                {/* Other Policies Navigation */}
-                                <div className="mt-8 pt-8 border-t border-primary-foreground/20">
-                                    <p className="text-sm text-primary-foreground/50 mb-4">Other Policies</p>
-                                    <nav className="space-y-2">
-                                        {SIDEBAR_LINKS.filter(link => link.handle !== policy.handle).map(link => (
-                                            <Link viewTransition
-                                                key={link.handle}
-                                                to={`/policies/${link.handle}`}
-                                                prefetch="viewport"
-                                                className="group flex items-center gap-2 py-1 text-primary-foreground/70 transition-colors hover:text-primary-foreground hover:no-underline"
-                                            >
-                                                <span className="text-primary-foreground/40 transition-all duration-200 group-hover:text-primary-foreground group-hover:translate-x-1">
-                                                    &rarr;
-                                                </span>
-                                                {link.title}
-                                            </Link>
-                                        ))}
-                                    </nav>
+                                    {/* Other Policies Navigation */}
+                                    <div className="mt-8 pt-8 border-t border-primary-foreground/20">
+                                        <p className="text-sm text-primary-foreground/50 mb-4">Other Policies</p>
+                                        <nav className="space-y-2">
+                                            {SIDEBAR_LINKS.filter(link => link.handle !== policy.handle).map(link => (
+                                                <Link
+                                                    key={link.handle}
+                                                    to={`/policies/${link.handle}`}
+                                                    prefetch="viewport"
+                                                    className="group flex items-center gap-2 py-1 text-primary-foreground/70 transition-colors hover:text-primary-foreground hover:no-underline"
+                                                >
+                                                    <span className="text-primary-foreground/40 transition-all duration-200 group-hover:text-primary-foreground group-hover:translate-x-1">
+                                                        &rarr;
+                                                    </span>
+                                                    {link.title}
+                                                </Link>
+                                            ))}
+                                        </nav>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Policy Content */}
-                            <div>
-                                <article
-                                    className="policy-content policy-content-dark"
-                                    dangerouslySetInnerHTML={{__html: policy.body}}
-                                />
+                                {/* Policy Content */}
+                                <div>
+                                    <article
+                                        className="policy-content policy-content-dark"
+                                        dangerouslySetInnerHTML={{__html: policy.body}}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
             </AnimatedSection>
 
             <AnimatedSection animation="slide-up" threshold={0.1}>
-            <section className="bg-primary-foreground/10 py-12 sm:py-16 md:py-20">
-                <div className="px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-medium text-primary-foreground mb-3 sm:mb-4">
-                            Questions about this policy?
-                        </h2>
-                        <p className="text-base sm:text-lg text-primary-foreground/70 mb-6 sm:mb-8 max-w-lg mx-auto">
-                            Our team is here to help clarify any details. Reach out and we&apos;ll respond within 24
-                            hours.
-                        </p>
-                        <a
-                            href="/contact"
-                            className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-primary-foreground text-primary text-base sm:text-lg font-medium hover:bg-primary-foreground/90 transition-colors min-h-12 sm:min-h-14"
-                        >
-                            Contact Us
-                            <span className="ml-2">&rarr;</span>
-                        </a>
+                <section className="bg-primary-foreground/10 py-12 sm:py-16 md:py-20">
+                    <div className="px-4 sm:px-6 lg:px-8">
+                        <div className="text-center">
+                            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-medium text-primary-foreground mb-3 sm:mb-4">
+                                Questions about this policy?
+                            </h2>
+                            <p className="text-base sm:text-lg text-primary-foreground/70 mb-6 sm:mb-8 max-w-lg mx-auto">
+                                Our team is here to help clarify any details. Reach out and we&apos;ll respond within 24
+                                hours.
+                            </p>
+                            <a
+                                href="/contact"
+                                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-primary-foreground text-primary text-base sm:text-lg font-medium hover:bg-primary-foreground/90 transition-colors min-h-12 sm:min-h-14"
+                            >
+                                Contact Us
+                                <span className="ml-2">&rarr;</span>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
             </AnimatedSection>
         </div>
     );

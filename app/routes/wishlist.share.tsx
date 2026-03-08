@@ -247,7 +247,7 @@ function SharedWishlistEmpty() {
             </p>
 
             <Button asChild size="lg" className="text-base sm:text-lg">
-                <Link viewTransition to="/collections/all-products">
+                <Link to="/collections/all-products">
                     <ShoppingBag className="size-5" />
                     Browse Products
                 </Link>

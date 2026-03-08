@@ -46,7 +46,7 @@ import type {Route} from "./+types/blogs._index";
 import {getPaginationVariables, getSeoMeta} from "@shopify/hydrogen";
 import {ArticleCard, type ArticleCardData} from "~/components/blog/ArticleCard";
 import {ArticleHero} from "~/components/blog/ArticleHero";
-import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {Button} from "~/components/ui/button";
 import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel";
 import {cn} from "~/lib/utils";
@@ -179,85 +179,83 @@ export default function Blogs({loaderData}: Route.ComponentProps) {
     const allArticles = hasMultipleCategories ? selectedArticles : blogNodes[0]?.articles?.nodes || [];
 
     return (
-        <PageTransition>
-            <div className="px-4 sm:px-6 lg:px-8 mb-4 space-y-12 sm:space-y-16 md:space-y-20 pb-12 sm:pb-16 md:pb-20  ">
-                {/* Hero Section - Two Column Layout
+        <div className="px-4 sm:px-6 lg:px-8 mb-4 space-y-12 sm:space-y-16 md:space-y-20 pb-12 sm:pb-16 md:pb-20  ">
+            {/* Hero Section - Two Column Layout
                      pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px) */}
-                <AnimatedSection animation="hero" threshold={0.1}>
-                    <header className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-end pt-(--page-breathing-room) pb-6 sm:pb-8 md:pb-12">
-                        <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium text-primary leading-none">
-                            {blogPageHeading}
-                        </h1>
-                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-primary leading-relaxed max-w-xl">
-                            {blogPageDescription}
-                        </p>
-                    </header>
+            <AnimatedSection animation="hero" threshold={0.1}>
+                <header className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-end pt-(--page-breathing-room) pb-6 sm:pb-8 md:pb-12">
+                    <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium text-primary leading-none">
+                        {blogPageHeading}
+                    </h1>
+                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-primary leading-relaxed max-w-xl">
+                        {blogPageDescription}
+                    </p>
+                </header>
+            </AnimatedSection>
+
+            {/* Featured Article Hero */}
+            {featuredArticle && (
+                <AnimatedSection animation="scale" threshold={0.1}>
+                    <ArticleHero article={featuredArticle} variant="listing" />
                 </AnimatedSection>
+            )}
 
-                {/* Featured Article Hero */}
-                {featuredArticle && (
-                    <AnimatedSection animation="scale" threshold={0.1}>
-                        <ArticleHero article={featuredArticle} variant="listing" />
-                    </AnimatedSection>
-                )}
-
-                {/* Category Articles Section */}
-                {allArticles.length > 0 && (
-                    <section className="space-y-6 sm:space-y-8">
-                        {/* Category Selection - Only show if multiple categories */}
-                        {hasMultipleCategories && (
-                            <div className="space-y-4 sm:space-y-6">
-                                <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-normal text-primary text-center">
-                                    Browse by Category
-                                </h2>
-                                <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-                                    {blogNodes.map((blog: BlogWithArticles) => (
-                                        <Button
-                                            key={blog.handle}
-                                            variant={selectedCategoryHandle === blog.handle ? "default" : "outline"}
-                                            onClick={() => handleCategorySelect(blog.handle)}
-                                            size="sm"
-                                            className={cn(
-                                                "rounded-full border-2 transition-all duration-300 min-h-11 text-sm sm:text-base",
-                                                selectedCategoryHandle === blog.handle
-                                                    ? "bg-primary text-primary-foreground border-primary"
-                                                    : "border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground"
-                                            )}
-                                        >
-                                            {blog.title} ({blog.articles?.nodes?.length || 0})
-                                        </Button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Article Carousel */}
-                        <ArticleCarousel articles={allArticles} categoryHandle={selectedCategoryHandle} />
-
-                        {/* View All Link */}
-                        {selectedBlog && hasMultipleCategories && (
-                            <div className="flex justify-center pt-4 sm:pt-6">
-                                <Link viewTransition to={`/blogs/${selectedBlog.handle}`} prefetch="viewport" className="no-underline">
+            {/* Category Articles Section */}
+            {allArticles.length > 0 && (
+                <section className="space-y-6 sm:space-y-8">
+                    {/* Category Selection - Only show if multiple categories */}
+                    {hasMultipleCategories && (
+                        <div className="space-y-4 sm:space-y-6">
+                            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-normal text-primary text-center">
+                                Browse by Category
+                            </h2>
+                            <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+                                {blogNodes.map((blog: BlogWithArticles) => (
                                     <Button
-                                        variant="outline"
-                                        className="rounded-full border-2 border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground text-sm sm:text-base"
+                                        key={blog.handle}
+                                        variant={selectedCategoryHandle === blog.handle ? "default" : "outline"}
+                                        onClick={() => handleCategorySelect(blog.handle)}
+                                        size="sm"
+                                        className={cn(
+                                            "rounded-full border-2 transition-all duration-300 min-h-11 text-sm sm:text-base",
+                                            selectedCategoryHandle === blog.handle
+                                                ? "bg-primary text-primary-foreground border-primary"
+                                                : "border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground"
+                                        )}
                                     >
-                                        View all {selectedBlog.title} articles
+                                        {blog.title} ({blog.articles?.nodes?.length || 0})
                                     </Button>
-                                </Link>
+                                ))}
                             </div>
-                        )}
-                    </section>
-                )}
+                        </div>
+                    )}
 
-                {/* Empty State */}
-                {!featuredArticle && allArticles.length === 0 && (
-                    <div className="text-center py-12 sm:py-16">
-                        <p className="text-sm sm:text-base text-muted-foreground">No articles published yet.</p>
-                    </div>
-                )}
-            </div>
-        </PageTransition>
+                    {/* Article Carousel */}
+                    <ArticleCarousel articles={allArticles} categoryHandle={selectedCategoryHandle} />
+
+                    {/* View All Link */}
+                    {selectedBlog && hasMultipleCategories && (
+                        <div className="flex justify-center pt-4 sm:pt-6">
+                            <Link to={`/blogs/${selectedBlog.handle}`} prefetch="viewport" className="no-underline">
+                                <Button
+                                    variant="outline"
+                                    className="rounded-full border-2 border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground text-sm sm:text-base"
+                                >
+                                    View all {selectedBlog.title} articles
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
+                </section>
+            )}
+
+            {/* Empty State */}
+            {!featuredArticle && allArticles.length === 0 && (
+                <div className="text-center py-12 sm:py-16">
+                    <p className="text-sm sm:text-base text-muted-foreground">No articles published yet.</p>
+                </div>
+            )}
+        </div>
     );
 }
 

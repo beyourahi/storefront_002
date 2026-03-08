@@ -250,7 +250,7 @@ function CartEmpty({hidden = false, layout}: {hidden: boolean; layout: CartLayou
                         Your cart is empty
                     </EmptyTitle>
                 </EmptyHeader>
-                <Link viewTransition
+                <Link
                     to="/collections/all-products"
                     onClick={layout === "aside" ? close : undefined}
                     prefetch="viewport"

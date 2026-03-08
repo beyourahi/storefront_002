@@ -63,7 +63,7 @@ export function AuthRequiredFallback({message, ctaText = "Sign In"}: AuthRequire
                 Uses asChild with Link so it navigates via React Router, not a page refresh.
                 /account/login triggers customerAccount.login() OAuth redirect. */}
             <Button asChild size="lg">
-                <Link viewTransition to="/account/login" prefetch="intent">
+                <Link to="/account/login" prefetch="intent">
                     {ctaText}
                 </Link>
             </Button>

@@ -408,7 +408,7 @@ export function ProductItem({
     // List variant - horizontal layout
     if (variant === "list") {
         return (
-            <Link viewTransition
+            <Link
                 to={linkUrl}
                 target={linkTarget}
                 prefetch="viewport"
@@ -579,7 +579,7 @@ export function ProductItem({
 
     // Card variant - default grid layout
     return (
-        <Link viewTransition
+        <Link
             to={linkUrl}
             target={linkTarget}
             prefetch="viewport"

@@ -92,7 +92,7 @@ import {
     Loader2Icon,
     UserCogIcon
 } from "lucide-react";
-import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent} from "~/components/ui/empty";
 import {useEffect, useRef, useState} from "react";
 import {toast} from "sonner";
@@ -615,10 +615,10 @@ export default function AccountProfile() {
     };
 
     return (
-        <PageTransition>
+        <>
             {/* Max-width wrapper for optimal readability on large screens
-                 Constrains form-heavy content to ~1024px for better readability
-                 and visual balance. No effect on mobile/tablet. */}
+                Constrains form-heavy content to ~1024px for better readability
+                and visual balance. No effect on mobile/tablet. */}
             <div className="max-w-5xl mx-auto">
                 <div className="space-y-10 md:space-y-14 lg:space-y-16">
                     {/* Profile Header - Hero style matching dashboard */}
@@ -963,7 +963,7 @@ export default function AccountProfile() {
                     </AnimatedSection>
                 </div>
             </div>
-        </PageTransition>
+        </>
     );
 }
 

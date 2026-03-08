@@ -86,13 +86,7 @@ import {SEARCH_ENDPOINT} from "~/components/SearchFormPredictive";
 import {urlWithTrackingParams} from "~/lib/search";
 import type {MenuCollection, SearchProduct} from "types";
 
-const FALLBACK_POPULAR_SEARCHES = [
-    "new arrivals",
-    "best sellers",
-    "gift ideas",
-    "on sale",
-    "trending now"
-];
+const FALLBACK_POPULAR_SEARCHES = ["new arrivals", "best sellers", "gift ideas", "on sale", "trending now"];
 
 const FALLBACK_SEARCH_CONTENT = {
     searchPlaceholder: "Search products...",
@@ -101,7 +95,7 @@ const FALLBACK_SEARCH_CONTENT = {
     featuredCollectionsHeading: "Featured Collections",
     clearAllButton: "Clear All",
     emptyResultsHeading: "No results found",
-    emptyResultsMessageTemplate: "We couldn't find anything for \"{term}\"",
+    emptyResultsMessageTemplate: 'We couldn\'t find anything for "{term}"',
     viewAllResults: "View All Results",
     categoryProducts: "Products",
     categoryCollections: "Collections",
@@ -493,7 +487,7 @@ function SearchInitialState({
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-responsive gap-y-responsive-lg">
                         {collections.map(collection => (
-                            <Link viewTransition
+                            <Link
                                 key={collection.id}
                                 to={`/collections/${collection.handle}`}
                                 onClick={onClose}
@@ -942,7 +936,7 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
 
     if (variant === "list") {
         return (
-            <Link viewTransition
+            <Link
                 to={`/collections/${collection.handle}`}
                 onClick={onClick}
                 prefetch="viewport"
@@ -962,7 +956,10 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
                             data={collection.image}
                             loading="lazy"
                             sizes="96px"
-                            className={cn("motion-image h-full w-full object-cover", canHover && "group-hover:scale-[1.03]")}
+                            className={cn(
+                                "motion-image h-full w-full object-cover",
+                                canHover && "group-hover:scale-[1.03]"
+                            )}
                         />
                     ) : (
                         <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">
@@ -970,7 +967,12 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
                         </div>
                     )}
                     {/* Hover overlay */}
-                    <div className={cn("motion-interactive absolute inset-0 bg-primary/0", canHover && "group-hover:bg-primary/5")} />
+                    <div
+                        className={cn(
+                            "motion-interactive absolute inset-0 bg-primary/0",
+                            canHover && "group-hover:bg-primary/5"
+                        )}
+                    />
                 </div>
                 <div className="flex-1 min-w-0">
                     <h3 className="font-serif text-base md:text-lg font-medium text-primary truncate">
@@ -985,7 +987,7 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
     }
 
     return (
-        <Link viewTransition
+        <Link
             to={`/collections/${collection.handle}`}
             onClick={onClick}
             prefetch="viewport"
@@ -1002,7 +1004,10 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
                         data={collection.image}
                         loading="lazy"
                         sizes="(min-width: 768px) 25vw, 50vw"
-                        className={cn("motion-image h-full w-full object-cover", canHover && "group-hover:scale-[1.03]")}
+                        className={cn(
+                            "motion-image h-full w-full object-cover",
+                            canHover && "group-hover:scale-[1.03]"
+                        )}
                     />
                 ) : (
                     <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">
@@ -1056,7 +1061,7 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
 
     if (variant === "list") {
         return (
-            <Link viewTransition
+            <Link
                 to={articleUrl}
                 onClick={onClick}
                 prefetch="viewport"
@@ -1076,7 +1081,10 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
                             data={article.image}
                             loading="lazy"
                             sizes="96px"
-                            className={cn("motion-image h-full w-full object-cover", canHover && "group-hover:scale-[1.03]")}
+                            className={cn(
+                                "motion-image h-full w-full object-cover",
+                                canHover && "group-hover:scale-[1.03]"
+                            )}
                         />
                     ) : (
                         <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">
@@ -1084,7 +1092,12 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
                         </div>
                     )}
                     {/* Hover overlay */}
-                    <div className={cn("motion-interactive absolute inset-0 bg-primary/0", canHover && "group-hover:bg-primary/5")} />
+                    <div
+                        className={cn(
+                            "motion-interactive absolute inset-0 bg-primary/0",
+                            canHover && "group-hover:bg-primary/5"
+                        )}
+                    />
                 </div>
                 <div className="flex-1 min-w-0">
                     <h4 className="font-serif text-base md:text-lg font-medium text-primary truncate">
@@ -1106,7 +1119,7 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
 
     // Card variant - vertical layout with image on top
     return (
-        <Link viewTransition
+        <Link
             to={articleUrl}
             onClick={onClick}
             prefetch="viewport"
@@ -1123,7 +1136,10 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
                         data={article.image}
                         loading="lazy"
                         sizes="(min-width: 45em) 400px, 100vw"
-                        className={cn("motion-image h-full w-full object-cover", canHover && "group-hover:scale-[1.03]")}
+                        className={cn(
+                            "motion-image h-full w-full object-cover",
+                            canHover && "group-hover:scale-[1.03]"
+                        )}
                     />
                 ) : (
                     <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">

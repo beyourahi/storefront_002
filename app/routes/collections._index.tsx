@@ -138,21 +138,22 @@ export default function Collections() {
             {/* Header Section
                  pt-(--page-breathing-room-dense): Extra breathing room for collections pages (40px → 96px) */}
             <AnimatedSection animation="fade" threshold={0.08}>
-            <header className="pt-(--page-breathing-room-dense) pb-6 md:pb-8">
-                {/* Title with collection count superscript (matching menu style) */}
-                <div className="relative inline-block">
-                    <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-medium text-primary tracking-tight my-0">
-                        / Collections
-                    </h1>
-                    {/* Collection count - positioned at top-right of title with small gap */}
-                    <sup className="absolute top-0 left-[calc(100%+0.25rem)] sm:left-[calc(100%+0.5rem)] font-mono tabular-nums text-primary/60 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">
-                        {totalCollectionCount}
-                    </sup>
-                </div>
-                <p className="mt-3 md:mt-4 font-sans text-sm md:text-base lg:text-lg text-primary/70 max-w-prose">
-                    Explore our curated collections of handcrafted products, thoughtfully designed with care for you.
-                </p>
-            </header>
+                <header className="pt-(--page-breathing-room-dense) pb-6 md:pb-8">
+                    {/* Title with collection count superscript (matching menu style) */}
+                    <div className="relative inline-block">
+                        <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-medium text-primary tracking-tight my-0">
+                            / Collections
+                        </h1>
+                        {/* Collection count - positioned at top-right of title with small gap */}
+                        <sup className="absolute top-0 left-[calc(100%+0.25rem)] sm:left-[calc(100%+0.5rem)] font-mono tabular-nums text-primary/60 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">
+                            {totalCollectionCount}
+                        </sup>
+                    </div>
+                    <p className="mt-3 md:mt-4 font-sans text-sm md:text-base lg:text-lg text-primary/70 max-w-prose">
+                        Explore our curated collections of handcrafted products, thoughtfully designed with care for
+                        you.
+                    </p>
+                </header>
             </AnimatedSection>
 
             <Pagination connection={collections}>
@@ -261,7 +262,7 @@ function CollectionCard({collection, index}: {collection: CollectionFragment; in
     const linkTo = collection.handle === "sale" ? "/sale" : `/collections/${collection.handle}`;
 
     return (
-        <Link viewTransition
+        <Link
             to={linkTo}
             prefetch="viewport"
             className="group block no-underline animate-product-fade-in"

@@ -44,7 +44,7 @@ import {OrderProductItem} from "~/components/OrderProductItem";
 import {Badge} from "~/components/ui/badge";
 import {Button} from "~/components/ui/button";
 import {Input} from "~/components/ui/input";
-import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {AuthRequiredFallback} from "~/components/AuthRequiredFallback";
 import {PackageSearchIcon, ShoppingBagIcon, CalendarIcon, ClockIcon, SearchIcon, XIcon} from "lucide-react";
 import {cn} from "~/lib/utils";
@@ -293,42 +293,29 @@ export default function Orders() {
     };
 
     return (
-        <PageTransition>
-            <div className="space-y-10 md:space-y-14 lg:space-y-16">
-                {/* Page Header - with search on large screens */}
-                <AnimatedSection animation="hero" threshold={0.1}>
-                    <section className="space-y-6">
-                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                            {/* Left: Title and description */}
-                            <div className="flex items-center gap-3">
-                                <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
-                                    <PackageSearchIcon className="size-5 md:size-6 text-muted-foreground" />
-                                </div>
-                                <div>
-                                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-foreground tracking-tight my-0">
-                                        Order History
-                                    </h1>
-                                    <p className="text-muted-foreground text-sm md:text-base mt-1">
-                                        Track and manage all your orders in one place
-                                    </p>
-                                </div>
+        <div className="space-y-10 md:space-y-14 lg:space-y-16">
+            {/* Page Header - with search on large screens */}
+            <AnimatedSection animation="hero" threshold={0.1}>
+                <section className="space-y-6">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                        {/* Left: Title and description */}
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
+                                <PackageSearchIcon className="size-5 md:size-6 text-muted-foreground" />
                             </div>
-
-                            {/* Right: Search (large screens only) */}
-                            {hasOrders && (
-                                <div className="hidden lg:block">
-                                    <OrderSearchInput
-                                        searchQuery={searchQuery}
-                                        onSearchChange={handleSearchChange}
-                                        onClearSearch={handleClearSearch}
-                                    />
-                                </div>
-                            )}
+                            <div>
+                                <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-foreground tracking-tight my-0">
+                                    Order History
+                                </h1>
+                                <p className="text-muted-foreground text-sm md:text-base mt-1">
+                                    Track and manage all your orders in one place
+                                </p>
+                            </div>
                         </div>
 
-                        {/* Mobile/tablet search - below header */}
+                        {/* Right: Search (large screens only) */}
                         {hasOrders && (
-                            <div className="lg:hidden">
+                            <div className="hidden lg:block">
                                 <OrderSearchInput
                                     searchQuery={searchQuery}
                                     onSearchChange={handleSearchChange}
@@ -336,15 +323,26 @@ export default function Orders() {
                                 />
                             </div>
                         )}
-                    </section>
-                </AnimatedSection>
+                    </div>
 
-                {/* Orders List */}
-                <AnimatedSection animation="section" threshold={0.1} delay={100}>
-                    <OrdersListWithSearch orders={orders} productHandles={productHandles} searchQuery={searchQuery} />
-                </AnimatedSection>
-            </div>
-        </PageTransition>
+                    {/* Mobile/tablet search - below header */}
+                    {hasOrders && (
+                        <div className="lg:hidden">
+                            <OrderSearchInput
+                                searchQuery={searchQuery}
+                                onSearchChange={handleSearchChange}
+                                onClearSearch={handleClearSearch}
+                            />
+                        </div>
+                    )}
+                </section>
+            </AnimatedSection>
+
+            {/* Orders List */}
+            <AnimatedSection animation="section" threshold={0.1} delay={100}>
+                <OrdersListWithSearch orders={orders} productHandles={productHandles} searchQuery={searchQuery} />
+            </AnimatedSection>
+        </div>
     );
 }
 
@@ -746,10 +744,10 @@ function EmptyOrders() {
             {/* CTA buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
                 <Button asChild size="lg">
-                    <Link viewTransition to="/collections">{accountContent.actionShopNow}</Link>
+                    <Link to="/collections">{accountContent.actionShopNow}</Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                    <Link viewTransition to="/account">{accountContent.navDashboard}</Link>
+                    <Link to="/account">{accountContent.navDashboard}</Link>
                 </Button>
             </div>
         </div>

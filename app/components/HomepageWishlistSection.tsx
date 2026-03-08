@@ -145,7 +145,7 @@ export function HomepageWishlistSection({className}: HomepageWishlistSectionProp
                         </p>
                     </div>
                     {/* View All Button - Desktop (pill style matching Recently Viewed) */}
-                    <Link viewTransition
+                    <Link
                         to="/wishlist"
                         className="hidden rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground md:text-2xl sm:inline-flex"
                     >
@@ -184,7 +184,7 @@ export function HomepageWishlistSection({className}: HomepageWishlistSectionProp
 
             {/* View All Button - Mobile (pill style matching Recently Viewed) */}
             <div className="mt-6 flex justify-center sm:hidden">
-                <Link viewTransition
+                <Link
                     to="/wishlist"
                     className="rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                 >
@@ -203,7 +203,7 @@ function FeaturedWishlistCard({product}: {product: ProductItemFragment}) {
     const titleParts = product.title.trim().split(" + ");
 
     return (
-        <Link viewTransition
+        <Link
             to={`/products/${product.handle}`}
             prefetch="viewport"
             className={cn(
@@ -282,7 +282,7 @@ function WishlistCard({
     const titleParts = product.title.trim().split(" + ");
 
     return (
-        <Link viewTransition
+        <Link
             to={`/products/${product.handle}`}
             prefetch="viewport"
             className={cn(
@@ -345,12 +345,14 @@ function ViewMoreTile({count}: {count: number}) {
     const {canHover} = usePointerCapabilities();
 
     return (
-        <Link viewTransition
+        <Link
             to="/wishlist"
             prefetch="viewport"
             className={cn(
                 "flex flex-col items-center justify-center rounded-xl sm:rounded-2xl bg-black text-white cursor-pointer aspect-[4/5] sm:aspect-auto transition-colors",
-                canHover ? "group hover:bg-gray-900" : "motion-press active:bg-gray-900 active:scale-[var(--motion-press-scale)]"
+                canHover
+                    ? "group hover:bg-gray-900"
+                    : "motion-press active:bg-gray-900 active:scale-[var(--motion-press-scale)]"
             )}
         >
             <span

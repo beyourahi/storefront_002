@@ -36,7 +36,7 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
 
     return (
         <section className="grid gap-6 rounded-[var(--radius-3xl-raw)] border border-border/60 bg-card/60 p-4 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.45)] backdrop-blur md:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] md:p-6 lg:gap-8 lg:p-8">
-            <Link viewTransition
+            <Link
                 to={`/products/${product.handle}`}
                 prefetch="intent"
                 className="group relative overflow-hidden rounded-[var(--radius-2xl-raw)] bg-muted/35"
@@ -71,9 +71,7 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
             <div className="flex flex-col justify-between gap-8 rounded-[var(--radius-2xl-raw)] bg-background/70 p-6 md:p-8">
                 <div className="space-y-5">
                     <div className="space-y-3">
-                        <p className="text-muted-foreground text-xs uppercase tracking-[0.4em]">
-                            Featured product
-                        </p>
+                        <p className="text-muted-foreground text-xs uppercase tracking-[0.4em]">Featured product</p>
                         <h2 className="font-serif text-3xl leading-none uppercase sm:text-4xl lg:text-5xl">
                             {product.title}
                         </h2>
@@ -98,8 +96,12 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                         ) : null}
                     </div>
 
-                    <Button asChild size="lg" className="w-full justify-between rounded-[var(--radius-pill-raw)] px-6 py-6 text-sm uppercase tracking-[0.24em] md:w-auto">
-                        <Link viewTransition to={`/products/${product.handle}`} prefetch="intent">
+                    <Button
+                        asChild
+                        size="lg"
+                        className="w-full justify-between rounded-[var(--radius-pill-raw)] px-6 py-6 text-sm uppercase tracking-[0.24em] md:w-auto"
+                    >
+                        <Link to={`/products/${product.handle}`} prefetch="intent">
                             View featured product
                             <ArrowUpRight className="h-4 w-4" />
                         </Link>

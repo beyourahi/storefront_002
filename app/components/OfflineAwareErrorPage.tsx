@@ -273,10 +273,10 @@ function NotFoundErrorUI({title, message}: NotFoundErrorUIProps) {
             {/* Action buttons */}
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
                 <Button asChild>
-                    <Link viewTransition to="/">Back to Home</Link>
+                    <Link to="/">Back to Home</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                    <Link viewTransition to="/collections/all-products">Browse All Products</Link>
+                    <Link to="/collections/all-products">Browse All Products</Link>
                 </Button>
             </div>
         </div>
@@ -321,14 +321,14 @@ function GenericErrorUI({statusCode, title, message}: GenericErrorUIProps) {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
                 <Button onClick={() => window.location.reload()}>Try Again</Button>
                 <Button variant="outline" asChild>
-                    <Link viewTransition to="/">Back to Home</Link>
+                    <Link to="/">Back to Home</Link>
                 </Button>
             </div>
 
             {/* Contact footer for server errors */}
             <p className="mt-8 text-sm text-muted-foreground">
                 If the problem persists,{" "}
-                <Link viewTransition to="/contact" className="text-primary underline underline-offset-4 hover:text-primary/80">
+                <Link to="/contact" className="text-primary underline underline-offset-4 hover:text-primary/80">
                     please contact us
                 </Link>
                 .

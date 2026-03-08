@@ -121,17 +121,17 @@ export function ErrorPage({statusCode, title, message}: ErrorPageProps) {
                 {is404 ? (
                     <>
                         <Button asChild>
-                            <Link viewTransition to="/">{errorContent.notFoundPrimaryCta}</Link>
+                            <Link to="/">{errorContent.notFoundPrimaryCta}</Link>
                         </Button>
                         <Button variant="outline" asChild>
-                            <Link viewTransition to="/collections/all-products">{errorContent.notFoundSecondaryCta}</Link>
+                            <Link to="/collections/all-products">{errorContent.notFoundSecondaryCta}</Link>
                         </Button>
                     </>
                 ) : (
                     <>
                         <Button onClick={() => window.location.reload()}>{errorContent.serverErrorRetry}</Button>
                         <Button variant="outline" asChild>
-                            <Link viewTransition to="/">{errorContent.serverErrorHome}</Link>
+                            <Link to="/">{errorContent.serverErrorHome}</Link>
                         </Button>
                     </>
                 )}
@@ -141,7 +141,7 @@ export function ErrorPage({statusCode, title, message}: ErrorPageProps) {
             {!is404 && (
                 <p className="mt-8 text-sm text-muted-foreground">
                     {errorContent.serverErrorContactPrefix}{" "}
-                    <Link viewTransition to="/contact" className="text-primary underline underline-offset-4 hover:text-primary/80">
+                    <Link to="/contact" className="text-primary underline underline-offset-4 hover:text-primary/80">
                         {errorContent.serverErrorContactLink}
                     </Link>
                     .

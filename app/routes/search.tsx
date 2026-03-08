@@ -75,13 +75,7 @@ import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 import {sortWithPinnedFirst} from "~/lib/product-tags";
 import {AnimatedSection} from "~/components/AnimatedSection";
 
-const FALLBACK_POPULAR_SEARCHES = [
-    "new arrivals",
-    "best sellers",
-    "gift ideas",
-    "on sale",
-    "trending now"
-];
+const FALLBACK_POPULAR_SEARCHES = ["new arrivals", "best sellers", "gift ideas", "on sale", "trending now"];
 
 // =============================================================================
 // META FUNCTION
@@ -355,64 +349,80 @@ export default function SearchPage() {
                     <div className="space-y-6">
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                             <div className="flex flex-col gap-4 mb-6">
-                            {/* Tabs row - horizontally scrollable on mobile for small screens */}
-                            <div className="flex items-center justify-between gap-4">
-                                <TabsList className="bg-transparent p-0 h-auto gap-1 sm:gap-1.5 md:gap-2 shrink-0 overflow-x-auto scrollbar-hide">
-                                    <TabsTrigger
-                                        value="products"
-                                        className={cn(
-                                            "rounded-[var(--radius-pill-raw)] border-2 border-primary",
-                                            // Responsive padding and touch target - tighter on smallest screens
-                                            "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
-                                            "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
-                                            "transition-all duration-200",
-                                            "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                                            "data-[state=inactive]:bg-transparent data-[state=inactive]:text-primary"
-                                        )}
-                                    >
-                                        {/* Icon hidden on smallest screens, visible on sm+ */}
-                                        <Package className="hidden sm:inline-block size-4 mr-1.5" />
-                                        <span>Products</span>
-                                        <span className="ml-1 text-sm opacity-80">({products.totalCount})</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value="collections"
-                                        className={cn(
-                                            "rounded-[var(--radius-pill-raw)] border-2 border-primary",
-                                            "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
-                                            "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
-                                            "transition-all duration-200",
-                                            "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                                            "data-[state=inactive]:bg-transparent data-[state=inactive]:text-primary"
-                                        )}
-                                    >
-                                        <FolderOpen className="hidden sm:inline-block size-4 mr-1.5" />
-                                        <span>Collections</span>
-                                        <span className="ml-1 text-sm opacity-80">({collections.totalCount})</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value="articles"
-                                        className={cn(
-                                            "rounded-[var(--radius-pill-raw)] border-2 border-primary",
-                                            "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
-                                            "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
-                                            "transition-all duration-200",
-                                            "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                                            "data-[state=inactive]:bg-transparent data-[state=inactive]:text-primary"
-                                        )}
-                                    >
-                                        <Newspaper className="hidden sm:inline-block size-4 mr-1.5" />
-                                        <span>Articles</span>
-                                        <span className="ml-1 text-sm opacity-80">({articles.totalCount})</span>
-                                    </TabsTrigger>
-                                </TabsList>
+                                {/* Tabs row - horizontally scrollable on mobile for small screens */}
+                                <div className="flex items-center justify-between gap-4">
+                                    <TabsList className="bg-transparent p-0 h-auto gap-1 sm:gap-1.5 md:gap-2 shrink-0 overflow-x-auto scrollbar-hide">
+                                        <TabsTrigger
+                                            value="products"
+                                            className={cn(
+                                                "rounded-[var(--radius-pill-raw)] border-2 border-primary",
+                                                // Responsive padding and touch target - tighter on smallest screens
+                                                "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
+                                                "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
+                                                "transition-all duration-200",
+                                                "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                                                "data-[state=inactive]:bg-transparent data-[state=inactive]:text-primary"
+                                            )}
+                                        >
+                                            {/* Icon hidden on smallest screens, visible on sm+ */}
+                                            <Package className="hidden sm:inline-block size-4 mr-1.5" />
+                                            <span>Products</span>
+                                            <span className="ml-1 text-sm opacity-80">({products.totalCount})</span>
+                                        </TabsTrigger>
+                                        <TabsTrigger
+                                            value="collections"
+                                            className={cn(
+                                                "rounded-[var(--radius-pill-raw)] border-2 border-primary",
+                                                "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
+                                                "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
+                                                "transition-all duration-200",
+                                                "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                                                "data-[state=inactive]:bg-transparent data-[state=inactive]:text-primary"
+                                            )}
+                                        >
+                                            <FolderOpen className="hidden sm:inline-block size-4 mr-1.5" />
+                                            <span>Collections</span>
+                                            <span className="ml-1 text-sm opacity-80">({collections.totalCount})</span>
+                                        </TabsTrigger>
+                                        <TabsTrigger
+                                            value="articles"
+                                            className={cn(
+                                                "rounded-[var(--radius-pill-raw)] border-2 border-primary",
+                                                "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
+                                                "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
+                                                "transition-all duration-200",
+                                                "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                                                "data-[state=inactive]:bg-transparent data-[state=inactive]:text-primary"
+                                            )}
+                                        >
+                                            <Newspaper className="hidden sm:inline-block size-4 mr-1.5" />
+                                            <span>Articles</span>
+                                            <span className="ml-1 text-sm opacity-80">({articles.totalCount})</span>
+                                        </TabsTrigger>
+                                    </TabsList>
 
-                                {/* View options on desktop - inline with tabs */}
-                                {/* TODO: Implement sorting for search results - for now only grid/list options */}
+                                    {/* View options on desktop - inline with tabs */}
+                                    {/* TODO: Implement sorting for search results - for now only grid/list options */}
+                                    {((activeTab === "products" && products.nodes.length > 0) ||
+                                        (activeTab === "collections" && collections.nodes.length > 0) ||
+                                        (activeTab === "articles" && articles.nodes.length > 0)) && (
+                                        <div className="hidden md:block shrink-0">
+                                            <ViewOptionsSelector
+                                                gridColumns={currentGridColumns}
+                                                onGridColumnsChange={handleGridColumnsChange}
+                                                layoutMode={currentLayoutMode}
+                                                onLayoutModeChange={handleLayoutModeChange}
+                                                showSortOptions={false}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* View options on mobile - separate row below tabs */}
                                 {((activeTab === "products" && products.nodes.length > 0) ||
                                     (activeTab === "collections" && collections.nodes.length > 0) ||
                                     (activeTab === "articles" && articles.nodes.length > 0)) && (
-                                    <div className="hidden md:block shrink-0">
+                                    <div className="md:hidden">
                                         <ViewOptionsSelector
                                             gridColumns={currentGridColumns}
                                             onGridColumnsChange={handleGridColumnsChange}
@@ -422,22 +432,6 @@ export default function SearchPage() {
                                         />
                                     </div>
                                 )}
-                            </div>
-
-                            {/* View options on mobile - separate row below tabs */}
-                            {((activeTab === "products" && products.nodes.length > 0) ||
-                                (activeTab === "collections" && collections.nodes.length > 0) ||
-                                (activeTab === "articles" && articles.nodes.length > 0)) && (
-                                <div className="md:hidden">
-                                    <ViewOptionsSelector
-                                        gridColumns={currentGridColumns}
-                                        onGridColumnsChange={handleGridColumnsChange}
-                                        layoutMode={currentLayoutMode}
-                                        onLayoutModeChange={handleLayoutModeChange}
-                                        showSortOptions={false}
-                                    />
-                                </div>
-                            )}
                             </div>
 
                             <TabsContent value="products" className="mt-0">
@@ -585,7 +579,7 @@ function SearchPageInitialState({
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-responsive">
                         {featuredCollections.map(collection => (
-                            <Link viewTransition
+                            <Link
                                 key={collection.id}
                                 to={`/collections/${collection.handle}`}
                                 prefetch="viewport"
@@ -742,7 +736,7 @@ function SearchProductItem({
 
     if (variant === "list") {
         return (
-            <Link viewTransition
+            <Link
                 to={productUrl}
                 prefetch="viewport"
                 className={cn(
@@ -790,7 +784,7 @@ function SearchProductItem({
     }
 
     return (
-        <Link viewTransition
+        <Link
             to={productUrl}
             prefetch="viewport"
             className={cn(
@@ -890,7 +884,7 @@ function SearchCollectionCard({
 
     if (variant === "list") {
         return (
-            <Link viewTransition
+            <Link
                 to={`/collections/${collection.handle}`}
                 prefetch="viewport"
                 className={cn(
@@ -932,7 +926,7 @@ function SearchCollectionCard({
     }
 
     return (
-        <Link viewTransition
+        <Link
             to={`/collections/${collection.handle}`}
             prefetch="viewport"
             className={cn(
@@ -1046,7 +1040,7 @@ function SearchArticleCard({
 
     if (variant === "list") {
         return (
-            <Link viewTransition
+            <Link
                 to={articleUrl}
                 prefetch="viewport"
                 className={cn(
@@ -1095,7 +1089,7 @@ function SearchArticleCard({
 
     // Card variant - vertical layout with image on top
     return (
-        <Link viewTransition
+        <Link
             to={articleUrl}
             prefetch="viewport"
             className={cn(

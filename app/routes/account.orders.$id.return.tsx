@@ -234,7 +234,7 @@ export default function OrderReturnRoute() {
                     </AlertDescription>
                 </Alert>
                 <Button asChild>
-                    <Link viewTransition to="/account/orders">Back to Orders</Link>
+                    <Link to="/account/orders">Back to Orders</Link>
                 </Button>
             </div>
         );
@@ -274,7 +274,7 @@ export default function OrderReturnRoute() {
                         {isSubmitting ? "Submitting..." : "Submit Return Request"}
                     </Button>
                     <Button variant="outline" asChild>
-                        <Link viewTransition to="/account/orders">Cancel</Link>
+                        <Link to="/account/orders">Cancel</Link>
                     </Button>
                 </div>
             </Form>

@@ -62,7 +62,7 @@ import {
     DialogHeader,
     DialogTitle
 } from "~/components/ui/dialog";
-import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {useLockBodyScroll} from "~/lib/LenisProvider";
 import {toast} from "sonner";
 import {cn} from "~/lib/utils";
@@ -272,80 +272,74 @@ export default function AccountWishlist() {
 
     if (!isHydrated || isLoading) {
         return (
-            <PageTransition>
-                <div className="space-y-8 md:space-y-10 lg:space-y-12">
-                    <WishlistHeader count={null} ids={ids} products={[]} onClearClick={() => setDialogOpen(true)} />
-                    <WishlistViewOptionsSelector
-                        gridColumns={gridColumns}
-                        onGridColumnsChange={setGridColumns}
-                        layoutMode={layoutMode}
-                        onLayoutModeChange={setLayoutMode}
-                        sortOption={sortOption}
-                        onSortChange={setSortOption}
-                    />
-                    <WishlistSkeleton count={ids.length || 8} layoutMode={layoutMode} />
-                </div>
-            </PageTransition>
+            <div className="space-y-8 md:space-y-10 lg:space-y-12">
+                <WishlistHeader count={null} ids={ids} products={[]} onClearClick={() => setDialogOpen(true)} />
+                <WishlistViewOptionsSelector
+                    gridColumns={gridColumns}
+                    onGridColumnsChange={setGridColumns}
+                    layoutMode={layoutMode}
+                    onLayoutModeChange={setLayoutMode}
+                    sortOption={sortOption}
+                    onSortChange={setSortOption}
+                />
+                <WishlistSkeleton count={ids.length || 8} layoutMode={layoutMode} />
+            </div>
         );
     }
 
     if (count === 0) {
         return (
-            <PageTransition>
-                <div className="space-y-8 md:space-y-10 lg:space-y-12">
-                    <AnimatedSection animation="hero" threshold={0.1}>
-                        <WishlistHeader count={0} ids={[]} products={[]} onClearClick={() => setDialogOpen(true)} />
-                    </AnimatedSection>
-                    <AnimatedSection animation="section" threshold={0.1} delay={100}>
-                        <WishlistEmpty />
-                    </AnimatedSection>
-                </div>
-            </PageTransition>
+            <div className="space-y-8 md:space-y-10 lg:space-y-12">
+                <AnimatedSection animation="hero" threshold={0.1}>
+                    <WishlistHeader count={0} ids={[]} products={[]} onClearClick={() => setDialogOpen(true)} />
+                </AnimatedSection>
+                <AnimatedSection animation="section" threshold={0.1} delay={100}>
+                    <WishlistEmpty />
+                </AnimatedSection>
+            </div>
         );
     }
 
     return (
         <>
-            <PageTransition>
-                <div className="space-y-8 md:space-y-10 lg:space-y-12">
-                    <AnimatedSection animation="hero" threshold={0.1}>
-                        <WishlistHeader
-                            count={count}
-                            ids={ids}
-                            products={products}
-                            onClearClick={() => setDialogOpen(true)}
-                        />
-                    </AnimatedSection>
-
-                    <WishlistViewOptionsSelector
-                        gridColumns={gridColumns}
-                        onGridColumnsChange={setGridColumns}
-                        layoutMode={layoutMode}
-                        onLayoutModeChange={setLayoutMode}
-                        sortOption={sortOption}
-                        onSortChange={setSortOption}
+            <div className="space-y-8 md:space-y-10 lg:space-y-12">
+                <AnimatedSection animation="hero" threshold={0.1}>
+                    <WishlistHeader
+                        count={count}
+                        ids={ids}
+                        products={products}
+                        onClearClick={() => setDialogOpen(true)}
                     />
+                </AnimatedSection>
 
-                    <AnimatedSection animation="section" threshold={0.1} delay={100}>
-                        {products.length > 0 ? (
-                            <div className={gridClassName}>
-                                {products.map((product, index) => (
-                                    <ProductItem
-                                        key={product.id}
-                                        product={product}
-                                        loading={index < 4 ? "eager" : "lazy"}
-                                        variant={layoutMode === "list" ? "list" : "card"}
-                                        index={index}
-                                        gridColumns={gridColumns}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <WishlistUnavailable onClearClick={() => setDialogOpen(true)} />
-                        )}
-                    </AnimatedSection>
-                </div>
-            </PageTransition>
+                <WishlistViewOptionsSelector
+                    gridColumns={gridColumns}
+                    onGridColumnsChange={setGridColumns}
+                    layoutMode={layoutMode}
+                    onLayoutModeChange={setLayoutMode}
+                    sortOption={sortOption}
+                    onSortChange={setSortOption}
+                />
+
+                <AnimatedSection animation="section" threshold={0.1} delay={100}>
+                    {products.length > 0 ? (
+                        <div className={gridClassName}>
+                            {products.map((product, index) => (
+                                <ProductItem
+                                    key={product.id}
+                                    product={product}
+                                    loading={index < 4 ? "eager" : "lazy"}
+                                    variant={layoutMode === "list" ? "list" : "card"}
+                                    index={index}
+                                    gridColumns={gridColumns}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <WishlistUnavailable onClearClick={() => setDialogOpen(true)} />
+                    )}
+                </AnimatedSection>
+            </div>
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="rounded-2xl p-8 sm:max-w-md border-none" showCloseButton={false}>
@@ -864,7 +858,7 @@ function WishlistEmpty() {
                     Save products you love by clicking the heart icon. They&apos;ll appear here for easy access.
                 </p>
                 <Button asChild size="lg" className="gap-2">
-                    <Link viewTransition to="/collections/all-products">
+                    <Link to="/collections/all-products">
                         <ShoppingBag className="size-4" />
                         Start Shopping
                     </Link>

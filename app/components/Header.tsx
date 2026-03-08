@@ -168,7 +168,11 @@ export function Header({header, cart}: HeaderProps) {
                 <div className="flex items-center gap-0 sm:gap-1">
                     <MenuToggle actionState={actionState} />
                     {/* All Products button - hidden on mobile, visible on sm+ screens */}
-                    <HeaderTextLink actionState={actionState} className="hidden sm:inline-flex" to="/collections/all-products">
+                    <HeaderTextLink
+                        actionState={actionState}
+                        className="hidden sm:inline-flex"
+                        to="/collections/all-products"
+                    >
                         Shop all
                     </HeaderTextLink>
                 </div>
@@ -184,7 +188,7 @@ export function Header({header, cart}: HeaderProps) {
                         !isHomePage ? "opacity-100" : "opacity-0"
                     )}
                 >
-                    <NavLink viewTransition
+                    <NavLink
                         to="/"
                         prefetch="viewport"
                         className={cn(
@@ -233,7 +237,7 @@ export function HeaderMenu({
     return (
         <nav className={className} role="navigation">
             {viewport === "mobile" && (
-                <NavLink viewTransition end onClick={close} prefetch="viewport" className={getNavLinkClassName} to="/">
+                <NavLink end onClick={close} prefetch="viewport" className={getNavLinkClassName} to="/">
                     Home
                 </NavLink>
             )}
@@ -250,7 +254,7 @@ export function HeaderMenu({
                         ? new URL(item.url).pathname
                         : item.url;
                 return (
-                    <NavLink viewTransition
+                    <NavLink
                         className={getNavLinkClassName}
                         end
                         key={item.id}
@@ -298,12 +302,8 @@ function HeaderTextLink({
     to: string;
 }) {
     return (
-        <Button
-            variant="ghost"
-            asChild
-            className={getHeaderTextActionClassName(actionState, className)}
-        >
-            <NavLink viewTransition prefetch="viewport" to={to} className={HEADER_ACTION_LINK_RESET_CLASSNAME}>
+        <Button variant="ghost" asChild className={getHeaderTextActionClassName(actionState, className)}>
+            <NavLink prefetch="viewport" to={to} className={HEADER_ACTION_LINK_RESET_CLASSNAME}>
                 {children}
             </NavLink>
         </Button>

@@ -108,7 +108,9 @@ export default function SubscriptionsIndex() {
             <AnimatedSection animation="fade" threshold={0.08}>
                 <header className="space-y-2">
                     <h2 className="text-2xl font-semibold tracking-tight">Subscriptions</h2>
-                    <p className="text-sm text-muted-foreground">Manage your recurring orders and subscription plans.</p>
+                    <p className="text-sm text-muted-foreground">
+                        Manage your recurring orders and subscription plans.
+                    </p>
                 </header>
             </AnimatedSection>
 
@@ -120,7 +122,7 @@ export default function SubscriptionsIndex() {
                         <CardContent className="py-12 text-center">
                             <p className="text-muted-foreground">You have no active subscriptions.</p>
                             <Button asChild variant="link" className="mt-4">
-                                <Link viewTransition to="/collections/all-products">Browse Products</Link>
+                                <Link to="/collections/all-products">Browse Products</Link>
                             </Button>
                         </CardContent>
                     </Card>
@@ -223,7 +225,7 @@ function SubscriptionCard({subscription}: {subscription: SubscriptionContract}) 
             </CardContent>
             <CardFooter>
                 <Button variant="link" className="h-auto p-0" asChild>
-                    <Link viewTransition to={`/account/subscriptions/${btoa(subscription.id)}`}>Manage Subscription →</Link>
+                    <Link to={`/account/subscriptions/${btoa(subscription.id)}`}>Manage Subscription →</Link>
                 </Button>
             </CardFooter>
         </Card>

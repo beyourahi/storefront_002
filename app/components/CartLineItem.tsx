@@ -134,8 +134,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
         | undefined;
     const isChildLine = !!parentRelationship;
     const parentProductTitle =
-        parentRelationship?.parent?.merchandise?.product?.title ??
-        parentRelationship?.parent?.merchandise?.title;
+        parentRelationship?.parent?.merchandise?.product?.title ?? parentRelationship?.parent?.merchandise?.title;
 
     // Compact horizontal layout for aside drawer
     if (!isPage) {
@@ -156,13 +155,15 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                 )}
                 <div className="flex gap-2">
                     {/* Product Image - Fixed size for drawer */}
-                    <Link viewTransition
+                    <Link
                         prefetch="viewport"
                         to={lineItemUrl}
                         onClick={handleLinkClick}
                         className={cn(
                             "motion-interactive shrink-0 overflow-hidden rounded-xl bg-overlay-light ring-1 ring-primary-foreground/10 cursor-pointer",
-                            canHover ? "group-hover/item:ring-primary-foreground/20" : "active:ring-primary-foreground/20",
+                            canHover
+                                ? "group-hover/item:ring-primary-foreground/20"
+                                : "active:ring-primary-foreground/20",
                             isChildLine ? "size-12 sm:size-14" : "size-[72px] sm:size-20"
                         )}
                     >
@@ -183,7 +184,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                     <div className="flex-1 min-w-0 flex flex-col gap-0">
                         {/* Top Row: Title + Remove Button */}
                         <div className="flex items-start justify-between gap-1">
-                            <Link viewTransition
+                            <Link
                                 prefetch="viewport"
                                 to={lineItemUrl}
                                 onClick={handleLinkClick}
@@ -245,13 +246,15 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
             )}
             <div className="flex gap-2.5">
                 {/* Product Image - Responsive sizing */}
-                <Link viewTransition
+                <Link
                     prefetch="viewport"
                     to={lineItemUrl}
                     onClick={handleLinkClick}
                     className={cn(
                         "motion-interactive shrink-0 overflow-hidden rounded-xl bg-muted/30 shadow-sm ring-1 ring-border/50 cursor-pointer",
-                        canHover ? "group-hover/item:shadow-md group-hover/item:ring-border" : "active:shadow-md active:ring-border",
+                        canHover
+                            ? "group-hover/item:shadow-md group-hover/item:ring-border"
+                            : "active:shadow-md active:ring-border",
                         isChildLine ? "size-14 sm:size-16" : "size-20 sm:size-24"
                     )}
                 >
@@ -272,7 +275,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                 <div className="flex-1 min-w-0 flex flex-col gap-0">
                     {/* Top Row: Title + Remove Button */}
                     <div className="flex items-start justify-between gap-1">
-                        <Link viewTransition
+                        <Link
                             prefetch="viewport"
                             to={lineItemUrl}
                             onClick={handleLinkClick}

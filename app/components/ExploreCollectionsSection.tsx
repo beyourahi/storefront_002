@@ -90,7 +90,7 @@ export function ExploreCollectionsSection({collections}: ExploreCollectionsSecti
                 <h2 className="m-0 font-serif text-3xl font-medium text-primary sm:text-4xl md:text-5xl lg:text-6xl">
                     {collectionsTitle}
                 </h2>
-                <Link viewTransition
+                <Link
                     to="/collections"
                     className={cn(
                         "motion-interactive motion-press hidden w-fit rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 py-1.5 font-sans text-base font-medium text-primary active:scale-[var(--motion-press-scale)] cursor-pointer sm:block sm:px-4 sm:py-2 sm:text-lg md:text-xl",
@@ -136,7 +136,7 @@ export function ExploreCollectionsSection({collections}: ExploreCollectionsSecti
 
                 {/* Mobile-only View all button - below carousel */}
                 <div className="mt-6 flex justify-center sm:hidden">
-                    <Link viewTransition
+                    <Link
                         to="/collections"
                         className={cn(
                             "motion-interactive motion-press rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-base font-medium text-primary transition-colors active:scale-[var(--motion-press-scale)] cursor-pointer",
@@ -186,14 +186,16 @@ function CollectionCard({collection, isExpanded, onTap}: CollectionCardProps) {
     };
 
     return (
-        <Link viewTransition
+        <Link
             to={`/collections/${collection.handle}`}
             prefetch="viewport"
             onClick={handleClick}
             className={cn(
                 "relative flex-1 transition-all duration-500 ease-out cursor-pointer",
                 "motion-interactive-strong",
-                canHover ? "group hover:flex-2 hover:no-underline" : "motion-press active:scale-[var(--motion-press-scale)]",
+                canHover
+                    ? "group hover:flex-2 hover:no-underline"
+                    : "motion-press active:scale-[var(--motion-press-scale)]",
                 isExpanded && "flex-2"
             )}
         >
@@ -272,7 +274,7 @@ function MobileCollectionCard({collection}: {collection: ExploreCollectionFragme
     const description = truncateDescription(collection.description, 80);
 
     return (
-        <Link viewTransition
+        <Link
             to={`/collections/${collection.handle}`}
             prefetch="viewport"
             className="group motion-link motion-press block hover:no-underline active:scale-[var(--motion-press-scale)] cursor-pointer"

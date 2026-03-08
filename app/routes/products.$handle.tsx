@@ -66,7 +66,6 @@ import {ProductTitle} from "~/components/ProductTitle";
 import {ProductDescription} from "~/components/ProductDescription";
 import {SizeChartButton} from "~/components/SizeChartButton";
 import {parseSizeChart} from "~/lib/size-chart";
-import {PageTransition} from "~/components/AnimatedSection";
 import {redirectIfHandleIsLocalized} from "~/lib/redirect";
 import {useRecentlyViewed} from "~/lib/recently-viewed";
 import {CollectionSidebar, type CollectionWithCount} from "~/components/CollectionSidebar";
@@ -304,144 +303,142 @@ export default function Product() {
 
     return (
         <>
-            <PageTransition>
-                {/* Mobile Layout (hidden on desktop) */}
-                <div className="md:hidden">
-                    {/* 1. Product Images
+            {/* Mobile Layout (hidden on desktop) */}
+            <div className="md:hidden">
+                {/* 1. Product Images
                          - pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px)
                          - Additional small padding for gallery */}
-                    <div className="px-3 sm:px-4 pt-(--page-breathing-room)">
-                        <ProductImageGallery
-                            images={product.images.nodes}
-                            selectedVariantImage={selectedVariant?.image}
-                            media={product.media?.nodes}
-                        />
-                    </div>
-
-                    {/* 2. Product Name and Discount Badge - fluid text sizing for long perfume names at 320px */}
-                    <div className="px-3 sm:px-4 pt-4 sm:pt-6 space-y-2">
-                        <ProductTitle title={title} variant="pdp" />
-                        <ProductDiscountBadge selectedVariant={selectedVariant} product={product} />
-                    </div>
-
-                    {/* 3. Description - Comprehensive prose typography */}
-                    <div className="px-3 sm:px-4 py-3 sm:py-4">
-                        <ProductDescription html={descriptionHtml} size="sm" />
-                    </div>
-
-                    {/* 4. Product Hero Mobile (variants, quantity, add to cart) */}
-                    <ProductHeroMobile
-                        productOptions={productOptions}
-                        selectedVariant={selectedVariant}
-                        selectedSellingPlan={selectedSellingPlan}
-                        title={title}
-                        tags={product.tags}
-                        sizeChartButton={
-                            sizeChartResult.isValid && sizeChartResult.data ? (
-                                <SizeChartButton sizeChart={sizeChartResult.data} variant="mobile" />
-                            ) : undefined
-                        }
+                <div className="px-3 sm:px-4 pt-(--page-breathing-room)">
+                    <ProductImageGallery
+                        images={product.images.nodes}
+                        selectedVariantImage={selectedVariant?.image}
+                        media={product.media?.nodes}
                     />
                 </div>
 
-                {/* Desktop Layout (hidden on mobile)
+                {/* 2. Product Name and Discount Badge - fluid text sizing for long perfume names at 320px */}
+                <div className="px-3 sm:px-4 pt-4 sm:pt-6 space-y-2">
+                    <ProductTitle title={title} variant="pdp" />
+                    <ProductDiscountBadge selectedVariant={selectedVariant} product={product} />
+                </div>
+
+                {/* 3. Description - Comprehensive prose typography */}
+                <div className="px-3 sm:px-4 py-3 sm:py-4">
+                    <ProductDescription html={descriptionHtml} size="sm" />
+                </div>
+
+                {/* 4. Product Hero Mobile (variants, quantity, add to cart) */}
+                <ProductHeroMobile
+                    productOptions={productOptions}
+                    selectedVariant={selectedVariant}
+                    selectedSellingPlan={selectedSellingPlan}
+                    title={title}
+                    tags={product.tags}
+                    sizeChartButton={
+                        sizeChartResult.isValid && sizeChartResult.data ? (
+                            <SizeChartButton sizeChart={sizeChartResult.data} variant="mobile" />
+                        ) : undefined
+                    }
+                />
+            </div>
+
+            {/* Desktop Layout (hidden on mobile)
                      Responsive margins scale from md to 3xl for ultrawide support.
                      At 3xl (1921px+), content is max-width constrained and centered.
                      - pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px)
                      Product pages use standard breathing room (not dense) because the sidebar
                      is for navigation, not high-density content like collection grids. */}
-                <div className="hidden md:block pt-(--page-breathing-room) mx-4 lg:mx-6 xl:mx-8 2xl:mx-12 3xl:mx-auto 3xl:max-w-400 3xl:px-12 mb-4">
-                    {/* Main 3-Column Layout (Desktop)
+            <div className="hidden md:block pt-(--page-breathing-room) mx-4 lg:mx-6 xl:mx-8 2xl:mx-12 3xl:mx-auto 3xl:max-w-400 3xl:px-12 mb-4">
+                {/* Main 3-Column Layout (Desktop)
                          Gap scales progressively for visual rhythm at larger screens */}
-                    <div className="flex gap-8 lg:gap-12 xl:gap-14 2xl:gap-16">
-                        {/* Desktop Sidebar - sticky, positioned using same breathing room as page padding
+                <div className="flex gap-8 lg:gap-12 xl:gap-14 2xl:gap-16">
+                    {/* Desktop Sidebar - sticky, positioned using same breathing room as page padding
                              Uses --page-breathing-room for consistent alignment with standard pages.
                              When scrolled, header adds pt-3 (12px), so sidebar adds matching offset.
                              - Base: --total-header-height + --page-breathing-room
                              - Scrolled: +0.75rem (12px) to match header's pt-3 floating effect
                              - z-10 ensures sidebar stays below header (z-100) but above page content */}
-                        <div className="w-72 lg:w-80 xl:w-84 2xl:w-88 shrink-0 animate-slide-right-fade">
-                            <div
-                                className={cn(
-                                    "sticky z-10 transition-[top] duration-300 ease-out",
-                                    isScrolled
-                                        ? "top-[calc(var(--total-header-height)+0.75rem+var(--page-breathing-room))]"
-                                        : "top-[calc(var(--total-header-height)+var(--page-breathing-room))]"
-                                )}
-                            >
-                                <CollectionSidebar
-                                    collections={collectionsWithCounts}
-                                    activeHandle={activeCollectionHandle}
-                                    totalProductCount={totalProductCount}
-                                    discountCount={discountCount}
-                                />
-                            </div>
+                    <div className="w-72 lg:w-80 xl:w-84 2xl:w-88 shrink-0 animate-slide-right-fade">
+                        <div
+                            className={cn(
+                                "sticky z-10 transition-[top] duration-300 ease-out",
+                                isScrolled
+                                    ? "top-[calc(var(--total-header-height)+0.75rem+var(--page-breathing-room))]"
+                                    : "top-[calc(var(--total-header-height)+var(--page-breathing-room))]"
+                            )}
+                        >
+                            <CollectionSidebar
+                                collections={collectionsWithCounts}
+                                activeHandle={activeCollectionHandle}
+                                totalProductCount={totalProductCount}
+                                discountCount={discountCount}
+                            />
                         </div>
+                    </div>
 
-                        {/* Image Gallery + Product Info */}
-                        <div className="flex-1 min-w-0">
-                            <div className="grid md:grid-cols-2 gap-8 md:gap-12 xl:gap-14 2xl:gap-16">
-                                {/* Product Image Gallery - sticky for large screens only
+                    {/* Image Gallery + Product Info */}
+                    <div className="flex-1 min-w-0">
+                        <div className="grid md:grid-cols-2 gap-8 md:gap-12 xl:gap-14 2xl:gap-16">
+                            {/* Product Image Gallery - sticky for large screens only
                                      Images remain fixed while product info scrolls, similar to collection sidebar.
                                      Uses same breathing room calculation as sidebar for visual alignment.
                                      When scrolled, adds +0.75rem offset to match header's pt-3 floating effect. */}
-                                <div
-                                    className={cn(
-                                        "self-start md:sticky md:transition-[top] md:duration-300 md:ease-out",
-                                        isScrolled
-                                            ? "md:top-[calc(var(--total-header-height)+0.75rem+var(--page-breathing-room))]"
-                                            : "md:top-[calc(var(--total-header-height)+var(--page-breathing-room))]"
-                                    )}
-                                >
-                                    <ProductImageGallery
-                                        images={product.images.nodes}
-                                        selectedVariantImage={selectedVariant?.image}
-                                        media={product.media?.nodes}
-                                    />
-                                </div>
-                                {/* Product Info - scrolls naturally while images remain sticky
+                            <div
+                                className={cn(
+                                    "self-start md:sticky md:transition-[top] md:duration-300 md:ease-out",
+                                    isScrolled
+                                        ? "md:top-[calc(var(--total-header-height)+0.75rem+var(--page-breathing-room))]"
+                                        : "md:top-[calc(var(--total-header-height)+var(--page-breathing-room))]"
+                                )}
+                            >
+                                <ProductImageGallery
+                                    images={product.images.nodes}
+                                    selectedVariantImage={selectedVariant?.image}
+                                    media={product.media?.nodes}
+                                />
+                            </div>
+                            {/* Product Info - scrolls naturally while images remain sticky
                                      This creates the desired "sticky images, scrolling info" UX for large screens.
                                      The product info (title, variants, description) flows with page scroll,
                                      allowing users to read long descriptions without losing sight of the product image. */}
-                                <div className="space-y-6 animate-slide-left-fade" style={{animationDelay: "100ms"}}>
-                                    {/* Product Title and Discount Badge
+                            <div className="space-y-6 animate-slide-left-fade" style={{animationDelay: "100ms"}}>
+                                {/* Product Title and Discount Badge
                                          Title scales progressively: 32px → 40px → 48px → 56px → 64px */}
-                                    <div className="space-y-3 mb-12 lg:mb-16 xl:mb-20 2xl:mb-24">
-                                        <ProductTitle title={title} variant="pdp" />
-                                        <ProductDiscountBadge selectedVariant={selectedVariant} product={product} />
-                                    </div>
-                                    <ProductForm
-                                        productOptions={productOptions}
-                                        selectedVariant={selectedVariant}
-                                        sellingPlanGroups={product.sellingPlanGroups}
-                                        selectedSellingPlan={selectedSellingPlan}
-                                        tags={product.tags}
-                                        wishlistButton={
-                                            <WishlistButton
-                                                productId={product.id}
-                                                productTitle={product.title}
-                                                variant="primary-outline"
-                                            />
-                                        }
-                                        shareButton={
-                                            <ProductShareButton product={product} selectedVariant={selectedVariant} />
-                                        }
-                                        sizeChartButton={
-                                            sizeChartResult.isValid && sizeChartResult.data ? (
-                                                <SizeChartButton sizeChart={sizeChartResult.data} variant="link" />
-                                            ) : undefined
-                                        }
-                                    />
-                                    {/* Product Description - Comprehensive prose typography for desktop */}
-                                    <ProductDescription html={descriptionHtml} size="base" className="pt-12" />
+                                <div className="space-y-3 mb-12 lg:mb-16 xl:mb-20 2xl:mb-24">
+                                    <ProductTitle title={title} variant="pdp" />
+                                    <ProductDiscountBadge selectedVariant={selectedVariant} product={product} />
                                 </div>
+                                <ProductForm
+                                    productOptions={productOptions}
+                                    selectedVariant={selectedVariant}
+                                    sellingPlanGroups={product.sellingPlanGroups}
+                                    selectedSellingPlan={selectedSellingPlan}
+                                    tags={product.tags}
+                                    wishlistButton={
+                                        <WishlistButton
+                                            productId={product.id}
+                                            productTitle={product.title}
+                                            variant="primary-outline"
+                                        />
+                                    }
+                                    shareButton={
+                                        <ProductShareButton product={product} selectedVariant={selectedVariant} />
+                                    }
+                                    sizeChartButton={
+                                        sizeChartResult.isValid && sizeChartResult.data ? (
+                                            <SizeChartButton sizeChart={sizeChartResult.data} variant="link" />
+                                        ) : undefined
+                                    }
+                                />
+                                {/* Product Description - Comprehensive prose typography for desktop */}
+                                <ProductDescription html={descriptionHtml} size="base" className="pt-12" />
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <RelatedProducts products={recommendations} />
-            </PageTransition>
+            <RelatedProducts products={recommendations} />
 
             <Analytics.ProductView
                 data={{

@@ -92,7 +92,6 @@ import {NetworkStatusIndicator} from "~/components/NetworkStatusIndicator";
 import {ServiceWorkerUpdateBanner} from "~/components/pwa/ServiceWorkerUpdateBanner";
 import {OpenInAppButton} from "~/components/pwa/OpenInAppButton";
 import {withTimeoutAndFallback, TIMEOUT_DEFAULTS} from "~/lib/promise-utils";
-import {usePageTransitionOrchestrator} from "~/lib/navigation-transitions";
 
 export type RootLoader = typeof loader;
 
@@ -448,7 +447,6 @@ export function Layout({children}: {children?: React.ReactNode}) {
 
 export default function App() {
     const data = useRouteLoaderData<RootLoader>("root");
-    usePageTransitionOrchestrator();
 
     // Persist theme to localStorage and update SW cache for offline page
     // This ensures the offline page displays brand-consistent styling

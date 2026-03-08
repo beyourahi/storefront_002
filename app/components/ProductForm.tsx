@@ -444,7 +444,7 @@ export function ProductForm({
 
                                 if (isDifferentProduct) {
                                     return (
-                                        <Link viewTransition
+                                        <Link
                                             key={option.name + name}
                                             prefetch="viewport"
                                             preventScrollReset
