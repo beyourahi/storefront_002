@@ -237,7 +237,7 @@ export default function Blogs({loaderData}: Route.ComponentProps) {
                         {/* View All Link */}
                         {selectedBlog && hasMultipleCategories && (
                             <div className="flex justify-center pt-4 sm:pt-6">
-                                <Link to={`/blogs/${selectedBlog.handle}`} prefetch="viewport" className="no-underline">
+                                <Link viewTransition to={`/blogs/${selectedBlog.handle}`} prefetch="viewport" className="no-underline">
                                     <Button
                                         variant="outline"
                                         className="rounded-full border-2 border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground text-sm sm:text-base"

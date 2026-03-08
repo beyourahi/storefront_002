@@ -90,6 +90,7 @@ import {ProductPrice} from "./ProductPrice";
 import {ProductTitle} from "./ProductTitle";
 import {Money} from "~/components/Money";
 import {useAside} from "./Aside";
+import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import type {CartApiQueryFragment} from "storefrontapi.generated";
 import {Button} from "~/components/ui/button";
 import {Minus, Plus, X, RefreshCw} from "lucide-react";
@@ -106,6 +107,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
     const {product, title, image, selectedOptions} = merchandise;
     const lineItemUrl = useVariantUrl(product.handle, selectedOptions);
     const {close} = useAside();
+    const {canHover} = usePointerCapabilities();
     const isPage = layout === "page";
 
     const handleLinkClick = () => {
@@ -141,7 +143,8 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
             <div
                 key={id}
                 className={cn(
-                    "group/item flex flex-col gap-1 py-2 first:pt-0 transition-colors duration-200",
+                    "motion-interactive flex flex-col gap-1 py-2 first:pt-0",
+                    canHover ? "group/item" : "motion-press",
                     isChildLine && "ml-5 border-l border-primary-foreground/20 pl-3"
                 )}
             >
@@ -153,12 +156,13 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                 )}
                 <div className="flex gap-2">
                     {/* Product Image - Fixed size for drawer */}
-                    <Link
+                    <Link viewTransition
                         prefetch="viewport"
                         to={lineItemUrl}
                         onClick={handleLinkClick}
                         className={cn(
-                            "shrink-0 overflow-hidden rounded-xl bg-overlay-light ring-1 ring-primary-foreground/10 cursor-pointer transition-all duration-300 group-hover/item:ring-primary-foreground/20",
+                            "motion-interactive shrink-0 overflow-hidden rounded-xl bg-overlay-light ring-1 ring-primary-foreground/10 cursor-pointer",
+                            canHover ? "group-hover/item:ring-primary-foreground/20" : "active:ring-primary-foreground/20",
                             isChildLine ? "size-12 sm:size-14" : "size-[72px] sm:size-20"
                         )}
                     >
@@ -170,7 +174,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                                 height={isChildLine ? 56 : 80}
                                 loading="lazy"
                                 width={isChildLine ? 56 : 80}
-                                className="size-full object-cover transition-transform duration-300 hover:scale-105"
+                                className={cn("motion-image size-full object-cover", canHover && "hover:scale-[1.03]")}
                             />
                         )}
                     </Link>
@@ -179,11 +183,14 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                     <div className="flex-1 min-w-0 flex flex-col gap-0">
                         {/* Top Row: Title + Remove Button */}
                         <div className="flex items-start justify-between gap-1">
-                            <Link
+                            <Link viewTransition
                                 prefetch="viewport"
                                 to={lineItemUrl}
                                 onClick={handleLinkClick}
-                                className="flex-1 min-w-0 cursor-pointer transition-opacity duration-200 hover:opacity-85"
+                                className={cn(
+                                    "motion-link flex-1 min-w-0 cursor-pointer",
+                                    canHover ? "hover:opacity-85" : "active:opacity-85"
+                                )}
                             >
                                 <ProductTitle title={product.title} variant="cart" darkContext />
                             </Link>
@@ -199,7 +206,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
 
                         {/* Subscription Badge */}
                         {sellingPlanAllocation && (
-                            <span className="inline-flex items-center gap-1 text-sm font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary-foreground/8 text-primary-foreground/90 ring-1 ring-primary-foreground/15 w-fit">
+                            <span className="inline-flex items-center gap-1 text-sm font-medium uppercase tracking-wider px-2 py-0.5 rounded-[var(--radius-pill-raw)] bg-primary-foreground/8 text-primary-foreground/90 ring-1 ring-primary-foreground/15 w-fit">
                                 <RefreshCw className="size-3 opacity-70" />
                                 {sellingPlanAllocation.sellingPlan.name}
                             </span>
@@ -227,7 +234,8 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
         <div
             key={id}
             className={cn(
-                "group/item flex flex-col gap-1 py-2.5 first:pt-0 transition-colors duration-200 hover:bg-muted/20 rounded-lg -mx-2 px-2",
+                "motion-interactive -mx-2 flex flex-col gap-1 rounded-lg px-2 py-2.5 first:pt-0",
+                canHover ? "group/item hover:bg-muted/20" : "motion-press active:bg-muted/20",
                 isChildLine && "ml-6 border-l border-border pl-4"
             )}
         >
@@ -237,12 +245,13 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
             )}
             <div className="flex gap-2.5">
                 {/* Product Image - Responsive sizing */}
-                <Link
+                <Link viewTransition
                     prefetch="viewport"
                     to={lineItemUrl}
                     onClick={handleLinkClick}
                     className={cn(
-                        "shrink-0 overflow-hidden rounded-xl bg-muted/30 shadow-sm ring-1 ring-border/50 cursor-pointer transition-all duration-300 group-hover/item:shadow-md group-hover/item:ring-border",
+                        "motion-interactive shrink-0 overflow-hidden rounded-xl bg-muted/30 shadow-sm ring-1 ring-border/50 cursor-pointer",
+                        canHover ? "group-hover/item:shadow-md group-hover/item:ring-border" : "active:shadow-md active:ring-border",
                         isChildLine ? "size-14 sm:size-16" : "size-20 sm:size-24"
                     )}
                 >
@@ -254,7 +263,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                             height={isChildLine ? 64 : 96}
                             loading="lazy"
                             width={isChildLine ? 64 : 96}
-                            className="size-full object-cover transition-transform duration-300 hover:scale-105"
+                            className={cn("motion-image size-full object-cover", canHover && "hover:scale-[1.03]")}
                         />
                     )}
                 </Link>
@@ -263,11 +272,11 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                 <div className="flex-1 min-w-0 flex flex-col gap-0">
                     {/* Top Row: Title + Remove Button */}
                     <div className="flex items-start justify-between gap-1">
-                        <Link
+                        <Link viewTransition
                             prefetch="viewport"
                             to={lineItemUrl}
                             onClick={handleLinkClick}
-                            className="flex-1 min-w-0 cursor-pointer transition-opacity duration-200 hover:opacity-80"
+                            className="motion-link flex-1 min-w-0 cursor-pointer hover:opacity-80"
                         >
                             <ProductTitle title={product.title} variant="cart" />
                         </Link>
@@ -283,7 +292,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
 
                     {/* Subscription Badge */}
                     {sellingPlanAllocation && (
-                        <span className="inline-flex items-center gap-1 text-sm font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/8 text-primary ring-1 ring-primary/15 w-fit">
+                        <span className="inline-flex items-center gap-1 text-sm font-medium uppercase tracking-wider px-2 py-0.5 rounded-[var(--radius-pill-raw)] bg-primary/8 text-primary ring-1 ring-primary/15 w-fit">
                             <RefreshCw className="size-3 opacity-60" />
                             {sellingPlanAllocation.sellingPlan.name}
                         </span>
@@ -346,15 +355,15 @@ function CartLineQuantity({line, isPage, productTitle}: {line: CartLine; isPage:
     if (!isPage) {
         return (
             <div className="inline-flex items-center gap-1.5">
-                <div className="inline-flex select-none items-center rounded-full border border-primary-foreground/40 bg-primary-foreground/5 backdrop-blur-sm">
+                <div className="inline-flex select-none items-center rounded-[var(--radius-pill-raw)] border border-primary-foreground/40 bg-primary-foreground/5 backdrop-blur-sm">
                     <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
                         <button
                             type="submit"
                             disabled={!canDecrement}
                             className={cn(
-                                "flex items-center justify-center size-10 sm:size-9 text-primary-foreground/80 rounded-l-full transition-all duration-200",
+                                "motion-interactive motion-press flex size-10 items-center justify-center rounded-l-full text-primary-foreground/80 sm:size-9",
                                 canDecrement
-                                    ? "cursor-pointer hover:text-primary-foreground hover:bg-primary-foreground/10 active:scale-95"
+                                    ? "cursor-pointer hover:bg-primary-foreground/10 hover:text-primary-foreground active:scale-[var(--motion-press-scale)]"
                                     : "opacity-30 cursor-not-allowed"
                             )}
                             aria-label="Decrease quantity"
@@ -372,9 +381,9 @@ function CartLineQuantity({line, isPage, productTitle}: {line: CartLine; isPage:
                             type="submit"
                             disabled={!canIncrement}
                             className={cn(
-                                "flex items-center justify-center size-10 sm:size-9 text-primary-foreground/80 rounded-r-full transition-all duration-200",
+                                "motion-interactive motion-press flex size-10 items-center justify-center rounded-r-full text-primary-foreground/80 sm:size-9",
                                 canIncrement
-                                    ? "cursor-pointer hover:text-primary-foreground hover:bg-primary-foreground/10 active:scale-95"
+                                    ? "cursor-pointer hover:bg-primary-foreground/10 hover:text-primary-foreground active:scale-[var(--motion-press-scale)]"
                                     : "opacity-30 cursor-not-allowed"
                             )}
                             aria-label="Increase quantity"
@@ -391,15 +400,15 @@ function CartLineQuantity({line, isPage, productTitle}: {line: CartLine; isPage:
     // Touch targets: 44px minimum for mobile (size-11), 36px for desktop (sm:size-9)
     return (
         <div className="inline-flex items-center gap-1.5">
-            <div className="inline-flex select-none items-center rounded-full border border-primary/50 bg-muted/30 shadow-sm">
+            <div className="inline-flex select-none items-center rounded-[var(--radius-pill-raw)] border border-primary/50 bg-muted/30 shadow-sm">
                 <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
                     <button
                         type="submit"
                         disabled={!canDecrement}
                         className={cn(
-                            "flex items-center justify-center size-10 sm:size-9 text-primary/70 rounded-l-full transition-all duration-200",
+                            "motion-interactive motion-press flex size-10 items-center justify-center rounded-l-full text-primary/70 sm:size-9",
                             canDecrement
-                                ? "cursor-pointer hover:text-primary hover:bg-primary/10 active:scale-95"
+                                ? "cursor-pointer hover:bg-primary/10 hover:text-primary active:scale-[var(--motion-press-scale)]"
                                 : "opacity-30 cursor-not-allowed"
                         )}
                         aria-label="Decrease quantity"
@@ -415,9 +424,9 @@ function CartLineQuantity({line, isPage, productTitle}: {line: CartLine; isPage:
                         type="submit"
                         disabled={!canIncrement}
                         className={cn(
-                            "flex items-center justify-center size-10 sm:size-9 text-primary/70 rounded-r-full transition-all duration-200",
+                            "motion-interactive motion-press flex size-10 items-center justify-center rounded-r-full text-primary/70 sm:size-9",
                             canIncrement
-                                ? "cursor-pointer hover:text-primary hover:bg-primary/10 active:scale-95"
+                                ? "cursor-pointer hover:bg-primary/10 hover:text-primary active:scale-[var(--motion-press-scale)]"
                                 : "opacity-30 cursor-not-allowed"
                         )}
                         aria-label="Increase quantity"
@@ -460,7 +469,7 @@ function CartLineRemoveButton({
                 size="icon"
                 disabled={disabled}
                 className={cn(
-                    "size-10 sm:size-9 transition-all duration-200",
+                    "motion-interactive motion-press size-10 sm:size-9",
                     compact && isPage
                         ? "text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 group-hover/item:text-muted-foreground"
                         : compact

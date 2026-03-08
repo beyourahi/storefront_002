@@ -26,6 +26,7 @@ import {useEffect, useRef} from "react";
 import {Link} from "react-router";
 import {CircleArrowOutUpRight} from "lucide-react";
 import {useBrandAnimation, AnimatedBrandText} from "~/components/BrandAnimation";
+import {ParallaxLayer} from "~/components/motion/ParallaxLayer";
 import {useSiteSettings} from "~/lib/site-content-context";
 import {useScreenSize, BREAKPOINTS} from "~/hooks/useScreenSize";
 import {truncateText} from "~/lib/utils";
@@ -223,11 +224,13 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
         <section ref={heroRef} className="grid h-dvh overflow-hidden w-full p-0">
             {/* Background Media (Video or Image) with Gradient */}
             <div className="relative col-start-1 row-start-1 w-full h-full overflow-hidden @container">
-                <HeroBackgroundMedia
+                <ParallaxLayer className="size-full" contentClassName="size-full" amplitude={32} scale={1.08}>
+                    <HeroBackgroundMedia
                         mobile={heroMediaMobile}
                         largeScreen={heroMediaLargeScreen}
                         fallbackVideoSrc={fallbackVideoSrc}
                     />
+                </ParallaxLayer>
 
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-linear-to-t from-dark/60 via-dark/10 to-transparent" />
@@ -276,9 +279,9 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
 
                         Touch target: min 44px height (py-3 = 12px × 2 + line-height ≈ 48px)
                         Mobile: wider padding and full-width option for better tap area */}
-                    <Link
+                    <Link viewTransition
                         to="/collections/all-products"
-                        className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 md:gap-3 rounded-full bg-primary border-2 border-primary px-4 sm:px-5 md:px-6 py-3 md:py-3.5 font-sans text-sm sm:text-base md:text-lg font-medium text-primary-foreground no-underline hover:no-underline transition-all duration-200 hover:bg-light hover:text-primary hover:border-light active:bg-light/90 active:border-light active:scale-[0.98] cursor-pointer"
+                        className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 md:gap-3 rounded-[var(--radius-pill-raw)] bg-primary border-2 border-primary px-4 sm:px-5 md:px-6 py-3 md:py-3.5 font-sans text-sm sm:text-base md:text-lg font-medium text-primary-foreground no-underline hover:no-underline transition-all duration-200 hover:bg-light hover:text-primary hover:border-light active:bg-light/90 active:border-light active:scale-[0.98] cursor-pointer"
                     >
                         Shop Now
                         <CircleArrowOutUpRight className="w-5 h-5 md:w-6 md:h-6 transition-transform duration-200 group-hover:rotate-45" />
@@ -291,7 +294,7 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                      Text: truncated collection.description > hardcoded text
                      CTA: hardcoded "Discover Yours"
                      Link: /collections/{handle} > /collections/all-products */}
-                <Link
+                <Link viewTransition
                     to={cardLink}
                     className="hidden md:flex absolute top-[65%] right-8 z-60 w-90 lg:w-105 h-auto rounded-2xl overflow-hidden bg-overlay-light-hover backdrop-blur-md border border-light/30 no-underline hover:no-underline group transition-all hover:bg-light/30 animate-bounce-slow will-change-transform motion-reduce:animate-none cursor-pointer"
                 >

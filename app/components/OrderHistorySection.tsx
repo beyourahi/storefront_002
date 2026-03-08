@@ -76,7 +76,7 @@ export function OrderHistorySection({products, loading = false}: OrderHistorySec
                     </div>
                     {/* View All Button - Desktop (pill style) */}
                     {!isLoading && products.length > 0 && (
-                        <Link
+                        <Link viewTransition
                             to="/account/orders"
                             className="hidden rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-lg font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground hover:no-underline sm:inline-flex md:text-xl"
                         >
@@ -120,7 +120,7 @@ export function OrderHistorySection({products, loading = false}: OrderHistorySec
             {/* View All Button - Mobile (centered below carousel) */}
             {!isLoading && products.length > 0 && (
                 <div className="mt-6 flex justify-center sm:hidden">
-                    <Link
+                    <Link viewTransition
                         to="/account/orders"
                         className="rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-lg font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground hover:no-underline"
                     >

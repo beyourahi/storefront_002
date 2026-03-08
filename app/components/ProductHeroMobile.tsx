@@ -222,7 +222,7 @@ export function ProductHeroMobile({
 
                                 if (isDifferentProduct) {
                                     return (
-                                        <Link
+                                        <Link viewTransition
                                             key={option.name + name}
                                             prefetch="viewport"
                                             preventScrollReset

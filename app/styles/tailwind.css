@@ -146,7 +146,25 @@
     /* ─────────────────────────────────────────────────────────────────────
      * Layout & Spacing
      * ───────────────────────────────────────────────────────────────────── */
-    --radius: 0.5rem;
+    --radius: 8px;
+    --radius-xs-raw: 4px;
+    --radius-sm-raw: 6px;
+    --radius-md-raw: 8px;
+    --radius-lg-raw: 12px;
+    --radius-xl-raw: 16px;
+    --radius-2xl-raw: 24px;
+    --radius-3xl-raw: 32px;
+    --radius-pill-raw: 32px;
+    --motion-duration-fast: 180ms;
+    --motion-duration-standard: 260ms;
+    --motion-duration-slow: 420ms;
+    --motion-duration-overlay: 420ms;
+    --motion-duration-image: 520ms;
+    --motion-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+    --motion-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+    --motion-hover-lift: 4px;
+    --motion-press-scale: 0.985;
+    --pointer-hover-enabled: 0;
     --spacing: 0.25rem;
 
     /* ─────────────────────────────────────────────────────────────────────
@@ -325,6 +343,12 @@
     --marquee-duration: 60s;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    :root {
+        --pointer-hover-enabled: 1;
+    }
+}
+
 @media (min-width: 768px) {
     :root {
         --marquee-duration: 80s;
@@ -407,6 +431,103 @@
 
 .animate-page-fade-in {
     animation: page-fade-in 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@supports (view-transition-name: none) {
+    :root {
+        --vt-duration-mobile: 220ms;
+        --vt-duration-desktop: 280ms;
+        --vt-easing: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: var(--vt-duration-mobile);
+        animation-timing-function: var(--vt-easing);
+    }
+
+    @media (min-width: 768px) {
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation-duration: var(--vt-duration-desktop);
+        }
+    }
+
+    ::view-transition-old(root) {
+        animation-name: vt-fade-out;
+    }
+
+    ::view-transition-new(root) {
+        animation-name: vt-fade-in;
+    }
+
+    html[data-transition="forward"] ::view-transition-old(root) {
+        animation-name: vt-slide-forward-out;
+    }
+
+    html[data-transition="forward"] ::view-transition-new(root) {
+        animation-name: vt-slide-forward-in;
+    }
+
+    html[data-transition="backward"] ::view-transition-old(root) {
+        animation-name: vt-slide-backward-out;
+    }
+
+    html[data-transition="backward"] ::view-transition-new(root) {
+        animation-name: vt-slide-backward-in;
+    }
+
+    @keyframes vt-fade-out {
+        to {
+            opacity: 0;
+        }
+    }
+
+    @keyframes vt-fade-in {
+        from {
+            opacity: 0;
+        }
+    }
+
+    @keyframes vt-slide-forward-out {
+        to {
+            opacity: 0;
+            transform: translateX(-24px) scale(0.992);
+        }
+    }
+
+    @keyframes vt-slide-forward-in {
+        from {
+            opacity: 0;
+            transform: translateX(24px) scale(0.996);
+        }
+    }
+
+    @keyframes vt-slide-backward-out {
+        to {
+            opacity: 0;
+            transform: translateX(24px) scale(0.992);
+        }
+    }
+
+    @keyframes vt-slide-backward-in {
+        from {
+            opacity: 0;
+            transform: translateX(-24px) scale(0.996);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation-duration: 1ms !important;
+            animation-name: vt-fade-out, vt-fade-in !important;
+        }
+
+        * {
+            view-transition-name: none !important;
+        }
+    }
 }
 
 /* Slide up fade - for sections entering viewport */
@@ -845,10 +966,14 @@
     --font-serif: var(--font-serif);
 
     /* Border radius */
-    --radius-sm: calc(var(--radius) - 0.25rem);
-    --radius-md: calc(var(--radius) - 0.125rem);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) + 0.25rem);
+    --radius-xs: var(--radius-xs-raw);
+    --radius-sm: var(--radius-sm-raw);
+    --radius-md: var(--radius-md-raw);
+    --radius-lg: var(--radius-lg-raw);
+    --radius-xl: var(--radius-xl-raw);
+    --radius-2xl: var(--radius-2xl-raw);
+    --radius-3xl: var(--radius-3xl-raw);
+    --radius-pill: var(--radius-pill-raw);
 
     /* Shadows */
     --shadow-xs: var(--shadow-xs);
@@ -1000,6 +1125,50 @@
    ========================================== */
 
 @layer utilities {
+    .motion-interactive {
+        transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+        transition-duration: var(--motion-duration-standard);
+        transition-timing-function: var(--motion-ease-standard);
+    }
+
+    .motion-interactive-strong {
+        transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+        transition-duration: var(--motion-duration-slow);
+        transition-timing-function: var(--motion-ease-emphasized);
+    }
+
+    .motion-link {
+        transition-property: color, opacity, text-decoration-color, transform;
+        transition-duration: var(--motion-duration-fast);
+        transition-timing-function: var(--motion-ease-standard);
+    }
+
+    .motion-overlay {
+        transition-property: opacity, transform, filter;
+        transition-duration: var(--motion-duration-overlay);
+        transition-timing-function: var(--motion-ease-emphasized);
+    }
+
+    .motion-image {
+        transition-property: transform, opacity, filter;
+        transition-duration: var(--motion-duration-image);
+        transition-timing-function: var(--motion-ease-emphasized);
+    }
+
+    .motion-field {
+        transition-property: background-color, border-color, color, box-shadow, opacity;
+        transition-duration: var(--motion-duration-fast);
+        transition-timing-function: var(--motion-ease-standard);
+    }
+
+    .motion-lift:hover {
+        transform: translateY(calc(var(--motion-hover-lift) * -1));
+    }
+
+    .motion-press:active {
+        transform: scale(var(--motion-press-scale));
+    }
+
     /* ─────────────────────────────────────────────────────────────────────
      * Fluid Typography System
      * Uses CSS clamp() for smooth scaling between breakpoints
@@ -1168,6 +1337,22 @@
         max-width: 100vw;
         margin-left: 0;
         margin-right: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .motion-interactive,
+    .motion-interactive-strong,
+    .motion-link,
+    .motion-overlay,
+    .motion-image,
+    .motion-field {
+        transition-duration: 1ms !important;
+    }
+
+    .motion-lift:hover,
+    .motion-press:active {
+        transform: none !important;
     }
 }
 

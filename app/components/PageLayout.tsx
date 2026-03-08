@@ -202,7 +202,12 @@ export function PageLayout({
                             pt-[var(--total-header-height)] = announcement + gap + header
                             Breathing room is added to each page's first section individually
                             using pt-(--page-breathing-room) or pt-(--page-breathing-room-dense) */}
-                    <main className={cn("overflow-x-clip", paddingType !== "home" && "pt-(--total-header-height)")}>
+                    <main
+                        className={cn(
+                            "motion-interactive overflow-x-clip transition-[padding-top]",
+                            paddingType !== "home" && "pt-(--total-header-height)"
+                        )}
+                    >
                         {children}
                     </main>
                     <Footer footer={footer} header={header} publicStoreDomain={publicStoreDomain} />
@@ -297,7 +302,7 @@ function CartErrorFallback() {
                 </Button>
 
                 {/* Secondary: Continue shopping */}
-                <Link
+                <Link viewTransition
                     to="/collections/all-products"
                     onClick={close}
                     prefetch="viewport"

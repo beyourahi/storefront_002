@@ -141,12 +141,25 @@ export interface ResolvedTheme {
     diagnostics: ThemeDiagnostic[];
     scheme: SemanticScheme;
     colors: DerivedTheme;
+    radius: ThemeRadiusScale;
     fonts: ThemeFonts;
     googleFontsUrl: string;
     cssVariables: string;
 }
 
 export type GeneratedTheme = ResolvedTheme;
+
+export interface ThemeRadiusScale {
+    base: number;
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
+    twoXl: number;
+    threeXl: number;
+    pill: number;
+}
 
 // =============================================================================
 // CONSTANTS
@@ -161,6 +174,9 @@ const BRAND_SECONDARY_FALLBACK = "oklch(0.610 0.100 210)";
 const BRAND_ACCENT_FALLBACK = "oklch(0.680 0.120 60)";
 const WHITE = "oklch(0.980 0 0)";
 const BLACK = "oklch(0.120 0 0)";
+export const DEFAULT_BORDER_RADIUS_SEED = 8;
+export const MIN_BORDER_RADIUS_SEED = 4;
+export const MAX_BORDER_RADIUS_SEED = 28;
 
 const DEFAULT_THEME_COLORS: ThemeCoreColors = {
     primary: "oklch(0 0 0)",
@@ -244,6 +260,44 @@ export {getContrastForeground, hexToOklch, normalizeToOklch, colorIsValidColor a
 
 function clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));
+}
+
+function roundRadius(value: number): number {
+    return Math.round(value);
+}
+
+export function sanitizeBorderRadiusSeed(
+    value: unknown,
+    fallback = DEFAULT_BORDER_RADIUS_SEED
+): number {
+    const numeric =
+        typeof value === "number"
+            ? value
+            : typeof value === "string"
+              ? Number.parseFloat(value.trim())
+              : Number.NaN;
+
+    if (!Number.isFinite(numeric)) {
+        return clamp(fallback, MIN_BORDER_RADIUS_SEED, MAX_BORDER_RADIUS_SEED);
+    }
+
+    return clamp(roundRadius(numeric), MIN_BORDER_RADIUS_SEED, MAX_BORDER_RADIUS_SEED);
+}
+
+export function deriveRadiusScale(seed: number): ThemeRadiusScale {
+    const base = sanitizeBorderRadiusSeed(seed);
+
+    return {
+        base,
+        xs: clamp(roundRadius(base * 0.5), 2, 12),
+        sm: clamp(roundRadius(base * 0.75), 4, 16),
+        md: base,
+        lg: clamp(roundRadius(base * 1.5), 8, 24),
+        xl: clamp(roundRadius(base * 2), 12, 32),
+        twoXl: clamp(roundRadius(base * 3), 16, 40),
+        threeXl: clamp(roundRadius(base * 4), 24, 64),
+        pill: clamp(roundRadius(base * 4), 24, 999)
+    };
 }
 
 function normalizeHue(hue: number): number {
@@ -806,7 +860,11 @@ function deriveThemeShadowColor(colors: DerivedTheme): string {
     });
 }
 
-export function generateThemeCssVariables(colors: DerivedTheme, fonts: ThemeFonts): string {
+export function generateThemeCssVariables(
+    colors: DerivedTheme,
+    fonts: ThemeFonts,
+    radius: ThemeRadiusScale
+): string {
     return `:root {
   /* Canonical semantic tokens */
   --surface-canvas: ${colors.surfaceCanvas};
@@ -873,6 +931,15 @@ export function generateThemeCssVariables(colors: DerivedTheme, fonts: ThemeFont
   --overlay-light: ${colors.brandPrimarySubtle};
   --overlay-light-hover: ${colors.brandAccentSubtle};
   --shadow-color: ${deriveThemeShadowColor(colors)};
+  --radius: ${radius.base}px;
+  --radius-xs-raw: ${radius.xs}px;
+  --radius-sm-raw: ${radius.sm}px;
+  --radius-md-raw: ${radius.md}px;
+  --radius-lg-raw: ${radius.lg}px;
+  --radius-xl-raw: ${radius.xl}px;
+  --radius-2xl-raw: ${radius.twoXl}px;
+  --radius-3xl-raw: ${radius.threeXl}px;
+  --radius-pill-raw: ${radius.pill}px;
 
   --font-sans: ${generateFontFamily(fonts.sans, "sans")};
   --font-serif: ${generateFontFamily(fonts.serif, "serif")};
@@ -900,7 +967,8 @@ function toThemeSeedInputs(coreColors: ThemeCoreColors | ThemeSeedInputs): Theme
 
 export function resolveTheme(
     coreColors: ThemeCoreColors | ThemeSeedInputs | null,
-    fonts: ThemeFonts | null
+    fonts: ThemeFonts | null,
+    radiusSeed = DEFAULT_BORDER_RADIUS_SEED
 ): ResolvedTheme | null {
     if (!coreColors && !fonts) return null;
 
@@ -909,21 +977,27 @@ export function resolveTheme(
     const {seeds, diagnostics} = normalizeSeeds(seedInputs);
     const scheme = buildSemanticScheme(seeds);
     const colors = buildDerivedTheme(scheme);
+    const radius = deriveRadiusScale(radiusSeed);
     const googleFontsUrl = generateGoogleFontsUrl(finalFonts);
-    const cssVariables = generateThemeCssVariables(colors, finalFonts);
+    const cssVariables = generateThemeCssVariables(colors, finalFonts, radius);
 
     return {
         seeds,
         diagnostics,
         scheme,
         colors,
+        radius,
         fonts: finalFonts,
         googleFontsUrl,
         cssVariables
     };
 }
 
-export function generateTheme(coreColors: ThemeCoreColors | null, fonts: ThemeFonts | null): GeneratedTheme | null {
+export function generateTheme(
+    coreColors: ThemeCoreColors | null,
+    fonts: ThemeFonts | null,
+    radiusSeed = DEFAULT_BORDER_RADIUS_SEED
+): GeneratedTheme | null {
     const finalColors = coreColors ? {...DEFAULT_THEME_COLORS, ...coreColors} : DEFAULT_THEME_COLORS;
-    return resolveTheme(finalColors, fonts);
+    return resolveTheme(finalColors, fonts, radiusSeed);
 }

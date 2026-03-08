@@ -46,6 +46,7 @@ import {getSeoMeta, getPaginationVariables} from "@shopify/hydrogen";
 import {InfiniteScrollSection} from "~/components/InfiniteScrollSection";
 import {ProductItem} from "~/components/ProductItem";
 import {CollectionPageLayout, useGridColumns, useLayoutMode, getGridClassName} from "~/components/CollectionPageLayout";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import type {CollectionWithCount} from "~/components/CollectionSidebar";
 import {filterAndSortDiscountedProducts, type DiscountedProduct, type RawDiscountProduct} from "~/lib/discounts";
 import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
@@ -173,26 +174,28 @@ export default function SalePage() {
             onLayoutModeChange={setLayoutMode}
             showSortOptions={false}
         >
-            {totalCount > 0 ? (
-                <InfiniteScrollSection<DiscountedProduct>
-                    key={`sale-${layoutMode}-${gridColumns}`}
-                    connection={connection}
-                    resourcesClassName={resourcesClassName}
-                >
-                    {({node: product, index}) => (
-                        <ProductItem
-                            key={product.id}
-                            product={product as any}
-                            loading={index < 12 ? "eager" : undefined}
-                            variant={layoutMode === "list" ? "list" : "card"}
-                            index={index}
-                            gridColumns={gridColumns}
-                        />
-                    )}
-                </InfiniteScrollSection>
-            ) : (
-                <EmptyState />
-            )}
+            <AnimatedSection animation="slide-up" threshold={0.12}>
+                {totalCount > 0 ? (
+                    <InfiniteScrollSection<DiscountedProduct>
+                        key={`sale-${layoutMode}-${gridColumns}`}
+                        connection={connection}
+                        resourcesClassName={resourcesClassName}
+                    >
+                        {({node: product, index}) => (
+                            <ProductItem
+                                key={product.id}
+                                product={product as any}
+                                loading={index < 12 ? "eager" : undefined}
+                                variant={layoutMode === "list" ? "list" : "card"}
+                                index={index}
+                                gridColumns={gridColumns}
+                            />
+                        )}
+                    </InfiniteScrollSection>
+                ) : (
+                    <EmptyState />
+                )}
+            </AnimatedSection>
         </CollectionPageLayout>
     );
 }

@@ -34,6 +34,7 @@
 
 import type {ReactNode, HTMLAttributes} from "react";
 import {useInView} from "~/hooks/useInView";
+import {usePageTransitionRuntime} from "~/lib/navigation-transitions";
 import {cn} from "~/lib/utils";
 
 // ============================================================================
@@ -150,9 +151,20 @@ export const AnimatedSection = ({
  *   );
  * }
  */
-export const PageTransition = ({children, className}: {children: ReactNode; className?: string}) => (
-    <div className={cn("animate-page-fade-in will-change-[transform,opacity]", className)}>{children}</div>
-);
+export const PageTransition = ({children, className}: {children: ReactNode; className?: string}) => {
+    const {shouldAnimateFallbackTransition} = usePageTransitionRuntime();
+
+    return (
+        <div
+            className={cn(
+                shouldAnimateFallbackTransition && "animate-page-fade-in will-change-[transform,opacity]",
+                className
+            )}
+        >
+            {children}
+        </div>
+    );
+};
 
 /**
  * Staggered list wrapper - automatically applies stagger delays to children.

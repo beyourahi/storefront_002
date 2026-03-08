@@ -746,10 +746,10 @@ function EmptyOrders() {
             {/* CTA buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
                 <Button asChild size="lg">
-                    <Link to="/collections">{accountContent.actionShopNow}</Link>
+                    <Link viewTransition to="/collections">{accountContent.actionShopNow}</Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                    <Link to="/account">{accountContent.navDashboard}</Link>
+                    <Link viewTransition to="/account">{accountContent.navDashboard}</Link>
                 </Button>
             </div>
         </div>

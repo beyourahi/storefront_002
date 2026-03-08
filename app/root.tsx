@@ -92,6 +92,7 @@ import {NetworkStatusIndicator} from "~/components/NetworkStatusIndicator";
 import {ServiceWorkerUpdateBanner} from "~/components/pwa/ServiceWorkerUpdateBanner";
 import {OpenInAppButton} from "~/components/pwa/OpenInAppButton";
 import {withTimeoutAndFallback, TIMEOUT_DEFAULTS} from "~/lib/promise-utils";
+import {usePageTransitionOrchestrator} from "~/lib/navigation-transitions";
 
 export type RootLoader = typeof loader;
 
@@ -280,7 +281,8 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
     // Generate dynamic theme from theme_settings metaobject (fonts + colors)
     const generatedTheme: GeneratedTheme | null = generateTheme(
         siteContent.themeConfig.colors,
-        siteContent.themeConfig.fonts
+        siteContent.themeConfig.fonts,
+        siteContent.themeConfig.borderRadius
     );
 
     return {
@@ -446,6 +448,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
 
 export default function App() {
     const data = useRouteLoaderData<RootLoader>("root");
+    usePageTransitionOrchestrator();
 
     // Persist theme to localStorage and update SW cache for offline page
     // This ensures the offline page displays brand-consistent styling

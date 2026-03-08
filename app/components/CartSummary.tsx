@@ -451,7 +451,7 @@ function CartCheckoutActions({
 
     // Shared button/link styles
     const baseStyles = cn(
-        "w-full inline-flex select-none items-center justify-between rounded-full border-2 px-3 sm:px-4 min-h-11 text-base sm:text-lg font-medium transition-colors",
+        "motion-interactive motion-press w-full inline-flex min-h-11 select-none items-center justify-between rounded-[var(--radius-pill-raw)] border-2 px-3 text-base font-medium active:scale-[var(--motion-press-scale)] sm:px-4 sm:text-lg",
         isPage ? "border-primary bg-primary text-primary-foreground py-3" : "border-light bg-light text-primary py-2.5"
     );
 

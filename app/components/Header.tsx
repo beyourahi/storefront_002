@@ -184,7 +184,7 @@ export function Header({header, cart}: HeaderProps) {
                         !isHomePage ? "opacity-100" : "opacity-0"
                     )}
                 >
-                    <NavLink
+                    <NavLink viewTransition
                         to="/"
                         prefetch="viewport"
                         className={cn(
@@ -233,7 +233,7 @@ export function HeaderMenu({
     return (
         <nav className={className} role="navigation">
             {viewport === "mobile" && (
-                <NavLink end onClick={close} prefetch="viewport" className={getNavLinkClassName} to="/">
+                <NavLink viewTransition end onClick={close} prefetch="viewport" className={getNavLinkClassName} to="/">
                     Home
                 </NavLink>
             )}
@@ -250,7 +250,7 @@ export function HeaderMenu({
                         ? new URL(item.url).pathname
                         : item.url;
                 return (
-                    <NavLink
+                    <NavLink viewTransition
                         className={getNavLinkClassName}
                         end
                         key={item.id}
@@ -303,7 +303,7 @@ function HeaderTextLink({
             asChild
             className={getHeaderTextActionClassName(actionState, className)}
         >
-            <NavLink prefetch="viewport" to={to} className={HEADER_ACTION_LINK_RESET_CLASSNAME}>
+            <NavLink viewTransition prefetch="viewport" to={to} className={HEADER_ACTION_LINK_RESET_CLASSNAME}>
                 {children}
             </NavLink>
         </Button>

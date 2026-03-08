@@ -864,7 +864,7 @@ function WishlistEmpty() {
                     Save products you love by clicking the heart icon. They&apos;ll appear here for easy access.
                 </p>
                 <Button asChild size="lg" className="gap-2">
-                    <Link to="/collections/all-products">
+                    <Link viewTransition to="/collections/all-products">
                         <ShoppingBag className="size-4" />
                         Start Shopping
                     </Link>

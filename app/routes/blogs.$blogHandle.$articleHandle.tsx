@@ -220,7 +220,7 @@ export default function Article({loaderData}: Route.ComponentProps) {
                 <nav aria-label="Breadcrumb" className="mx-auto max-w-5xl pt-(--page-breathing-room) pb-4 md:pb-6">
                     <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
                         <li>
-                            <Link
+                            <Link viewTransition
                                 to="/blogs"
                                 className="transition-colors hover:text-foreground min-h-11 inline-flex items-center"
                             >
@@ -231,7 +231,7 @@ export default function Article({loaderData}: Route.ComponentProps) {
                             <ChevronRight className="size-3.5 text-muted-foreground/50" />
                         </li>
                         <li>
-                            <Link
+                            <Link viewTransition
                                 to={`/blogs/${blogHandle}`}
                                 className="transition-colors hover:text-foreground min-h-11 inline-flex items-center"
                             >
@@ -354,7 +354,7 @@ export default function Article({loaderData}: Route.ComponentProps) {
                 {/* Back to Blog - polished pill-shaped link with icon animation */}
                 <AnimatedSection animation="fade" threshold={0.2}>
                     <div className="mx-auto prose-readable-wide pt-4 md:pt-6 pb-8 md:pb-12">
-                        <Link
+                        <Link viewTransition
                             to={`/blogs/${blogHandle}`}
                             prefetch="viewport"
                             className="group inline-flex items-center gap-2 rounded-full border-2 border-primary/30 px-5 py-2.5 text-sm md:text-base text-muted-foreground transition-all hover:text-foreground hover:border-primary/60 hover:no-underline min-h-11"

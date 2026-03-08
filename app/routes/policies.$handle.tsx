@@ -50,6 +50,7 @@ import {Link, useLoaderData} from "react-router";
 import type {Route} from "./+types/policies.$handle";
 import {getSeoMeta} from "@shopify/hydrogen";
 import {type Shop} from "@shopify/hydrogen/storefront-api-types";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {buildCanonicalUrl, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 import {useSiteSettings} from "~/lib/site-content-context";
 
@@ -135,7 +136,7 @@ export default function Policy() {
 
     return (
         <div className="min-h-dvh bg-primary  ">
-            {/* Main Policy Section with Sticky Heading */}
+            <AnimatedSection animation="fade" threshold={0.08}>
             <section className="pt-32 sm:pt-36 md:pt-44 lg:pt-52 xl:pt-64 pb-12 sm:pb-16 md:pb-24 lg:pb-32">
                 <div className="px-4 sm:px-6 lg:px-8">
                     <div>
@@ -157,7 +158,7 @@ export default function Policy() {
                                     <p className="text-sm text-primary-foreground/50 mb-4">Other Policies</p>
                                     <nav className="space-y-2">
                                         {SIDEBAR_LINKS.filter(link => link.handle !== policy.handle).map(link => (
-                                            <Link
+                                            <Link viewTransition
                                                 key={link.handle}
                                                 to={`/policies/${link.handle}`}
                                                 prefetch="viewport"
@@ -184,8 +185,9 @@ export default function Policy() {
                     </div>
                 </div>
             </section>
+            </AnimatedSection>
 
-            {/* Contact CTA Section */}
+            <AnimatedSection animation="slide-up" threshold={0.1}>
             <section className="bg-primary-foreground/10 py-12 sm:py-16 md:py-20">
                 <div className="px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
@@ -206,6 +208,7 @@ export default function Policy() {
                     </div>
                 </div>
             </section>
+            </AnimatedSection>
         </div>
     );
 }

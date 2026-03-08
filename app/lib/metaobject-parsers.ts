@@ -41,6 +41,7 @@
  * - app/root.tsx - Uses parseSiteContent to transform query results
  */
 
+import {DEFAULT_BORDER_RADIUS_SEED, sanitizeBorderRadiusSeed} from "~/lib/theme-utils";
 import type {
     SiteSettings,
     SocialLink,
@@ -129,6 +130,7 @@ const FALLBACK_SITE_SETTINGS = {
     brandLogo: null,
     brandWords: FALLBACK_BRAND_WORDS,
     missionStatement: "",
+    featuredProductSection: null,
     heroHeading: "Shop with Intention",
     heroDescription:
         "Discover products built to last. Quality craftsmanship, thoughtful design, everyday value. Your next favorite find is here.",
@@ -498,6 +500,71 @@ function parseAnnouncementTexts(announcementField: any): string[] {
     }
 }
 
+function warnFeaturedProductSection(reason: string) {
+    if (process.env.NODE_ENV === "development") {
+        console.warn(`[SiteSettings] featured_product_section omitted: ${reason}`);
+    }
+}
+
+function parseFeaturedProductSection(featuredProductField: any): SiteSettings["featuredProductSection"] {
+    const reference = featuredProductField?.reference;
+
+    if (!reference) return null;
+
+    if (reference.__typename !== "Product") {
+        warnFeaturedProductSection(`expected Product reference, received ${reference.__typename ?? "unknown"}`);
+        return null;
+    }
+
+    const selectedVariant = reference.selectedOrFirstAvailableVariant;
+    if (!reference.availableForSale || !selectedVariant?.availableForSale) {
+        warnFeaturedProductSection(`product "${reference.handle ?? reference.id}" is unavailable`);
+        return null;
+    }
+
+    if (!selectedVariant.price?.amount || !selectedVariant.price.currencyCode) {
+        warnFeaturedProductSection(`product "${reference.handle ?? reference.id}" is missing sellable pricing`);
+        return null;
+    }
+
+    const featuredImage = reference.featuredImage?.url
+        ? {
+              url: reference.featuredImage.url as string,
+              altText: (reference.featuredImage.altText as string | null) ?? null,
+              width: (reference.featuredImage.width as number | null) ?? null,
+              height: (reference.featuredImage.height as number | null) ?? null
+          }
+        : reference.selectedOrFirstAvailableVariant?.image?.url
+          ? {
+                url: reference.selectedOrFirstAvailableVariant.image.url as string,
+                altText: (reference.selectedOrFirstAvailableVariant.image.altText as string | null) ?? null,
+                width: (reference.selectedOrFirstAvailableVariant.image.width as number | null) ?? null,
+                height: (reference.selectedOrFirstAvailableVariant.image.height as number | null) ?? null
+            }
+          : null;
+
+    return {
+        id: reference.id as string,
+        handle: reference.handle as string,
+        title: reference.title as string,
+        vendor: (reference.vendor as string | null) ?? "",
+        description: (reference.description as string | null) ?? "",
+        availableForSale: true,
+        featuredImage,
+        price: {
+            amount: selectedVariant.price.amount as string,
+            currencyCode: selectedVariant.price.currencyCode as string
+        },
+        compareAtPrice:
+            selectedVariant.compareAtPrice?.amount && selectedVariant.compareAtPrice.currencyCode
+                ? {
+                      amount: selectedVariant.compareAtPrice.amount as string,
+                      currencyCode: selectedVariant.compareAtPrice.currencyCode as string
+                  }
+                : null
+    };
+}
+
 /**
  * Parse free shipping threshold from Decimal field
  * Shopify Decimal fields return numeric strings (e.g., "50.00")
@@ -752,7 +819,8 @@ function parseThemeColors(data: any): ThemeCoreColors {
  */
 export const DEFAULT_THEME_CONFIG: ThemeConfig = {
     fonts: FALLBACK_THEME_FONTS,
-    colors: FALLBACK_THEME_COLORS
+    colors: FALLBACK_THEME_COLORS,
+    borderRadius: DEFAULT_BORDER_RADIUS_SEED
 };
 
 /**
@@ -774,6 +842,7 @@ export function parseThemeSettings(data: any): ThemeConfig {
             colorBackground: data.colorBackground?.value ?? "(not set)",
             colorForeground: data.colorForeground?.value ?? "(not set)",
             colorAccent: data.colorAccent?.value ?? "(not set)",
+            borderRadius: data.borderRadius?.value ?? "(not set)",
             fontBody: data.fontBody?.value ?? "(not set)",
             fontHeading: data.fontHeading?.value ?? "(not set)",
             fontPrice: data.fontPrice?.value ?? "(not set)"
@@ -782,7 +851,8 @@ export function parseThemeSettings(data: any): ThemeConfig {
 
     return {
         fonts: parseThemeFonts(data),
-        colors: parseThemeColors(data)
+        colors: parseThemeColors(data),
+        borderRadius: sanitizeBorderRadiusSeed(data.borderRadius?.value, DEFAULT_THEME_CONFIG.borderRadius)
     };
 }
 
@@ -817,6 +887,7 @@ export function parseSiteSettings(data: any): SiteSettings {
         })(),
         brandWords: parseBrandWords(data.brandWords),
         missionStatement: data.missionStatement?.value || DEFAULT_SITE_SETTINGS.missionStatement,
+        featuredProductSection: parseFeaturedProductSection(data.featuredProductSection),
 
         // Hero Section
         heroHeading: data.heroHeading?.value || DEFAULT_SITE_SETTINGS.heroHeading,

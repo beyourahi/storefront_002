@@ -32,6 +32,7 @@ import {reconstructGids} from "~/lib/wishlist-utils";
 import {ProductPrice} from "~/components/ProductPrice";
 import {WishlistButton} from "~/components/WishlistButton";
 import {Skeleton} from "~/components/ui/skeleton";
+import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {cn} from "~/lib/utils";
 
 // ============================================================================
@@ -144,9 +145,9 @@ export function HomepageWishlistSection({className}: HomepageWishlistSectionProp
                         </p>
                     </div>
                     {/* View All Button - Desktop (pill style matching Recently Viewed) */}
-                    <Link
+                    <Link viewTransition
                         to="/wishlist"
-                        className="hidden rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground md:text-2xl sm:inline-flex"
+                        className="hidden rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground md:text-2xl sm:inline-flex"
                     >
                         View all
                     </Link>
@@ -183,9 +184,9 @@ export function HomepageWishlistSection({className}: HomepageWishlistSectionProp
 
             {/* View All Button - Mobile (pill style matching Recently Viewed) */}
             <div className="mt-6 flex justify-center sm:hidden">
-                <Link
+                <Link viewTransition
                     to="/wishlist"
-                    className="rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                    className="rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                 >
                     View all
                 </Link>
@@ -198,20 +199,27 @@ export function HomepageWishlistSection({className}: HomepageWishlistSectionProp
  * Featured product card - larger, spans 2x2, with always-visible info
  */
 function FeaturedWishlistCard({product}: {product: ProductItemFragment}) {
+    const {canHover} = usePointerCapabilities();
     const titleParts = product.title.trim().split(" + ");
 
     return (
-        <Link
+        <Link viewTransition
             to={`/products/${product.handle}`}
             prefetch="viewport"
-            className="col-span-2 row-span-2 group relative overflow-hidden rounded-2xl cursor-pointer"
+            className={cn(
+                "col-span-2 row-span-2 relative overflow-hidden rounded-2xl cursor-pointer",
+                canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
+            )}
         >
             {/* Background Image */}
             {product.featuredImage && (
                 <Image
                     data={product.featuredImage}
                     sizes="(min-width: 768px) 50vw, 100vw"
-                    className="w-full h-full object-cover aspect-square sm:aspect-auto transition-transform duration-700 group-hover:scale-105"
+                    className={cn(
+                        "w-full h-full object-cover aspect-square sm:aspect-auto transition-transform duration-700",
+                        canHover && "group-hover:scale-105"
+                    )}
                 />
             )}
 
@@ -230,7 +238,7 @@ function FeaturedWishlistCard({product}: {product: ProductItemFragment}) {
             </div>
 
             {/* Featured Badge */}
-            <span className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-red-500 text-white text-sm font-medium px-2.5 py-1 rounded-full">
+            <span className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-red-500 text-white text-sm font-medium px-2.5 py-1 rounded-[var(--radius-pill-raw)]">
                 Featured
             </span>
 
@@ -244,7 +252,12 @@ function FeaturedWishlistCard({product}: {product: ProductItemFragment}) {
                     <span className="text-white text-lg sm:text-xl font-bold">
                         <ProductPrice price={product.priceRange.minVariantPrice} />
                     </span>
-                    <span className="text-white/60 text-sm hidden sm:inline group-hover:text-white transition-colors">
+                    <span
+                        className={cn(
+                            "text-sm hidden sm:inline transition-colors",
+                            canHover ? "text-white/60 group-hover:text-white" : "text-white/80"
+                        )}
+                    >
                         View details →
                     </span>
                 </div>
@@ -265,14 +278,16 @@ function WishlistCard({
     index: number;
     spanFullOnMobile?: boolean;
 }) {
+    const {canHover} = usePointerCapabilities();
     const titleParts = product.title.trim().split(" + ");
 
     return (
-        <Link
+        <Link viewTransition
             to={`/products/${product.handle}`}
             prefetch="viewport"
             className={cn(
-                "group relative overflow-hidden rounded-xl sm:rounded-2xl cursor-pointer sm:aspect-auto",
+                "relative overflow-hidden rounded-xl sm:rounded-2xl cursor-pointer sm:aspect-auto",
+                canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]",
                 spanFullOnMobile
                     ? "col-span-2 sm:col-span-1 aspect-8/5" // 2x width needs 2x wider aspect to match height
                     : "aspect-4/5"
@@ -284,12 +299,20 @@ function WishlistCard({
                 <Image
                     data={product.featuredImage}
                     sizes="(min-width: 768px) 25vw, 50vw"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className={cn(
+                        "w-full h-full object-cover transition-transform duration-500",
+                        canHover && "group-hover:scale-105"
+                    )}
                 />
             )}
 
             {/* Overlay with Info - Always visible on mobile, hover on desktop */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+            <div
+                className={cn(
+                    "absolute inset-0 bg-gradient-to-t from-black/70 to-transparent transition-opacity duration-300",
+                    canHover ? "sm:opacity-0 sm:group-hover:opacity-100" : "opacity-100"
+                )}
+            >
                 <div className="absolute bottom-3 left-3 right-3">
                     <h4 className="text-white font-medium text-sm line-clamp-1">
                         <span>{titleParts[0]}</span>
@@ -319,13 +342,23 @@ function WishlistCard({
  * View more tile - links to full wishlist
  */
 function ViewMoreTile({count}: {count: number}) {
+    const {canHover} = usePointerCapabilities();
+
     return (
-        <Link
+        <Link viewTransition
             to="/wishlist"
             prefetch="viewport"
-            className="flex flex-col items-center justify-center rounded-xl sm:rounded-2xl bg-black text-white cursor-pointer aspect-[4/5] sm:aspect-auto group hover:bg-gray-900 transition-colors"
+            className={cn(
+                "flex flex-col items-center justify-center rounded-xl sm:rounded-2xl bg-black text-white cursor-pointer aspect-[4/5] sm:aspect-auto transition-colors",
+                canHover ? "group hover:bg-gray-900" : "motion-press active:bg-gray-900 active:scale-[var(--motion-press-scale)]"
+            )}
         >
-            <span className="text-3xl sm:text-4xl font-light mb-1 group-hover:scale-110 transition-transform">
+            <span
+                className={cn(
+                    "text-3xl sm:text-4xl font-light mb-1 transition-transform",
+                    canHover && "group-hover:scale-110"
+                )}
+            >
                 +{count}
             </span>
             <span className="text-sm opacity-70">more items</span>
@@ -349,7 +382,7 @@ function WishlistSectionSkeleton() {
                         </div>
                         <Skeleton className="mt-2 h-5 w-32 md:h-6 md:w-40" />
                     </div>
-                    <Skeleton className="hidden sm:block h-12 w-28 rounded-full" />
+                    <Skeleton className="hidden sm:block h-12 w-28 rounded-[var(--radius-pill-raw)]" />
                 </div>
             </div>
 
@@ -362,7 +395,7 @@ function WishlistSectionSkeleton() {
 
             {/* Mobile button skeleton */}
             <div className="mt-6 flex justify-center sm:hidden">
-                <Skeleton className="h-11 w-28 rounded-full" />
+                <Skeleton className="h-11 w-28 rounded-[var(--radius-pill-raw)]" />
             </div>
         </div>
     );

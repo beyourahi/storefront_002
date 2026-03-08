@@ -45,6 +45,7 @@
 
 import type {Route} from "./+types/faq";
 import {getSeoMeta} from "@shopify/hydrogen";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "~/components/ui/accordion";
 import {buildCanonicalUrl, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 import {useFaqItems} from "~/lib/site-content-context";
@@ -70,7 +71,7 @@ export default function FAQ() {
 
     return (
         <div className="min-h-dvh bg-primary">
-            {/* Main FAQ Section with Sticky Heading */}
+            <AnimatedSection animation="fade" threshold={0.08}>
             <section className="pt-32 sm:pt-36 md:pt-44 lg:pt-52 xl:pt-64 pb-12 sm:pb-16 md:pb-24 lg:pb-32">
                 <div className="px-4 sm:px-6 lg:px-8">
                     <div>
@@ -121,8 +122,9 @@ export default function FAQ() {
                     </div>
                 </div>
             </section>
+            </AnimatedSection>
 
-            {/* Contact CTA Section */}
+            <AnimatedSection animation="slide-up" threshold={0.1}>
             <section className="bg-primary-foreground/10 py-12 sm:py-16 md:py-20">
                 <div className="px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
@@ -142,6 +144,7 @@ export default function FAQ() {
                     </div>
                 </div>
             </section>
+            </AnimatedSection>
         </div>
     );
 }

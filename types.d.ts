@@ -564,6 +564,29 @@ export type HeroMedia =
           };
       };
 
+export interface FeaturedProductSection {
+    id: string;
+    handle: string;
+    title: string;
+    vendor: string;
+    description: string;
+    availableForSale: boolean;
+    featuredImage: {
+        url: string;
+        altText?: string | null;
+        width?: number | null;
+        height?: number | null;
+    } | null;
+    price: {
+        amount: string;
+        currencyCode: string;
+    };
+    compareAtPrice: {
+        amount: string;
+        currencyCode: string;
+    } | null;
+}
+
 /**
  * Site settings from the site_settings metaobject
  * Contains ALL site-wide configuration in one place for easy management
@@ -581,6 +604,7 @@ export interface SiteSettings {
     } | null;
     brandWords: string[];
     missionStatement: string;
+    featuredProductSection: FeaturedProductSection | null;
 
     // ─────────────────────────────────────────────────────────────────────────
     // HERO SECTION
@@ -801,6 +825,7 @@ export interface ThemeCoreColors {
 export interface ThemeConfig {
     fonts: ThemeFonts;
     colors: ThemeCoreColors;
+    borderRadius: number;
 }
 
 /**

@@ -47,6 +47,7 @@
 import {useLoaderData} from "react-router";
 import type {Route} from "./+types/gallery";
 import {getSeoMeta} from "@shopify/hydrogen";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {GalleryGrid} from "~/components/gallery/GalleryGrid";
 import {transformToGalleryImages} from "~/lib/gallery";
 import type {GalleryImageData, GalleryPageInfo} from "~/lib/gallery";
@@ -116,15 +117,18 @@ export default function Gallery() {
         <div className="px-4 sm:px-6 lg:px-8 pb-8 md:pb-12  ">
             {/* Header - responsive text sizing and spacing
                  pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px) */}
-            <header className="pt-(--page-breathing-room) mb-6 md:mb-10 lg:mb-12">
-                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-primary mb-2 md:mb-3">
-                    {galleryPageHeading}
-                </h1>
-                <p className="text-muted-foreground text-sm sm:text-base max-w-2xl">{galleryPageDescription}</p>
-            </header>
+            <AnimatedSection animation="fade" threshold={0.08}>
+                <header className="pt-(--page-breathing-room) mb-6 md:mb-10 lg:mb-12">
+                    <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-primary mb-2 md:mb-3">
+                        {galleryPageHeading}
+                    </h1>
+                    <p className="text-muted-foreground text-sm sm:text-base max-w-2xl">{galleryPageDescription}</p>
+                </header>
+            </AnimatedSection>
 
-            {/* Gallery Grid with Infinite Scroll & Lightbox */}
-            <GalleryGrid initialImages={images} pageInfo={pageInfo} />
+            <AnimatedSection animation="slide-up" threshold={0.1}>
+                <GalleryGrid initialImages={images} pageInfo={pageInfo} />
+            </AnimatedSection>
         </div>
     );
 }

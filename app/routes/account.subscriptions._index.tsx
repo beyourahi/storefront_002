@@ -25,6 +25,7 @@ import {data as remixData, Link, useLoaderData} from "react-router";
 import type {Route} from "./+types/account.subscriptions._index";
 import {Image} from "@shopify/hydrogen";
 import {Money} from "~/components/Money";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {
     CUSTOMER_SUBSCRIPTIONS_QUERY,
     SUBSCRIPTION_STATUSES,
@@ -104,29 +105,33 @@ export default function SubscriptionsIndex() {
 
     return (
         <div className="space-y-6">
-            <header className="space-y-2">
-                <h2 className="text-2xl font-semibold tracking-tight">Subscriptions</h2>
-                <p className="text-sm text-muted-foreground">Manage your recurring orders and subscription plans.</p>
-            </header>
+            <AnimatedSection animation="fade" threshold={0.08}>
+                <header className="space-y-2">
+                    <h2 className="text-2xl font-semibold tracking-tight">Subscriptions</h2>
+                    <p className="text-sm text-muted-foreground">Manage your recurring orders and subscription plans.</p>
+                </header>
+            </AnimatedSection>
 
             <Separator />
 
-            {subscriptions.length === 0 ? (
-                <Card>
-                    <CardContent className="py-12 text-center">
-                        <p className="text-muted-foreground">You have no active subscriptions.</p>
-                        <Button asChild variant="link" className="mt-4">
-                            <Link to="/collections/all-products">Browse Products</Link>
-                        </Button>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="space-y-4">
-                    {subscriptions.map(subscription => (
-                        <SubscriptionCard key={subscription.id} subscription={subscription} />
-                    ))}
-                </div>
-            )}
+            <AnimatedSection animation="slide-up" threshold={0.1}>
+                {subscriptions.length === 0 ? (
+                    <Card>
+                        <CardContent className="py-12 text-center">
+                            <p className="text-muted-foreground">You have no active subscriptions.</p>
+                            <Button asChild variant="link" className="mt-4">
+                                <Link viewTransition to="/collections/all-products">Browse Products</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <div className="space-y-4">
+                        {subscriptions.map(subscription => (
+                            <SubscriptionCard key={subscription.id} subscription={subscription} />
+                        ))}
+                    </div>
+                )}
+            </AnimatedSection>
         </div>
     );
 }
@@ -218,7 +223,7 @@ function SubscriptionCard({subscription}: {subscription: SubscriptionContract}) 
             </CardContent>
             <CardFooter>
                 <Button variant="link" className="h-auto p-0" asChild>
-                    <Link to={`/account/subscriptions/${btoa(subscription.id)}`}>Manage Subscription →</Link>
+                    <Link viewTransition to={`/account/subscriptions/${btoa(subscription.id)}`}>Manage Subscription →</Link>
                 </Button>
             </CardFooter>
         </Card>

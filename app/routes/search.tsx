@@ -62,6 +62,7 @@ import {DiscountBadge} from "~/components/DiscountBadge";
 import {getProductFontSizes} from "~/components/ProductItem";
 import {analyzeProductDiscount, type ProductWithVariants} from "~/lib/discounts";
 import {useRecentSearches} from "~/hooks/useRecentSearches";
+import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {Alert, AlertDescription} from "~/components/ui/alert";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "~/components/ui/tabs";
 import {Button} from "~/components/ui/button";
@@ -72,6 +73,7 @@ import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 import {sortWithPinnedFirst} from "~/lib/product-tags";
+import {AnimatedSection} from "~/components/AnimatedSection";
 
 const FALLBACK_POPULAR_SEARCHES = [
     "new arrivals",
@@ -285,44 +287,45 @@ export default function SearchPage() {
         <div className="px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 3xl:mx-auto 3xl:max-w-400 3xl:px-12 mb-4 min-h-dvh  ">
             {/* Page Header with fluid title sizing
                  pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px) */}
-            <header className="pt-(--page-breathing-room) pb-6 sm:pb-8 md:pb-12 lg:pb-16 xl:pb-20">
-                <h1 className="font-serif text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-medium text-primary tracking-tight m-0">
-                    / Search
-                </h1>
-            </header>
+            <AnimatedSection animation="fade" threshold={0.08}>
+                <header className="pt-(--page-breathing-room) pb-6 sm:pb-8 md:pb-12 lg:pb-16 xl:pb-20">
+                    <h1 className="font-serif text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-medium text-primary tracking-tight m-0">
+                        / Search
+                    </h1>
+                </header>
+            </AnimatedSection>
 
             {/* Search Form - styled like FullScreenSearch with underline input
                  Max-width scales up on larger screens for visual balance */}
-            <SearchForm
-                className="mb-6 sm:mb-8 md:mb-10 lg:mb-12 max-w-4xl xl:max-w-5xl 2xl:max-w-6xl"
-                formRef={formRef}
-            >
-                {({inputRef}) => (
-                    <input
-                        defaultValue={term}
-                        name="q"
-                        type="search"
-                        placeholder="Search..."
-                        ref={el => {
-                            // Use callback ref to sync both refs
-                            (inputRef as React.MutableRefObject<HTMLInputElement | null>).current = el;
-                            searchInputRef.current = el;
-                        }}
-                        onChange={handleInputChange}
-                        autoComplete="off"
-                        enterKeyHint="search"
-                        className={cn(
-                            "w-full bg-transparent border-0 border-b-2 border-[var(--border-strong)]",
-                            // Responsive text sizing matching FullScreenSearch
-                            "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif",
-                            "text-primary placeholder:text-primary/40",
-                            // Responsive padding
-                            "py-3 sm:py-4 outline-none",
-                            "focus:border-primary transition-colors duration-300"
-                        )}
-                    />
-                )}
-            </SearchForm>
+            <AnimatedSection animation="slide-up" threshold={0.1}>
+                <SearchForm
+                    className="mb-6 sm:mb-8 md:mb-10 lg:mb-12 max-w-4xl xl:max-w-5xl 2xl:max-w-6xl"
+                    formRef={formRef}
+                >
+                    {({inputRef}) => (
+                        <input
+                            defaultValue={term}
+                            name="q"
+                            type="search"
+                            placeholder="Search..."
+                            ref={el => {
+                                (inputRef as React.MutableRefObject<HTMLInputElement | null>).current = el;
+                                searchInputRef.current = el;
+                            }}
+                            onChange={handleInputChange}
+                            autoComplete="off"
+                            enterKeyHint="search"
+                            className={cn(
+                                "w-full bg-transparent border-0 border-b-2 border-[var(--border-strong)]",
+                                "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif",
+                                "text-primary placeholder:text-primary/40",
+                                "py-3 sm:py-4 outline-none",
+                                "focus:border-primary transition-colors duration-300"
+                            )}
+                        />
+                    )}
+                </SearchForm>
+            </AnimatedSection>
 
             {/* Error State */}
             {error && (
@@ -334,27 +337,31 @@ export default function SearchPage() {
 
             {/* Results or Empty States */}
             {!term ? (
-                <SearchPageInitialState
-                    recentSearches={recentSearches}
-                    collections={menuCollections}
-                    popularSearches={popularSearchTerms.length > 0 ? popularSearchTerms : FALLBACK_POPULAR_SEARCHES}
-                    onClearRecent={clearSearches}
-                    onSuggestionClick={handleSuggestionClick}
-                />
+                <AnimatedSection animation="fade" threshold={0.1}>
+                    <SearchPageInitialState
+                        recentSearches={recentSearches}
+                        collections={menuCollections}
+                        popularSearches={popularSearchTerms.length > 0 ? popularSearchTerms : FALLBACK_POPULAR_SEARCHES}
+                        onClearRecent={clearSearches}
+                        onSuggestionClick={handleSuggestionClick}
+                    />
+                </AnimatedSection>
             ) : totalResults === 0 ? (
-                <SearchEmptyState term={term} />
+                <AnimatedSection animation="fade" threshold={0.1}>
+                    <SearchEmptyState term={term} />
+                </AnimatedSection>
             ) : (
-                <div className="space-y-6">
-                    {/* Tabs Navigation */}
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                        <div className="flex flex-col gap-4 mb-6">
+                <AnimatedSection animation="slide-up" threshold={0.12}>
+                    <div className="space-y-6">
+                        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                            <div className="flex flex-col gap-4 mb-6">
                             {/* Tabs row - horizontally scrollable on mobile for small screens */}
                             <div className="flex items-center justify-between gap-4">
                                 <TabsList className="bg-transparent p-0 h-auto gap-1 sm:gap-1.5 md:gap-2 shrink-0 overflow-x-auto scrollbar-hide">
                                     <TabsTrigger
                                         value="products"
                                         className={cn(
-                                            "rounded-full border-2 border-primary",
+                                            "rounded-[var(--radius-pill-raw)] border-2 border-primary",
                                             // Responsive padding and touch target - tighter on smallest screens
                                             "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
                                             "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
@@ -371,7 +378,7 @@ export default function SearchPage() {
                                     <TabsTrigger
                                         value="collections"
                                         className={cn(
-                                            "rounded-full border-2 border-primary",
+                                            "rounded-[var(--radius-pill-raw)] border-2 border-primary",
                                             "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
                                             "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
                                             "transition-all duration-200",
@@ -386,7 +393,7 @@ export default function SearchPage() {
                                     <TabsTrigger
                                         value="articles"
                                         className={cn(
-                                            "rounded-full border-2 border-primary",
+                                            "rounded-[var(--radius-pill-raw)] border-2 border-primary",
                                             "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
                                             "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
                                             "transition-all duration-200",
@@ -431,39 +438,37 @@ export default function SearchPage() {
                                     />
                                 </div>
                             )}
-                        </div>
+                            </div>
 
-                        {/* Products Tab */}
-                        <TabsContent value="products" className="mt-0">
-                            <SearchProductsTab
-                                products={products}
-                                term={term}
-                                gridColumns={productsGridColumns}
-                                layoutMode={productsLayoutMode}
-                            />
-                        </TabsContent>
+                            <TabsContent value="products" className="mt-0">
+                                <SearchProductsTab
+                                    products={products}
+                                    term={term}
+                                    gridColumns={productsGridColumns}
+                                    layoutMode={productsLayoutMode}
+                                />
+                            </TabsContent>
 
-                        {/* Collections Tab */}
-                        <TabsContent value="collections" className="mt-0">
-                            <SearchCollectionsTab
-                                collections={collections}
-                                term={term}
-                                gridColumns={collectionsGridColumns}
-                                layoutMode={collectionsLayoutMode}
-                            />
-                        </TabsContent>
+                            <TabsContent value="collections" className="mt-0">
+                                <SearchCollectionsTab
+                                    collections={collections}
+                                    term={term}
+                                    gridColumns={collectionsGridColumns}
+                                    layoutMode={collectionsLayoutMode}
+                                />
+                            </TabsContent>
 
-                        {/* Articles Tab */}
-                        <TabsContent value="articles" className="mt-0">
-                            <SearchArticlesTab
-                                articles={articles}
-                                term={term}
-                                gridColumns={articlesGridColumns}
-                                layoutMode={articlesLayoutMode}
-                            />
-                        </TabsContent>
-                    </Tabs>
-                </div>
+                            <TabsContent value="articles" className="mt-0">
+                                <SearchArticlesTab
+                                    articles={articles}
+                                    term={term}
+                                    gridColumns={articlesGridColumns}
+                                    layoutMode={articlesLayoutMode}
+                                />
+                            </TabsContent>
+                        </Tabs>
+                    </div>
+                </AnimatedSection>
             )}
 
             <Analytics.SearchView
@@ -580,7 +585,7 @@ function SearchPageInitialState({
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-responsive">
                         {featuredCollections.map(collection => (
-                            <Link
+                            <Link viewTransition
                                 key={collection.id}
                                 to={`/collections/${collection.handle}`}
                                 prefetch="viewport"
@@ -718,6 +723,7 @@ function SearchProductItem({
     index?: number;
     gridColumns?: GridColumns;
 }) {
+    const {canHover} = usePointerCapabilities();
     const productUrl = urlWithTrackingParams({
         baseUrl: `/products/${product.handle}`,
         trackingParams: product.trackingParameters,
@@ -736,12 +742,12 @@ function SearchProductItem({
 
     if (variant === "list") {
         return (
-            <Link
+            <Link viewTransition
                 to={productUrl}
                 prefetch="viewport"
                 className={cn(
-                    "flex items-center gap-4 md:gap-6 py-4 pl-4 border-b border-border/50 no-underline group",
-                    "transition-colors hover:bg-muted/30",
+                    "flex items-center gap-4 md:gap-6 py-4 pl-4 border-b border-border/50 no-underline",
+                    canHover ? "group transition-colors hover:bg-muted/30" : "motion-press active:bg-muted/30",
                     "animate-product-fade-in"
                 )}
                 style={{animationDelay: `${staggerDelay}ms`}}
@@ -758,7 +764,10 @@ function SearchProductItem({
                             data={image}
                             loading={loading}
                             sizes="96px"
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className={cn(
+                                "w-full h-full object-cover transition-transform duration-300",
+                                canHover && "group-hover:scale-105"
+                            )}
                         />
                     ) : (
                         <div className="w-full h-full bg-muted/50" />
@@ -781,10 +790,13 @@ function SearchProductItem({
     }
 
     return (
-        <Link
+        <Link viewTransition
             to={productUrl}
             prefetch="viewport"
-            className={cn("block no-underline group animate-product-fade-in")}
+            className={cn(
+                "block no-underline animate-product-fade-in",
+                canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
+            )}
             style={{animationDelay: `${staggerDelay}ms`}}
         >
             <div className="relative overflow-hidden rounded-2xl bg-muted/50 mb-4">
@@ -796,7 +808,10 @@ function SearchProductItem({
                         data={image}
                         loading={loading}
                         sizes="(min-width: 45em) 400px, 100vw"
-                        className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className={cn(
+                            "h-auto w-full object-cover transition-transform duration-300",
+                            canHover && "group-hover:scale-105"
+                        )}
                     />
                 ) : (
                     <div className="aspect-4/5 bg-muted/50" />
@@ -870,16 +885,17 @@ function SearchCollectionCard({
     index: number;
     variant?: "card" | "list";
 }) {
+    const {canHover} = usePointerCapabilities();
     const staggerDelay = Math.min(index, 11) * 40;
 
     if (variant === "list") {
         return (
-            <Link
+            <Link viewTransition
                 to={`/collections/${collection.handle}`}
                 prefetch="viewport"
                 className={cn(
-                    "flex items-center gap-4 md:gap-6 py-4 border-b border-border/50 no-underline group",
-                    "transition-colors hover:bg-muted/30",
+                    "flex items-center gap-4 md:gap-6 py-4 border-b border-border/50 no-underline",
+                    canHover ? "group transition-colors hover:bg-muted/30" : "motion-press active:bg-muted/30",
                     "animate-product-fade-in"
                 )}
                 style={{animationDelay: `${staggerDelay}ms`}}
@@ -892,7 +908,10 @@ function SearchCollectionCard({
                             alt={collection.image.altText || collection.title}
                             data={collection.image}
                             sizes="96px"
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className={cn(
+                                "w-full h-full object-cover transition-transform duration-300",
+                                canHover && "group-hover:scale-105"
+                            )}
                         />
                     ) : (
                         <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">
@@ -913,10 +932,13 @@ function SearchCollectionCard({
     }
 
     return (
-        <Link
+        <Link viewTransition
             to={`/collections/${collection.handle}`}
             prefetch="viewport"
-            className="group block animate-product-fade-in"
+            className={cn(
+                "block animate-product-fade-in",
+                canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
+            )}
             style={{animationDelay: `${staggerDelay}ms`}}
         >
             <div className="aspect-square rounded-xl overflow-hidden bg-muted/50 mb-3">
@@ -925,7 +947,10 @@ function SearchCollectionCard({
                         alt={collection.image.altText || collection.title}
                         data={collection.image}
                         sizes="(min-width: 768px) 25vw, 50vw"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className={cn(
+                            "w-full h-full object-cover transition-transform duration-300",
+                            canHover && "group-hover:scale-105"
+                        )}
                     />
                 ) : (
                     <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">
@@ -935,7 +960,12 @@ function SearchCollectionCard({
                     </div>
                 )}
             </div>
-            <h3 className="font-serif text-sm md:text-base font-medium text-primary group-hover:text-primary/70 transition-colors">
+            <h3
+                className={cn(
+                    "font-serif text-sm md:text-base font-medium text-primary transition-colors",
+                    canHover && "group-hover:text-primary/70"
+                )}
+            >
                 {collection.title}
             </h3>
             {collection.description && (
@@ -1000,6 +1030,7 @@ function SearchArticleCard({
     index: number;
     variant?: "card" | "list";
 }) {
+    const {canHover} = usePointerCapabilities();
     const articleUrl = urlWithTrackingParams({
         baseUrl: `/blogs/${article.blog.handle}/${article.handle}`,
         trackingParams: article.trackingParameters,
@@ -1015,12 +1046,12 @@ function SearchArticleCard({
 
     if (variant === "list") {
         return (
-            <Link
+            <Link viewTransition
                 to={articleUrl}
                 prefetch="viewport"
                 className={cn(
-                    "flex items-center gap-4 md:gap-6 py-4 border-b border-border/50 no-underline group",
-                    "transition-colors hover:bg-muted/30",
+                    "flex items-center gap-4 md:gap-6 py-4 border-b border-border/50 no-underline",
+                    canHover ? "group transition-colors hover:bg-muted/30" : "motion-press active:bg-muted/30",
                     "animate-product-fade-in"
                 )}
                 style={{animationDelay: `${staggerDelay}ms`}}
@@ -1033,7 +1064,10 @@ function SearchArticleCard({
                             alt={article.image.altText || article.title}
                             data={article.image}
                             sizes="96px"
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className={cn(
+                                "w-full h-full object-cover transition-transform duration-300",
+                                canHover && "group-hover:scale-105"
+                            )}
                         />
                     ) : (
                         <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">
@@ -1061,10 +1095,13 @@ function SearchArticleCard({
 
     // Card variant - vertical layout with image on top
     return (
-        <Link
+        <Link viewTransition
             to={articleUrl}
             prefetch="viewport"
-            className={cn("block no-underline group animate-product-fade-in")}
+            className={cn(
+                "block no-underline animate-product-fade-in",
+                canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
+            )}
             style={{animationDelay: `${staggerDelay}ms`}}
         >
             <div className="aspect-4/3 rounded-2xl overflow-hidden bg-muted/50 mb-4">
@@ -1073,7 +1110,10 @@ function SearchArticleCard({
                         alt={article.image.altText || article.title}
                         data={article.image}
                         sizes="(min-width: 45em) 400px, 100vw"
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className={cn(
+                            "w-full h-full object-cover transition-transform duration-300",
+                            canHover && "group-hover:scale-105"
+                        )}
                     />
                 ) : (
                     <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">

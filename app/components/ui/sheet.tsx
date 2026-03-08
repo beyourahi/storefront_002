@@ -95,7 +95,7 @@ function SheetOverlay({className, ...props}: React.ComponentProps<typeof SheetPr
         <SheetPrimitive.Overlay
             data-slot="sheet-overlay"
             className={cn(
-                "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-10000 bg-overlay-dark backdrop-blur-md",
+                "motion-overlay data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-10000 bg-overlay-dark backdrop-blur-md",
                 className
             )}
             {...props}
@@ -131,8 +131,8 @@ function SheetContent({
                     // Base styling
                     "bg-background fixed z-10000 flex flex-col shadow-lg",
                     // Animations
-                    "data-[state=open]:animate-in data-[state=closed]:animate-out",
-                    "transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+                    "motion-overlay data-[state=open]:animate-in data-[state=closed]:animate-out",
+                    "transition-[transform,opacity] data-[state=closed]:duration-[var(--motion-duration-overlay)] data-[state=open]:duration-[var(--motion-duration-overlay)]",
                     // Right side sheet - responsive widths with safe area awareness
                     side === "right" && [
                         "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
@@ -173,8 +173,8 @@ function SheetContent({
                             // Touch-friendly sizing (44x44px minimum)
                             "flex select-none items-center justify-center size-10 sm:size-11",
                             // Styling
-                            "rounded-full bg-muted/50 hover:bg-muted cursor-pointer",
-                            "opacity-70 transition-all hover:opacity-100",
+                            "motion-interactive motion-press rounded-full bg-muted/50 hover:bg-muted cursor-pointer",
+                            "opacity-70 hover:opacity-100 active:scale-[var(--motion-press-scale)]",
                             // Focus states
                             "ring-offset-background focus:ring-ring focus:ring-2 focus:ring-offset-2 focus:outline-hidden",
                             // Disabled state

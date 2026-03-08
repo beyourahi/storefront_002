@@ -288,8 +288,8 @@ export function WishlistButton({
                 onClick={handleClick}
                 disabled={!isHydrated}
                 className={cn(
-                    "inline-flex min-h-10 min-w-10 select-none items-center justify-center rounded-full border-2 border-primary p-1.5 transition-all duration-200",
-                    "active:scale-95",
+                    "motion-interactive motion-press inline-flex min-h-10 min-w-10 select-none items-center justify-center rounded-full border-2 border-primary p-1.5",
+                    "active:scale-[var(--motion-press-scale)]",
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
                     // Match variant options button active/inactive styling
@@ -305,7 +305,7 @@ export function WishlistButton({
             >
                 <Heart
                     className={cn(
-                        "size-5 transition-all duration-200",
+                        "motion-image size-5",
                         isInWishlist ? "fill-current" : "fill-transparent",
                         // Continuous heartbeat animation when in wishlist (matching header)
                         isInWishlist && !isAnimating && "animate-heart-beat",
@@ -352,11 +352,11 @@ export function WishlistButton({
             disabled={!isHydrated}
             className={cn(
                 // Base styles
-                "select-none rounded-full transition-all duration-200 ease-out",
+                "motion-interactive motion-press select-none rounded-full",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 // Animation
-                "active:scale-90",
+                "active:scale-[var(--motion-press-scale)]",
                 // Size
                 sizeClasses[size],
                 // Variant
@@ -374,7 +374,7 @@ export function WishlistButton({
             <Heart
                 className={cn(
                     iconSizes[size],
-                    "transition-all duration-300",
+                    "motion-image",
                     // Color states using semantic design system tokens (no hardcoded colors)
                     // Active: wishlist-active (#e63946) - "loved/saved" semantic color
                     // Inactive: primary (#1f1f1f) - consistent with CTA system

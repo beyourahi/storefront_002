@@ -270,7 +270,7 @@ function OfflineProductCard({product}: {product: RecentlyViewedProduct}) {
     const subtitle = titleParts[1];
 
     return (
-        <Link to={`/products/${product.handle}`} className="group block">
+        <Link viewTransition to={`/products/${product.handle}`} className="group block">
             {/* Product Image */}
             <div className="relative aspect-4/5 w-full overflow-hidden rounded-3xl bg-secondary/10">
                 {product.imageUrl ? (

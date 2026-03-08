@@ -59,6 +59,7 @@ import type {Route} from "./+types/collections._index";
 import {Image, getSeoMeta, getPaginationVariables, Pagination} from "@shopify/hydrogen";
 import {useInView} from "react-intersection-observer";
 import type {CollectionFragment} from "storefrontapi.generated";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
 import {Skeleton} from "~/components/ui/skeleton";
 import {countDiscountedProducts} from "~/lib/discounts";
@@ -136,6 +137,7 @@ export default function Collections() {
         <div className="mx-2 md:mx-4 mb-4 pb-16 md:pb-20 lg:pb-24  ">
             {/* Header Section
                  pt-(--page-breathing-room-dense): Extra breathing room for collections pages (40px → 96px) */}
+            <AnimatedSection animation="fade" threshold={0.08}>
             <header className="pt-(--page-breathing-room-dense) pb-6 md:pb-8">
                 {/* Title with collection count superscript (matching menu style) */}
                 <div className="relative inline-block">
@@ -151,22 +153,24 @@ export default function Collections() {
                     Explore our curated collections of handcrafted products, thoughtfully designed with care for you.
                 </p>
             </header>
+            </AnimatedSection>
 
             <Pagination connection={collections}>
                 {({nodes, isLoading, NextLink, state, nextPageUrl, hasNextPage}) => (
                     <>
-                        {/* Collections Grid with auto-scroll - prepend SALE collection */}
-                        <CollectionsGrid
-                            collections={
-                                saleProductCount > 0
-                                    ? [saleCollection, ...(nodes as CollectionFragment[])]
-                                    : (nodes as CollectionFragment[])
-                            }
-                            inView={inView}
-                            hasNextPage={hasNextPage}
-                            nextPageUrl={nextPageUrl}
-                            state={state}
-                        />
+                        <AnimatedSection animation="slide-up" threshold={0.12}>
+                            <CollectionsGrid
+                                collections={
+                                    saleProductCount > 0
+                                        ? [saleCollection, ...(nodes as CollectionFragment[])]
+                                        : (nodes as CollectionFragment[])
+                                }
+                                inView={inView}
+                                hasNextPage={hasNextPage}
+                                nextPageUrl={nextPageUrl}
+                                state={state}
+                            />
+                        </AnimatedSection>
 
                         {/* Loading skeletons - responsive grid matching main layout */}
                         {isLoading && (
@@ -257,7 +261,7 @@ function CollectionCard({collection, index}: {collection: CollectionFragment; in
     const linkTo = collection.handle === "sale" ? "/sale" : `/collections/${collection.handle}`;
 
     return (
-        <Link
+        <Link viewTransition
             to={linkTo}
             prefetch="viewport"
             className="group block no-underline animate-product-fade-in"

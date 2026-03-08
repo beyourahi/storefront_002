@@ -232,7 +232,7 @@ export function ArticleHero({article, variant = "listing", showReadMore = true, 
                                 Touch target: min 44px height (py-3 + line-height ≈ 48px)
                                 Icon: CircleArrowOutUpRight rotates 45° on hover */}
                             {showReadMore && (
-                                <Link to={articleUrl} prefetch="viewport" className="no-underline">
+                                <Link viewTransition to={articleUrl} prefetch="viewport" className="no-underline">
                                     <span className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-full bg-primary border-2 border-primary px-4 sm:px-5 md:px-6 py-3 font-sans text-sm sm:text-base font-medium text-primary-foreground hover:bg-light hover:text-primary hover:border-light active:bg-light/90 active:border-light active:scale-[0.98] cursor-pointer transition-all duration-200">
                                         Read Article
                                         <CircleArrowOutUpRight className="w-5 h-5 transition-transform duration-200 group-hover:rotate-45" />

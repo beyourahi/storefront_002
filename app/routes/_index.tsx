@@ -92,8 +92,9 @@
  * - VideoHero.tsx - Hero banner component (#1 - brand introduction)
  */
 
-import {useLoaderData} from "react-router";
+import {useLoaderData, useRouteLoaderData} from "react-router";
 import type {Route} from "./+types/_index";
+import type {RootLoader} from "~/root";
 import {getSeoMeta} from "@shopify/hydrogen";
 import {VideoHero} from "~/components/VideoHero";
 import {CuratedCollections, type CuratedCollectionsData} from "~/components/CuratedCollections";
@@ -108,6 +109,7 @@ import {TestimonialsSection} from "~/components/TestimonialsSection";
 import {BlogSection} from "~/components/BlogSection";
 import {FAQSection} from "~/components/FAQSection";
 import {AnimatedSection} from "~/components/AnimatedSection";
+import {FeaturedProductSpotlight} from "~/components/FeaturedProductSpotlight";
 import {HomepageWishlistSection} from "~/components/HomepageWishlistSection";
 import {Container} from "~/components/Container";
 import {buildCollectionTabs} from "~/lib/collections";
@@ -405,6 +407,8 @@ export interface HomepageArticle {
 
 export default function Homepage() {
     const data = useLoaderData<typeof loader>();
+    const rootData = useRouteLoaderData<RootLoader>("root");
+    const featuredProduct = rootData?.siteContent?.siteSettings?.featuredProductSection ?? null;
     const testimonials = useTestimonials();
     const instagramMedia = useInstagramMedia();
     const faqItems = useFaqItems();
@@ -430,6 +434,12 @@ export default function Homepage() {
                 <AnimatedSection animation="section" threshold={0.1} className="mt-8 sm:mt-12">
                     <CuratedCollections collections={data.curatedCollections} />
                 </AnimatedSection>
+
+                {featuredProduct ? (
+                    <AnimatedSection animation="slide-up" threshold={0.12} className="mt-12 md:mt-16 lg:mt-20">
+                        <FeaturedProductSpotlight product={featuredProduct} />
+                    </AnimatedSection>
+                ) : null}
 
                 {/* ═══════════════════════════════════════════════════════════════════
                     TIER 2: TRUST & VALIDATION - Build confidence after product interest

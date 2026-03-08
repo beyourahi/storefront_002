@@ -200,7 +200,7 @@ export default function ReturnsHistoryRoute() {
                             </div>
                             {hasReturns && (
                                 <Button variant="link" asChild className="text-primary p-0 h-auto group hidden sm:flex">
-                                    <Link
+                                    <Link viewTransition
                                         to="/account/orders"
                                         className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
                                     >
@@ -250,13 +250,13 @@ function ReturnsEmpty() {
                 {/* CTA buttons - primary action to view orders */}
                 <div className="flex flex-col sm:flex-row gap-3">
                     <Button asChild size="lg">
-                        <Link to="/account/orders" className="gap-2">
+                        <Link viewTransition to="/account/orders" className="gap-2">
                             <PackageSearchIcon className="size-4" />
                             View Orders
                         </Link>
                     </Button>
                     <Button asChild size="lg" variant="outline">
-                        <Link to="/collections">Continue Shopping</Link>
+                        <Link viewTransition to="/collections">Continue Shopping</Link>
                     </Button>
                 </div>
             </CardContent>
@@ -272,7 +272,7 @@ function ReturnCard({returnItem, index = 0}: {returnItem: ReturnWithOrder; index
     const totalQuantity = lineItems.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
-        <Link
+        <Link viewTransition
             to="/account/orders"
             className="group block no-underline animate-product-fade-in"
             style={{animationDelay: `${Math.min(index, 11) * 50}ms`}}

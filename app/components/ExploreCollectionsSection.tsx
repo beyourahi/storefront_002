@@ -26,6 +26,7 @@ import {Link} from "react-router";
 import {Image} from "@shopify/hydrogen";
 import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel";
 import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
+import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {cn} from "~/lib/utils";
 import type {ExploreCollectionFragment} from "storefrontapi.generated";
 import {useSectionHeadings} from "~/lib/site-content-context";
@@ -70,6 +71,7 @@ function truncateDescription(description: string | null, maxLength: number = 80)
 export function ExploreCollectionsSection({collections}: ExploreCollectionsSectionProps) {
     // Track which card is expanded on touch devices (tap-to-expand)
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+    const {canHover} = usePointerCapabilities();
     const {collectionsTitle} = useSectionHeadings();
 
     // Handle tap on touch devices - toggle expansion
@@ -88,9 +90,14 @@ export function ExploreCollectionsSection({collections}: ExploreCollectionsSecti
                 <h2 className="m-0 font-serif text-3xl font-medium text-primary sm:text-4xl md:text-5xl lg:text-6xl">
                     {collectionsTitle}
                 </h2>
-                <Link
+                <Link viewTransition
                     to="/collections"
-                    className="hidden w-fit rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 sm:py-2 font-sans text-base font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground hover:no-underline sm:block sm:text-lg md:text-xl cursor-pointer"
+                    className={cn(
+                        "motion-interactive motion-press hidden w-fit rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 py-1.5 font-sans text-base font-medium text-primary active:scale-[var(--motion-press-scale)] cursor-pointer sm:block sm:px-4 sm:py-2 sm:text-lg md:text-xl",
+                        canHover
+                            ? "hover:bg-primary hover:text-primary-foreground hover:no-underline"
+                            : "active:bg-primary active:text-primary-foreground"
+                    )}
                 >
                     View all
                 </Link>
@@ -129,9 +136,14 @@ export function ExploreCollectionsSection({collections}: ExploreCollectionsSecti
 
                 {/* Mobile-only View all button - below carousel */}
                 <div className="mt-6 flex justify-center sm:hidden">
-                    <Link
+                    <Link viewTransition
                         to="/collections"
-                        className="rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-base font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground hover:no-underline cursor-pointer"
+                        className={cn(
+                            "motion-interactive motion-press rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-base font-medium text-primary transition-colors active:scale-[var(--motion-press-scale)] cursor-pointer",
+                            canHover
+                                ? "hover:bg-primary hover:text-primary-foreground hover:no-underline"
+                                : "active:bg-primary active:text-primary-foreground"
+                        )}
                     >
                         View all
                     </Link>
@@ -156,6 +168,7 @@ interface CollectionCardProps {
  * - Touch devices: tap once to expand/preview, tap again to navigate
  */
 function CollectionCard({collection, isExpanded, onTap}: CollectionCardProps) {
+    const {canHover} = usePointerCapabilities();
     const shortTitle = formatShortTitle(collection.title);
     const description = truncateDescription(collection.description);
 
@@ -164,9 +177,7 @@ function CollectionCard({collection, isExpanded, onTap}: CollectionCardProps) {
     const handleClick = (e: React.MouseEvent) => {
         // Check if this is a touch device (no hover capability)
         // We use matchMedia for reliable detection
-        const hasHover = window.matchMedia("(hover: hover)").matches;
-
-        if (!hasHover && !isExpanded) {
+        if (!canHover && !isExpanded) {
             // Touch device and card not expanded - expand instead of navigate
             e.preventDefault();
             onTap();
@@ -175,15 +186,14 @@ function CollectionCard({collection, isExpanded, onTap}: CollectionCardProps) {
     };
 
     return (
-        <Link
+        <Link viewTransition
             to={`/collections/${collection.handle}`}
             prefetch="viewport"
             onClick={handleClick}
             className={cn(
-                "group relative flex-1 transition-all duration-500 ease-out hover:no-underline cursor-pointer",
-                // On hover-capable devices, use CSS hover for expansion
-                // On touch devices, use state-based expansion
-                "hover:flex-2",
+                "relative flex-1 transition-all duration-500 ease-out cursor-pointer",
+                "motion-interactive-strong",
+                canHover ? "group hover:flex-2 hover:no-underline" : "motion-press active:scale-[var(--motion-press-scale)]",
                 isExpanded && "flex-2"
             )}
         >
@@ -197,8 +207,8 @@ function CollectionCard({collection, isExpanded, onTap}: CollectionCardProps) {
                         loading="eager"
                         sizes="(min-width: 1024px) 25vw, 75vw"
                         className={cn(
-                            "absolute inset-0 h-full w-full object-cover transition-transform duration-500",
-                            "group-hover:scale-105",
+                            "motion-image absolute inset-0 h-full w-full object-cover",
+                            canHover && "group-hover:scale-[1.03]",
                             isExpanded && "scale-105"
                         )}
                     />
@@ -212,9 +222,9 @@ function CollectionCard({collection, isExpanded, onTap}: CollectionCardProps) {
                 {/* Gradient overlay - stronger gradient for better text readability */}
                 <div
                     className={cn(
-                        "absolute inset-0 transition-opacity duration-300",
+                        "motion-interactive absolute inset-0",
                         "bg-linear-to-t from-dark/80 via-dark/30 to-transparent",
-                        "opacity-0 group-hover:opacity-100",
+                        canHover && "opacity-0 group-hover:opacity-100",
                         isExpanded && "opacity-100"
                     )}
                 />
@@ -223,8 +233,8 @@ function CollectionCard({collection, isExpanded, onTap}: CollectionCardProps) {
                 <div
                     className={cn(
                         "absolute bottom-0 left-0 right-0 p-4 xl:p-5",
-                        "translate-y-full transition-transform duration-300 ease-out",
-                        "group-hover:translate-y-0",
+                        "motion-interactive translate-y-full",
+                        canHover && "group-hover:translate-y-0",
                         isExpanded && "translate-y-0"
                     )}
                 >
@@ -239,8 +249,8 @@ function CollectionCard({collection, isExpanded, onTap}: CollectionCardProps) {
                 {/* Always-visible title at bottom (when not expanded) */}
                 <div
                     className={cn(
-                        "absolute bottom-4 left-4 right-4 transition-opacity duration-300 xl:bottom-5 xl:left-5 xl:right-5",
-                        "group-hover:opacity-0",
+                        "motion-interactive absolute bottom-4 left-4 right-4 xl:bottom-5 xl:left-5 xl:right-5",
+                        canHover && "group-hover:opacity-0",
                         isExpanded && "opacity-0"
                     )}
                 >
@@ -262,10 +272,10 @@ function MobileCollectionCard({collection}: {collection: ExploreCollectionFragme
     const description = truncateDescription(collection.description, 80);
 
     return (
-        <Link
+        <Link viewTransition
             to={`/collections/${collection.handle}`}
             prefetch="viewport"
-            className="group block hover:no-underline active:scale-[0.98] transition-transform cursor-pointer"
+            className="group motion-link motion-press block hover:no-underline active:scale-[var(--motion-press-scale)] cursor-pointer"
         >
             {/* Consistent 3:4 aspect ratio across all mobile/tablet sizes */}
             <div className="relative aspect-[3/4] overflow-hidden rounded-2xl sm:rounded-3xl">
@@ -276,7 +286,7 @@ function MobileCollectionCard({collection}: {collection: ExploreCollectionFragme
                         data={collection.image}
                         loading="lazy"
                         sizes="(min-width: 768px) 45vw, (min-width: 640px) 55vw, 72vw"
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-active:scale-105"
+                        className="motion-image absolute inset-0 h-full w-full object-cover group-active:scale-[1.03]"
                     />
                 )}
 

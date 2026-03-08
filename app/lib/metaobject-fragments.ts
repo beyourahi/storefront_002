@@ -79,6 +79,63 @@ export const SITE_SETTINGS_FRAGMENT = `#graphql
     # ─────────────────────────────────────────────────────────────────────────
     heroHeading: field(key: "hero_main_heading") { value }
     heroDescription: field(key: "hero_description_text") { value }
+    featuredProductSection: field(key: "featured_product_section") {
+      reference {
+        ... on Product {
+          __typename
+          id
+          handle
+          title
+          vendor
+          description
+          availableForSale
+          featuredImage {
+            url
+            altText
+            width
+            height
+          }
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          compareAtPriceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          selectedOrFirstAvailableVariant(
+            selectedOptions: []
+            ignoreUnknownOptions: true
+            caseInsensitiveMatch: true
+          ) {
+            id
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
+            image {
+              url
+              altText
+              width
+              height
+            }
+          }
+        }
+      }
+    }
     heroMediaMobile: field(key: "hero_background_media_mobile") {
       reference {
         ... on MediaImage {
@@ -345,6 +402,7 @@ export const THEME_SETTINGS_FRAGMENT = `#graphql
     fontBody: field(key: "body_font") { value }
     fontHeading: field(key: "heading_font") { value }
     fontPrice: field(key: "price_font") { value }
+    borderRadius: field(key: "border_radius") { value }
 
     # ─────────────────────────────────────────────────────────────────────────
     # COLORS (OKLCH or HEX format)

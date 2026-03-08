@@ -263,7 +263,7 @@ export function useThemeColors(): ThemeCoreColors {
 export function useGeneratedTheme(): GeneratedTheme | null {
     const themeConfig = useThemeConfig();
 
-    return generateTheme(themeConfig.colors, themeConfig.fonts);
+    return generateTheme(themeConfig.colors, themeConfig.fonts, themeConfig.borderRadius);
 }
 
 // =============================================================================

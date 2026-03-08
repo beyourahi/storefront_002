@@ -180,7 +180,7 @@ function CollectionLink({
 
     return (
         <li>
-            <Link
+            <Link viewTransition
                 to={href}
                 prefetch="viewport"
                 className={cn(

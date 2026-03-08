@@ -30,6 +30,7 @@ import {data as remixData, redirect, Form, useLoaderData, useNavigation, useActi
 import type {Route} from "./+types/account.subscriptions.$id";
 import {Image} from "@shopify/hydrogen";
 import {Money} from "~/components/Money";
+import {AnimatedSection} from "~/components/AnimatedSection";
 import {
     CUSTOMER_SUBSCRIPTION_QUERY,
     SUBSCRIPTION_STATUSES,
@@ -348,16 +349,17 @@ export default function SubscriptionDetail() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <header className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-semibold tracking-tight">Subscription Details</h2>
-                    <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                    {frequency} • Created {new Date(subscription.createdAt).toLocaleDateString()}
-                </p>
-            </header>
+            <AnimatedSection animation="fade" threshold={0.08}>
+                <header className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-2xl font-semibold tracking-tight">Subscription Details</h2>
+                        <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                        {frequency} • Created {new Date(subscription.createdAt).toLocaleDateString()}
+                    </p>
+                </header>
+            </AnimatedSection>
 
             <Separator />
 
@@ -387,7 +389,7 @@ export default function SubscriptionDetail() {
                 </Alert>
             )}
 
-            {/* Line Items */}
+            <AnimatedSection animation="slide-up" threshold={0.1}>
             <Card>
                 <CardHeader>
                     <CardTitle className="text-base">Subscription Items</CardTitle>
@@ -439,8 +441,9 @@ export default function SubscriptionDetail() {
                     </Table>
                 </CardContent>
             </Card>
+            </AnimatedSection>
 
-            {/* Billing Info */}
+            <AnimatedSection animation="slide-up" threshold={0.1}>
             <div className="grid gap-4 md:grid-cols-2">
                 <Card>
                     <CardHeader>
@@ -472,9 +475,11 @@ export default function SubscriptionDetail() {
                     </CardContent>
                 </Card>
             </div>
+            </AnimatedSection>
 
             {/* Upcoming Billing Cycles */}
             {subscription.upcomingBillingCycles.nodes.length > 0 && (
+                <AnimatedSection animation="slide-up" threshold={0.1}>
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-base">Upcoming Billing Cycles</CardTitle>
@@ -527,10 +532,12 @@ export default function SubscriptionDetail() {
                         </div>
                     </CardContent>
                 </Card>
+                </AnimatedSection>
             )}
 
             {/* Recent Orders */}
             {subscription.orders.nodes.length > 0 && (
+                <AnimatedSection animation="fade" threshold={0.1}>
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-base">Recent Orders</CardTitle>
@@ -550,7 +557,7 @@ export default function SubscriptionDetail() {
                                 {subscription.orders.nodes.map(order => (
                                     <TableRow key={order.id}>
                                         <TableCell>
-                                            <Link to="/account/orders" className="font-medium hover:underline">
+                                            <Link viewTransition to="/account/orders" className="font-medium hover:underline">
                                                 {order.name}
                                             </Link>
                                         </TableCell>
@@ -567,9 +574,10 @@ export default function SubscriptionDetail() {
                         </Table>
                     </CardContent>
                 </Card>
+                </AnimatedSection>
             )}
 
-            {/* Actions */}
+            <AnimatedSection animation="slide-up" threshold={0.1}>
             <Card>
                 <CardHeader>
                     <CardTitle className="text-base">Manage Subscription</CardTitle>
@@ -638,10 +646,11 @@ export default function SubscriptionDetail() {
                 </CardContent>
                 <CardFooter>
                     <Button variant="link" className="h-auto p-0" asChild>
-                        <Link to="/account/subscriptions">← Back to Subscriptions</Link>
+                        <Link viewTransition to="/account/subscriptions">← Back to Subscriptions</Link>
                     </Button>
                 </CardFooter>
             </Card>
+            </AnimatedSection>
         </div>
     );
 }

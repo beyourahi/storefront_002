@@ -67,6 +67,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {useAside} from "~/components/Aside";
 import {cn} from "~/lib/utils";
 import {Button} from "~/components/ui/button";
+import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {useSiteSettings} from "~/lib/site-content-context";
 import {OpenInAppButton} from "~/components/pwa/OpenInAppButton";
 import type {MenuCollection} from "types";
@@ -148,6 +149,7 @@ const POLICY_LINKS = [
  */
 export function FullScreenMenu({collections, totalProductCount, discountCount, hasBlog}: FullScreenMenuProps) {
     const {type, close, open} = useAside();
+    const {canHover} = usePointerCapabilities();
     const {brandName} = useSiteSettings();
     const isOpen = type === "mobile";
 
@@ -190,22 +192,22 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
                 {/* Overlay with fade animation */}
                 <Dialog.Overlay
                     className={cn(
-                        "fixed inset-0 z-200 bg-background",
+                        "motion-overlay fixed inset-0 z-200 bg-background",
                         "data-[state=open]:animate-in data-[state=closed]:animate-out",
                         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-                        "data-[state=closed]:duration-300 data-[state=open]:duration-500"
+                        "data-[state=closed]:duration-[var(--motion-duration-overlay)] data-[state=open]:duration-[var(--motion-duration-overlay)]"
                     )}
                 />
 
                 {/* Content with slide-from-left animation for native mobile feel */}
                 <Dialog.Content
                     className={cn(
-                        "fixed inset-0 z-200 flex flex-col h-dvh bg-background",
+                        "motion-overlay fixed inset-0 z-200 flex h-dvh flex-col bg-background",
                         // Slide-from-left animation (native iOS navigation pattern)
                         "data-[state=open]:animate-in data-[state=closed]:animate-out",
                         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
                         "data-[state=closed]:slide-out-to-left-full data-[state=open]:slide-in-from-left-full",
-                        "data-[state=closed]:duration-300 data-[state=open]:duration-400"
+                        "data-[state=closed]:duration-[var(--motion-duration-overlay)] data-[state=open]:duration-[var(--motion-duration-overlay)]"
                     )}
                 >
                     {/* Mobile header - solid bar with menu button and brand for small screens only */}
@@ -221,18 +223,18 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
                         <Dialog.Close asChild>
                             <Button
                                 variant="ghost"
-                                className="min-h-11 min-w-11 px-2 text-base font-medium text-primary hover:bg-transparent hover:text-primary cursor-pointer"
+                                className="motion-link min-h-11 min-w-11 px-2 text-base font-medium text-primary hover:bg-transparent hover:text-primary cursor-pointer"
                             >
                                 Menu
                             </Button>
                         </Dialog.Close>
 
                         {/* Brand name - center */}
-                        <Link
+                        <Link viewTransition
                             to="/"
                             prefetch="viewport"
                             onClick={close}
-                            className="absolute left-1/2 -translate-x-1/2 font-serif text-2xl uppercase tracking-wider text-primary cursor-pointer"
+                            className="motion-link absolute left-1/2 -translate-x-1/2 font-serif text-2xl uppercase tracking-wider text-primary cursor-pointer"
                         >
                             {brandName}
                         </Link>
@@ -241,7 +243,7 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
                         <Dialog.Close asChild>
                             <Button
                                 variant="ghost"
-                                className="min-h-11 px-2 text-base font-medium text-primary hover:bg-transparent hover:text-primary cursor-pointer"
+                                className="motion-link min-h-11 px-2 text-base font-medium text-primary hover:bg-transparent hover:text-primary cursor-pointer"
                             >
                                 Close
                             </Button>
@@ -253,7 +255,7 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
                         <Button
                             variant="ghost"
                             className={cn(
-                                "absolute z-10 text-primary hover:text-primary hidden sm:flex",
+                                "motion-link absolute z-10 hidden text-primary hover:text-primary sm:flex",
                                 // Safe area positioning for iOS devices
                                 "top-4 right-4",
                                 // Add safe area insets
@@ -283,15 +285,12 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
                                 type="button"
                                 onClick={handleOpenSearch}
                                 className={cn(
-                                    "w-full flex select-none items-center mb-8 sm:hidden cursor-pointer",
+                                    "motion-field motion-press w-full mb-8 flex min-h-14 select-none items-center cursor-pointer sm:hidden",
                                     "bg-transparent border-0 border-b-2 border-[var(--border-strong)]",
                                     "text-xl font-serif text-primary/40",
                                     "py-3 text-left",
-                                    "transition-colors duration-300",
-                                    "hover:border-primary/50",
-                                    "active:scale-[0.99]",
-                                    // Ensure 44px minimum touch target
-                                    "min-h-14"
+                                    canHover ? "hover:border-primary/50" : "active:border-primary/50",
+                                    "active:scale-[var(--motion-press-scale)]"
                                 )}
                                 aria-label="Open search"
                             >
@@ -469,18 +468,22 @@ interface MenuLinkProps {
  * @param staggerIndex - Index for animation delay (50ms * index, max 400ms)
  */
 function MenuLink({title, url, count, onNavigate, variant = "collection", staggerIndex = 0}: MenuLinkProps) {
+    const {canHover} = usePointerCapabilities();
     // -1 indicates no count should be shown (e.g., SALE where count is dynamic)
     const displayCount = count !== undefined && count >= 0 ? (count >= 250 ? "250+" : count.toString()) : null;
     // Calculate stagger delay (50ms increment, capped at 400ms)
     const staggerDelay = Math.min(staggerIndex, 8) * 50;
 
     return (
-        <Link
+        <Link viewTransition
             to={url}
             prefetch="viewport"
             onClick={onNavigate}
             className={cn(
-                "group flex items-baseline gap-1 text-primary transition-colors hover:text-primary/70 cursor-pointer",
+                "motion-link flex items-baseline gap-1 text-primary cursor-pointer",
+                canHover
+                    ? "group hover:text-primary/70"
+                    : "motion-press active:scale-[var(--motion-press-scale)] active:text-primary/80",
                 // 44px minimum touch target (Apple HIG guideline)
                 "min-h-11 py-2",
                 // Stagger animation on menu open
@@ -499,7 +502,12 @@ function MenuLink({title, url, count, onNavigate, variant = "collection", stagge
             >
                 {title}
                 {/* Animated underline */}
-                <span className="absolute bottom-0 left-0 w-full h-px bg-current scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left" />
+                <span
+                    className={cn(
+                        "motion-link absolute bottom-0 left-0 h-px w-full origin-left bg-current",
+                        canHover ? "scale-x-0 group-hover:scale-x-100" : "scale-x-100 opacity-50"
+                    )}
+                />
             </span>
             {displayCount && <sup className="text-sm md:text-sm">{displayCount}</sup>}
         </Link>

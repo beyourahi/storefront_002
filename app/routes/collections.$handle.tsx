@@ -51,7 +51,7 @@ import {
     mapSortToCollectionSortKey,
     getGridClassName
 } from "~/components/CollectionPageLayout";
-import {PageTransition} from "~/components/AnimatedSection";
+import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
 import type {ProductItemFragment} from "storefrontapi.generated";
 import type {ProductCollectionSortKeys} from "@shopify/hydrogen/storefront-api-types";
@@ -259,30 +259,32 @@ export default function Collection() {
                 layoutMode={layoutMode}
                 onLayoutModeChange={setLayoutMode}
             >
-                <InfiniteScrollSection<ProductItemFragment>
-                    key={`${sortOption}-${layoutMode}-${gridColumns}`}
-                    connection={collection.products}
-                    resourcesClassName={resourcesClassName}
-                    showSkeletons
-                    skeletonCount={8}
-                    sortNodes={sortProductsWithPinned}
-                    renderSkeleton={
-                        layoutMode === "list"
-                            ? () => <ProductListSkeleton animate={false} />
-                            : () => <ProductCardSkeleton animate={false} />
-                    }
-                >
-                    {({node: product, index}) => (
-                        <ProductItem
-                            key={product.id}
-                            product={product}
-                            loading={index < 12 ? "eager" : undefined}
-                            variant={layoutMode === "list" ? "list" : "card"}
-                            index={index}
-                            gridColumns={gridColumns}
-                        />
-                    )}
-                </InfiniteScrollSection>
+                <AnimatedSection animation="slide-up" threshold={0.12}>
+                    <InfiniteScrollSection<ProductItemFragment>
+                        key={`${sortOption}-${layoutMode}-${gridColumns}`}
+                        connection={collection.products}
+                        resourcesClassName={resourcesClassName}
+                        showSkeletons
+                        skeletonCount={8}
+                        sortNodes={sortProductsWithPinned}
+                        renderSkeleton={
+                            layoutMode === "list"
+                                ? () => <ProductListSkeleton animate={false} />
+                                : () => <ProductCardSkeleton animate={false} />
+                        }
+                    >
+                        {({node: product, index}) => (
+                            <ProductItem
+                                key={product.id}
+                                product={product}
+                                loading={index < 12 ? "eager" : undefined}
+                                variant={layoutMode === "list" ? "list" : "card"}
+                                index={index}
+                                gridColumns={gridColumns}
+                            />
+                        )}
+                    </InfiniteScrollSection>
+                </AnimatedSection>
                 <Analytics.CollectionView
                     data={{
                         collection: {

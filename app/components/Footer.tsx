@@ -121,7 +121,7 @@ export function Footer({footer: footerPromise, header: _header}: FooterProps) {
 function FooterLogo() {
     const {brandName} = useSiteSettings();
     return (
-        <NavLink to="/" prefetch="viewport" className="block hover:no-underline cursor-pointer">
+        <NavLink viewTransition to="/" prefetch="viewport" className="block hover:no-underline cursor-pointer">
             {/* Responsive text sizing: text-4xl at 320px to prevent overflow,
                  scales progressively to text-[10rem] on ultrawide (3xl) screens */}
             <span className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl 3xl:text-[10rem] font-normal tracking-wide uppercase">
@@ -243,7 +243,7 @@ function FooterLinks() {
                                         {link.title}
                                     </a>
                                 ) : (
-                                    <NavLink
+                                    <NavLink viewTransition
                                         to={link.url}
                                         prefetch="viewport"
                                         className="inline-flex items-center min-h-11 sm:min-h-0 py-1 sm:py-0.5 text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors hover:no-underline cursor-pointer"
@@ -276,7 +276,7 @@ function NewsletterSection() {
             {/* Login CTA - Secondary action */}
             <div className="pt-4 border-t border-primary-foreground/10">
                 <p className="text-sm text-primary-foreground/60 mb-3">Already a member?</p>
-                <NavLink
+                <NavLink viewTransition
                     to="/account"
                     prefetch="viewport"
                     className="inline-flex items-center gap-2 min-h-11 py-2 sm:min-h-0 sm:py-1 text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors hover:no-underline cursor-pointer group"

@@ -67,6 +67,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {useAside} from "~/components/Aside";
 import {useRecentSearches} from "~/hooks/useRecentSearches";
 import {useSearchKeyboard} from "~/hooks/useSearchKeyboard";
+import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 import {
     ViewOptionsSelector,
@@ -272,21 +273,21 @@ export function FullScreenSearch({collections, popularSearchTerms = []}: FullScr
                 {/* Overlay with blur effect */}
                 <Dialog.Overlay
                     className={cn(
-                        "fixed inset-0 z-200 bg-overlay-dark backdrop-blur-md",
+                        "motion-overlay fixed inset-0 z-200 bg-overlay-dark backdrop-blur-md",
                         "data-[state=open]:animate-in data-[state=closed]:animate-out",
                         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-                        "data-[state=closed]:duration-300 data-[state=open]:duration-500"
+                        "data-[state=closed]:duration-[var(--motion-duration-overlay)] data-[state=open]:duration-[var(--motion-duration-overlay)]"
                     )}
                 />
 
                 {/* Content */}
                 <Dialog.Content
                     className={cn(
-                        "fixed inset-0 z-200 flex flex-col h-dvh bg-background",
+                        "motion-overlay fixed inset-0 z-200 flex h-dvh flex-col bg-background",
                         "data-[state=open]:animate-in data-[state=closed]:animate-out",
                         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
                         "data-[state=closed]:slide-out-to-bottom-4 data-[state=open]:slide-in-from-bottom-4",
-                        "data-[state=closed]:duration-300 data-[state=open]:duration-500"
+                        "data-[state=closed]:duration-[var(--motion-duration-overlay)] data-[state=open]:duration-[var(--motion-duration-overlay)]"
                     )}
                 >
                     {/* Close button - safe area aware positioning */}
@@ -294,7 +295,7 @@ export function FullScreenSearch({collections, popularSearchTerms = []}: FullScr
                         <Button
                             variant="ghost"
                             className={cn(
-                                "absolute z-10 text-primary hover:text-primary",
+                                "motion-link absolute z-10 text-primary hover:text-primary",
                                 // Safe area aware positioning - closer to edge on mobile for thumb reach
                                 "top-3 right-3 sm:top-4 sm:right-4",
                                 // Ensure 44px minimum touch target height
@@ -322,7 +323,7 @@ export function FullScreenSearch({collections, popularSearchTerms = []}: FullScr
                                         "text-primary placeholder:text-primary/40",
                                         // Responsive padding
                                         "py-3 sm:py-4 outline-none",
-                                        "focus:border-primary transition-colors duration-300"
+                                        "motion-field focus:border-primary"
                                     )}
                                     placeholder={searchContent.searchPlaceholder}
                                     autoComplete="off"
@@ -405,6 +406,8 @@ function SearchInitialState({
     onClose,
     searchContent
 }: SearchInitialStateProps) {
+    const {canHover} = usePointerCapabilities();
+
     return (
         <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
             {/* Recent searches */}
@@ -418,7 +421,8 @@ function SearchInitialState({
                         <button
                             onClick={onClearRecent}
                             className={cn(
-                                "text-sm text-primary/70 hover:text-primary transition-colors cursor-pointer",
+                                "motion-link text-sm text-primary/70 cursor-pointer",
+                                canHover ? "hover:text-primary" : "active:text-primary",
                                 // Ensure touch target
                                 "min-h-11 px-2 flex items-center"
                             )}
@@ -432,12 +436,15 @@ function SearchInitialState({
                                 key={term}
                                 onClick={() => onSuggestionClick(term)}
                                 className={cn(
+                                    "motion-interactive motion-press",
                                     // Responsive padding with proper touch target
                                     "px-3 sm:px-4 py-2.5 sm:py-2 min-h-11 cursor-pointer",
-                                    "rounded-full border border-[var(--border-strong)]",
+                                    "rounded-[var(--radius-pill-raw)] border border-[var(--border-strong)]",
                                     "text-sm font-medium text-primary",
-                                    "hover:bg-primary hover:text-primary-foreground",
-                                    "active:scale-95 transition-all duration-200"
+                                    canHover
+                                        ? "hover:bg-primary hover:text-primary-foreground"
+                                        : "active:bg-primary active:text-primary-foreground",
+                                    "active:scale-[var(--motion-press-scale)]"
                                 )}
                             >
                                 {term}
@@ -460,12 +467,15 @@ function SearchInitialState({
                                 key={term}
                                 onClick={() => onSuggestionClick(term)}
                                 className={cn(
+                                    "motion-interactive motion-press",
                                     // Responsive padding with proper touch target
                                     "px-3 sm:px-4 py-2.5 sm:py-2 min-h-11 cursor-pointer",
-                                    "rounded-full border border-[var(--border-strong)]",
+                                    "rounded-[var(--radius-pill-raw)] border border-[var(--border-strong)]",
                                     "text-sm font-medium text-primary",
-                                    "hover:bg-primary hover:text-primary-foreground",
-                                    "active:scale-95 transition-all duration-200"
+                                    canHover
+                                        ? "hover:bg-primary hover:text-primary-foreground"
+                                        : "active:bg-primary active:text-primary-foreground",
+                                    "active:scale-[var(--motion-press-scale)]"
                                 )}
                             >
                                 {term}
@@ -483,12 +493,15 @@ function SearchInitialState({
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-responsive gap-y-responsive-lg">
                         {collections.map(collection => (
-                            <Link
+                            <Link viewTransition
                                 key={collection.id}
                                 to={`/collections/${collection.handle}`}
                                 onClick={onClose}
                                 prefetch="viewport"
-                                className="group cursor-pointer"
+                                className={cn(
+                                    "motion-link cursor-pointer",
+                                    canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
+                                )}
                             >
                                 <div className="aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-muted/50 mb-2 sm:mb-3">
                                     {collection.image ? (
@@ -497,17 +510,30 @@ function SearchInitialState({
                                             data={collection.image}
                                             loading="lazy"
                                             sizes="(min-width: 768px) 25vw, 50vw"
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            className={cn(
+                                                "motion-image h-full w-full object-cover",
+                                                canHover && "group-hover:scale-[1.03]"
+                                            )}
                                         />
                                     ) : (
-                                        <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                                        <div
+                                            className={cn(
+                                                "motion-image flex h-full w-full items-center justify-center bg-linear-to-br from-primary/5 to-primary/20",
+                                                canHover && "group-hover:scale-[1.03]"
+                                            )}
+                                        >
                                             <span className="text-xl sm:text-2xl md:text-3xl font-serif text-primary/30">
                                                 {collection.title.charAt(0)}
                                             </span>
                                         </div>
                                     )}
                                 </div>
-                                <p className="text-sm sm:text-sm md:text-base font-medium text-primary group-hover:text-primary/70 transition-colors line-clamp-1">
+                                <p
+                                    className={cn(
+                                        "motion-link line-clamp-1 text-sm font-medium text-primary sm:text-sm md:text-base",
+                                        canHover && "group-hover:text-primary/70"
+                                    )}
+                                >
                                     {collection.title}
                                 </p>
                                 <p className="text-sm sm:text-sm text-muted-foreground">
@@ -687,7 +713,7 @@ function SearchResultsSection({
                             <TabsTrigger
                                 value="products"
                                 className={cn(
-                                    "rounded-full border-2 border-primary shrink-0",
+                                    "rounded-[var(--radius-pill-raw)] border-2 border-primary shrink-0",
                                     // Responsive padding - smaller on mobile for 320px screens
                                     "px-3 py-1.5 sm:px-4 sm:py-2",
                                     // Minimum touch target height (44px = 11 * 4px)
@@ -707,7 +733,7 @@ function SearchResultsSection({
                             <TabsTrigger
                                 value="collections"
                                 className={cn(
-                                    "rounded-full border-2 border-primary shrink-0",
+                                    "rounded-[var(--radius-pill-raw)] border-2 border-primary shrink-0",
                                     "px-3 py-1.5 sm:px-4 sm:py-2",
                                     // Minimum touch target height (44px = 11 * 4px)
                                     "min-h-11",
@@ -724,7 +750,7 @@ function SearchResultsSection({
                             <TabsTrigger
                                 value="articles"
                                 className={cn(
-                                    "rounded-full border-2 border-primary shrink-0",
+                                    "rounded-[var(--radius-pill-raw)] border-2 border-primary shrink-0",
                                     "px-3 py-1.5 sm:px-4 sm:py-2",
                                     // Minimum touch target height (44px = 11 * 4px)
                                     "min-h-11",
@@ -868,13 +894,14 @@ function SearchResultsSection({
                         type="button"
                         onClick={onViewAll}
                         className={cn(
-                            "rounded-full border-2 border-primary cursor-pointer",
+                            "motion-interactive motion-press",
+                            "rounded-[var(--radius-pill-raw)] border-2 border-primary cursor-pointer",
                             // Responsive padding and sizing with proper touch target
                             "px-4 sm:px-6 py-2.5 sm:py-2 min-h-11",
                             "font-sans text-base sm:text-xl md:text-2xl font-medium",
-                            "text-primary transition-colors",
+                            "text-primary",
                             "hover:bg-primary hover:text-primary-foreground",
-                            "active:scale-95"
+                            "active:scale-[var(--motion-press-scale)]"
                         )}
                     >
                         <span className="sm:hidden">{searchContent.viewAllResults}</span>
@@ -910,17 +937,18 @@ interface SearchCollectionCardProps {
 }
 
 function SearchCollectionCard({collection, onClick, index, variant = "card"}: SearchCollectionCardProps) {
+    const {canHover} = usePointerCapabilities();
     const staggerDelay = Math.min(index, 11) * 40;
 
     if (variant === "list") {
         return (
-            <Link
+            <Link viewTransition
                 to={`/collections/${collection.handle}`}
                 onClick={onClick}
                 prefetch="viewport"
                 className={cn(
-                    "flex items-center gap-4 md:gap-6 py-4 pl-4 md:pl-6 border-b border-border/50 no-underline group cursor-pointer",
-                    "transition-colors hover:bg-muted/30",
+                    "motion-interactive flex items-center gap-4 border-b border-border/50 py-4 pl-4 no-underline cursor-pointer md:gap-6 md:pl-6",
+                    canHover ? "group hover:bg-muted/30" : "motion-press active:bg-muted/30",
                     "animate-product-fade-in"
                 )}
                 style={{animationDelay: `${staggerDelay}ms`}}
@@ -934,7 +962,7 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
                             data={collection.image}
                             loading="lazy"
                             sizes="96px"
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className={cn("motion-image h-full w-full object-cover", canHover && "group-hover:scale-[1.03]")}
                         />
                     ) : (
                         <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">
@@ -942,7 +970,7 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
                         </div>
                     )}
                     {/* Hover overlay */}
-                    <div className="absolute inset-0 bg-primary/0 transition-colors duration-300 group-hover:bg-primary/5" />
+                    <div className={cn("motion-interactive absolute inset-0 bg-primary/0", canHover && "group-hover:bg-primary/5")} />
                 </div>
                 <div className="flex-1 min-w-0">
                     <h3 className="font-serif text-base md:text-lg font-medium text-primary truncate">
@@ -957,11 +985,14 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
     }
 
     return (
-        <Link
+        <Link viewTransition
             to={`/collections/${collection.handle}`}
             onClick={onClick}
             prefetch="viewport"
-            className="group block animate-product-fade-in cursor-pointer"
+            className={cn(
+                "motion-link block animate-product-fade-in cursor-pointer",
+                canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
+            )}
             style={{animationDelay: `${staggerDelay}ms`}}
         >
             <div className="aspect-square rounded-xl overflow-hidden bg-muted/50 mb-3">
@@ -971,7 +1002,7 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
                         data={collection.image}
                         loading="lazy"
                         sizes="(min-width: 768px) 25vw, 50vw"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className={cn("motion-image h-full w-full object-cover", canHover && "group-hover:scale-[1.03]")}
                     />
                 ) : (
                     <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">
@@ -981,7 +1012,12 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
                     </div>
                 )}
             </div>
-            <h3 className="font-serif text-sm md:text-base font-medium text-primary group-hover:text-primary/70 transition-colors">
+            <h3
+                className={cn(
+                    "font-serif text-sm md:text-base font-medium text-primary transition-colors",
+                    canHover && "group-hover:text-primary/70"
+                )}
+            >
                 {collection.title}
             </h3>
             {collection.description && (
@@ -1004,6 +1040,7 @@ interface SearchArticleItemProps {
 }
 
 function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}: SearchArticleItemProps) {
+    const {canHover} = usePointerCapabilities();
     const articleUrl = urlWithTrackingParams({
         baseUrl: `/blogs/${article.blog.handle}/${article.handle}`,
         trackingParams: article.trackingParameters,
@@ -1019,13 +1056,13 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
 
     if (variant === "list") {
         return (
-            <Link
+            <Link viewTransition
                 to={articleUrl}
                 onClick={onClick}
                 prefetch="viewport"
                 className={cn(
-                    "flex items-center gap-4 md:gap-6 py-4 pl-4 md:pl-6 border-b border-border/50 no-underline group cursor-pointer",
-                    "transition-colors hover:bg-muted/30",
+                    "motion-interactive flex items-center gap-4 border-b border-border/50 py-4 pl-4 no-underline cursor-pointer md:gap-6 md:pl-6",
+                    canHover ? "group hover:bg-muted/30" : "motion-press active:bg-muted/30",
                     "animate-product-fade-in"
                 )}
                 style={{animationDelay: `${staggerDelay}ms`}}
@@ -1039,7 +1076,7 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
                             data={article.image}
                             loading="lazy"
                             sizes="96px"
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className={cn("motion-image h-full w-full object-cover", canHover && "group-hover:scale-[1.03]")}
                         />
                     ) : (
                         <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">
@@ -1047,7 +1084,7 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
                         </div>
                     )}
                     {/* Hover overlay */}
-                    <div className="absolute inset-0 bg-primary/0 transition-colors duration-300 group-hover:bg-primary/5" />
+                    <div className={cn("motion-interactive absolute inset-0 bg-primary/0", canHover && "group-hover:bg-primary/5")} />
                 </div>
                 <div className="flex-1 min-w-0">
                     <h4 className="font-serif text-base md:text-lg font-medium text-primary truncate">
@@ -1069,11 +1106,14 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
 
     // Card variant - vertical layout with image on top
     return (
-        <Link
+        <Link viewTransition
             to={articleUrl}
             onClick={onClick}
             prefetch="viewport"
-            className={cn("block no-underline group animate-product-fade-in cursor-pointer")}
+            className={cn(
+                "motion-link block no-underline animate-product-fade-in cursor-pointer",
+                canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
+            )}
             style={{animationDelay: `${staggerDelay}ms`}}
         >
             <div className="aspect-4/3 rounded-2xl overflow-hidden bg-muted/50 mb-4">
@@ -1083,7 +1123,7 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
                         data={article.image}
                         loading="lazy"
                         sizes="(min-width: 45em) 400px, 100vw"
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className={cn("motion-image h-full w-full object-cover", canHover && "group-hover:scale-[1.03]")}
                     />
                 ) : (
                     <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center">
@@ -1122,9 +1162,9 @@ function SearchLoadingSkeleton() {
         <div className="max-w-6xl mx-auto space-y-6">
             {/* Tabs skeleton */}
             <div className="flex gap-2">
-                <Skeleton className="h-11 w-28 rounded-full" />
-                <Skeleton className="h-11 w-32 rounded-full" />
-                <Skeleton className="h-11 w-24 rounded-full" />
+                <Skeleton className="h-11 w-28 rounded-[var(--radius-pill-raw)]" />
+                <Skeleton className="h-11 w-32 rounded-[var(--radius-pill-raw)]" />
+                <Skeleton className="h-11 w-24 rounded-[var(--radius-pill-raw)]" />
             </div>
 
             {/* Product grid skeleton */}

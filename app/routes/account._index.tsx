@@ -56,6 +56,7 @@ import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel"
 import {ProductItem} from "~/components/ProductItem";
 import {Money} from "~/components/Money";
 import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
+import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {cn} from "~/lib/utils";
 import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
@@ -589,6 +590,7 @@ function TransactionItem({transaction}: {transaction: StoreCreditTransaction}) {
 type OrderNode = NonNullable<ReturnType<typeof useLoaderData<typeof loader>>["orders"]>["nodes"][number];
 
 function RecentOrdersSection({orders}: {orders: ReturnType<typeof useLoaderData<typeof loader>>["orders"]}) {
+    const {canHover} = usePointerCapabilities();
     const accountContent = FALLBACK_ACCOUNT_CONTENT;
     const orderNodes = orders?.nodes ?? [];
     const hasOrders = orderNodes.length > 0;
@@ -602,12 +604,20 @@ function RecentOrdersSection({orders}: {orders: ReturnType<typeof useLoaderData<
                 </h2>
                 {hasOrders && (
                     <Button variant="link" asChild className="text-primary p-0 h-auto group">
-                        <Link
+                        <Link viewTransition
                             to="/account/orders"
-                            className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
+                            className={cn(
+                                "flex items-center gap-1.5 transition-all duration-200",
+                                canHover ? "group-hover:gap-2" : "motion-press active:scale-[var(--motion-press-scale)]"
+                            )}
                         >
                             {accountContent.viewAllOrders}{" "}
-                            <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+                            <ArrowRightIcon
+                                className={cn(
+                                    "size-4 transition-transform",
+                                    canHover && "group-hover:translate-x-0.5"
+                                )}
+                            />
                         </Link>
                     </Button>
                 )}
@@ -627,13 +637,25 @@ function RecentOrdersSection({orders}: {orders: ReturnType<typeof useLoaderData<
 }
 
 function OrderCard({order}: {order: OrderNode}) {
+    const {canHover} = usePointerCapabilities();
     const lineItems = order.lineItems?.nodes ?? [];
     const fulfillmentStatus = order.fulfillments?.nodes?.[0]?.status;
     const displayStatus = fulfillmentStatus || order.financialStatus;
 
     return (
-        <Link to="/account/orders" className="group block no-underline">
-            <Card className="rounded-2xl py-0 overflow-hidden h-full bg-linear-to-br from-muted/30 via-card to-muted/15 shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] hover:-translate-y-0.5 transition-all duration-300">
+        <Link viewTransition
+            to="/account/orders"
+            className={cn("block no-underline", canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]")}
+        >
+            <Card
+                className={cn(
+                    "rounded-2xl py-0 overflow-hidden h-full bg-linear-to-br from-muted/30 via-card to-muted/15 transition-all duration-300",
+                    "shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)]",
+                    canHover
+                        ? "hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] hover:-translate-y-0.5"
+                        : "active:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)]"
+                )}
+            >
                 <CardContent className="p-5 md:p-6 flex flex-col h-full">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-4">
@@ -654,7 +676,8 @@ function OrderCard({order}: {order: OrderNode}) {
                             <div
                                 key={item.id}
                                 className={cn(
-                                    "relative size-14 rounded-xl overflow-hidden bg-muted shrink-0 ring-2 ring-card shadow-sm transition-transform duration-200 group-hover:-translate-y-0.5",
+                                    "relative size-14 rounded-xl overflow-hidden bg-muted shrink-0 ring-2 ring-card shadow-sm transition-transform duration-200",
+                                    canHover && "group-hover:-translate-y-0.5",
                                     index === 3 && lineItems.length > 4 && "relative"
                                 )}
                                 style={{zIndex: 10 - index, transitionDelay: `${index * 30}ms`}}
@@ -702,9 +725,16 @@ function OrderCard({order}: {order: OrderNode}) {
                     </div>
 
                     {/* View Details - Subtle arrow indicator */}
-                    <div className="mt-4 flex items-center gap-1.5 text-sm font-medium text-primary group-hover:gap-2.5 transition-all duration-200">
+                    <div
+                        className={cn(
+                            "mt-4 flex items-center gap-1.5 text-sm font-medium text-primary transition-all duration-200",
+                            canHover && "group-hover:gap-2.5"
+                        )}
+                    >
                         <span>View Details</span>
-                        <ArrowRightIcon className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                        <ArrowRightIcon
+                            className={cn("size-4 transition-transform duration-200", canHover && "group-hover:translate-x-0.5")}
+                        />
                     </div>
                 </CardContent>
             </Card>
@@ -728,7 +758,7 @@ function EmptyOrders() {
                     {accountContent.emptyNoOrdersMessage}
                 </p>
                 <Button asChild size="lg">
-                    <Link to="/collections">{accountContent.actionShopNow}</Link>
+                    <Link viewTransition to="/collections">{accountContent.actionShopNow}</Link>
                 </Button>
             </CardContent>
         </Card>
@@ -747,6 +777,7 @@ function EmptyOrders() {
 // ============================================
 
 function QuickActionsGrid() {
+    const {canHover} = usePointerCapabilities();
     const accountContent = FALLBACK_ACCOUNT_CONTENT;
 
     const actions = [
@@ -795,20 +826,41 @@ function QuickActionsGrid() {
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
                 {actions.map((action, index) => (
-                    <Link
+                    <Link viewTransition
                         key={action.label}
                         to={action.href}
-                        className="group flex flex-col items-center gap-4 p-6 md:p-8 lg:p-10 rounded-2xl bg-linear-to-br from-muted/30 via-card to-muted/15 shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] hover:-translate-y-0.5 transition-all duration-300"
+                        className={cn(
+                            "flex flex-col items-center gap-4 p-6 md:p-8 lg:p-10 rounded-2xl bg-linear-to-br from-muted/30 via-card to-muted/15 transition-all duration-300",
+                            "shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)]",
+                            canHover
+                                ? "group hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] hover:-translate-y-0.5"
+                                : "motion-press active:scale-[var(--motion-press-scale)] active:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)]"
+                        )}
                         style={{animationDelay: `${index * 50}ms`}}
                     >
-                        <div className="flex items-center justify-center size-16 md:size-20 lg:size-24 rounded-2xl bg-muted/40 group-hover:bg-primary group-hover:shadow-md transition-all duration-300">
-                            <action.icon className="size-7 md:size-8 lg:size-9 text-muted-foreground group-hover:text-primary-foreground transition-colors duration-300" />
+                        <div
+                            className={cn(
+                                "flex items-center justify-center size-16 md:size-20 lg:size-24 rounded-2xl bg-muted/40 transition-all duration-300",
+                                canHover && "group-hover:bg-primary group-hover:shadow-md"
+                            )}
+                        >
+                            <action.icon
+                                className={cn(
+                                    "size-7 md:size-8 lg:size-9 text-muted-foreground transition-colors duration-300",
+                                    canHover && "group-hover:text-primary-foreground"
+                                )}
+                            />
                         </div>
                         <div className="text-center space-y-0.5">
                             <span className="block text-base md:text-lg font-medium text-foreground">
                                 {action.label}
                             </span>
-                            <span className="block text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 hidden sm:block">
+                            <span
+                                className={cn(
+                                    "block text-xs text-muted-foreground transition-opacity duration-200 hidden sm:block",
+                                    canHover ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+                                )}
+                            >
                                 {action.description}
                             </span>
                         </div>
@@ -1033,7 +1085,7 @@ function RecentlyViewedSection({
                     {accountContent.sectionRecentlyViewed}
                 </h2>
                 <Button variant="link" asChild className="text-primary p-0 h-auto group">
-                    <Link
+                    <Link viewTransition
                         to="/collections"
                         className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
                     >
@@ -1079,7 +1131,7 @@ function RecommendedSection({products}: {products: CuratedProductFragment[]}) {
                     {recommendedTitle}
                 </h2>
                 <Button variant="link" asChild className="text-primary p-0 h-auto group">
-                    <Link
+                    <Link viewTransition
                         to="/collections/all-products"
                         className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
                     >
@@ -1150,7 +1202,7 @@ function SpecialOffersBanner({
                         size="lg"
                         className="bg-accent-foreground text-accent hover:bg-accent-foreground/90 shrink-0 shadow-lg"
                     >
-                        <Link to="/collections">Shop Now</Link>
+                        <Link viewTransition to="/collections">Shop Now</Link>
                     </Button>
                 </div>
             </div>

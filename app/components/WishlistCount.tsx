@@ -82,13 +82,13 @@
  * @usage_example
  * ```tsx
  * // Badge on icon button (typical usage)
- * <Link to="/wishlist" className="relative">
+ * <Link viewTransition to="/wishlist" className="relative">
  *   <Heart className="size-6" />
  *   <WishlistCount className="absolute -top-1 -right-1" />
  * </Link>
  *
  * // Inline count in navigation text
- * <Link to="/wishlist">
+ * <Link viewTransition to="/wishlist">
  *   Wishlist <WishlistCountInline />
  * </Link>
  *

@@ -5,6 +5,8 @@
         "app/**/*.tsx",
         "app/**/*.d.ts",
         "scripts/**/*.ts",
+        "tmp_tests/**/*.ts",
+        "tmp_tests/**/*.d.ts",
         "*.ts",
         "*.tsx",
         "*.d.ts",

@@ -56,6 +56,7 @@ import {RETURNS_AVAILABILITY_QUERY, checkReturnsEnabled} from "~/graphql/custome
 import {cn} from "~/lib/utils";
 import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
+import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 
 // =============================================================================
@@ -210,13 +211,19 @@ function AccountMenu({returnsEnabled}: {returnsEnabled: boolean}) {
 }
 
 function AccountNavLink({to, end, children}: {to: string; end?: boolean; children: React.ReactNode}) {
+    const {canHover} = usePointerCapabilities();
+
     return (
         /* Individual navigation link - Matches CuratedCollections tab behavior
            - shrink-0: Prevents link from shrinking in flex container
            - whitespace-nowrap: Ensures text stays on one line (critical for scroll)
            - Removed snap-start as we're not using scroll snap (matching CuratedCollections)
         */
-        <NavLink to={to} end={end} className="group shrink-0">
+        <NavLink viewTransition
+            to={to}
+            end={end}
+            className={cn("shrink-0", canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]")}
+        >
             {({isActive, isPending}) => (
                 <span
                     className={cn(
@@ -228,7 +235,9 @@ function AccountNavLink({to, end, children}: {to: string; end?: boolean; childre
                             ? "text-primary/50"
                             : isActive
                               ? "text-primary"
-                              : "text-primary/70 group-hover:text-primary"
+                              : canHover
+                                ? "text-primary/70 group-hover:text-primary"
+                                : "text-primary/85"
                     )}
                 >
                     {children}
@@ -236,7 +245,7 @@ function AccountNavLink({to, end, children}: {to: string; end?: boolean; childre
                     <span
                         className={cn(
                             "absolute bottom-0 left-0 w-full h-0.5 bg-primary transition-transform duration-300 ease-out origin-left",
-                            isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                            isActive ? "scale-x-100" : canHover ? "scale-x-0 group-hover:scale-x-100" : "scale-x-100 opacity-45"
                         )}
                     />
                 </span>
