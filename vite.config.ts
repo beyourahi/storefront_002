@@ -38,10 +38,10 @@
  * - tsconfig.json - TypeScript path aliases
  */
 
-import {defineConfig} from "vite";
-import {hydrogen} from "@shopify/hydrogen/vite";
-import {oxygen} from "@shopify/mini-oxygen/vite";
-import {reactRouter} from "@react-router/dev/vite";
+import { defineConfig } from "vite";
+import { hydrogen } from "@shopify/hydrogen/vite";
+import { oxygen } from "@shopify/mini-oxygen/vite";
+import { reactRouter } from "@react-router/dev/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import babel from "vite-plugin-babel";
@@ -55,7 +55,7 @@ import babel from "vite-plugin-babel";
  * The target must be explicitly set to "18" for React 18.x projects.
  */
 const ReactCompilerConfig = {
-    target: "18"
+  target: "18",
 };
 
 // =============================================================================
@@ -63,66 +63,73 @@ const ReactCompilerConfig = {
 // =============================================================================
 
 export default defineConfig({
-    plugins: [
-        // -------------------------------------------------------------------------
-        // PLUGINS
-        // Order matters: Babel must run first to transform JSX/TSX with React Compiler
-        // -------------------------------------------------------------------------
-        babel({
-            filter: /\.[jt]sx?$/,
-            babelConfig: {
-                presets: [["@babel/preset-react", {runtime: "automatic"}], "@babel/preset-typescript"],
-                plugins: [["babel-plugin-react-compiler", ReactCompilerConfig]]
-            }
-        }), // React Compiler via Babel - automatic memoization
-        tailwindcss(), // Tailwind CSS v4 processing
-        hydrogen(), // Shopify Hydrogen features (cart, storefront client)
-        oxygen(), // Shopify Oxygen (Cloudflare Workers) environment
-        reactRouter(), // React Router 7 file-based routing
-        tsconfigPaths() // Enables ~/ path alias from tsconfig.json
+  plugins: [
+    // -------------------------------------------------------------------------
+    // PLUGINS
+    // Order matters: Babel must run first to transform JSX/TSX with React Compiler
+    // -------------------------------------------------------------------------
+    babel({
+      filter: /\.[jt]sx?$/,
+      babelConfig: {
+        presets: [
+          ["@babel/preset-react", { runtime: "automatic" }],
+          "@babel/preset-typescript",
+        ],
+        plugins: [["babel-plugin-react-compiler", ReactCompilerConfig]],
+      },
+    }), // React Compiler via Babel - automatic memoization
+    tailwindcss(), // Tailwind CSS v4 processing
+    hydrogen(), // Shopify Hydrogen features (cart, storefront client)
+    oxygen(), // Shopify Oxygen (Cloudflare Workers) environment
+    reactRouter(), // React Router 7 file-based routing
+    tsconfigPaths(), // Enables ~/ path alias from tsconfig.json
+  ],
+
+  // -------------------------------------------------------------------------
+  // BUILD OPTIONS
+  // -------------------------------------------------------------------------
+  build: {
+    // Don't inline assets as base64 - this allows strict CSP headers
+    // All assets are served as separate files with proper caching
+    assetsInlineLimit: 0,
+  },
+
+  // -------------------------------------------------------------------------
+  // SSR OPTIONS
+  // -------------------------------------------------------------------------
+  ssr: {
+    optimizeDeps: {
+      /**
+       * Include dependencies here if they throw CJS<>ESM errors.
+       * For example, for the following error:
+       *
+       * > ReferenceError: module is not defined
+       * >   at /Users/.../node_modules/example-dep/index.js:1:1
+       *
+       * Include 'example-dep' in the array below.
+       * @see https://vitejs.dev/config/dep-optimization-options
+       */
+      include: [
+        "@shopify/hydrogen",
+        "set-cookie-parser",
+        "cookie",
+        "react-router",
+        "react-compiler-runtime",
+        "use-sync-external-store/shim",
+        "@radix-ui/react-use-is-hydrated",
+      ],
+    },
+  },
+  // -------------------------------------------------------------------------
+  // DEV SERVER OPTIONS
+  // -------------------------------------------------------------------------
+  server: {
+    // Allowed hosts for development server
+    // - tryhydrogen.dev: Shopify's development environment
+    // - ngrok: Required for Customer Account API OAuth flow
+    allowedHosts: [
+      ".tryhydrogen.dev",
+      "hermelinda-nonsegmentary-hettie.ngrok-free.dev",
     ],
-
-    // -------------------------------------------------------------------------
-    // BUILD OPTIONS
-    // -------------------------------------------------------------------------
-    build: {
-        // Don't inline assets as base64 - this allows strict CSP headers
-        // All assets are served as separate files with proper caching
-        assetsInlineLimit: 0
-    },
-
-    // -------------------------------------------------------------------------
-    // SSR OPTIONS
-    // -------------------------------------------------------------------------
-    ssr: {
-        optimizeDeps: {
-            /**
-             * Include dependencies here if they throw CJS<>ESM errors.
-             * For example, for the following error:
-             *
-             * > ReferenceError: module is not defined
-             * >   at /Users/.../node_modules/example-dep/index.js:1:1
-             *
-             * Include 'example-dep' in the array below.
-             * @see https://vitejs.dev/config/dep-optimization-options
-             */
-            include: [
-                "set-cookie-parser",
-                "cookie",
-                "react-router",
-                "react-compiler-runtime",
-                "use-sync-external-store/shim",
-                "@radix-ui/react-use-is-hydrated"
-            ]
-        }
-    },
-    // -------------------------------------------------------------------------
-    // DEV SERVER OPTIONS
-    // -------------------------------------------------------------------------
-    server: {
-        // Allowed hosts for development server
-        // - tryhydrogen.dev: Shopify's development environment
-        // - ngrok: Required for Customer Account API OAuth flow
-        allowedHosts: [".tryhydrogen.dev", "hermelinda-nonsegmentary-hettie.ngrok-free.dev"]
-    }
+  },
 });

@@ -33,6 +33,7 @@ import {createContext, useContext, useState, useEffect, useRef, type ReactNode} 
 import type {BrandAnimationContextValue, MeasuredPositions} from "types";
 import {useScrollProgress} from "~/lib/useScrollProgress";
 import {useSiteSettings} from "~/lib/site-content-context";
+import {calculateBrandAnimationEndY} from "~/lib/brand-animation-layout";
 
 // ============================================================================
 // Constants
@@ -41,17 +42,20 @@ import {useSiteSettings} from "~/lib/site-content-context";
 /**
  * Layout constants for AnimatedBrandText positioning
  *
- * These must match the CSS custom properties in tailwind.css for accurate animation:
- * - --announcement-height: 32px (when visible)
+ * These must stay in sync with the header styles for accurate animation.
+ * Layout values that can change at runtime (for example, announcement visibility) are
+ * read from CSS custom properties instead of being hardcoded in the component.
+ *
+ * Relevant CSS variables from tailwind.css / PageLayout:
+ * - --announcement-height: 32px when visible, 0px when hidden
  * - --announcement-gap: 8px
  * - --header-height: 68px
  *
  * The endY calculation accounts for the full vertical stack:
- * announcement (32px) + gap (8px) + header padding (0px mobile / 8px sm+) + centering offset
+ * live announcement height + gap + header padding (0px mobile / 8px sm+) + centering offset
  */
-const HEADER_HEIGHT = 68; // 4.25rem = 68px (matches --header-height in tailwind.css)
-const ANNOUNCEMENT_HEIGHT = 32; // Matches --announcement-height when visible
-const ANNOUNCEMENT_GAP = 8; // Matches --announcement-gap in tailwind.css (8px)
+const DEFAULT_HEADER_HEIGHT = 68; // 4.25rem = 68px (matches --header-height in tailwind.css)
+const DEFAULT_ANNOUNCEMENT_GAP = 8; // Matches --announcement-gap in tailwind.css (8px)
 const HEADER_PADDING_TOP_SM = 8; // sm:pt-2 (0.5rem = 8px) - only applied at sm+ breakpoint
 const HEADER_PADDING_TOP_MOBILE = 0; // No pt-* on mobile when scrolled (Header.tsx: "px-2 sm:px-3 sm:pt-2")
 const HEADER_TEXT_SIZE_MOBILE = 24; // text-2xl (1.5rem) on mobile
@@ -238,7 +242,7 @@ function calculateOptimalFontSize(element: HTMLElement, maxWidth: number): numbe
  */
 export function AnimatedBrandText() {
     const {progress, heroRef} = useBrandAnimation();
-    const {brandName} = useSiteSettings();
+    const {brandName, announcementBanner} = useSiteSettings();
     const containerRef = useRef<HTMLDivElement>(null);
     const textRef = useRef<HTMLParagraphElement>(null);
     const [positions, setPositions] = useState<MeasuredPositions | null>(null);
@@ -306,14 +310,24 @@ export function AnimatedBrandText() {
             // Center horizontally in viewport, vertically centered in header
             const endX = (viewportWidth - scaledWidth) / 2;
 
-            // Center vertically in header, accounting for fixed elements above:
-            // - Announcement banner (32px when visible)
-            // - Gap between announcement and header (8px, --announcement-gap)
-            // - Header padding top (0px on mobile, 8px sm:pt-2 on sm+)
-            // - Centering within remaining header height
+            // Center vertically in the live header stack. The announcement banner is
+            // conditional, so we read the resolved CSS variables instead of assuming
+            // the banner is always visible.
             const scaledHeight = startHeight * endScale;
+            const layoutStyles = getComputedStyle(textRef.current);
+            const announcementHeight = announcementBanner.length > 0 ? 32 : 0;
+            const announcementGap =
+                Number.parseFloat(layoutStyles.getPropertyValue("--announcement-gap")) || DEFAULT_ANNOUNCEMENT_GAP;
+            const headerHeight =
+                Number.parseFloat(layoutStyles.getPropertyValue("--header-height")) || DEFAULT_HEADER_HEIGHT;
             const headerPaddingTop = viewportWidth < SM_BREAKPOINT ? HEADER_PADDING_TOP_MOBILE : HEADER_PADDING_TOP_SM;
-            const endY = ANNOUNCEMENT_HEIGHT + ANNOUNCEMENT_GAP + headerPaddingTop + (HEADER_HEIGHT - scaledHeight) / 2;
+            const endY = calculateBrandAnimationEndY({
+                announcementHeight,
+                announcementGap,
+                headerHeight,
+                headerPaddingTop,
+                scaledHeight
+            });
 
             setPositions({
                 startX,
@@ -338,7 +352,7 @@ export function AnimatedBrandText() {
             clearTimeout(timeoutId);
             window.removeEventListener("resize", calculatePositions);
         };
-    }, [isClient, optimalFontSize, heroRef]);
+    }, [announcementBanner.length, isClient, optimalFontSize, heroRef]);
 
     // Don't render on server
     if (!isClient) {
