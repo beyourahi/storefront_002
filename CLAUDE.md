@@ -30,10 +30,11 @@ A **commercial Shopify Hydrogen template** built to be sold to multiple client b
 | Target                             | Purpose                         | Data Source                               |
 | ---------------------------------- | ------------------------------- | ----------------------------------------- |
 | **Shopify Oxygen**                 | Client production deployments   | Client's own Shopify store (no fallback)  |
-| **Cloudflare Workers + local dev** | Portfolio showcase + dev server | Fallback demo store + `fallback-data.ts`  |
+| **Cloudflare Workers + local dev** | Portfolio showcase + dev server | Demo Shopify store credentials + in-repo content defaults |
 
-- On **Oxygen**: NEVER use the fallback store or `fallback-data.ts` — all data comes from the client's Shopify store
-- On **Cloudflare Workers** and during **local development**: ALWAYS use the fallback demo store for products and `fallback-data.ts` for non-product content
+- On **Oxygen**: use the client's Shopify credentials only
+- On **Cloudflare Workers** portfolio deployments: `wrangler.jsonc` is preconfigured with the demo-store credentials
+- During **local development**: point `.env` at the desired Shopify store; UI and content defaults currently live in `app/lib/metaobject-parsers.ts`
 
 ## Tech Stack
 
@@ -55,6 +56,7 @@ A **commercial Shopify Hydrogen template** built to be sold to multiple client b
 |               | next-themes      | -          | Dark mode                           |
 |               | colorjs.io       | -          | Color manipulation                  |
 | **Dev**       | ESLint           | 9          | TypeScript, React, a11y             |
+|               | Bun              | Latest     | Package manager + scripts           |
 |               | Prettier         | 3          | Shopify config                      |
 |               | Node.js          | >= 20.19.0 | **Strict requirement**              |
 
@@ -87,12 +89,12 @@ storefront_002/
 ## Common Commands
 
 ```bash
-npm run dev          # Dev server + GraphQL codegen
-npm run build        # Production build
-npm run preview      # Preview build
-npm run lint         # ESLint
-npm run typecheck    # TypeScript + route types
-npm run codegen      # Regenerate GraphQL types
+bun run dev          # Dev server + GraphQL codegen
+bun run build        # Production build
+bun run preview      # Preview build
+bun run lint         # ESLint
+bun run typecheck    # TypeScript + route types
+bun run codegen      # Regenerate GraphQL types
 ```
 
 ## Code Style
@@ -140,7 +142,7 @@ Always use MCP tools over web search for official docs. Validate GraphQL after A
 ## Repository
 
 **Commits**: Conventional (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `perf:`)
-**Before Push**: `npm run typecheck`, `npm run lint`, `npm run codegen` (after GraphQL changes)
+**Before Push**: `bun run typecheck`, `bun run lint`, `bun run codegen` (after GraphQL changes)
 **Code Review**: Read comments, update on change, test WCAG compliance
 
 ## Environment
@@ -169,10 +171,10 @@ PUBLIC_CUSTOMER_ACCOUNT_API_URL=https://shopify.com/66049638586
 SHOP_ID=66049638586
 ```
 
-Non-product content falls back to `fallback-data.ts` in `app/lib/`. The `lib/data-source.ts` adapter selects Shopify vs. fallback based on env credentials.
+For portfolio Workers deploys, demo-store credentials live in `wrangler.jsonc`. UI and content defaults are currently embedded in `app/lib/metaobject-parsers.ts`, and `app/lib/data-source.ts` currently proxies Shopify only.
 
-**Setup**: `npm install && npm run codegen && npm run dev`
-**Dev URL**: http://localhost:3000, hot reload enabled
+**Setup**: `bun install && bun run codegen && bun run dev`
+**Dev URL**: check the Hydrogen dev output for the active local URL; do not assume `http://localhost:3000`
 
 ## Key Files
 
@@ -180,8 +182,8 @@ Non-product content falls back to `fallback-data.ts` in `app/lib/`. The `lib/dat
 **Config**: `vite.config.ts` (React Compiler), `react-router.config.ts`, `eslint.config.js`, `styles/tailwind.css`
 **GraphQL**: `storefrontapi.generated.d.ts`, `customer-accountapi.generated.d.ts`
 **Solutions**: `lib/color/contrast.ts` (WCAG), `lib/wishlist-context.tsx` (SSR), `lib/smoothScroll.ts` (Lenis)
-**Data Source Resolver**: `lib/data-source.ts` — centralized Shopify/mock adapter selection based on env credentials
-**Mock Data**: `lib/mock-data.ts` — 24 products, 6 collections consumed through DataAdapter mock handlers
+**Data Source Resolver**: `app/lib/data-source.ts` — validates store env and proxies Shopify queries used by the app context
+**Content Defaults**: `app/lib/metaobject-parsers.ts` — fallback UI and content constants used when metaobject fields are missing
 
 ## Critical Warnings
 
@@ -208,7 +210,7 @@ Non-product content falls back to `fallback-data.ts` in `app/lib/`. The `lib/dat
 **5. GraphQL Codegen**
 
 - **Problem**: Stale types after query changes
-- **Solution**: `npm run codegen` after ANY GraphQL modification
+- **Solution**: `bun run codegen` after ANY GraphQL modification
 
 **6. Service Worker Cache**
 
@@ -297,7 +299,8 @@ Read all comments before editing. Update when changing code. Add for complex log
 - `site_settings` (singleton): Brand, hero, testimonials, FAQs, Instagram, shipping
 - `theme_settings` (singleton): Fonts (Google), colors (OKLCH/HEX)
 - 80/20 architecture: High-value content only
-- Files: `lib/metaobject-queries.ts`, `lib/metaobject-parsers.ts`, `lib/fallback-data.ts`, `lib/site-content-context.tsx`
+- Files: `lib/metaobject-queries.ts`, `lib/metaobject-parsers.ts`, `lib/site-content-context.tsx`
+  Fallback constants currently live in `lib/metaobject-parsers.ts`.
 
 **PWA Manifest**: Generated from metaobjects via `lib/pwa-queries.ts`, `lib/pwa-parsers.ts`, `routes/manifest[.]webmanifest.tsx`
 

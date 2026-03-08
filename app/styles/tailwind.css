@@ -66,64 +66,50 @@
     --page-breathing-room-dense: clamp(2.5rem, 6vw, 6rem);
 
     /* ─────────────────────────────────────────────────────────────────────
-     * Core Background/Foreground Pair
+     * Canonical semantic tokens
      * ───────────────────────────────────────────────────────────────────── */
-    /* background: #ffffff | foreground: #000000 */
-    /* foreground on background = 21.00:1 (WCAG AAA) ✓ */
-    --background: oklch(1 0 0);
-    --foreground: oklch(0 0 0);
+    --surface-canvas: oklch(0.985 0.004 95);
+    --surface-default: oklch(0.992 0.004 95);
+    --surface-raised: oklch(0.998 0.006 95);
+    --surface-muted: oklch(0.93 0.01 95);
+    --surface-interactive: oklch(0.9 0.012 95);
+    --surface-overlay: oklch(0.18 0.006 95 / 0.34);
+    --text-primary: oklch(0.18 0.01 95);
+    --text-secondary: oklch(0.34 0.012 95);
+    --text-subtle: oklch(0.5 0.01 95);
+    --text-inverse: oklch(0.98 0 0);
+    --border-subtle: oklch(0.84 0.012 95);
+    --border-strong: oklch(0.68 0.014 95);
+    --input-border: oklch(0.62 0.016 95);
+    --focus-ring: oklch(0.46 0.12 250);
+    --brand-primary: oklch(0.46 0.18 250);
+    --brand-primary-foreground: oklch(0.98 0 0);
+    --brand-primary-hover: oklch(0.42 0.18 250);
+    --brand-primary-active: oklch(0.38 0.18 250);
+    --brand-primary-subtle: oklch(0.93 0.05 250);
+    --brand-primary-subtle-foreground: oklch(0.18 0.01 250);
+    --brand-secondary: oklch(0.56 0.12 215);
+    --brand-secondary-subtle: oklch(0.94 0.04 215);
+    --brand-accent: oklch(0.62 0.12 70);
+    --brand-accent-subtle: oklch(0.92 0.05 70);
 
     /* ─────────────────────────────────────────────────────────────────────
-     * Card Colors
+     * Legacy compatibility aliases
      * ───────────────────────────────────────────────────────────────────── */
-    /* card: #ffffff | card-foreground: #000000 */
-    /* card-foreground on card = 21.00:1 (WCAG AAA) ✓ */
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0 0 0);
-
-    /* ─────────────────────────────────────────────────────────────────────
-     * Popover Colors
-     * ───────────────────────────────────────────────────────────────────── */
-    /* popover: #ffffff | popover-foreground: #000000 */
-    /* popover-foreground on popover = 21.00:1 (WCAG AAA) ✓ */
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0 0 0);
-
-    /* ─────────────────────────────────────────────────────────────────────
-     * Primary Colors (Main brand/action color)
-     * ───────────────────────────────────────────────────────────────────── */
-    /* primary: #000000 | primary-foreground: #ffffff */
-    /* primary-foreground on primary = 21.00:1 (WCAG AAA) ✓ */
-    /* primary on background = 21.00:1 (WCAG AAA) ✓ - for outlined buttons */
-    --primary: oklch(0 0 0);
-    --primary-foreground: oklch(1 0 0);
-
-    /* ─────────────────────────────────────────────────────────────────────
-     * Secondary Colors (Subtle backgrounds, borders)
-     * ───────────────────────────────────────────────────────────────────── */
-    /* secondary: #ffffff | secondary-foreground: #000000 */
-    /* secondary-foreground on secondary = 21.00:1 (WCAG AAA) ✓ */
-    /* secondary on background = 1.00:1 - decorative only, not for text */
-    --secondary: oklch(1 0 0);
-    --secondary-foreground: oklch(0 0 0);
-
-    /* ─────────────────────────────────────────────────────────────────────
-     * Muted Colors (Disabled states, subtle text)
-     * ───────────────────────────────────────────────────────────────────── */
-    /* muted: #ffffff | muted-foreground: #000000 */
-    /* muted-foreground on muted = 21.00:1 (WCAG AAA) ✓ */
-    /* muted-foreground on background = 21.00:1 (WCAG AAA) ✓ */
-    --muted: oklch(1 0 0);
-    --muted-foreground: oklch(0 0 0);
-
-    /* ─────────────────────────────────────────────────────────────────────
-     * Accent Colors (Hover states, highlights)
-     * ───────────────────────────────────────────────────────────────────── */
-    /* accent: #000000 | accent-foreground: #ffffff */
-    /* accent-foreground on accent = 21.00:1 (WCAG AAA) ✓ */
-    /* accent on background = 21.00:1 (WCAG AAA) ✓ */
-    --accent: oklch(0 0 0);
-    --accent-foreground: oklch(1 0 0);
+    --background: var(--surface-canvas);
+    --foreground: var(--text-primary);
+    --card: var(--surface-raised);
+    --card-foreground: var(--text-primary);
+    --popover: var(--surface-default);
+    --popover-foreground: var(--text-primary);
+    --primary: var(--brand-primary);
+    --primary-foreground: var(--brand-primary-foreground);
+    --secondary: var(--surface-interactive);
+    --secondary-foreground: var(--text-primary);
+    --muted: var(--surface-muted);
+    --muted-foreground: var(--text-secondary);
+    --accent: var(--brand-accent-subtle);
+    --accent-foreground: var(--brand-primary-subtle-foreground);
 
     /* ─────────────────────────────────────────────────────────────────────
      * Destructive Colors (Errors, warnings, delete actions)
@@ -140,14 +126,14 @@
     /* border: #000000 | on background (#ffffff) = 21.00:1 (WCAG AAA) ✓ */
     /* Note: Borders are decorative/structural, not informational */
     /* For informational borders, use primary or accent colors */
-    --border: oklch(0 0 0);
+    --border: var(--border-subtle);
 
     /* input: #000000 | foreground text on input = 21.00:1 (WCAG AAA) ✓ */
-    --input: oklch(0 0 0);
+    --input: var(--input-border);
 
     /* ring: #000000 | on background = 21.00:1 (WCAG AAA) ✓ */
     /* Focus ring provides excellent visibility for keyboard navigation */
-    --ring: oklch(0 0 0);
+    --ring: var(--focus-ring);
 
     /* ─────────────────────────────────────────────────────────────────────
      * Typography
@@ -222,9 +208,9 @@
      * Overlay Colors - Backdrops and transparent layers
      * These are decorative/structural, not for informational content
      * ───────────────────────────────────────────────────────────────────── */
-    --overlay-dark: oklch(0 0 0 / 0.3);
-    --overlay-light: oklch(1 0 0 / 0.1);
-    --overlay-light-hover: oklch(1 0 0 / 0.2);
+    --overlay-dark: var(--surface-overlay);
+    --overlay-light: var(--brand-primary-subtle);
+    --overlay-light-hover: var(--brand-accent-subtle);
 
     /* ─────────────────────────────────────────────────────────────────────
      * Primary Button Interaction States
@@ -239,7 +225,7 @@
      * - primary-foreground (#fff) on primary-active (#0d0d0d) = 19.35:1 (WCAG AAA) ✓
      * ───────────────────────────────────────────────────────────────────── */
     /* primary-active: Pressed state for tactile feedback (matches primary black) */
-    --primary-active: oklch(0 0 0);
+    --primary-active: var(--brand-primary-active);
 
     /* ─────────────────────────────────────────────────────────────────────
      * Wishlist Active Colors (Love/Heart Toggle)

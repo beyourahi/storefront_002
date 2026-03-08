@@ -41,6 +41,7 @@ import type {OrderLineItemFullFragment} from "customer-accountapi.generated";
 import {ProductItem} from "~/components/ProductItem";
 import {Badge} from "~/components/ui/badge";
 import {getOrderStatusVariant, formatOrderStatus} from "~/lib/order-status";
+import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 
 // ============================================================================
 // Types
@@ -246,7 +247,7 @@ export function OrderProductItem({
     // ========================================================================
     if (context === "carousel" && orderHistoryProduct) {
         const productFragment = convertOrderHistoryProductToFragment(orderHistoryProduct);
-        const formattedDate = new Date(orderHistoryProduct.orderDate).toLocaleDateString("en-US", {
+        const formattedDate = new Date(orderHistoryProduct.orderDate).toLocaleDateString(STORE_FORMAT_LOCALE, {
             month: "short",
             day: "numeric"
         });

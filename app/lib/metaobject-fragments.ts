@@ -134,7 +134,6 @@ export const SITE_SETTINGS_FRAGMENT = `#graphql
     city: field(key: "city") { value }
     state: field(key: "state_province") { value }
     zipCode: field(key: "postal_code") { value }
-    country: field(key: "country") { value }
 
     # ─────────────────────────────────────────────────────────────────────────
     # SECTION HEADINGS

@@ -68,6 +68,7 @@ import {Button} from "~/components/ui/button";
 import {Search, AlertCircle, Package, FolderOpen, Newspaper, SearchX, Calendar, Clock, TrendingUp} from "lucide-react";
 import {cn} from "~/lib/utils";
 import {buildCanonicalUrl} from "~/lib/seo";
+import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 import {sortWithPinnedFirst} from "~/lib/product-tags";
@@ -310,7 +311,7 @@ export default function SearchPage() {
                         autoComplete="off"
                         enterKeyHint="search"
                         className={cn(
-                            "w-full bg-transparent border-0 border-b-2 border-primary/30",
+                            "w-full bg-transparent border-0 border-b-2 border-[var(--border-strong)]",
                             // Responsive text sizing matching FullScreenSearch
                             "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif",
                             "text-primary placeholder:text-primary/40",
@@ -538,7 +539,7 @@ function SearchPageInitialState({
                                 variant="outline"
                                 size="sm"
                                 onClick={() => onSuggestionClick(term)}
-                                className="text-sm sm:text-sm border-primary/30"
+                                className="text-sm sm:text-sm border-[var(--border-strong)]"
                             >
                                 {term}
                             </Button>
@@ -561,7 +562,7 @@ function SearchPageInitialState({
                                 variant="outline"
                                 size="sm"
                                 onClick={() => onSuggestionClick(term)}
-                                className="text-sm sm:text-sm border-primary/30"
+                                className="text-sm sm:text-sm border-[var(--border-strong)]"
                             >
                                 {term}
                             </Button>
@@ -1005,7 +1006,7 @@ function SearchArticleCard({
     });
 
     const staggerDelay = Math.min(index, 11) * 40;
-    const publishDate = new Date(article.publishedAt).toLocaleDateString("en-US", {
+    const publishDate = new Date(article.publishedAt).toLocaleDateString(STORE_FORMAT_LOCALE, {
         year: "numeric",
         month: "short",
         day: "numeric"

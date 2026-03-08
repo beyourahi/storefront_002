@@ -12,7 +12,7 @@
  * - Contact cards (email, phone, hours)
  * - Location/address section
  * - Social media links
- * - CMS-driven content (no hardcoded values)
+ * - CMS-driven content with a fixed Bangladesh country label
  *
  * @design
  * Uses alternating background sections:
@@ -23,7 +23,8 @@
  * @cms-integration
  * All content comes from site_settings metaobject:
  * - contact_email, contact_phone, business_hours
- * - address fields (street, city, state, zip, country)
+ * - address fields (street, city, state, zip)
+ * - country is fixed in code to Bangladesh
  * - Social links array (platform, handle, url)
  *
  * @accessibility
@@ -39,8 +40,10 @@
 
 import type {Route} from "./+types/contact";
 import {getSeoMeta} from "@shopify/hydrogen";
+import {Fragment} from "react";
 import {buildCanonicalUrl, getBrandNameFromMatches} from "~/lib/seo";
 import {useContactInfo, useSocialLinks} from "~/lib/site-content-context";
+import {STORE_COUNTRY_NAME} from "~/lib/store-locale";
 
 export const meta: Route.MetaFunction = ({matches}) => {
     const brandName = getBrandNameFromMatches(matches);
@@ -56,6 +59,9 @@ export const meta: Route.MetaFunction = ({matches}) => {
 export default function Contact() {
     const contactInfo = useContactInfo();
     const socialLinks = useSocialLinks();
+    const regionLine = [contactInfo.address.city, contactInfo.address.state].filter(Boolean).join(", ");
+    const cityStateZipLine = [regionLine, contactInfo.address.zip].filter(Boolean).join(" ");
+    const addressLines = [contactInfo.address.street, cityStateZipLine, STORE_COUNTRY_NAME].filter(Boolean);
     return (
         <div className="min-h-dvh  ">
             {/* Hero Section - Cream Background
@@ -135,14 +141,14 @@ export default function Contact() {
                             <div className="flex items-end">
                                 <address className="not-italic">
                                     <p className="text-xl sm:text-2xl md:text-3xl text-primary-foreground leading-relaxed">
-                                        {contactInfo.address.street}
-                                        <br />
-                                        {contactInfo.address.city}, {contactInfo.address.state}{" "}
-                                        {contactInfo.address.zip}
-                                        <br />
-                                        <span className="text-primary-foreground/60">
-                                            {contactInfo.address.country}
-                                        </span>
+                                        {addressLines.map((line, index) => (
+                                            <Fragment key={line}>
+                                                <span className={index === addressLines.length - 1 ? "text-primary-foreground/60" : undefined}>
+                                                    {line}
+                                                </span>
+                                                {index < addressLines.length - 1 && <br />}
+                                            </Fragment>
+                                        ))}
                                     </p>
                                 </address>
                             </div>

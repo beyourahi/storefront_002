@@ -67,6 +67,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {useAside} from "~/components/Aside";
 import {useRecentSearches} from "~/hooks/useRecentSearches";
 import {useSearchKeyboard} from "~/hooks/useSearchKeyboard";
+import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 import {
     ViewOptionsSelector,
     getResponsiveDefaultColumns,
@@ -315,7 +316,7 @@ export function FullScreenSearch({collections, popularSearchTerms = []}: FullScr
                                     type="search"
                                     onChange={handleInputChange}
                                     className={cn(
-                                        "w-full bg-transparent border-0 border-b-2 border-primary/30",
+                                        "w-full bg-transparent border-0 border-b-2 border-[var(--border-strong)]",
                                         // Responsive text sizing
                                         "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif",
                                         "text-primary placeholder:text-primary/40",
@@ -433,7 +434,7 @@ function SearchInitialState({
                                 className={cn(
                                     // Responsive padding with proper touch target
                                     "px-3 sm:px-4 py-2.5 sm:py-2 min-h-11 cursor-pointer",
-                                    "rounded-full border border-primary/30",
+                                    "rounded-full border border-[var(--border-strong)]",
                                     "text-sm font-medium text-primary",
                                     "hover:bg-primary hover:text-primary-foreground",
                                     "active:scale-95 transition-all duration-200"
@@ -461,7 +462,7 @@ function SearchInitialState({
                                 className={cn(
                                     // Responsive padding with proper touch target
                                     "px-3 sm:px-4 py-2.5 sm:py-2 min-h-11 cursor-pointer",
-                                    "rounded-full border border-primary/30",
+                                    "rounded-full border border-[var(--border-strong)]",
                                     "text-sm font-medium text-primary",
                                     "hover:bg-primary hover:text-primary-foreground",
                                     "active:scale-95 transition-all duration-200"
@@ -1010,7 +1011,7 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
     });
 
     const staggerDelay = Math.min(index, 11) * 40;
-    const publishDate = new Date(article.publishedAt).toLocaleDateString("en-US", {
+    const publishDate = new Date(article.publishedAt).toLocaleDateString(STORE_FORMAT_LOCALE, {
         year: "numeric",
         month: "short",
         day: "numeric"

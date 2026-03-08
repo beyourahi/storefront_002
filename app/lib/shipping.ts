@@ -1,3 +1,5 @@
+import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
+
 /**
  * @fileoverview Shipping Configuration and Free Shipping Utilities
  *
@@ -82,11 +84,11 @@ export function parseShippingConfig(
 export function formatShippingThreshold(amount: number, currencyCode: string = DEFAULT_CURRENCY_CODE): string {
     // For BDT, use the Taka symbol
     if (currencyCode === "BDT") {
-        return `৳${amount.toLocaleString()}`;
+        return `৳${amount.toLocaleString(STORE_FORMAT_LOCALE)}`;
     }
 
     // For other currencies, use Intl formatter
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat(STORE_FORMAT_LOCALE, {
         style: "currency",
         currency: currencyCode,
         minimumFractionDigits: 0,

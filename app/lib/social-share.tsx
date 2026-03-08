@@ -40,6 +40,7 @@
  */
 
 import type {ProductFragment} from "storefrontapi.generated";
+import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 
 // Types
 export interface ShareData {
@@ -72,7 +73,7 @@ export interface SocialSharePlatform {
 // Format price from Shopify Money type
 function formatPrice(price: {amount: string; currencyCode: string}): string {
     const amount = parseFloat(price.amount);
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat(STORE_FORMAT_LOCALE, {
         style: "currency",
         currency: price.currencyCode
     }).format(amount);

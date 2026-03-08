@@ -39,6 +39,7 @@
  */
 
 import type {ShareData} from "~/lib/social-share";
+import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 
 /**
  * Strip HTML tags from a string for word counting
@@ -71,7 +72,7 @@ export function calculateReadingTime(content: string, wordsPerMinute: number = 2
  * Format article date for display
  */
 export function formatArticleDate(date: string, options?: Intl.DateTimeFormatOptions): string {
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat(STORE_FORMAT_LOCALE, {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -83,7 +84,7 @@ export function formatArticleDate(date: string, options?: Intl.DateTimeFormatOpt
  * Format article date in short format (e.g., "Dec 4, 2025")
  */
 export function formatArticleDateShort(date: string): string {
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat(STORE_FORMAT_LOCALE, {
         month: "short",
         day: "numeric",
         year: "numeric"

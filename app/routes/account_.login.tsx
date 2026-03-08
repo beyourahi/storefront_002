@@ -22,6 +22,7 @@
  */
 
 import type {Route} from "./+types/account_.login";
+import {STORE_COUNTRY_CODE} from "~/lib/store-locale";
 
 // =============================================================================
 // LOADER
@@ -43,6 +44,6 @@ import type {Route} from "./+types/account_.login";
 export async function loader({request, context}: Route.LoaderArgs) {
     return context.customerAccount.login({
         // Pass country code for localized login experience
-        countryCode: context.storefront.i18n.country
+        countryCode: STORE_COUNTRY_CODE
     });
 }

@@ -43,6 +43,7 @@ import {
     RotateCcwIcon,
     ShoppingBagIcon
 } from "lucide-react";
+import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 
 export const meta: Route.MetaFunction = () => {
     return [{title: "Returns History"}];
@@ -330,7 +331,7 @@ function ReturnCard({returnItem, index = 0}: {returnItem: ReturnWithOrder; index
                         {returnItem.createdAt && (
                             <p className="text-sm text-muted-foreground flex items-center gap-1.5">
                                 <CalendarIcon className="size-3.5 shrink-0" />
-                                {new Date(returnItem.createdAt).toLocaleDateString("en-US", {
+                                {new Date(returnItem.createdAt).toLocaleDateString(STORE_FORMAT_LOCALE, {
                                     weekday: "short",
                                     month: "short",
                                     day: "numeric",

@@ -69,6 +69,7 @@ import {Toaster} from "~/components/ui/sonner";
 import {FOOTER_QUERY, HEADER_QUERY, MENU_COLLECTIONS_QUERY} from "~/lib/fragments";
 import {extractPopularSearchTerms} from "~/lib/popularSearches";
 import {parseShippingConfig, type ShippingConfig} from "~/lib/shipping";
+import {STORE_COUNTRY_CODE} from "~/lib/store-locale";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
 import {STORE_CREDIT_BALANCE_QUERY} from "~/graphql/customer-account/StoreCreditQueries";
 import tailwindCss from "./styles/tailwind.css?url";
@@ -204,7 +205,7 @@ export async function loader(args: Route.LoaderArgs) {
             storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
             withPrivacyBanner: false,
             // localize the privacy banner
-            country: args.context.storefront.i18n.country,
+            country: STORE_COUNTRY_CODE,
             language: args.context.storefront.i18n.language
         }
     };

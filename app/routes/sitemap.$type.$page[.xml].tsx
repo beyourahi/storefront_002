@@ -21,14 +21,12 @@
  * - blogs: Blog posts and articles
  *
  * @i18n
- * Generates URLs for multiple locales:
- * - EN-US (English, United States)
- * - EN-CA (English, Canada)
- * - FR-CA (French, Canada)
+ * Generates URLs for the storefront's single locale:
+ * - EN-BD (English, Bangladesh)
  *
  * @url-structure
  * URLs follow the pattern: /{locale}/{type}/{handle}
- * Example: /EN-CA/products/blue-shirt
+ * Example: /EN-BD/products/blue-shirt
  *
  * @pagination
  * Large catalogs are split across multiple pages:
@@ -49,6 +47,7 @@
 
 import type {Route} from "./+types/sitemap.$type.$page[.xml]";
 import {getSitemap} from "@shopify/hydrogen";
+import {STORE_SITEMAP_LOCALE} from "~/lib/store-locale";
 
 // =============================================================================
 // LOADER
@@ -68,8 +67,8 @@ export async function loader({request, params, context: {storefront}}: Route.Loa
         storefront,
         request,
         params,
-        // Supported locales for URL generation
-        locales: ["EN-US", "EN-CA", "FR-CA"],
+        // Supported locale for URL generation
+        locales: [STORE_SITEMAP_LOCALE],
         // Custom URL builder for locale-prefixed URLs
         getLink: ({type, baseUrl, handle, locale}) => {
             if (!locale) return `${baseUrl}/${type}/${handle}`;

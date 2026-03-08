@@ -604,7 +604,6 @@ export interface SiteSettings {
         city: string;
         state: string;
         zip: string;
-        country: string;
     };
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -676,7 +675,6 @@ export interface ContactInfo {
         city: string;
         state: string;
         zip: string;
-        country: string;
     };
 }
 

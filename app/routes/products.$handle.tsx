@@ -83,6 +83,7 @@ import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 import {hasSpecialTag} from "~/lib/product-tags";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
+import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 
 // =============================================================================
 // META FUNCTION
@@ -274,7 +275,7 @@ export default function Product() {
                 const formatPrice = (price: {amount: string; currencyCode: string} | null | undefined) => {
                     if (!price) return "";
                     const amount = parseFloat(price.amount);
-                    return new Intl.NumberFormat("en-US", {
+                    return new Intl.NumberFormat(STORE_FORMAT_LOCALE, {
                         style: "currency",
                         currency: price.currencyCode
                     }).format(amount);

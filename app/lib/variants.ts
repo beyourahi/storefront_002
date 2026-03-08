@@ -10,7 +10,7 @@
  * Product variants are encoded in URLs as query parameters:
  * - /products/t-shirt?Color=Red&Size=Large
  * - This allows direct linking to specific variants
- * - Supports locale prefixes: /en-US/products/t-shirt?Color=Red
+ * - Supports locale prefixes: /en-BD/products/t-shirt?Color=Red
  *
  * @dependencies
  * - react-router - For current location access
@@ -29,7 +29,7 @@
  * // Function usage for manual URL construction
  * const url = getVariantUrl({
  *   handle: 't-shirt',
- *   pathname: '/en-US/products/example',
+ *   pathname: '/en-BD/products/example',
  *   searchParams: new URLSearchParams(),
  *   selectedOptions: [{name: 'Color', value: 'Red'}]
  * });
@@ -82,7 +82,7 @@ export function useVariantUrl(handle: string, selectedOptions?: SelectedOption[]
  * Constructs a product variant URL with selected options as query parameters.
  *
  * Handles locale detection by checking for locale prefix pattern in pathname
- * (e.g., /en-US/, /fr-CA/). Preserves locale prefix in generated URL.
+ * (e.g., /en-BD/). Preserves locale prefix in generated URL.
  *
  * @param params.handle - Product handle (URL slug)
  * @param params.pathname - Current page pathname (for locale detection)
@@ -95,11 +95,11 @@ export function useVariantUrl(handle: string, selectedOptions?: SelectedOption[]
  * ```typescript
  * getVariantUrl({
  *   handle: 't-shirt',
- *   pathname: '/en-US/products/other-product',
+ *   pathname: '/en-BD/products/other-product',
  *   searchParams: new URLSearchParams(),
  *   selectedOptions: [{name: 'Color', value: 'Red'}]
  * });
- * // Returns: "/en-US/products/t-shirt?Color=Red"
+ * // Returns: "/en-BD/products/t-shirt?Color=Red"
  * ```
  */
 export function getVariantUrl({

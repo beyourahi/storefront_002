@@ -1,65 +1,32 @@
 /**
  * @fileoverview Dynamic Theme Generation System
  *
- * @description
- * Core theming engine that generates CSS from Shopify metaobject data.
- * Enables multi-brand support by deriving a complete color palette and
- * typography system from minimal merchant configuration.
- *
- * @architecture
- * Theme Generation Flow:
- * 1. Shopify metaobject → 5 core colors + 3 font families
- * 2. Core colors → 15+ derived CSS variables (card, muted, borders, etc.)
- * 3. Font names → Google Fonts URL + CSS font-family declarations
- * 4. All combined → CSS :root variables injected in <head>
- *
- * Color Derivation Strategy:
- * - primary/secondary: Used as-is
- * - foregrounds: Calculated for WCAG contrast (white or dark) using APCA
- * - muted: Derived by reducing chroma and adjusting lightness
- * - borders: Based on secondary color
- *
- * @color-space
- * Uses OKLCH for color manipulation:
- * - L (lightness): 0-1
- * - C (chroma): 0-0.4 (saturation)
- * - H (hue): 0-360 degrees
- *
- * OKLCH advantages:
- * - Perceptually uniform lightness
- * - Predictable color manipulation
- * - Better gradient interpolation
- *
- * @dependencies
- * - ~/lib/color - Color conversion and contrast calculations
- *
- * @related
- * - metaobject-parsers.ts - Parses theme data from metaobjects
- * - root.tsx - Injects generated CSS variables
- * - tailwind.css - Default CSS variables (overridden by generated theme)
- * - theme-storage.ts - Persists theme for offline use
- * - lib/color/ - WCAG 2.1 + APCA contrast calculations
- *
- * @example
- * ```typescript
- * const theme = generateTheme(
- *   { primary: '#8B4513', secondary: '#F5F5DC', ... },
- *   { sans: 'Inter', serif: 'Playfair Display', mono: 'Fira Code' }
- * );
- * // Returns: { colors, fonts, googleFontsUrl, cssVariables }
- * ```
+ * Core theming engine that generates one semantic UI scheme from merchant seed colors.
+ * Shopify still stores five color fields, but this resolver treats them as brand hints,
+ * normalizes them to safe OKLCH values, derives a complete semantic token contract, and
+ * emits legacy aliases so existing Tailwind/shadcn usage keeps working during migration.
  */
 
-import {getContrastForeground, normalizeToOklch, hexToOklch, isValidColor as colorIsValidColor} from "./color";
+import {
+    calculateContrast,
+    getContrastForeground,
+    hexToOklch,
+    isInSrgbGamut,
+    isValidColor as colorIsValidColor,
+    normalizeToOklch,
+    rgbToHex,
+    toOklch,
+    toSrgb
+} from "./color";
 
 // =============================================================================
 // TYPES
 // =============================================================================
 
 export interface OklchColor {
-    l: number; // Lightness: 0-1
-    c: number; // Chroma: 0-0.4 (saturation)
-    h: number; // Hue: 0-360
+    l: number;
+    c: number;
+    h: number;
 }
 
 export interface ThemeCoreColors {
@@ -70,30 +37,94 @@ export interface ThemeCoreColors {
     accent: string;
 }
 
-export interface DerivedTheme {
-    // Base
+export interface ThemeSeedInputs {
+    brandPrimarySeed: string | null;
+    brandSecondarySeed: string | null;
+    canvasSeed: string | null;
+    inkSeed: string | null;
+    brandAccentSeed: string | null;
+}
+
+export type ThemeDiagnosticCode =
+    | "invalid_seed"
+    | "gamut_clamp"
+    | "chroma_clamp"
+    | "tone_correction"
+    | "duplicate_seed_collapse"
+    | "ignored_unsafe_input";
+
+export interface ThemeDiagnostic {
+    code: ThemeDiagnosticCode;
+    token: keyof ThemeSeedInputs | keyof NormalizedThemeSeeds;
+    message: string;
+    input?: string | null;
+    output?: string;
+}
+
+export interface NormalizedThemeSeeds {
+    brandPrimary: string;
+    brandSecondary: string;
+    canvas: string;
+    ink: string;
+    brandAccent: string;
+    isDark: boolean;
+    neutralHue: number;
+}
+
+export interface SemanticScheme {
+    surfaceCanvas: string;
+    surfaceDefault: string;
+    surfaceRaised: string;
+    surfaceMuted: string;
+    surfaceInteractive: string;
+    surfaceOverlay: string;
+    textPrimary: string;
+    textSecondary: string;
+    textSubtle: string;
+    textInverse: string;
+    borderSubtle: string;
+    borderStrong: string;
+    inputBorder: string;
+    focusRing: string;
+    brandPrimary: string;
+    brandPrimaryForeground: string;
+    brandPrimaryHover: string;
+    brandPrimaryActive: string;
+    brandPrimarySubtle: string;
+    brandPrimarySubtleForeground: string;
+    brandSecondary: string;
+    brandSecondarySubtle: string;
+    brandAccent: string;
+    brandAccentSubtle: string;
+    success: string;
+    successForeground: string;
+    successSubtle: string;
+    warning: string;
+    warningForeground: string;
+    warningSubtle: string;
+    destructive: string;
+    destructiveForeground: string;
+    destructiveSubtle: string;
+    info: string;
+    infoForeground: string;
+    infoSubtle: string;
+}
+
+export interface DerivedTheme extends SemanticScheme {
     background: string;
     foreground: string;
-
-    // Card & Popover
     card: string;
     cardForeground: string;
     popover: string;
     popoverForeground: string;
-
-    // Primary & Secondary
     primary: string;
     primaryForeground: string;
     secondary: string;
     secondaryForeground: string;
-
-    // Muted & Accent
     muted: string;
     mutedForeground: string;
     accent: string;
     accentForeground: string;
-
-    // Borders
     border: string;
     input: string;
     ring: string;
@@ -105,135 +136,623 @@ export interface ThemeFonts {
     mono: string;
 }
 
-export interface GeneratedTheme {
+export interface ResolvedTheme {
+    seeds: NormalizedThemeSeeds;
+    diagnostics: ThemeDiagnostic[];
+    scheme: SemanticScheme;
     colors: DerivedTheme;
     fonts: ThemeFonts;
     googleFontsUrl: string;
     cssVariables: string;
 }
 
+export type GeneratedTheme = ResolvedTheme;
+
 // =============================================================================
-// OKLCH PARSING & MANIPULATION
+// CONSTANTS
 // =============================================================================
 
-/**
- * Parse OKLCH color string to components
- * Supports: "oklch(0.6 0.1 45)" or "oklch(0.6 0.1 45 / 0.5)"
- */
+const LIGHT_CANVAS_FALLBACK = "oklch(0.985 0.004 95)";
+const LIGHT_INK_FALLBACK = "oklch(0.180 0.010 95)";
+const DARK_CANVAS_FALLBACK = "oklch(0.160 0.010 255)";
+const DARK_INK_FALLBACK = "oklch(0.940 0.012 255)";
+const BRAND_PRIMARY_FALLBACK = "oklch(0.520 0.150 250)";
+const BRAND_SECONDARY_FALLBACK = "oklch(0.610 0.100 210)";
+const BRAND_ACCENT_FALLBACK = "oklch(0.680 0.120 60)";
+const WHITE = "oklch(0.980 0 0)";
+const BLACK = "oklch(0.120 0 0)";
+
+const DEFAULT_THEME_COLORS: ThemeCoreColors = {
+    primary: "oklch(0 0 0)",
+    secondary: "oklch(1 0 0)",
+    background: "oklch(1 0 0)",
+    foreground: "oklch(0 0 0)",
+    accent: "oklch(0 0 0)"
+};
+
+const DEFAULT_THEME_FONTS: ThemeFonts = {
+    sans: "Inter",
+    serif: "Inter",
+    mono: "Inter"
+};
+
+// =============================================================================
+// OKLCH HELPERS
+// =============================================================================
+
 export function parseOklch(color: string): OklchColor | null {
-    // Match oklch(L C H) or oklch(L C H / alpha)
-    const match = color.match(/oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
-    if (!match) return null;
+    const parsed = toOklch(color);
+    if (!parsed) return null;
 
     return {
-        l: parseFloat(match[1]),
-        c: parseFloat(match[2]),
-        h: parseFloat(match[3])
+        l: parsed.l,
+        c: parsed.c,
+        h: Number.isNaN(parsed.h) ? 0 : parsed.h
     };
 }
 
-/**
- * Convert OklchColor to CSS string
- */
-export function toOklch(color: OklchColor): string {
-    return `oklch(${color.l.toFixed(4)} ${color.c.toFixed(4)} ${color.h.toFixed(4)})`;
+export function toOklchString(color: OklchColor): string {
+    return `oklch(${color.l.toFixed(4)} ${color.c.toFixed(4)} ${normalizeHue(color.h).toFixed(4)})`;
 }
 
-/**
- * Adjust lightness of an OKLCH color
- * @param delta - Positive to lighten, negative to darken
- */
 export function adjustLightness(color: string, delta: number): string {
     const parsed = parseOklch(color);
     if (!parsed) return color;
 
-    return toOklch({
+    return toOklchString({
         ...parsed,
-        l: Math.max(0, Math.min(1, parsed.l + delta))
+        l: clamp(parsed.l + delta, 0, 1)
     });
 }
 
-/**
- * Adjust chroma (saturation) of an OKLCH color
- * @param factor - Multiply chroma by this factor (0.5 = half saturation)
- */
 export function adjustChroma(color: string, factor: number): string {
     const parsed = parseOklch(color);
     if (!parsed) return color;
 
-    return toOklch({
+    return toOklchString({
         ...parsed,
-        c: Math.max(0, Math.min(0.4, parsed.c * factor))
+        c: clamp(parsed.c * factor, 0, 0.4)
     });
 }
 
-/**
- * Rotate hue of an OKLCH color
- * @param degrees - Degrees to rotate (positive = clockwise)
- */
 export function rotateHue(color: string, degrees: number): string {
     const parsed = parseOklch(color);
     if (!parsed) return color;
 
-    let newHue = (parsed.h + degrees) % 360;
-    if (newHue < 0) newHue += 360;
-
-    return toOklch({
+    return toOklchString({
         ...parsed,
-        h: newHue
+        h: normalizeHue(parsed.h + degrees)
     });
 }
 
-/**
- * Create a muted version of a color
- * Reduces chroma and adjusts lightness toward middle
- */
 export function toMuted(color: string): string {
     const parsed = parseOklch(color);
     if (!parsed) return color;
 
-    return toOklch({
-        l: Math.min(0.92, parsed.l * 0.95 + 0.1), // Push toward 0.85-0.92
-        c: parsed.c * 0.6, // Reduce saturation
+    return toOklchString({
+        l: parsed.l > 0.5 ? clamp(parsed.l - 0.08, 0, 1) : clamp(parsed.l + 0.08, 0, 1),
+        c: Math.min(parsed.c * 0.28, 0.05),
         h: parsed.h
     });
 }
 
-/**
- * Check if color is valid OKLCH
- */
 export function isValidOklch(color: string): boolean {
     return parseOklch(color) !== null;
 }
 
-// Re-export color utilities from color module for backward compatibility
-// (These are imported above for internal use, but we also re-export for external consumers)
-export {getContrastForeground, hexToOklch, normalizeToOklch, isValidColor as isValidColor} from "./color";
+export {getContrastForeground, hexToOklch, normalizeToOklch, colorIsValidColor as isValidColor};
+
+function clamp(value: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, value));
+}
+
+function normalizeHue(hue: number): number {
+    const normalized = hue % 360;
+    return normalized < 0 ? normalized + 360 : normalized;
+}
+
+function hueDistance(a: number, b: number): number {
+    return Math.abs(((a - b + 540) % 360) - 180);
+}
+
+function colorDistance(a: string, b: string): number {
+    const colorA = parseOklch(a);
+    const colorB = parseOklch(b);
+    if (!colorA || !colorB) return Number.POSITIVE_INFINITY;
+
+    return Math.abs(colorA.l - colorB.l) + Math.abs(colorA.c - colorB.c) * 1.4 + hueDistance(colorA.h, colorB.h) / 360;
+}
+
+function withLightness(color: string, lightness: number): string {
+    const parsed = parseOklch(color);
+    if (!parsed) return color;
+
+    return toOklchString({
+        ...parsed,
+        l: clamp(lightness, 0, 1)
+    });
+}
+
+function withChroma(color: string, chroma: number): string {
+    const parsed = parseOklch(color);
+    if (!parsed) return color;
+
+    return toOklchString({
+        ...parsed,
+        c: clamp(chroma, 0, 0.4)
+    });
+}
+
+function withValues(color: string, values: Partial<OklchColor>): string {
+    const parsed = parseOklch(color);
+    if (!parsed) return color;
+
+    return toOklchString({
+        l: clamp(values.l ?? parsed.l, 0, 1),
+        c: clamp(values.c ?? parsed.c, 0, 0.4),
+        h: normalizeHue(values.h ?? parsed.h)
+    });
+}
+
+function makeOklch(lightness: number, chroma: number, hue: number, alpha?: number): string {
+    const base = `oklch(${clamp(lightness, 0, 1).toFixed(4)} ${clamp(chroma, 0, 0.4).toFixed(4)} ${normalizeHue(hue).toFixed(
+        4
+    )}`;
+    return alpha == null ? `${base})` : `${base} / ${clamp(alpha, 0, 1).toFixed(3)})`;
+}
+
+function getContrastRatio(foreground: string, background: string): number {
+    return calculateContrast(foreground, background, "WCAG21")?.ratio ?? 0;
+}
+
+function ensureReadableText(foreground: string, background: string, targetRatio: number = 4.5): string {
+    const currentRatio = getContrastRatio(foreground, background);
+    if (currentRatio >= targetRatio) return foreground;
+
+    const preferred = getContrastForeground(background, {
+        lightForeground: WHITE,
+        darkForeground: BLACK
+    });
+
+    if (getContrastRatio(preferred, background) >= targetRatio) {
+        return preferred;
+    }
+
+    return getContrastRatio(BLACK, background) >= getContrastRatio(WHITE, background) ? BLACK : WHITE;
+}
+
+function normalizeColorInput(
+    input: string | null,
+    fallback: string,
+    token: keyof ThemeSeedInputs,
+    diagnostics: ThemeDiagnostic[],
+    options: {
+        maxChroma?: number;
+        minLightness?: number;
+        maxLightness?: number;
+    } = {}
+): string {
+    if (!input || !colorIsValidColor(input)) {
+        if (input) {
+            diagnostics.push({
+                code: "invalid_seed",
+                token,
+                message: `${token} is invalid and was replaced with a safe fallback.`,
+                input,
+                output: fallback
+            });
+        }
+        return normalizeToOklch(fallback);
+    }
+
+    const gamutMappedRgb = toSrgb(input);
+    const gamutMapped = gamutMappedRgb ? hexToOklch(rgbToHex(gamutMappedRgb)) : normalizeToOklch(input);
+    if (!isInSrgbGamut(input)) {
+        diagnostics.push({
+            code: "gamut_clamp",
+            token,
+            message: `${token} was gamut-mapped to an sRGB-safe value.`,
+            input,
+            output: gamutMapped
+        });
+    }
+
+    const parsed = parseOklch(gamutMapped);
+    if (!parsed) return normalizeToOklch(fallback);
+
+    let next = parsed;
+
+    if (options.maxChroma != null && next.c > options.maxChroma) {
+        next = {...next, c: options.maxChroma};
+        diagnostics.push({
+            code: "chroma_clamp",
+            token,
+            message: `${token} exceeded its chroma budget and was reduced.`,
+            input,
+            output: toOklchString(next)
+        });
+    }
+
+    const clampedLightness = clamp(next.l, options.minLightness ?? 0, options.maxLightness ?? 1);
+    if (clampedLightness !== next.l) {
+        next = {...next, l: clampedLightness};
+        diagnostics.push({
+            code: "tone_correction",
+            token,
+            message: `${token} lightness was normalized to keep the scheme stable.`,
+            input,
+            output: toOklchString(next)
+        });
+    }
+
+    return toOklchString(next);
+}
+
+function deriveNeutralHue(...colors: string[]): number {
+    for (const color of colors) {
+        const parsed = parseOklch(color);
+        if (parsed && parsed.c > 0.015) return parsed.h;
+    }
+
+    return 250;
+}
+
+function deriveDuplicateVariant(source: string, isDark: boolean, shift: "lighter" | "darker"): string {
+    const parsed = parseOklch(source);
+    if (!parsed) return source;
+
+    const delta = shift === "lighter" ? 0.12 : -0.12;
+    return toOklchString({
+        l: clamp(parsed.l + (isDark ? -delta : delta), 0, 1),
+        c: Math.min(parsed.c * 0.55, 0.12),
+        h: parsed.h
+    });
+}
+
+function normalizeSeeds(inputs: ThemeSeedInputs): {seeds: NormalizedThemeSeeds; diagnostics: ThemeDiagnostic[]} {
+    const diagnostics: ThemeDiagnostic[] = [];
+
+    const rawCanvas = normalizeColorInput(inputs.canvasSeed, LIGHT_CANVAS_FALLBACK, "canvasSeed", diagnostics, {
+        maxChroma: 0.02
+    });
+
+    const rawInk = normalizeColorInput(inputs.inkSeed, LIGHT_INK_FALLBACK, "inkSeed", diagnostics, {
+        maxChroma: 0.035
+    });
+
+    const rawCanvasParsed = parseOklch(rawCanvas) ?? parseOklch(LIGHT_CANVAS_FALLBACK)!;
+    const rawInkParsed = parseOklch(rawInk) ?? parseOklch(LIGHT_INK_FALLBACK)!;
+    const isDark = rawCanvasParsed.l < rawInkParsed.l && rawCanvasParsed.l < 0.5;
+
+    const canvasFallback = isDark ? DARK_CANVAS_FALLBACK : LIGHT_CANVAS_FALLBACK;
+    const inkFallback = isDark ? DARK_INK_FALLBACK : LIGHT_INK_FALLBACK;
+
+    let canvas = normalizeColorInput(inputs.canvasSeed, canvasFallback, "canvasSeed", diagnostics, {
+        maxChroma: 0.018,
+        minLightness: isDark ? 0.10 : 0.94,
+        maxLightness: isDark ? 0.22 : 0.995
+    });
+
+    let ink = normalizeColorInput(inputs.inkSeed, inkFallback, "inkSeed", diagnostics, {
+        maxChroma: 0.035,
+        minLightness: isDark ? 0.88 : 0.12,
+        maxLightness: isDark ? 0.985 : 0.30
+    });
+
+    if (getContrastRatio(ink, canvas) < 7) {
+        const correctedInk = ensureReadableText(ink, canvas, 7);
+        diagnostics.push({
+            code: "ignored_unsafe_input",
+            token: "inkSeed",
+            message: "Foreground seed was replaced because it could not maintain readable hierarchy.",
+            input: inputs.inkSeed,
+            output: correctedInk
+        });
+        ink = correctedInk;
+    }
+
+    let brandPrimary = normalizeColorInput(inputs.brandPrimarySeed, BRAND_PRIMARY_FALLBACK, "brandPrimarySeed", diagnostics, {
+        maxChroma: 0.24
+    });
+    let brandSecondary = normalizeColorInput(
+        inputs.brandSecondarySeed,
+        BRAND_SECONDARY_FALLBACK,
+        "brandSecondarySeed",
+        diagnostics,
+        {
+            maxChroma: 0.18
+        }
+    );
+    let brandAccent = normalizeColorInput(inputs.brandAccentSeed, BRAND_ACCENT_FALLBACK, "brandAccentSeed", diagnostics, {
+        maxChroma: 0.18
+    });
+
+    const primaryParsed = parseOklch(brandPrimary);
+    if (primaryParsed) {
+        const clampedPrimaryLightness = clamp(primaryParsed.l, isDark ? 0.62 : 0.38, isDark ? 0.84 : 0.68);
+        if (clampedPrimaryLightness !== primaryParsed.l) {
+            brandPrimary = withLightness(brandPrimary, clampedPrimaryLightness);
+            diagnostics.push({
+                code: "tone_correction",
+                token: "brandPrimary",
+                message: "Primary seed lightness was stabilized for usable emphasis states.",
+                input: inputs.brandPrimarySeed,
+                output: brandPrimary
+            });
+        }
+    }
+
+    if (colorDistance(brandPrimary, brandSecondary) < 0.12) {
+        brandSecondary = deriveDuplicateVariant(brandPrimary, isDark, "lighter");
+        diagnostics.push({
+            code: "duplicate_seed_collapse",
+            token: "brandSecondary",
+            message: "Secondary seed was too close to primary and was replaced with a derived companion.",
+            input: inputs.brandSecondarySeed,
+            output: brandSecondary
+        });
+    }
+
+    if (colorDistance(brandPrimary, brandAccent) < 0.12) {
+        brandAccent = deriveDuplicateVariant(brandPrimary, isDark, "darker");
+        diagnostics.push({
+            code: "duplicate_seed_collapse",
+            token: "brandAccent",
+            message: "Accent seed was too close to primary and was replaced with a derived companion.",
+            input: inputs.brandAccentSeed,
+            output: brandAccent
+        });
+    }
+
+    const neutralHue = deriveNeutralHue(brandPrimary, brandSecondary, brandAccent, ink);
+
+    canvas = withValues(canvas, {h: neutralHue});
+    ink = withValues(ink, {h: neutralHue});
+
+    return {
+        seeds: {
+            brandPrimary,
+            brandSecondary,
+            canvas,
+            ink,
+            brandAccent,
+            isDark,
+            neutralHue
+        },
+        diagnostics
+    };
+}
+
+function deriveSurfaceScale(seeds: NormalizedThemeSeeds): Pick<
+    SemanticScheme,
+    "surfaceCanvas" | "surfaceDefault" | "surfaceRaised" | "surfaceMuted" | "surfaceInteractive" | "surfaceOverlay"
+> {
+    const canvas = parseOklch(seeds.canvas) ?? parseOklch(seeds.isDark ? DARK_CANVAS_FALLBACK : LIGHT_CANVAS_FALLBACK)!;
+    const structuralChroma = Math.min(0.018, Math.max(0.004, parseOklch(seeds.brandPrimary)?.c ?? 0.02) * 0.10);
+
+    if (seeds.isDark) {
+        return {
+            surfaceCanvas: makeOklch(clamp(canvas.l, 0.11, 0.18), structuralChroma, seeds.neutralHue),
+            surfaceDefault: makeOklch(clamp(canvas.l + 0.03, 0.19, 0.22), structuralChroma, seeds.neutralHue),
+            surfaceRaised: makeOklch(clamp(canvas.l + 0.06, 0.23, 0.27), structuralChroma + 0.002, seeds.neutralHue),
+            surfaceMuted: makeOklch(clamp(canvas.l + 0.13, 0.30, 0.36), structuralChroma + 0.004, seeds.neutralHue),
+            surfaceInteractive: makeOklch(clamp(canvas.l + 0.19, 0.37, 0.43), structuralChroma + 0.006, seeds.neutralHue),
+            surfaceOverlay: makeOklch(0.02, 0, seeds.neutralHue, 0.58)
+        };
+    }
+
+    return {
+        surfaceCanvas: makeOklch(clamp(canvas.l, 0.965, 0.992), structuralChroma, seeds.neutralHue),
+        surfaceDefault: makeOklch(clamp(canvas.l + 0.010, 0.975, 0.996), structuralChroma, seeds.neutralHue),
+        surfaceRaised: makeOklch(clamp(canvas.l + 0.018, 0.982, 1), structuralChroma + 0.002, seeds.neutralHue),
+        surfaceMuted: makeOklch(clamp(canvas.l - 0.055, 0.88, 0.94), structuralChroma + 0.004, seeds.neutralHue),
+        surfaceInteractive: makeOklch(clamp(canvas.l - 0.085, 0.82, 0.91), structuralChroma + 0.006, seeds.neutralHue),
+        surfaceOverlay: makeOklch(0.18, structuralChroma, seeds.neutralHue, 0.34)
+    };
+}
+
+function deriveTextScale(
+    seeds: NormalizedThemeSeeds,
+    surfaces: ReturnType<typeof deriveSurfaceScale>
+): Pick<SemanticScheme, "textPrimary" | "textSecondary" | "textSubtle" | "textInverse"> {
+    const baseInk = parseOklch(seeds.ink) ?? parseOklch(seeds.isDark ? DARK_INK_FALLBACK : LIGHT_INK_FALLBACK)!;
+
+    if (seeds.isDark) {
+        const textPrimary = ensureReadableText(withValues(seeds.ink, {l: clamp(baseInk.l, 0.92, 0.98), c: Math.min(baseInk.c, 0.02)}), surfaces.surfaceCanvas);
+        return {
+            textPrimary,
+            textSecondary: ensureReadableText(makeOklch(0.82, 0.012, seeds.neutralHue), surfaces.surfaceCanvas),
+            textSubtle: ensureReadableText(makeOklch(0.68, 0.01, seeds.neutralHue), surfaces.surfaceCanvas, 3),
+            textInverse: makeOklch(0.16, 0.01, seeds.neutralHue)
+        };
+    }
+
+    const textPrimary = ensureReadableText(withValues(seeds.ink, {l: clamp(baseInk.l, 0.14, 0.22), c: Math.min(baseInk.c, 0.02)}), surfaces.surfaceCanvas);
+    return {
+        textPrimary,
+        textSecondary: ensureReadableText(makeOklch(0.34, 0.012, seeds.neutralHue), surfaces.surfaceCanvas),
+        textSubtle: ensureReadableText(makeOklch(0.50, 0.010, seeds.neutralHue), surfaces.surfaceCanvas, 3),
+        textInverse: makeOklch(0.98, 0, seeds.neutralHue)
+    };
+}
+
+function ensureRingVisibility(color: string, background: string, isDark: boolean): string {
+    if (getContrastRatio(color, background) >= 3) return color;
+
+    const parsed = parseOklch(color);
+    if (!parsed) {
+        return ensureReadableText(isDark ? WHITE : BLACK, background, 3);
+    }
+
+    return withValues(color, {
+        l: isDark ? Math.max(parsed.l, 0.78) : Math.min(parsed.l, 0.42),
+        c: Math.max(parsed.c, 0.08)
+    });
+}
+
+function deriveBrandRoles(
+    seeds: NormalizedThemeSeeds,
+    surfaces: ReturnType<typeof deriveSurfaceScale>,
+    text: ReturnType<typeof deriveTextScale>
+): Pick<
+    SemanticScheme,
+    | "brandPrimary"
+    | "brandPrimaryForeground"
+    | "brandPrimaryHover"
+    | "brandPrimaryActive"
+    | "brandPrimarySubtle"
+    | "brandPrimarySubtleForeground"
+    | "brandSecondary"
+    | "brandSecondarySubtle"
+    | "brandAccent"
+    | "brandAccentSubtle"
+    | "focusRing"
+> {
+    const primary = seeds.brandPrimary;
+    const primaryParsed = parseOklch(primary) ?? parseOklch(BRAND_PRIMARY_FALLBACK)!;
+    const secondary = withValues(seeds.brandSecondary, {
+        l: clamp(parseOklch(seeds.brandSecondary)?.l ?? primaryParsed.l, seeds.isDark ? 0.66 : 0.40, seeds.isDark ? 0.84 : 0.72)
+    });
+    const accent = withValues(seeds.brandAccent, {
+        l: clamp(parseOklch(seeds.brandAccent)?.l ?? primaryParsed.l, seeds.isDark ? 0.70 : 0.42, seeds.isDark ? 0.88 : 0.76)
+    });
+
+    const brandPrimarySubtle = seeds.isDark
+        ? makeOklch(0.30, Math.min(primaryParsed.c * 0.45, 0.09), primaryParsed.h)
+        : makeOklch(0.93, Math.min(primaryParsed.c * 0.30, 0.06), primaryParsed.h);
+
+    const brandSecondarySubtle = seeds.isDark
+        ? makeOklch(0.28, Math.min((parseOklch(secondary)?.c ?? primaryParsed.c) * 0.45, 0.08), parseOklch(secondary)?.h ?? primaryParsed.h)
+        : makeOklch(0.94, Math.min((parseOklch(secondary)?.c ?? primaryParsed.c) * 0.28, 0.05), parseOklch(secondary)?.h ?? primaryParsed.h);
+
+    const brandAccentSubtle = seeds.isDark
+        ? makeOklch(0.32, Math.min((parseOklch(accent)?.c ?? primaryParsed.c) * 0.45, 0.10), parseOklch(accent)?.h ?? primaryParsed.h)
+        : makeOklch(0.92, Math.min((parseOklch(accent)?.c ?? primaryParsed.c) * 0.30, 0.07), parseOklch(accent)?.h ?? primaryParsed.h);
+
+    return {
+        brandPrimary: primary,
+        brandPrimaryForeground: ensureReadableText(getContrastForeground(primary, {lightForeground: WHITE, darkForeground: BLACK}), primary),
+        brandPrimaryHover: withLightness(primary, clamp(primaryParsed.l + (seeds.isDark ? -0.05 : -0.04), 0, 1)),
+        brandPrimaryActive: withLightness(primary, clamp(primaryParsed.l + (seeds.isDark ? -0.09 : -0.08), 0, 1)),
+        brandPrimarySubtle,
+        brandPrimarySubtleForeground: ensureReadableText(text.textPrimary, brandPrimarySubtle),
+        brandSecondary: secondary,
+        brandSecondarySubtle,
+        brandAccent: accent,
+        brandAccentSubtle,
+        focusRing: ensureRingVisibility(primary, surfaces.surfaceCanvas, seeds.isDark)
+    };
+}
+
+function deriveStructureRoles(
+    seeds: NormalizedThemeSeeds,
+    surfaces: ReturnType<typeof deriveSurfaceScale>
+): Pick<SemanticScheme, "borderSubtle" | "borderStrong" | "inputBorder"> {
+    const structuralChroma = Math.min(0.025, Math.max(0.006, parseOklch(seeds.brandPrimary)?.c ?? 0.02) * 0.12);
+
+    if (seeds.isDark) {
+        return {
+            borderSubtle: makeOklch(0.34, structuralChroma, seeds.neutralHue),
+            borderStrong: makeOklch(0.46, structuralChroma + 0.002, seeds.neutralHue),
+            inputBorder: makeOklch(0.50, structuralChroma + 0.003, seeds.neutralHue)
+        };
+    }
+
+    return {
+        borderSubtle: makeOklch(0.84, structuralChroma, seeds.neutralHue),
+        borderStrong: makeOklch(0.68, structuralChroma + 0.002, seeds.neutralHue),
+        inputBorder: makeOklch(0.62, structuralChroma + 0.003, seeds.neutralHue)
+    };
+}
+
+function deriveSystemRoles(seeds: NormalizedThemeSeeds): Pick<
+    SemanticScheme,
+    | "success"
+    | "successForeground"
+    | "successSubtle"
+    | "warning"
+    | "warningForeground"
+    | "warningSubtle"
+    | "destructive"
+    | "destructiveForeground"
+    | "destructiveSubtle"
+    | "info"
+    | "infoForeground"
+    | "infoSubtle"
+> {
+    return {
+        success: "oklch(0.72 0.17 142)",
+        successForeground: WHITE,
+        successSubtle: seeds.isDark ? "oklch(0.28 0.08 142)" : "oklch(0.95 0.03 142)",
+        warning: "oklch(0.79 0.17 75)",
+        warningForeground: "oklch(0.25 0.02 60)",
+        warningSubtle: seeds.isDark ? "oklch(0.32 0.08 75)" : "oklch(0.96 0.03 75)",
+        destructive: "oklch(0.55 0.2 25)",
+        destructiveForeground: WHITE,
+        destructiveSubtle: seeds.isDark ? "oklch(0.28 0.09 25)" : "oklch(0.95 0.03 25)",
+        info: "oklch(0.63 0.18 245)",
+        infoForeground: WHITE,
+        infoSubtle: seeds.isDark ? "oklch(0.28 0.08 245)" : "oklch(0.95 0.03 245)"
+    };
+}
+
+function buildSemanticScheme(seeds: NormalizedThemeSeeds): SemanticScheme {
+    const surfaces = deriveSurfaceScale(seeds);
+    const text = deriveTextScale(seeds, surfaces);
+    const structure = deriveStructureRoles(seeds, surfaces);
+    const brand = deriveBrandRoles(seeds, surfaces, text);
+    const system = deriveSystemRoles(seeds);
+
+    return {
+        ...surfaces,
+        ...text,
+        ...structure,
+        ...brand,
+        ...system
+    };
+}
+
+function buildDerivedTheme(scheme: SemanticScheme): DerivedTheme {
+    return {
+        ...scheme,
+        background: scheme.surfaceCanvas,
+        foreground: scheme.textPrimary,
+        card: scheme.surfaceRaised,
+        cardForeground: scheme.textPrimary,
+        popover: scheme.surfaceDefault,
+        popoverForeground: scheme.textPrimary,
+        primary: scheme.brandPrimary,
+        primaryForeground: scheme.brandPrimaryForeground,
+        secondary: scheme.surfaceInteractive,
+        secondaryForeground: scheme.textPrimary,
+        muted: scheme.surfaceMuted,
+        mutedForeground: scheme.textSecondary,
+        accent: scheme.brandAccentSubtle,
+        accentForeground: scheme.brandPrimarySubtleForeground,
+        border: scheme.borderSubtle,
+        input: scheme.inputBorder,
+        ring: scheme.focusRing
+    };
+}
+
+export function deriveThemeColors(core: ThemeCoreColors): DerivedTheme {
+    return resolveTheme(core, DEFAULT_THEME_FONTS)?.colors ?? buildDerivedTheme(buildSemanticScheme(normalizeSeeds(toThemeSeedInputs(core)).seeds));
+}
 
 // =============================================================================
 // FONT UTILITIES
 // =============================================================================
 
-/**
- * Sanitize font name for safe use in CSS and URLs
- * Only allows alphanumeric characters, spaces, and common punctuation
- */
 export function sanitizeFontName(fontName: string): string {
     return fontName.replace(/[^a-zA-Z0-9\s\-_]/g, "").trim();
 }
 
-/**
- * Generate Google Fonts URL from font names
- * Supports variable fonts with weight ranges
- */
 export function generateGoogleFontsUrl(fonts: ThemeFonts): string {
     const fontFamilies: string[] = [];
 
-    // Build font family strings with weights
     if (fonts.sans) {
         const sanitized = sanitizeFontName(fonts.sans).replace(/ /g, "+");
         if (sanitized) {
-            // Variable font syntax for modern fonts
             fontFamilies.push(`family=${sanitized}:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900`);
         }
     }
@@ -257,9 +776,6 @@ export function generateGoogleFontsUrl(fonts: ThemeFonts): string {
     return `https://fonts.googleapis.com/css2?${fontFamilies.join("&")}&display=swap`;
 }
 
-/**
- * Generate CSS font-family value with fallbacks
- */
 export function generateFontFamily(fontName: string, type: "sans" | "serif" | "mono"): string {
     const fallbacks = {
         sans: "ui-sans-serif, system-ui, sans-serif",
@@ -276,124 +792,87 @@ export function generateFontFamily(fontName: string, type: "sans" | "serif" | "m
 }
 
 // =============================================================================
-// THEME GENERATION
-// =============================================================================
-
-/**
- * Derive all theme colors from 5 core colors
- */
-export function deriveThemeColors(core: ThemeCoreColors): DerivedTheme {
-    const primary = normalizeToOklch(core.primary);
-    const secondary = normalizeToOklch(core.secondary);
-    const background = normalizeToOklch(core.background);
-    const foreground = normalizeToOklch(core.foreground);
-    const accent = normalizeToOklch(core.accent);
-
-    return {
-        // Base
-        background,
-        foreground,
-
-        // Card & Popover (same as background, popover slightly lighter)
-        card: background,
-        cardForeground: foreground,
-        popover: adjustLightness(background, 0.03),
-        popoverForeground: foreground,
-
-        // Primary & Secondary with contrast foregrounds
-        primary,
-        primaryForeground: getContrastForeground(primary),
-        secondary,
-        secondaryForeground: getContrastForeground(secondary),
-
-        // Muted & Accent
-        muted: toMuted(accent),
-        mutedForeground: adjustLightness(foreground, 0.12),
-        accent,
-        accentForeground: foreground,
-
-        // Borders (derived from secondary)
-        border: secondary,
-        input: secondary,
-        ring: primary
-    };
-}
-
-// =============================================================================
 // CSS GENERATION
 // =============================================================================
 
-/**
- * Derive shadow color from the theme's primary hue.
- * Shadows carry a subtle brand tint by matching the primary hue at fixed
- * low-chroma / mid-lightness — perceptually neutral but brand-consistent.
- * Falls back to a warm neutral (≈ hsl 20 18% 51%) for achromatic themes.
- */
 function deriveThemeShadowColor(colors: DerivedTheme): string {
-    const pr = parseOklch(colors.primary);
-    const fg = parseOklch(colors.foreground);
-
-    // Prefer primary hue if the brand color has notable chroma; otherwise try foreground
-    const source = pr && pr.c > 0.05 ? pr : fg && fg.c > 0.02 ? fg : null;
-
-    // Achromatic theme (black/white) — pure black matches the default in tailwind.css
+    const source = parseOklch(colors.brandPrimary) ?? parseOklch(colors.textPrimary);
     if (!source) return "oklch(0 0 0)";
 
-    return toOklch({
-        l: 0.5,
-        c: Math.min(0.05, source.c * 0.25), // very subtle brand tint
+    return toOklchString({
+        l: colors.surfaceCanvas === colors.background && parseOklch(colors.background)?.l && (parseOklch(colors.background)?.l ?? 1) < 0.5 ? 0.72 : 0.42,
+        c: Math.min(0.05, Math.max(source.c * 0.2, 0.01)),
         h: source.h
     });
 }
 
-/**
- * Generate CSS variables string for injection into <head>
- * This CSS overrides the Tailwind defaults when theme data is present
- */
 export function generateThemeCssVariables(colors: DerivedTheme, fonts: ThemeFonts): string {
     return `:root {
-  /* ═══════════════════════════════════════════════════════════════════════════
-     Dynamic Theme Colors - Generated from Shopify Metaobjects
-     These override the defaults in tailwind.css
-     ═══════════════════════════════════════════════════════════════════════════ */
+  /* Canonical semantic tokens */
+  --surface-canvas: ${colors.surfaceCanvas};
+  --surface-default: ${colors.surfaceDefault};
+  --surface-raised: ${colors.surfaceRaised};
+  --surface-muted: ${colors.surfaceMuted};
+  --surface-interactive: ${colors.surfaceInteractive};
+  --surface-overlay: ${colors.surfaceOverlay};
+  --text-primary: ${colors.textPrimary};
+  --text-secondary: ${colors.textSecondary};
+  --text-subtle: ${colors.textSubtle};
+  --text-inverse: ${colors.textInverse};
+  --border-subtle: ${colors.borderSubtle};
+  --border-strong: ${colors.borderStrong};
+  --input-border: ${colors.inputBorder};
+  --focus-ring: ${colors.focusRing};
+  --brand-primary: ${colors.brandPrimary};
+  --brand-primary-foreground: ${colors.brandPrimaryForeground};
+  --brand-primary-hover: ${colors.brandPrimaryHover};
+  --brand-primary-active: ${colors.brandPrimaryActive};
+  --brand-primary-subtle: ${colors.brandPrimarySubtle};
+  --brand-primary-subtle-foreground: ${colors.brandPrimarySubtleForeground};
+  --brand-secondary: ${colors.brandSecondary};
+  --brand-secondary-subtle: ${colors.brandSecondarySubtle};
+  --brand-accent: ${colors.brandAccent};
+  --brand-accent-subtle: ${colors.brandAccentSubtle};
 
-  /* Core Colors */
+  /* Legacy compatibility aliases */
   --background: ${colors.background};
   --foreground: ${colors.foreground};
-
-  /* Card & Popover */
   --card: ${colors.card};
   --card-foreground: ${colors.cardForeground};
   --popover: ${colors.popover};
   --popover-foreground: ${colors.popoverForeground};
-
-  /* Primary */
   --primary: ${colors.primary};
   --primary-foreground: ${colors.primaryForeground};
-
-  /* Secondary */
   --secondary: ${colors.secondary};
   --secondary-foreground: ${colors.secondaryForeground};
-
-  /* Muted */
   --muted: ${colors.muted};
   --muted-foreground: ${colors.mutedForeground};
-
-  /* Accent */
   --accent: ${colors.accent};
   --accent-foreground: ${colors.accentForeground};
-
-  /* Borders & Input */
   --border: ${colors.border};
   --input: ${colors.input};
   --ring: ${colors.ring};
 
-  /* Shadows - brand-tinted shadow color derived from primary hue */
-  --shadow-color: ${deriveThemeShadowColor(colors)};
+  /* System semantics */
+  --success: ${colors.success};
+  --success-foreground: ${colors.successForeground};
+  --success-subtle: ${colors.successSubtle};
+  --warning: ${colors.warning};
+  --warning-foreground: ${colors.warningForeground};
+  --warning-subtle: ${colors.warningSubtle};
+  --destructive: ${colors.destructive};
+  --destructive-foreground: ${colors.destructiveForeground};
+  --destructive-subtle: ${colors.destructiveSubtle};
+  --info: ${colors.info};
+  --info-foreground: ${colors.infoForeground};
+  --info-subtle: ${colors.infoSubtle};
 
-  /* ═══════════════════════════════════════════════════════════════════════════
-     Dynamic Theme Fonts - Google Fonts loaded via <link>
-     ═══════════════════════════════════════════════════════════════════════════ */
+  /* Existing bespoke tokens */
+  --primary-active: ${colors.brandPrimaryActive};
+  --overlay-dark: ${colors.surfaceOverlay};
+  --overlay-light: ${colors.brandPrimarySubtle};
+  --overlay-light-hover: ${colors.brandAccentSubtle};
+  --shadow-color: ${deriveThemeShadowColor(colors)};
 
   --font-sans: ${generateFontFamily(fonts.sans, "sans")};
   --font-serif: ${generateFontFamily(fonts.serif, "serif")};
@@ -401,46 +880,50 @@ export function generateThemeCssVariables(colors: DerivedTheme, fonts: ThemeFont
 }`;
 }
 
-/**
- * Generate complete theme from parsed metaobject data
- * Returns null if no theme customization is present (use CSS defaults)
- */
-export function generateTheme(coreColors: ThemeCoreColors | null, fonts: ThemeFonts | null): GeneratedTheme | null {
-    // If no theme data provided, return null (use CSS defaults)
-    if (!coreColors && !fonts) return null;
+// =============================================================================
+// PUBLIC API
+// =============================================================================
 
-    // Default values - pure black/white only (matches tailwind.css)
-    const defaultColors: ThemeCoreColors = {
-        primary: "oklch(0 0 0)",
-        secondary: "oklch(1 0 0)",
-        background: "oklch(1 0 0)",
-        foreground: "oklch(0 0 0)",
-        accent: "oklch(0 0 0)"
-    };
-
-    const defaultFonts: ThemeFonts = {
-        sans: "Inter",
-        serif: "Inter",
-        mono: "Inter"
-    };
-
-    // Merge with defaults
-    const finalColors = coreColors ? {...defaultColors, ...coreColors} : defaultColors;
-    const finalFonts = fonts ? {...defaultFonts, ...fonts} : defaultFonts;
-
-    // Generate derived colors
-    const derivedColors = deriveThemeColors(finalColors);
-
-    // Generate Google Fonts URL
-    const googleFontsUrl = generateGoogleFontsUrl(finalFonts);
-
-    // Generate CSS variables
-    const cssVariables = generateThemeCssVariables(derivedColors, finalFonts);
+function toThemeSeedInputs(coreColors: ThemeCoreColors | ThemeSeedInputs): ThemeSeedInputs {
+    if ("brandPrimarySeed" in coreColors) {
+        return coreColors;
+    }
 
     return {
-        colors: derivedColors,
+        brandPrimarySeed: coreColors.primary,
+        brandSecondarySeed: coreColors.secondary,
+        canvasSeed: coreColors.background,
+        inkSeed: coreColors.foreground,
+        brandAccentSeed: coreColors.accent
+    };
+}
+
+export function resolveTheme(
+    coreColors: ThemeCoreColors | ThemeSeedInputs | null,
+    fonts: ThemeFonts | null
+): ResolvedTheme | null {
+    if (!coreColors && !fonts) return null;
+
+    const seedInputs = toThemeSeedInputs(coreColors ?? toThemeSeedInputs(DEFAULT_THEME_COLORS));
+    const finalFonts = fonts ? {...DEFAULT_THEME_FONTS, ...fonts} : DEFAULT_THEME_FONTS;
+    const {seeds, diagnostics} = normalizeSeeds(seedInputs);
+    const scheme = buildSemanticScheme(seeds);
+    const colors = buildDerivedTheme(scheme);
+    const googleFontsUrl = generateGoogleFontsUrl(finalFonts);
+    const cssVariables = generateThemeCssVariables(colors, finalFonts);
+
+    return {
+        seeds,
+        diagnostics,
+        scheme,
+        colors,
         fonts: finalFonts,
         googleFontsUrl,
         cssVariables
     };
+}
+
+export function generateTheme(coreColors: ThemeCoreColors | null, fonts: ThemeFonts | null): GeneratedTheme | null {
+    const finalColors = coreColors ? {...DEFAULT_THEME_COLORS, ...coreColors} : DEFAULT_THEME_COLORS;
+    return resolveTheme(finalColors, fonts);
 }

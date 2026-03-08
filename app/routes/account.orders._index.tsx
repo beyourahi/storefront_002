@@ -50,6 +50,7 @@ import {PackageSearchIcon, ShoppingBagIcon, CalendarIcon, ClockIcon, SearchIcon,
 import {cn} from "~/lib/utils";
 import {getOrderStatusVariant, formatOrderStatus} from "~/lib/order-status";
 import {useMemo} from "react";
+import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 
 const FALLBACK_ACCOUNT_CONTENT = {
     emptyNoOrdersHeading: "No orders yet",
@@ -561,12 +562,12 @@ function OrderListItem({
 
     // Format date and time separately for editorial presentation
     const orderDate = new Date(order.processedAt);
-    const formattedDate = orderDate.toLocaleDateString("en-US", {
+    const formattedDate = orderDate.toLocaleDateString(STORE_FORMAT_LOCALE, {
         month: "short",
         day: "numeric",
         year: "numeric"
     });
-    const formattedTime = orderDate.toLocaleTimeString("en-US", {
+    const formattedTime = orderDate.toLocaleTimeString(STORE_FORMAT_LOCALE, {
         hour: "numeric",
         minute: "2-digit",
         hour12: true

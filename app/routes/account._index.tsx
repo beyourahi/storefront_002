@@ -58,6 +58,7 @@ import {Money} from "~/components/Money";
 import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
 import {cn} from "~/lib/utils";
 import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
+import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 import {
     PackageSearchIcon,
     ShoppingBagIcon,
@@ -546,7 +547,7 @@ function StoreCreditWidget({balance, accounts}: StoreCreditWidgetProps) {
 
 function TransactionItem({transaction}: {transaction: StoreCreditTransaction}) {
     const credit = isCredit(transaction);
-    const formattedDate = new Date(transaction.createdAt).toLocaleDateString("en-US", {
+    const formattedDate = new Date(transaction.createdAt).toLocaleDateString(STORE_FORMAT_LOCALE, {
         month: "short",
         day: "numeric",
         year: "numeric"
@@ -688,7 +689,7 @@ function OrderCard({order}: {order: OrderNode}) {
                     {/* Order Details */}
                     <div className="space-y-1.5 mt-auto">
                         <p className="text-sm text-muted-foreground">
-                            {new Date(order.processedAt).toLocaleDateString("en-US", {
+                            {new Date(order.processedAt).toLocaleDateString(STORE_FORMAT_LOCALE, {
                                 weekday: "short",
                                 month: "short",
                                 day: "numeric",

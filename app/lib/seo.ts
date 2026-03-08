@@ -51,6 +51,7 @@
  */
 
 import type {WithContext, Organization, WebSite, Product, ItemList, BlogPosting, FAQPage} from "schema-dts";
+import {STORE_LOCALE} from "~/lib/store-locale";
 
 const FALLBACK_BRAND_NAME = "Your Store";
 const FALLBACK_SITE_URL = "https://example.com";
@@ -65,7 +66,7 @@ export const SEO_CONFIG = {
     siteUrl: FALLBACK_SITE_URL,
     defaultTitle: FALLBACK_SEO_TITLE,
     defaultDescription: FALLBACK_SEO_DESCRIPTION,
-    locale: "en_US",
+    locale: STORE_LOCALE,
     twitterCardType: "summary_large_image" as const
 } as const;
 

@@ -39,6 +39,7 @@ import {createHydrogenContext} from "@shopify/hydrogen";
 import {AppSession} from "~/lib/session";
 import {CART_QUERY_FRAGMENT} from "~/lib/fragments";
 import {createDataAdapter, type DataAdapter} from "~/lib/data-source";
+import {STORE_I18N} from "~/lib/store-locale";
 
 // =============================================================================
 // ADDITIONAL CONTEXT CONFIGURATION
@@ -143,12 +144,8 @@ export async function createHydrogenRouterContext(request: Request, env: Env, ex
             cache,
             waitUntil,
             session,
-            // i18n configuration - currently hardcoded to EN/US
-            // TODO: Implement dynamic locale detection via:
-            // - URL path prefix (e.g., /fr-CA/products)
-            // - Accept-Language header
-            // - User preference cookie
-            i18n: {language: "EN", country: "US"},
+            // i18n configuration - permanently fixed to English/Bangladesh
+            i18n: STORE_I18N,
             // Cart configuration with custom query fragment
             // The fragment defines what cart data is fetched on every query
             cart: {
