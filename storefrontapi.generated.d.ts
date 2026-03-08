@@ -283,40 +283,6 @@ export type MenuFragment = Pick<StorefrontAPI.Menu, "id"> & {
   >;
 };
 
-export type ShopFragment = Pick<
-  StorefrontAPI.Shop,
-  "id" | "name" | "description"
-> & {
-  primaryDomain: Pick<StorefrontAPI.Domain, "url">;
-  brand?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.Brand, "shortDescription" | "slogan"> & {
-      logo?: StorefrontAPI.Maybe<{
-        image?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Image, "url" | "width" | "height">
-        >;
-      }>;
-      squareLogo?: StorefrontAPI.Maybe<{
-        image?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Image, "url" | "width" | "height">
-        >;
-      }>;
-      coverImage?: StorefrontAPI.Maybe<{
-        image?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Image, "url" | "width" | "height">
-        >;
-      }>;
-      colors: {
-        primary: Array<
-          Pick<StorefrontAPI.BrandColorGroup, "background" | "foreground">
-        >;
-        secondary: Array<
-          Pick<StorefrontAPI.BrandColorGroup, "background" | "foreground">
-        >;
-      };
-    }
-  >;
-};
-
 export type HeaderQueryVariables = StorefrontAPI.Exact<{
   country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
   headerMenuHandle: StorefrontAPI.Scalars["String"]["input"];
@@ -324,36 +290,6 @@ export type HeaderQueryVariables = StorefrontAPI.Exact<{
 }>;
 
 export type HeaderQuery = {
-  shop: Pick<StorefrontAPI.Shop, "id" | "name" | "description"> & {
-    primaryDomain: Pick<StorefrontAPI.Domain, "url">;
-    brand?: StorefrontAPI.Maybe<
-      Pick<StorefrontAPI.Brand, "shortDescription" | "slogan"> & {
-        logo?: StorefrontAPI.Maybe<{
-          image?: StorefrontAPI.Maybe<
-            Pick<StorefrontAPI.Image, "url" | "width" | "height">
-          >;
-        }>;
-        squareLogo?: StorefrontAPI.Maybe<{
-          image?: StorefrontAPI.Maybe<
-            Pick<StorefrontAPI.Image, "url" | "width" | "height">
-          >;
-        }>;
-        coverImage?: StorefrontAPI.Maybe<{
-          image?: StorefrontAPI.Maybe<
-            Pick<StorefrontAPI.Image, "url" | "width" | "height">
-          >;
-        }>;
-        colors: {
-          primary: Array<
-            Pick<StorefrontAPI.BrandColorGroup, "background" | "foreground">
-          >;
-          secondary: Array<
-            Pick<StorefrontAPI.BrandColorGroup, "background" | "foreground">
-          >;
-        };
-      }
-    >;
-  };
   menu?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Menu, "id"> & {
       items: Array<
@@ -457,6 +393,15 @@ export type SiteSettingsFragment = Pick<
   missionStatement?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.MetaobjectField, "value">
   >;
+  brandLogo?: StorefrontAPI.Maybe<{
+    reference?: StorefrontAPI.Maybe<
+      { __typename: "MediaImage" } & {
+        image?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Image, "url" | "altText" | "width" | "height">
+        >;
+      }
+    >;
+  }>;
   heroHeading?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.MetaobjectField, "value">
   >;
@@ -494,12 +439,6 @@ export type SiteSettingsFragment = Pick<
     >;
   }>;
   siteUrl?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MetaobjectField, "value">>;
-  defaultSeoTitle?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.MetaobjectField, "value">
-  >;
-  defaultSeoDescription?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.MetaobjectField, "value">
-  >;
   contactEmail?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.MetaobjectField, "value">
   >;
@@ -575,9 +514,6 @@ export type SiteSettingsFragment = Pick<
           })
     >;
   }>;
-  freeShippingThreshold?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.MetaobjectField, "value">
-  >;
   socialLinksData?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.MetaobjectField, "value">
   >;
@@ -691,6 +627,15 @@ export type SiteContentQuery = {
       missionStatement?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.MetaobjectField, "value">
       >;
+      brandLogo?: StorefrontAPI.Maybe<{
+        reference?: StorefrontAPI.Maybe<
+          { __typename: "MediaImage" } & {
+            image?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.Image, "url" | "altText" | "width" | "height">
+            >;
+          }
+        >;
+      }>;
       heroHeading?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.MetaobjectField, "value">
       >;
@@ -738,12 +683,6 @@ export type SiteContentQuery = {
         >;
       }>;
       siteUrl?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.MetaobjectField, "value">
-      >;
-      defaultSeoTitle?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.MetaobjectField, "value">
-      >;
-      defaultSeoDescription?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.MetaobjectField, "value">
       >;
       contactEmail?: StorefrontAPI.Maybe<
@@ -833,9 +772,6 @@ export type SiteContentQuery = {
               })
         >;
       }>;
-      freeShippingThreshold?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.MetaobjectField, "value">
-      >;
       socialLinksData?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.MetaobjectField, "value">
       >;
@@ -964,6 +900,15 @@ export type PwaManifestQuery = {
       missionStatement?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.MetaobjectField, "value">
       >;
+      brandLogo?: StorefrontAPI.Maybe<{
+        reference?: StorefrontAPI.Maybe<
+          { __typename: "MediaImage" } & {
+            image?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.Image, "url" | "altText" | "width" | "height">
+            >;
+          }
+        >;
+      }>;
       heroHeading?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.MetaobjectField, "value">
       >;
@@ -1011,12 +956,6 @@ export type PwaManifestQuery = {
         >;
       }>;
       siteUrl?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.MetaobjectField, "value">
-      >;
-      defaultSeoTitle?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.MetaobjectField, "value">
-      >;
-      defaultSeoDescription?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.MetaobjectField, "value">
       >;
       contactEmail?: StorefrontAPI.Maybe<
@@ -1106,9 +1045,6 @@ export type PwaManifestQuery = {
               })
         >;
       }>;
-      freeShippingThreshold?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.MetaobjectField, "value">
-      >;
       socialLinksData?: StorefrontAPI.Maybe<
         Pick<StorefrontAPI.MetaobjectField, "value">
       >;
@@ -1210,20 +1146,6 @@ export type PwaManifestQuery = {
       >;
     }
   >;
-  shop: Pick<StorefrontAPI.Shop, "name" | "description"> & {
-    brand?: StorefrontAPI.Maybe<
-      Pick<StorefrontAPI.Brand, "shortDescription"> & {
-        logo?: StorefrontAPI.Maybe<{
-          image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "url">>;
-        }>;
-        colors: {
-          primary: Array<
-            Pick<StorefrontAPI.BrandColorGroup, "background" | "foreground">
-          >;
-        };
-      }
-    >;
-  };
 };
 
 export type ShopShippingMetafieldFragment = {
@@ -2025,25 +1947,35 @@ export type AppleTouchIconQueryVariables = StorefrontAPI.Exact<{
 }>;
 
 export type AppleTouchIconQuery = {
-  pwaSettings?: StorefrontAPI.Maybe<{
-    iconApple?: StorefrontAPI.Maybe<{
-      reference?: StorefrontAPI.Maybe<{
-        image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "url">>;
-      }>;
+  siteSettings?: StorefrontAPI.Maybe<{
+    brandLogo?: StorefrontAPI.Maybe<{
+      reference?: StorefrontAPI.Maybe<
+        { __typename: "MediaImage" } & {
+          image?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.Image, "url" | "altText" | "width" | "height">
+          >;
+        }
+      >;
+    }>;
+    icon180Apple?: StorefrontAPI.Maybe<{
+      reference?: StorefrontAPI.Maybe<
+        { __typename: "MediaImage" } & {
+          image?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.Image, "url" | "altText" | "width" | "height">
+          >;
+        }
+      >;
     }>;
     icon192?: StorefrontAPI.Maybe<{
-      reference?: StorefrontAPI.Maybe<{
-        image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "url">>;
-      }>;
+      reference?: StorefrontAPI.Maybe<
+        { __typename: "MediaImage" } & {
+          image?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.Image, "url" | "altText" | "width" | "height">
+          >;
+        }
+      >;
     }>;
   }>;
-  shop: {
-    brand?: StorefrontAPI.Maybe<{
-      squareLogo?: StorefrontAPI.Maybe<{
-        image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "url">>;
-      }>;
-    }>;
-  };
 };
 
 export type ArticleQueryVariables = StorefrontAPI.Exact<{
@@ -2660,19 +2592,32 @@ export type FaviconQueryVariables = StorefrontAPI.Exact<{
 
 export type FaviconQuery = {
   siteSettings?: StorefrontAPI.Maybe<{
+    brandLogo?: StorefrontAPI.Maybe<{
+      reference?: StorefrontAPI.Maybe<
+        { __typename: "MediaImage" } & {
+          image?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.Image, "url" | "altText" | "width" | "height">
+          >;
+        }
+      >;
+    }>;
     favicon?: StorefrontAPI.Maybe<{
-      reference?: StorefrontAPI.Maybe<{
-        image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "url">>;
-      }>;
+      reference?: StorefrontAPI.Maybe<
+        { __typename: "MediaImage" } & {
+          image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "url">>;
+        }
+      >;
+    }>;
+    icon192?: StorefrontAPI.Maybe<{
+      reference?: StorefrontAPI.Maybe<
+        { __typename: "MediaImage" } & {
+          image?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.Image, "url" | "altText" | "width" | "height">
+          >;
+        }
+      >;
     }>;
   }>;
-  shop: {
-    brand?: StorefrontAPI.Maybe<{
-      squareLogo?: StorefrontAPI.Maybe<{
-        image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "url">>;
-      }>;
-    }>;
-  };
 };
 
 export type GalleryProductsQueryVariables = StorefrontAPI.Exact<{
@@ -4249,7 +4194,7 @@ export type SharedWishlistProductsQuery = {
 };
 
 interface GeneratedQueryTypes {
-  "#graphql\n  fragment Shop on Shop {\n    id\n    name\n    description\n    primaryDomain {\n      url\n    }\n    brand {\n      logo {\n        image {\n          url\n          width\n          height\n        }\n      }\n      squareLogo {\n        image {\n          url\n          width\n          height\n        }\n      }\n      coverImage {\n        image {\n          url\n          width\n          height\n        }\n      }\n      shortDescription\n      slogan\n      colors {\n        primary {\n          background\n          foreground\n        }\n        secondary {\n          background\n          foreground\n        }\n      }\n    }\n  }\n  query Header(\n    $country: CountryCode\n    $headerMenuHandle: String!\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    shop {\n      ...Shop\n    }\n    menu(handle: $headerMenuHandle) {\n      ...Menu\n    }\n  }\n  #graphql\n  fragment MenuItem on MenuItem {\n    id\n    resourceId\n    tags\n    title\n    type\n    url\n  }\n  fragment ChildMenuItem on MenuItem {\n    ...MenuItem\n  }\n  fragment ParentMenuItem on MenuItem {\n    ...MenuItem\n    items {\n      ...ChildMenuItem\n    }\n  }\n  fragment Menu on Menu {\n    id\n    items {\n      ...ParentMenuItem\n    }\n  }\n\n": {
+  "#graphql\n  query Header(\n    $country: CountryCode\n    $headerMenuHandle: String!\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    menu(handle: $headerMenuHandle) {\n      ...Menu\n    }\n  }\n  #graphql\n  fragment MenuItem on MenuItem {\n    id\n    resourceId\n    tags\n    title\n    type\n    url\n  }\n  fragment ChildMenuItem on MenuItem {\n    ...MenuItem\n  }\n  fragment ParentMenuItem on MenuItem {\n    ...MenuItem\n    items {\n      ...ChildMenuItem\n    }\n  }\n  fragment Menu on Menu {\n    id\n    items {\n      ...ParentMenuItem\n    }\n  }\n\n": {
     return: HeaderQuery;
     variables: HeaderQueryVariables;
   };
@@ -4261,7 +4206,7 @@ interface GeneratedQueryTypes {
     return: MenuCollectionsQuery;
     variables: MenuCollectionsQueryVariables;
   };
-  '#graphql\n  query SiteContent(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {\n      ...SiteSettings\n    }\n  }\n  #graphql\n  fragment SiteSettings on Metaobject {\n    id\n    handle\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # BRAND IDENTITY\n    # ─────────────────────────────────────────────────────────────────────────\n    brandName: field(key: "brand_name") { value }\n    # List of single line text - Shopify returns JSON array of strings\n    brandWords: field(key: "words_to_describe_your_brand") { value }\n    missionStatement: field(key: "brand_mission") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # HERO SECTION\n    # ─────────────────────────────────────────────────────────────────────────\n    heroHeading: field(key: "hero_main_heading") { value }\n    heroDescription: field(key: "hero_description_text") { value }\n    heroMediaMobile: field(key: "hero_background_media_mobile") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    heroMediaLargeScreen: field(key: "hero_background_media_large_screen") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SEO DEFAULTS\n    # ─────────────────────────────────────────────────────────────────────────\n    siteUrl: field(key: "website_url") { value }\n    defaultSeoTitle: field(key: "default_page_title") { value }\n    defaultSeoDescription: field(key: "default_page_description") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # CONTACT INFORMATION\n    # ─────────────────────────────────────────────────────────────────────────\n    contactEmail: field(key: "contact_email") { value }\n    contactPhone: field(key: "contact_phone") { value }\n    businessHours: field(key: "business_hours") { value }\n    streetAddress: field(key: "street_address") { value }\n    city: field(key: "city") { value }\n    state: field(key: "state_province") { value }\n    zipCode: field(key: "postal_code") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SECTION HEADINGS\n    # ─────────────────────────────────────────────────────────────────────────\n    blogSectionTitle: field(key: "blog_section_heading") { value }\n    collectionsTitle: field(key: "collections_section_heading") { value }\n    relatedProductsTitle: field(key: "related_products_heading") { value }\n    recommendedTitle: field(key: "recommended_products_heading") { value }\n    instagramTitle: field(key: "instagram_section_heading") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PAGE HEADINGS (Gallery & Blog)\n    # ─────────────────────────────────────────────────────────────────────────\n    galleryPageHeading: field(key: "gallery_page_heading") { value }\n    galleryPageDescription: field(key: "gallery_page_description") { value }\n    blogPageHeading: field(key: "blog_page_heading") { value }\n    blogPageDescription: field(key: "blog_page_description") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PROMOTIONAL BANNERS\n    # ─────────────────────────────────────────────────────────────────────────\n    # announcement_banner_text is now a "List of single line text" field in Shopify\n    # Returns JSON array of strings: ["text1", "text2", ...]\n    announcementBanner: field(key: "announcement_banner_text") { value }\n    promotionalBannerOneMedia: field(key: "promotional_banner_one_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    promotionalBannerTwoMedia: field(key: "promotional_banner_two_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SHIPPING\n    # ─────────────────────────────────────────────────────────────────────────\n    freeShippingThreshold: field(key: "free_shipping_minimum_order") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # COLLECTIONS\n    # ─────────────────────────────────────────────────────────────────────────\n\n    # List of links field - Shopify returns [{text, url}, ...] where text is the platform name\n    socialLinksData: field(key: "social_links_data") { value }\n\n    # JSON array: [{customerName, location, rating, text, avatarUrl}, ...]\n    testimonialsData: field(key: "testimonials_data") { value }\n\n    # JSON array: [{question, answer}, ...]\n    faqItemsData: field(key: "faq_items_data") { value }\n\n    # List of file references (images/videos)\n    instagramMediaData: field(key: "instagram_images_data") {\n      references(first: 20) {\n        nodes {\n          ... on MediaImage {\n            __typename\n            id\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n          ... on Video {\n            __typename\n            id\n            sources {\n              url\n              mimeType\n            }\n            previewImage {\n              url\n              altText\n            }\n            alt\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # FAVICON (File reference - MediaImage only)\n    # Dynamic favicon served from /favicon.ico route\n    # ─────────────────────────────────────────────────────────────────────────\n    favicon: field(key: "favicon") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PWA ICONS (File references - MediaImage only)\n    # Required for Progressive Web App installability\n    # ─────────────────────────────────────────────────────────────────────────\n    icon192: field(key: "icon_192") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon512: field(key: "icon_512") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon180Apple: field(key: "icon_180_apple") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n\n': {
+  '#graphql\n  query SiteContent(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {\n      ...SiteSettings\n    }\n  }\n  #graphql\n  fragment SiteSettings on Metaobject {\n    id\n    handle\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # BRAND IDENTITY\n    # ─────────────────────────────────────────────────────────────────────────\n    brandName: field(key: "brand_name") { value }\n    # List of single line text - Shopify returns JSON array of strings\n    brandWords: field(key: "words_to_describe_your_brand") { value }\n    missionStatement: field(key: "brand_mission") { value }\n    brandLogo: field(key: "brand_logo") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # HERO SECTION\n    # ─────────────────────────────────────────────────────────────────────────\n    heroHeading: field(key: "hero_main_heading") { value }\n    heroDescription: field(key: "hero_description_text") { value }\n    heroMediaMobile: field(key: "hero_background_media_mobile") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    heroMediaLargeScreen: field(key: "hero_background_media_large_screen") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SEO DEFAULTS\n    # ─────────────────────────────────────────────────────────────────────────\n    siteUrl: field(key: "website_url") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # CONTACT INFORMATION\n    # ─────────────────────────────────────────────────────────────────────────\n    contactEmail: field(key: "contact_email") { value }\n    contactPhone: field(key: "contact_phone") { value }\n    businessHours: field(key: "business_hours") { value }\n    streetAddress: field(key: "street_address") { value }\n    city: field(key: "city") { value }\n    state: field(key: "state_province") { value }\n    zipCode: field(key: "postal_code") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SECTION HEADINGS\n    # ─────────────────────────────────────────────────────────────────────────\n    blogSectionTitle: field(key: "blog_section_heading") { value }\n    collectionsTitle: field(key: "collections_section_heading") { value }\n    relatedProductsTitle: field(key: "related_products_heading") { value }\n    recommendedTitle: field(key: "recommended_products_heading") { value }\n    instagramTitle: field(key: "instagram_section_heading") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PAGE HEADINGS (Gallery & Blog)\n    # ─────────────────────────────────────────────────────────────────────────\n    galleryPageHeading: field(key: "gallery_page_heading") { value }\n    galleryPageDescription: field(key: "gallery_page_description") { value }\n    blogPageHeading: field(key: "blog_page_heading") { value }\n    blogPageDescription: field(key: "blog_page_description") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PROMOTIONAL BANNERS\n    # ─────────────────────────────────────────────────────────────────────────\n    # announcement_banner_text is now a "List of single line text" field in Shopify\n    # Returns JSON array of strings: ["text1", "text2", ...]\n    announcementBanner: field(key: "announcement_banner_text") { value }\n    promotionalBannerOneMedia: field(key: "promotional_banner_one_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    promotionalBannerTwoMedia: field(key: "promotional_banner_two_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # COLLECTIONS\n    # ─────────────────────────────────────────────────────────────────────────\n\n    # List of links field - Shopify returns [{text, url}, ...] where text is the platform name\n    socialLinksData: field(key: "social_links_data") { value }\n\n    # JSON array: [{customerName, location, rating, text, avatarUrl}, ...]\n    testimonialsData: field(key: "testimonials_data") { value }\n\n    # JSON array: [{question, answer}, ...]\n    faqItemsData: field(key: "faq_items_data") { value }\n\n    # List of file references (images/videos)\n    instagramMediaData: field(key: "instagram_images_data") {\n      references(first: 20) {\n        nodes {\n          ... on MediaImage {\n            __typename\n            id\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n          ... on Video {\n            __typename\n            id\n            sources {\n              url\n              mimeType\n            }\n            previewImage {\n              url\n              altText\n            }\n            alt\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # FAVICON (File reference - MediaImage only)\n    # Dynamic favicon served from /favicon.ico route\n    # ─────────────────────────────────────────────────────────────────────────\n    favicon: field(key: "favicon") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PWA ICONS (File references - MediaImage only)\n    # Required for Progressive Web App installability\n    # ─────────────────────────────────────────────────────────────────────────\n    icon192: field(key: "icon_192") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon512: field(key: "icon_512") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon180Apple: field(key: "icon_180_apple") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n\n': {
     return: SiteContentQuery;
     variables: SiteContentQueryVariables;
   };
@@ -4269,7 +4214,7 @@ interface GeneratedQueryTypes {
     return: ThemeSettingsQuery;
     variables: ThemeSettingsQueryVariables;
   };
-  '#graphql\n  query PwaManifest(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    # Site settings for brand identity and PWA icons\n    siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {\n      ...SiteSettings\n    }\n    # Theme settings for colors (converted to HEX for manifest)\n    themeSettings: metaobject(handle: {type: "theme_settings", handle: "main"}) {\n      ...ThemeSettings\n    }\n    # Shop brand data for fallbacks\n    shop {\n      name\n      description\n      brand {\n        shortDescription\n        logo {\n          image {\n            url\n          }\n        }\n        colors {\n          primary {\n            background\n            foreground\n          }\n        }\n      }\n    }\n  }\n  #graphql\n  fragment SiteSettings on Metaobject {\n    id\n    handle\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # BRAND IDENTITY\n    # ─────────────────────────────────────────────────────────────────────────\n    brandName: field(key: "brand_name") { value }\n    # List of single line text - Shopify returns JSON array of strings\n    brandWords: field(key: "words_to_describe_your_brand") { value }\n    missionStatement: field(key: "brand_mission") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # HERO SECTION\n    # ─────────────────────────────────────────────────────────────────────────\n    heroHeading: field(key: "hero_main_heading") { value }\n    heroDescription: field(key: "hero_description_text") { value }\n    heroMediaMobile: field(key: "hero_background_media_mobile") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    heroMediaLargeScreen: field(key: "hero_background_media_large_screen") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SEO DEFAULTS\n    # ─────────────────────────────────────────────────────────────────────────\n    siteUrl: field(key: "website_url") { value }\n    defaultSeoTitle: field(key: "default_page_title") { value }\n    defaultSeoDescription: field(key: "default_page_description") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # CONTACT INFORMATION\n    # ─────────────────────────────────────────────────────────────────────────\n    contactEmail: field(key: "contact_email") { value }\n    contactPhone: field(key: "contact_phone") { value }\n    businessHours: field(key: "business_hours") { value }\n    streetAddress: field(key: "street_address") { value }\n    city: field(key: "city") { value }\n    state: field(key: "state_province") { value }\n    zipCode: field(key: "postal_code") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SECTION HEADINGS\n    # ─────────────────────────────────────────────────────────────────────────\n    blogSectionTitle: field(key: "blog_section_heading") { value }\n    collectionsTitle: field(key: "collections_section_heading") { value }\n    relatedProductsTitle: field(key: "related_products_heading") { value }\n    recommendedTitle: field(key: "recommended_products_heading") { value }\n    instagramTitle: field(key: "instagram_section_heading") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PAGE HEADINGS (Gallery & Blog)\n    # ─────────────────────────────────────────────────────────────────────────\n    galleryPageHeading: field(key: "gallery_page_heading") { value }\n    galleryPageDescription: field(key: "gallery_page_description") { value }\n    blogPageHeading: field(key: "blog_page_heading") { value }\n    blogPageDescription: field(key: "blog_page_description") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PROMOTIONAL BANNERS\n    # ─────────────────────────────────────────────────────────────────────────\n    # announcement_banner_text is now a "List of single line text" field in Shopify\n    # Returns JSON array of strings: ["text1", "text2", ...]\n    announcementBanner: field(key: "announcement_banner_text") { value }\n    promotionalBannerOneMedia: field(key: "promotional_banner_one_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    promotionalBannerTwoMedia: field(key: "promotional_banner_two_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SHIPPING\n    # ─────────────────────────────────────────────────────────────────────────\n    freeShippingThreshold: field(key: "free_shipping_minimum_order") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # COLLECTIONS\n    # ─────────────────────────────────────────────────────────────────────────\n\n    # List of links field - Shopify returns [{text, url}, ...] where text is the platform name\n    socialLinksData: field(key: "social_links_data") { value }\n\n    # JSON array: [{customerName, location, rating, text, avatarUrl}, ...]\n    testimonialsData: field(key: "testimonials_data") { value }\n\n    # JSON array: [{question, answer}, ...]\n    faqItemsData: field(key: "faq_items_data") { value }\n\n    # List of file references (images/videos)\n    instagramMediaData: field(key: "instagram_images_data") {\n      references(first: 20) {\n        nodes {\n          ... on MediaImage {\n            __typename\n            id\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n          ... on Video {\n            __typename\n            id\n            sources {\n              url\n              mimeType\n            }\n            previewImage {\n              url\n              altText\n            }\n            alt\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # FAVICON (File reference - MediaImage only)\n    # Dynamic favicon served from /favicon.ico route\n    # ─────────────────────────────────────────────────────────────────────────\n    favicon: field(key: "favicon") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PWA ICONS (File references - MediaImage only)\n    # Required for Progressive Web App installability\n    # ─────────────────────────────────────────────────────────────────────────\n    icon192: field(key: "icon_192") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon512: field(key: "icon_512") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon180Apple: field(key: "icon_180_apple") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment ThemeSettings on Metaobject {\n    id\n    handle\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # FONTS (Google Font family names)\n    # These semantic names map to CSS variable roles:\n    # - body_font → --font-sans (paragraphs, buttons, labels, UI text)\n    # - heading_font → --font-serif (h1-h6, hero text, section titles)\n    # - price_font → --font-mono (prices, quantities, codes, tabular data)\n    # ─────────────────────────────────────────────────────────────────────────\n    fontBody: field(key: "body_font") { value }\n    fontHeading: field(key: "heading_font") { value }\n    fontPrice: field(key: "price_font") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # COLORS (OKLCH or HEX format)\n    # 5 core colors that derive 25+ CSS variables via theme-utils.ts\n    # ─────────────────────────────────────────────────────────────────────────\n    colorPrimary: field(key: "color_primary") { value }\n    colorSecondary: field(key: "color_secondary") { value }\n    colorBackground: field(key: "color_background") { value }\n    colorForeground: field(key: "color_foreground") { value }\n    colorAccent: field(key: "color_accent") { value }\n  }\n\n': {
+  '#graphql\n  query PwaManifest(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    # Site settings for brand identity and PWA icons\n    siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {\n      ...SiteSettings\n    }\n    # Theme settings for colors (converted to HEX for manifest)\n    themeSettings: metaobject(handle: {type: "theme_settings", handle: "main"}) {\n      ...ThemeSettings\n    }\n  }\n  #graphql\n  fragment SiteSettings on Metaobject {\n    id\n    handle\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # BRAND IDENTITY\n    # ─────────────────────────────────────────────────────────────────────────\n    brandName: field(key: "brand_name") { value }\n    # List of single line text - Shopify returns JSON array of strings\n    brandWords: field(key: "words_to_describe_your_brand") { value }\n    missionStatement: field(key: "brand_mission") { value }\n    brandLogo: field(key: "brand_logo") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # HERO SECTION\n    # ─────────────────────────────────────────────────────────────────────────\n    heroHeading: field(key: "hero_main_heading") { value }\n    heroDescription: field(key: "hero_description_text") { value }\n    heroMediaMobile: field(key: "hero_background_media_mobile") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    heroMediaLargeScreen: field(key: "hero_background_media_large_screen") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SEO DEFAULTS\n    # ─────────────────────────────────────────────────────────────────────────\n    siteUrl: field(key: "website_url") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # CONTACT INFORMATION\n    # ─────────────────────────────────────────────────────────────────────────\n    contactEmail: field(key: "contact_email") { value }\n    contactPhone: field(key: "contact_phone") { value }\n    businessHours: field(key: "business_hours") { value }\n    streetAddress: field(key: "street_address") { value }\n    city: field(key: "city") { value }\n    state: field(key: "state_province") { value }\n    zipCode: field(key: "postal_code") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SECTION HEADINGS\n    # ─────────────────────────────────────────────────────────────────────────\n    blogSectionTitle: field(key: "blog_section_heading") { value }\n    collectionsTitle: field(key: "collections_section_heading") { value }\n    relatedProductsTitle: field(key: "related_products_heading") { value }\n    recommendedTitle: field(key: "recommended_products_heading") { value }\n    instagramTitle: field(key: "instagram_section_heading") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PAGE HEADINGS (Gallery & Blog)\n    # ─────────────────────────────────────────────────────────────────────────\n    galleryPageHeading: field(key: "gallery_page_heading") { value }\n    galleryPageDescription: field(key: "gallery_page_description") { value }\n    blogPageHeading: field(key: "blog_page_heading") { value }\n    blogPageDescription: field(key: "blog_page_description") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PROMOTIONAL BANNERS\n    # ─────────────────────────────────────────────────────────────────────────\n    # announcement_banner_text is now a "List of single line text" field in Shopify\n    # Returns JSON array of strings: ["text1", "text2", ...]\n    announcementBanner: field(key: "announcement_banner_text") { value }\n    promotionalBannerOneMedia: field(key: "promotional_banner_one_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    promotionalBannerTwoMedia: field(key: "promotional_banner_two_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # COLLECTIONS\n    # ─────────────────────────────────────────────────────────────────────────\n\n    # List of links field - Shopify returns [{text, url}, ...] where text is the platform name\n    socialLinksData: field(key: "social_links_data") { value }\n\n    # JSON array: [{customerName, location, rating, text, avatarUrl}, ...]\n    testimonialsData: field(key: "testimonials_data") { value }\n\n    # JSON array: [{question, answer}, ...]\n    faqItemsData: field(key: "faq_items_data") { value }\n\n    # List of file references (images/videos)\n    instagramMediaData: field(key: "instagram_images_data") {\n      references(first: 20) {\n        nodes {\n          ... on MediaImage {\n            __typename\n            id\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n          ... on Video {\n            __typename\n            id\n            sources {\n              url\n              mimeType\n            }\n            previewImage {\n              url\n              altText\n            }\n            alt\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # FAVICON (File reference - MediaImage only)\n    # Dynamic favicon served from /favicon.ico route\n    # ─────────────────────────────────────────────────────────────────────────\n    favicon: field(key: "favicon") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PWA ICONS (File references - MediaImage only)\n    # Required for Progressive Web App installability\n    # ─────────────────────────────────────────────────────────────────────────\n    icon192: field(key: "icon_192") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon512: field(key: "icon_512") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon180Apple: field(key: "icon_180_apple") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment ThemeSettings on Metaobject {\n    id\n    handle\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # FONTS (Google Font family names)\n    # These semantic names map to CSS variable roles:\n    # - body_font → --font-sans (paragraphs, buttons, labels, UI text)\n    # - heading_font → --font-serif (h1-h6, hero text, section titles)\n    # - price_font → --font-mono (prices, quantities, codes, tabular data)\n    # ─────────────────────────────────────────────────────────────────────────\n    fontBody: field(key: "body_font") { value }\n    fontHeading: field(key: "heading_font") { value }\n    fontPrice: field(key: "price_font") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # COLORS (OKLCH or HEX format)\n    # 5 core colors that derive 25+ CSS variables via theme-utils.ts\n    # ─────────────────────────────────────────────────────────────────────────\n    colorPrimary: field(key: "color_primary") { value }\n    colorSecondary: field(key: "color_secondary") { value }\n    colorBackground: field(key: "color_background") { value }\n    colorForeground: field(key: "color_foreground") { value }\n    colorAccent: field(key: "color_accent") { value }\n  }\n\n': {
     return: PwaManifestQuery;
     variables: PwaManifestQueryVariables;
   };
@@ -4337,7 +4282,7 @@ interface GeneratedQueryTypes {
     return: WishlistProductsQuery;
     variables: WishlistProductsQueryVariables;
   };
-  '#graphql\n  query AppleTouchIcon(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    pwaSettings: metaobject(handle: {type: "pwa_settings", handle: "pwa_config"}) {\n      iconApple: field(key: "icon_180_apple") {\n        reference {\n          ... on MediaImage {\n            image { url }\n          }\n        }\n      }\n      icon192: field(key: "icon_192") {\n        reference {\n          ... on MediaImage {\n            image { url }\n          }\n        }\n      }\n    }\n    shop {\n      brand {\n        squareLogo {\n          image { url }\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  query AppleTouchIcon(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {\n      brandLogo: field(key: "brand_logo") {\n        reference {\n          ... on MediaImage {\n            __typename\n            image { url altText width height }\n          }\n        }\n      }\n      icon180Apple: field(key: "icon_180_apple") {\n        reference {\n          ... on MediaImage {\n            __typename\n            image { url altText width height }\n          }\n        }\n      }\n      icon192: field(key: "icon_192") {\n        reference {\n          ... on MediaImage {\n            __typename\n            image { url altText width height }\n          }\n        }\n      }\n    }\n  }\n': {
     return: AppleTouchIconQuery;
     variables: AppleTouchIconQueryVariables;
   };
@@ -4381,7 +4326,7 @@ interface GeneratedQueryTypes {
     return: SidebarCollectionsAllQuery;
     variables: SidebarCollectionsAllQueryVariables;
   };
-  '#graphql\n  query Favicon(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {\n      favicon: field(key: "favicon") {\n        reference {\n          ... on MediaImage {\n            image { url }\n          }\n        }\n      }\n    }\n    shop {\n      brand {\n        squareLogo {\n          image { url }\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  query Favicon(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {\n      brandLogo: field(key: "brand_logo") {\n        reference {\n          ... on MediaImage {\n            __typename\n            image { url altText width height }\n          }\n        }\n      }\n      favicon: field(key: "favicon") {\n        reference {\n          ... on MediaImage {\n            __typename\n            image { url }\n          }\n        }\n      }\n      icon192: field(key: "icon_192") {\n        reference {\n          ... on MediaImage {\n            __typename\n            image { url altText width height }\n          }\n        }\n      }\n    }\n  }\n': {
     return: FaviconQuery;
     variables: FaviconQueryVariables;
   };

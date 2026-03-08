@@ -573,6 +573,12 @@ export interface SiteSettings {
     // BRAND IDENTITY
     // ─────────────────────────────────────────────────────────────────────────
     brandName: string;
+    brandLogo?: {
+        url: string;
+        altText?: string | null;
+        width?: number | null;
+        height?: number | null;
+    } | null;
     brandWords: string[];
     missionStatement: string;
 
@@ -590,8 +596,6 @@ export interface SiteSettings {
     // SEO DEFAULTS
     // ─────────────────────────────────────────────────────────────────────────
     siteUrl: string;
-    defaultSeoTitle: string;
-    defaultSeoDescription: string;
 
     // ─────────────────────────────────────────────────────────────────────────
     // CONTACT INFORMATION
@@ -630,11 +634,6 @@ export interface SiteSettings {
     announcementBanner: string[];
     promotionalBannerOneMedia?: HeroMedia;
     promotionalBannerTwoMedia?: HeroMedia;
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // SHIPPING
-    // ─────────────────────────────────────────────────────────────────────────
-    freeShippingThreshold: number | null;
 
     // ─────────────────────────────────────────────────────────────────────────
     // COLLECTIONS

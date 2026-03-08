@@ -60,6 +60,19 @@ export const SITE_SETTINGS_FRAGMENT = `#graphql
     # List of single line text - Shopify returns JSON array of strings
     brandWords: field(key: "words_to_describe_your_brand") { value }
     missionStatement: field(key: "brand_mission") { value }
+    brandLogo: field(key: "brand_logo") {
+      reference {
+        ... on MediaImage {
+          __typename
+          image {
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
+    }
 
     # ─────────────────────────────────────────────────────────────────────────
     # HERO SECTION
@@ -121,8 +134,6 @@ export const SITE_SETTINGS_FRAGMENT = `#graphql
     # SEO DEFAULTS
     # ─────────────────────────────────────────────────────────────────────────
     siteUrl: field(key: "website_url") { value }
-    defaultSeoTitle: field(key: "default_page_title") { value }
-    defaultSeoDescription: field(key: "default_page_description") { value }
 
     # ─────────────────────────────────────────────────────────────────────────
     # CONTACT INFORMATION
@@ -208,11 +219,6 @@ export const SITE_SETTINGS_FRAGMENT = `#graphql
         }
       }
     }
-
-    # ─────────────────────────────────────────────────────────────────────────
-    # SHIPPING
-    # ─────────────────────────────────────────────────────────────────────────
-    freeShippingThreshold: field(key: "free_shipping_minimum_order") { value }
 
     # ─────────────────────────────────────────────────────────────────────────
     # COLLECTIONS

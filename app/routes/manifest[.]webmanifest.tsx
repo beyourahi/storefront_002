@@ -4,7 +4,7 @@
  * @description
  * Generates a dynamic Web App Manifest for Progressive Web App (PWA)
  * functionality. Data is pulled from Shopify metaobjects (site_settings
- * and theme_settings) with fallbacks to shop brand data.
+ * and theme_settings) only.
  *
  * @route GET /manifest.webmanifest
  *
@@ -36,7 +36,7 @@
  * - CDN: 24 hours (s-maxage=86400)
  *
  * @error-handling
- * - Missing icons: Returns 500 with helpful error
+ * - Missing icons: Returns a minimal manifest with an empty icons array
  * - Query failure: Returns minimal fallback manifest
  *
  * @color-conversion
@@ -54,7 +54,7 @@
 
 import type {Route} from "./+types/manifest[.]webmanifest";
 import {PWA_MANIFEST_QUERY} from "~/lib/pwa-queries";
-import {parseShopBrand, buildWebAppManifest} from "~/lib/pwa-parsers";
+import {buildWebAppManifest, getThemeColor} from "~/lib/pwa-parsers";
 import {parseSiteSettings, parseThemeSettings} from "~/lib/metaobject-parsers";
 
 export async function loader({context, request}: Route.LoaderArgs) {
@@ -65,31 +65,52 @@ export async function loader({context, request}: Route.LoaderArgs) {
     const manifestUrl = `${url.origin}/manifest.webmanifest`;
 
     try {
-        // Query site_settings, theme_settings, and shop brand data
+        // Query site_settings and theme_settings
         const data = await dataAdapter.query(PWA_MANIFEST_QUERY, {
             cache: dataAdapter.CacheLong() // Brand settings rarely change
         });
 
-        // Parse metaobjects and shop brand
+        // Parse metaobjects
         const siteSettings = parseSiteSettings(data?.siteSettings);
         const themeConfig = parseThemeSettings(data?.themeSettings);
-        const shopBrand = parseShopBrand(data?.shop);
 
         // Build the Web App Manifest with manifest URL for getInstalledRelatedApps()
-        const manifest = buildWebAppManifest(siteSettings, themeConfig, shopBrand, manifestUrl);
+        const manifest = buildWebAppManifest(siteSettings, themeConfig, manifestUrl);
 
-        // If manifest is null, icons are missing - return error
+        // If icons are missing entirely, still serve a valid manifest so the route never hard-fails.
         if (!manifest) {
-            console.error("[PWA Manifest] Missing required icons - PWA will not be installable");
+            console.error("[PWA Manifest] Missing PWA icons in site_settings; serving minimal manifest");
             return new Response(
-                JSON.stringify({
-                    error: "PWA manifest requires icons. Please add icon_192 and icon_512 fields to your site_settings metaobject."
-                }),
+                JSON.stringify(
+                    {
+                        name: siteSettings.brandName || "Store",
+                        short_name: (siteSettings.brandName || "Store").slice(0, 12),
+                        description: siteSettings.missionStatement || `Shop at ${siteSettings.brandName || "Store"}`,
+                        start_url: "/",
+                        scope: "/",
+                        display: "standalone",
+                        orientation: "any",
+                        theme_color: getThemeColor(themeConfig),
+                        background_color: "#ffffff",
+                        categories: ["shopping"],
+                        icons: [],
+                        related_applications: [
+                            {
+                                platform: "webapp",
+                                url: manifestUrl
+                            }
+                        ],
+                        prefer_related_applications: false,
+                        id: "/"
+                    },
+                    null,
+                    2
+                ),
                 {
-                    status: 500,
+                    status: 200,
                     headers: {
-                        "Content-Type": "application/json",
-                        "Cache-Control": "no-store"
+                        "Content-Type": "application/manifest+json",
+                        "Cache-Control": "public, max-age=300"
                     }
                 }
             );

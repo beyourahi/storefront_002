@@ -63,7 +63,8 @@ import type {RootLoader} from "~/root";
 // MAIN FOOTER COMPONENT
 // =============================================================================
 
-export function Footer({footer: footerPromise, header}: FooterProps) {
+export function Footer({footer: footerPromise, header: _header}: FooterProps) {
+    const {brandName} = useSiteSettings();
     return (
         <Suspense>
             <Await resolve={footerPromise}>
@@ -92,7 +93,7 @@ export function Footer({footer: footerPromise, header}: FooterProps) {
                                  px-container uses --container-padding: clamp(0.5rem, 0.75vw, 0.75rem)
                                  This ensures footer padding matches homepage sections exactly */}
                             <div className="py-4 sm:py-6 px-container flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2">
-                                <Copyright shopName={header.shop.name} />
+                                <Copyright shopName={brandName || "Store"} />
                                 <a
                                     href="https://beyourahi.com"
                                     target="_blank"

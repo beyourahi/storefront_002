@@ -2,15 +2,15 @@
  * @fileoverview Dynamic Favicon Route
  *
  * @description
- * Serves the site favicon dynamically based on Shopify configuration.
+ * Serves the site favicon dynamically based on site_settings.
  * Uses 302 redirect to actual favicon URL for efficient caching.
  *
  * @route GET /favicon.ico
  *
  * @favicon-priority
  * 1. site_settings.favicon (metaobject file reference)
- * 2. shop.brand.squareLogo (Shopify brand settings)
- * 3. Static /assets/favicon.svg (bundled fallback)
+ * 2. site_settings.brand_logo
+ * 3. site_settings.icon_192
  *
  * @caching
  * - Browser: 24 hours (max-age=86400)
@@ -36,6 +36,8 @@
 
 import type {Route} from "./+types/favicon[.]ico";
 import {redirect} from "react-router";
+import {parseSiteSettings} from "~/lib/metaobject-parsers";
+import {buildLettermarkIconSvg} from "~/lib/pwa-parsers";
 
 // Query for favicon from site_settings metaobject
 const FAVICON_QUERY = `#graphql
@@ -44,26 +46,33 @@ const FAVICON_QUERY = `#graphql
     $language: LanguageCode
   ) @inContext(country: $country, language: $language) {
     siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {
+      brandLogo: field(key: "brand_logo") {
+        reference {
+          ... on MediaImage {
+            __typename
+            image { url altText width height }
+          }
+        }
+      }
       favicon: field(key: "favicon") {
         reference {
           ... on MediaImage {
+            __typename
             image { url }
           }
         }
       }
-    }
-    shop {
-      brand {
-        squareLogo {
-          image { url }
+      icon192: field(key: "icon_192") {
+        reference {
+          ... on MediaImage {
+            __typename
+            image { url altText width height }
+          }
         }
       }
     }
   }
 ` as const;
-
-// Import static favicon for fallback path
-import faviconSvg from "~/assets/favicon.svg";
 
 export async function loader({context}: Route.LoaderArgs) {
     const {dataAdapter} = context;
@@ -81,18 +90,16 @@ export async function loader({context}: Route.LoaderArgs) {
         // eslint-disable-next-line no-console -- intentional debug logging for favicon route
         console.log("[Favicon] Query result:", JSON.stringify(data, null, 2));
 
-        // Try to get favicon URL in order of preference
-        const metaobjectFavicon = data?.siteSettings?.favicon?.reference?.image?.url;
-        const brandLogo = data?.shop?.brand?.squareLogo?.image?.url;
-        const faviconUrl = metaobjectFavicon || brandLogo;
+        const siteSettings = parseSiteSettings(data?.siteSettings);
+        const faviconUrl = siteSettings.faviconUrl || siteSettings.brandLogo?.url || siteSettings.icon192Url;
 
         // DEBUG: Log which favicon is being used
         // eslint-disable-next-line no-console -- intentional debug logging for favicon route
         console.log("[Favicon] Sources:", {
-            metaobjectFavicon,
-            brandLogo,
+            metaobjectFavicon: siteSettings.faviconUrl,
+            brandLogo: siteSettings.brandLogo?.url,
+            icon192: siteSettings.icon192Url,
             selectedUrl: faviconUrl,
-            fallback: faviconSvg
         });
 
         if (faviconUrl) {
@@ -107,22 +114,20 @@ export async function loader({context}: Route.LoaderArgs) {
             });
         }
 
-        // Fallback to static SVG favicon
-        // eslint-disable-next-line no-console -- intentional debug logging for favicon route
-        console.log("[Favicon] Using static fallback:", faviconSvg);
-        return redirect(faviconSvg, {
-            status: 302,
+        return new Response(buildLettermarkIconSvg(siteSettings.brandName || "Store"), {
+            status: 200,
             headers: {
-                "Cache-Control": "public, max-age=86400, s-maxage=604800"
+                "Content-Type": "image/svg+xml",
+                "Cache-Control": "public, max-age=300"
             }
         });
     } catch (error) {
         console.error("[Favicon] Error:", error);
-        // On error, still serve the static fallback
-        return redirect(faviconSvg, {
-            status: 302,
+        return new Response("Error loading favicon", {
+            status: 500,
             headers: {
-                "Cache-Control": "public, max-age=300" // Short cache on error
+                "Content-Type": "text/plain",
+                "Cache-Control": "no-store"
             }
         });
     }

@@ -76,7 +76,8 @@ import {
     generateProductSchema,
     truncateDescription,
     stripHtml,
-    buildCanonicalUrl
+    buildCanonicalUrl,
+    getSiteUrlFromMatches
 } from "~/lib/seo";
 import {Badge} from "~/components/ui/badge";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
@@ -91,6 +92,7 @@ import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 
 export const meta: Route.MetaFunction = ({data, matches}) => {
     const brandName = getBrandNameFromMatches(matches);
+    const siteUrl = getSiteUrlFromMatches(matches);
     const product = data?.product;
     if (!product) return [{title: `Product Not Found | ${brandName}`}];
 
@@ -103,7 +105,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
         getSeoMeta({
             title,
             description,
-            url: buildCanonicalUrl(`/products/${product.handle}`),
+            url: buildCanonicalUrl(`/products/${product.handle}`, siteUrl),
             media: image?.url
                 ? {
                       url: image.url,

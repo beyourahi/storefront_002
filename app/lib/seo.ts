@@ -9,9 +9,8 @@
  *
  * @architecture
  * SEO Data Sources (priority order):
- * 1. Shopify metaobjects (site_settings) - Dynamic brand data
- * 2. Shopify shop data (shop.brand) - Shop configuration
- * 3. Fallback data (fallback-data.ts) - Static defaults
+ * 1. Shopify metaobjects (site_settings + theme_settings) - Dynamic brand data
+ * 2. Fallback values in this module - Static defaults
  *
  * Schema.org Types Generated:
  * - Organization: Homepage (brand identity)
@@ -51,7 +50,11 @@
  */
 
 import type {WithContext, Organization, WebSite, Product, ItemList, BlogPosting, FAQPage} from "schema-dts";
+import type {SiteSettings, ThemeConfig} from "types";
 import {STORE_LOCALE} from "~/lib/store-locale";
+import {toHex} from "./color";
+
+type SeoSiteSettings = Partial<Pick<SiteSettings, "brandName" | "brandLogo" | "missionStatement" | "siteUrl">>;
 
 const FALLBACK_BRAND_NAME = "Your Store";
 const FALLBACK_SITE_URL = "https://example.com";
@@ -92,46 +95,26 @@ export interface SeoMedia {
     altText?: string;
 }
 
-// Type for shop data from Storefront API
-export interface ShopSeoData {
-    name: string;
-    description?: string | null;
-    primaryDomain?: {
-        url: string;
-    };
-    brand?: {
-        logo?: {
-            image?: {
-                url: string;
-                width?: number;
-                height?: number;
-            };
-        };
-        squareLogo?: {
-            image?: {
-                url: string;
-                width?: number;
-                height?: number;
-            };
-        };
-        coverImage?: {
-            image?: {
-                url: string;
-                width?: number;
-                height?: number;
-            };
-        };
-        shortDescription?: string | null;
-        slogan?: string | null;
-    };
+export function getSeoDefaults(
+    siteSettings?: SeoSiteSettings | null,
+    themeConfig?: Pick<ThemeConfig, "colors"> | null,
+    fallbackSiteUrl?: string
+) {
+    const brandName = siteSettings?.brandName?.trim() || SEO_CONFIG.siteName;
+    const description = truncateDescription(siteSettings?.missionStatement?.trim() || SEO_CONFIG.defaultDescription);
+    const siteUrl = siteSettings?.siteUrl?.trim() || fallbackSiteUrl || SEO_CONFIG.siteUrl;
+    const themeColor = toHex(themeConfig?.colors.primary ?? "") ?? "#000000";
+    const media = getDefaultOgImage(siteSettings);
+
+    return {brandName, description, siteUrl, themeColor, media};
 }
 
 /**
  * Build canonical URL from path
  */
-export function buildCanonicalUrl(path: string): string {
+export function buildCanonicalUrl(path: string, siteUrl: string = SEO_CONFIG.siteUrl): string {
     const cleanPath = path.startsWith("/") ? path : `/${path}`;
-    return `${SEO_CONFIG.siteUrl}${cleanPath}`;
+    return `${siteUrl}${cleanPath}`;
 }
 
 /**
@@ -181,16 +164,17 @@ export function formatSchemaDate(date: string | Date): string {
  * @param socialLinks - Array of social media URLs from site settings
  */
 export function generateOrganizationSchema(
-    shop?: ShopSeoData | null,
+    siteSettings?: SeoSiteSettings | null,
     socialLinks?: Array<{url: string}>
 ): WithContext<Organization> {
+    const defaults = getSeoDefaults(siteSettings);
     return {
         "@context": "https://schema.org",
         "@type": "Organization",
-        name: shop?.name || SEO_CONFIG.siteName,
-        url: shop?.primaryDomain?.url || SEO_CONFIG.siteUrl,
-        logo: shop?.brand?.logo?.image?.url || shop?.brand?.squareLogo?.image?.url,
-        description: shop?.brand?.shortDescription || shop?.description || SEO_CONFIG.defaultDescription,
+        name: defaults.brandName,
+        url: defaults.siteUrl,
+        logo: siteSettings?.brandLogo?.url,
+        description: defaults.description,
         sameAs: socialLinks?.map(link => link.url).filter(Boolean) || []
     };
 }
@@ -198,17 +182,20 @@ export function generateOrganizationSchema(
 /**
  * Generate WebSite schema with search action
  */
-export function generateWebsiteSchema(shop?: ShopSeoData | null): WithContext<WebSite> {
+export function generateWebsiteSchema(
+    siteSettings?: SeoSiteSettings | null
+): WithContext<WebSite> {
+    const defaults = getSeoDefaults(siteSettings);
     return {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        name: shop?.name || SEO_CONFIG.siteName,
-        url: shop?.primaryDomain?.url || SEO_CONFIG.siteUrl,
+        name: defaults.brandName,
+        url: defaults.siteUrl,
         potentialAction: {
             "@type": "SearchAction",
             target: {
                 "@type": "EntryPoint",
-                urlTemplate: `${SEO_CONFIG.siteUrl}/search?q={search_term_string}`
+                urlTemplate: `${defaults.siteUrl}/search?q={search_term_string}`
             },
             "query-input": "required name=search_term_string"
         } as any
@@ -373,27 +360,25 @@ export function getBrandNameFromMatches(matches: Array<{id: string; data?: unkno
     return rootData?.siteContent?.siteSettings?.brandName || SEO_CONFIG.siteName;
 }
 
-/**
- * Get default OG image from shop data or fallback
- */
-export function getDefaultOgImage(shop?: ShopSeoData | null): SeoMedia | undefined {
-    const coverImage = shop?.brand?.coverImage?.image;
-    const logo = shop?.brand?.logo?.image;
+export function getSiteUrlFromMatches(matches: Array<{id: string; data?: unknown} | undefined>): string {
+    const rootMatch = matches.find(m => m?.id === "root");
+    const rootData = rootMatch?.data as {siteContent?: {siteSettings?: {siteUrl?: string}}} | undefined;
+    return rootData?.siteContent?.siteSettings?.siteUrl || SEO_CONFIG.siteUrl;
+}
 
-    if (coverImage?.url) {
-        return {
-            url: coverImage.url,
-            width: coverImage.width,
-            height: coverImage.height,
-            type: "image"
-        };
-    }
+/**
+ * Get default OG image from site_settings
+ */
+export function getDefaultOgImage(
+    siteSettings?: SeoSiteSettings | null
+): SeoMedia | undefined {
+    const logo = siteSettings?.brandLogo;
 
     if (logo?.url) {
         return {
             url: logo.url,
-            width: logo.width,
-            height: logo.height,
+            width: logo.width ?? undefined,
+            height: logo.height ?? undefined,
             type: "image"
         };
     }

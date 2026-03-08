@@ -48,9 +48,10 @@ import {ProductItem} from "~/components/ProductItem";
 import {CollectionPageLayout, useGridColumns, useLayoutMode, getGridClassName} from "~/components/CollectionPageLayout";
 import type {CollectionWithCount} from "~/components/CollectionSidebar";
 import {filterAndSortDiscountedProducts, type DiscountedProduct, type RawDiscountProduct} from "~/lib/discounts";
-import {buildCanonicalUrl} from "~/lib/seo";
+import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
 
-export const meta: Route.MetaFunction = ({data}) => {
+export const meta: Route.MetaFunction = ({data, matches}) => {
+    const siteUrl = getSiteUrlFromMatches(matches);
     const maxDiscount = data?.maxDiscount ?? 0;
     const totalCount = data?.totalCount ?? 0;
 
@@ -64,7 +65,7 @@ export const meta: Route.MetaFunction = ({data}) => {
         getSeoMeta({
             title,
             description,
-            url: buildCanonicalUrl("/sale")
+            url: buildCanonicalUrl("/sale", siteUrl)
         }) ?? []
     );
 };

@@ -79,7 +79,7 @@ import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 import {GtmScript} from "~/components/GtmScript";
 import {GoogleTagManager} from "~/components/GoogleTagManager";
 import type {CartSuggestionProductFragment, MenuCollectionsQuery} from "storefrontapi.generated";
-import {SEO_CONFIG, truncateDescription} from "~/lib/seo";
+import {getSeoDefaults} from "~/lib/seo";
 import {SITE_CONTENT_QUERY, THEME_SETTINGS_QUERY} from "~/lib/metaobject-queries";
 import {parseSiteContent} from "~/lib/metaobject-parsers";
 import {SiteContentProvider} from "~/lib/site-content-context";
@@ -100,38 +100,24 @@ export type RootLoader = typeof loader;
  * Child routes can override by using getSeoMeta with their own data
  */
 export const meta: Route.MetaFunction = ({data}) => {
-    const shop = data?.header?.shop;
-    // Truncate description to SEO-friendly length (max 155 chars)
-    const description = truncateDescription(
-        shop?.brand?.shortDescription || shop?.description || SEO_CONFIG.defaultDescription
-    );
-
-    // Get theme color from brand colors (primary background - first in array)
-    const themeColor = shop?.brand?.colors?.primary?.[0]?.background ?? "#000000";
+    const seoDefaults = getSeoDefaults(data?.siteContent?.siteSettings, data?.siteContent?.themeConfig);
 
     const seoMeta =
         getSeoMeta({
-            title: shop?.name || SEO_CONFIG.siteName,
-            titleTemplate: `%s | ${shop?.name || SEO_CONFIG.siteName}`,
-            description,
-            url: SEO_CONFIG.siteUrl,
-            media: shop?.brand?.coverImage?.image?.url
-                ? {
-                      url: shop.brand.coverImage.image.url,
-                      width: shop.brand.coverImage.image.width,
-                      height: shop.brand.coverImage.image.height,
-                      type: "image"
-                  }
-                : undefined
+            title: seoDefaults.brandName,
+            titleTemplate: `%s | ${seoDefaults.brandName}`,
+            description: seoDefaults.description,
+            url: seoDefaults.siteUrl,
+            media: seoDefaults.media
         }) ?? [];
 
     return [
         ...seoMeta,
         // PWA meta tags
-        {name: "theme-color", content: themeColor},
+        {name: "theme-color", content: seoDefaults.themeColor},
         {name: "apple-mobile-web-app-capable", content: "yes"},
         {name: "apple-mobile-web-app-status-bar-style", content: "default"},
-        {name: "apple-mobile-web-app-title", content: shop?.name || SEO_CONFIG.siteName},
+        {name: "apple-mobile-web-app-title", content: seoDefaults.brandName},
         {name: "mobile-web-app-capable", content: "yes"},
         {name: "format-detection", content: "telephone=no"}
     ];
@@ -424,7 +410,7 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 function ThemeStyleTag({css}: {css: string}) {
     // CSS contains only CSS custom properties generated from validated color values
     // Safe for inline injection as it's not user-generated HTML content
-    return <style>{css}</style>;
+    return <style dangerouslySetInnerHTML={{__html: css}} />;
 }
 
 export function Layout({children}: {children?: React.ReactNode}) {
@@ -439,7 +425,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
                 <meta name="viewport" content="width=device-width,initial-scale=1" />
                 {/* PWA install capture - MUST be first script, loaded synchronously (no async/defer)
                     to catch beforeinstallprompt event before React hydration on mobile browsers */}
-                <script src="/pwa-install-capture.js" nonce={nonce} />
+                <script src="/pwa-install-capture.js" nonce={nonce} suppressHydrationWarning />
                 {/* Dynamic Google Fonts - loaded BEFORE Tailwind for font-family availability */}
                 {generatedTheme?.googleFontsUrl && <link rel="stylesheet" href={generatedTheme.googleFontsUrl} />}
                 <link rel="stylesheet" href={tailwindCss}></link>

@@ -47,10 +47,11 @@ import {redirectIfHandleIsLocalized} from "~/lib/redirect";
 import {ArticleCard, type ArticleCardData} from "~/components/blog/ArticleCard";
 import {ArticleHero} from "~/components/blog/ArticleHero";
 import {TagList} from "~/components/blog/TagBadge";
-import {buildCanonicalUrl, truncateDescription, getBrandNameFromMatches} from "~/lib/seo";
+import {buildCanonicalUrl, truncateDescription, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 
 export const meta: Route.MetaFunction = ({data, matches}) => {
     const brandName = getBrandNameFromMatches(matches);
+    const siteUrl = getSiteUrlFromMatches(matches);
     const blog = data?.blog;
     const featuredArticle = data?.featuredArticle;
 
@@ -63,7 +64,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
         getSeoMeta({
             title,
             description,
-            url: buildCanonicalUrl(`/blogs/${blog.handle}`),
+            url: buildCanonicalUrl(`/blogs/${blog.handle}`, siteUrl),
             media: featuredArticle?.image?.url
                 ? {
                       url: featuredArticle.image.url,

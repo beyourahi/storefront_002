@@ -309,11 +309,7 @@ const MENU_FRAGMENT = `#graphql
 // =============================================================================
 
 /**
- * Header data query - fetches shop info and main navigation menu.
- *
- * Data fetched:
- * - Shop: name, description, primary domain, brand assets (logos, colors)
- * - Menu: header navigation menu by handle
+ * Header data query - fetches the main navigation menu.
  *
  * @param $headerMenuHandle - Handle of the header menu in Shopify admin
  * @param $country - Country code for localized content
@@ -322,57 +318,11 @@ const MENU_FRAGMENT = `#graphql
  * Used in root.tsx loader to fetch layout data.
  */
 export const HEADER_QUERY = `#graphql
-  fragment Shop on Shop {
-    id
-    name
-    description
-    primaryDomain {
-      url
-    }
-    brand {
-      logo {
-        image {
-          url
-          width
-          height
-        }
-      }
-      squareLogo {
-        image {
-          url
-          width
-          height
-        }
-      }
-      coverImage {
-        image {
-          url
-          width
-          height
-        }
-      }
-      shortDescription
-      slogan
-      colors {
-        primary {
-          background
-          foreground
-        }
-        secondary {
-          background
-          foreground
-        }
-      }
-    }
-  }
   query Header(
     $country: CountryCode
     $headerMenuHandle: String!
     $language: LanguageCode
   ) @inContext(language: $language, country: $country) {
-    shop {
-      ...Shop
-    }
     menu(handle: $headerMenuHandle) {
       ...Menu
     }

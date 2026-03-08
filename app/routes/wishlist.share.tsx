@@ -48,20 +48,21 @@ import {decodeWishlistIds, reconstructGids} from "~/lib/wishlist-utils";
 import {useWishlist} from "~/lib/wishlist-context";
 import {ProductItem} from "~/components/ProductItem";
 import {Button} from "~/components/ui/button";
-import {buildCanonicalUrl} from "~/lib/seo";
+import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
 import {toast} from "sonner";
 
 // =============================================================================
 // META & LOADER
 // =============================================================================
 
-export const meta: Route.MetaFunction = ({data}) => {
+export const meta: Route.MetaFunction = ({data, matches}) => {
+    const siteUrl = getSiteUrlFromMatches(matches);
     const count = data?.products?.length ?? 0;
     return (
         getSeoMeta({
             title: `Shared Wishlist (${count} items)`,
             description: `Someone shared their wishlist with you! Browse ${count} curated product${count !== 1 ? "s" : ""}.`,
-            url: buildCanonicalUrl("/wishlist/share")
+            url: buildCanonicalUrl("/wishlist/share", siteUrl)
         }) ?? []
     );
 };

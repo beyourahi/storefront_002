@@ -60,9 +60,10 @@ import {
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
 import type {CollectionItemFragment} from "storefrontapi.generated";
 import type {ProductSortKeys} from "@shopify/hydrogen/storefront-api-types";
-import {buildCanonicalUrl} from "~/lib/seo";
+import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
 
-export const meta: Route.MetaFunction = ({data}) => {
+export const meta: Route.MetaFunction = ({data, matches}) => {
+    const siteUrl = getSiteUrlFromMatches(matches);
     const productCount = data && "totalProductCount" in data ? (data.totalProductCount ?? 0) : 0;
 
     return (
@@ -72,7 +73,7 @@ export const meta: Route.MetaFunction = ({data}) => {
                 productCount > 0
                     ? `Browse our complete collection of ${productCount} handcrafted products.`
                     : "Browse our complete collection of handcrafted products.",
-            url: buildCanonicalUrl("/collections/all-products")
+            url: buildCanonicalUrl("/collections/all-products", siteUrl)
         }) ?? []
     );
 };

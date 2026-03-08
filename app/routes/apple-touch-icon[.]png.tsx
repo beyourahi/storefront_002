@@ -3,7 +3,7 @@
  *
  * @description
  * Serves the Apple Touch Icon used when iOS users add the site to their
- * home screen. Dynamically fetches from Shopify configuration with fallbacks.
+ * home screen. Dynamically fetches from site_settings.
  *
  * @route GET /apple-touch-icon.png
  *
@@ -14,9 +14,9 @@
  * - Bookmark with icon
  *
  * @icon-priority
- * 1. pwa_settings.icon_180_apple (180x180 iOS-specific)
- * 2. pwa_settings.icon_192 (standard PWA icon as fallback)
- * 3. shop.brand.squareLogo (Shopify brand settings)
+ * 1. site_settings.icon_180_apple (180x180 iOS-specific)
+ * 2. site_settings.icon_192 (standard PWA icon as fallback)
+ * 3. site_settings.brand_logo
  *
  * @icon-requirements
  * Apple recommends 180x180 PNG for iPhone 6 Plus and later.
@@ -37,6 +37,8 @@
 
 import type {Route} from "./+types/apple-touch-icon[.]png";
 import {redirect} from "react-router";
+import {parseSiteSettings} from "~/lib/metaobject-parsers";
+import {buildLettermarkIconSvg, getAppleTouchIconUrl} from "~/lib/pwa-parsers";
 
 // Simple query for apple touch icon sources
 const APPLE_ICON_QUERY = `#graphql
@@ -44,26 +46,29 @@ const APPLE_ICON_QUERY = `#graphql
     $country: CountryCode
     $language: LanguageCode
   ) @inContext(country: $country, language: $language) {
-    pwaSettings: metaobject(handle: {type: "pwa_settings", handle: "pwa_config"}) {
-      iconApple: field(key: "icon_180_apple") {
+    siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {
+      brandLogo: field(key: "brand_logo") {
         reference {
           ... on MediaImage {
-            image { url }
+            __typename
+            image { url altText width height }
+          }
+        }
+      }
+      icon180Apple: field(key: "icon_180_apple") {
+        reference {
+          ... on MediaImage {
+            __typename
+            image { url altText width height }
           }
         }
       }
       icon192: field(key: "icon_192") {
         reference {
           ... on MediaImage {
-            image { url }
+            __typename
+            image { url altText width height }
           }
-        }
-      }
-    }
-    shop {
-      brand {
-        squareLogo {
-          image { url }
         }
       }
     }
@@ -78,11 +83,8 @@ export async function loader({context}: Route.LoaderArgs) {
             cache: dataAdapter.CacheLong() // Icon rarely changes
         });
 
-        // Try to get icon URL in order of preference
-        const iconUrl =
-            data?.pwaSettings?.iconApple?.reference?.image?.url ||
-            data?.pwaSettings?.icon192?.reference?.image?.url ||
-            data?.shop?.brand?.squareLogo?.image?.url;
+        const siteSettings = parseSiteSettings(data?.siteSettings);
+        const iconUrl = getAppleTouchIconUrl(siteSettings);
 
         if (iconUrl) {
             // Redirect to the actual icon URL with caching
@@ -94,11 +96,10 @@ export async function loader({context}: Route.LoaderArgs) {
             });
         }
 
-        // No icon found - return 404
-        return new Response("Apple touch icon not configured", {
-            status: 404,
+        return new Response(buildLettermarkIconSvg(siteSettings.brandName || "Store"), {
+            status: 200,
             headers: {
-                "Content-Type": "text/plain",
+                "Content-Type": "image/svg+xml",
                 "Cache-Control": "public, max-age=300"
             }
         });

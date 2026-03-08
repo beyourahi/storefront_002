@@ -119,11 +119,7 @@ import {
 } from "~/graphql/customer-account/CustomerOrderHistoryQuery";
 import type {CuratedProductFragment, ExploreCollectionFragment} from "storefrontapi.generated";
 import {
-    SEO_CONFIG,
-    generateOrganizationSchema,
-    generateWebsiteSchema,
-    truncateDescription,
-    type ShopSeoData
+    getSeoDefaults
 } from "~/lib/seo";
 import {useTestimonials, useInstagramMedia, useFaqItems, usePromotionalBanners} from "~/lib/site-content-context";
 
@@ -132,15 +128,16 @@ import {useTestimonials, useInstagramMedia, useFaqItems, usePromotionalBanners} 
 // =============================================================================
 
 export const meta: Route.MetaFunction = ({matches}) => {
-    // Get shop data from root loader
     const rootMatch = matches.find((m): m is (typeof matches)[number] & {id: "root"} => m?.id === "root");
-    const rootData = rootMatch?.data as {header?: {shop?: ShopSeoData}} | undefined;
-    const shop = rootData?.header?.shop;
-
-    // Truncate description to SEO-friendly length (max 155 chars)
-    const description = truncateDescription(
-        shop?.brand?.shortDescription || shop?.description || SEO_CONFIG.defaultDescription
-    );
+    const rootData = rootMatch?.data as
+        | {
+              siteContent?: {
+                  siteSettings?: Parameters<typeof getSeoDefaults>[0];
+                  themeConfig?: Parameters<typeof getSeoDefaults>[1];
+              };
+          }
+        | undefined;
+    const seoDefaults = getSeoDefaults(rootData?.siteContent?.siteSettings, rootData?.siteContent?.themeConfig);
 
     // Note: JSON-LD (Organization/WebSite schemas) intentionally omitted from homepage meta
     // to prevent React hydration mismatch caused by timing differences in how React Router
@@ -148,18 +145,11 @@ export const meta: Route.MetaFunction = ({matches}) => {
     // JSON-LD structured data is still provided on product, collection, and article pages.
     return (
         getSeoMeta({
-            title: shop?.name || SEO_CONFIG.siteName,
+            title: seoDefaults.brandName,
             titleTemplate: null, // No template for homepage - just the site name
-            description,
-            url: SEO_CONFIG.siteUrl,
-            media: shop?.brand?.coverImage?.image?.url
-                ? {
-                      url: shop.brand.coverImage.image.url,
-                      width: shop.brand.coverImage.image.width,
-                      height: shop.brand.coverImage.image.height,
-                      type: "image" as const
-                  }
-                : undefined
+            description: seoDefaults.description,
+            url: seoDefaults.siteUrl,
+            media: seoDefaults.media
         }) ?? []
     );
 };

@@ -97,7 +97,7 @@ interface ShareButtonsProps {
  * @example
  * ```tsx
  * // Inline variant for article footer
- * <ShareButtons article={article} variant="inline" shopName={shop.name} />
+ * <ShareButtons article={article} variant="inline" shopName={brandName} />
  *
  * // Dialog variant for header/toolbar
  * <ShareButtons article={article} variant="dialog" />

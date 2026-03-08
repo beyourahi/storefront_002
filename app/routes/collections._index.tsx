@@ -59,17 +59,18 @@ import type {Route} from "./+types/collections._index";
 import {Image, getSeoMeta, getPaginationVariables, Pagination} from "@shopify/hydrogen";
 import {useInView} from "react-intersection-observer";
 import type {CollectionFragment} from "storefrontapi.generated";
-import {buildCanonicalUrl} from "~/lib/seo";
+import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
 import {Skeleton} from "~/components/ui/skeleton";
 import {countDiscountedProducts} from "~/lib/discounts";
 import type {LightweightProduct} from "~/lib/discounts";
 
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({matches}) => {
+    const siteUrl = getSiteUrlFromMatches(matches);
     return (
         getSeoMeta({
             title: "Collections",
             description: "Explore our curated collections of handcrafted products, designed with care for you.",
-            url: buildCanonicalUrl("/collections")
+            url: buildCanonicalUrl("/collections", siteUrl)
         }) ?? []
     );
 };

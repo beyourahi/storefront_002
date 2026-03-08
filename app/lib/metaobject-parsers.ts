@@ -126,6 +126,7 @@ const FALLBACK_SECTION_HEADINGS = {
 
 const FALLBACK_SITE_SETTINGS = {
     brandName: "",
+    brandLogo: null,
     brandWords: FALLBACK_BRAND_WORDS,
     missionStatement: "",
     heroHeading: "Shop with Intention",
@@ -134,8 +135,6 @@ const FALLBACK_SITE_SETTINGS = {
     heroMediaMobile: undefined,
     heroMediaLargeScreen: undefined,
     siteUrl: "",
-    defaultSeoTitle: "",
-    defaultSeoDescription: "",
     contactEmail: "",
     contactPhone: "",
     businessHours: "",
@@ -150,7 +149,6 @@ const FALLBACK_SITE_SETTINGS = {
     announcementBanner: [],
     promotionalBannerOneMedia: undefined,
     promotionalBannerTwoMedia: undefined,
-    freeShippingThreshold: null,
     socialLinks: [],
     testimonials: [],
     faqItems: [],
@@ -807,6 +805,16 @@ export function parseSiteSettings(data: any): SiteSettings {
     return {
         // Brand Identity
         brandName: data.brandName?.value || DEFAULT_SITE_SETTINGS.brandName,
+        brandLogo: (() => {
+            const ref = data.brandLogo?.reference;
+            if (!ref || ref.__typename !== "MediaImage" || !ref.image?.url) return null;
+            return {
+                url: ref.image.url as string,
+                altText: (ref.image.altText as string | null) ?? null,
+                width: (ref.image.width as number | null) ?? null,
+                height: (ref.image.height as number | null) ?? null
+            };
+        })(),
         brandWords: parseBrandWords(data.brandWords),
         missionStatement: data.missionStatement?.value || DEFAULT_SITE_SETTINGS.missionStatement,
 
@@ -818,8 +826,6 @@ export function parseSiteSettings(data: any): SiteSettings {
 
         // SEO Defaults
         siteUrl: data.siteUrl?.value || DEFAULT_SITE_SETTINGS.siteUrl,
-        defaultSeoTitle: data.defaultSeoTitle?.value || DEFAULT_SITE_SETTINGS.defaultSeoTitle,
-        defaultSeoDescription: data.defaultSeoDescription?.value || DEFAULT_SITE_SETTINGS.defaultSeoDescription,
 
         // Contact Information
         contactEmail: data.contactEmail?.value || DEFAULT_SITE_SETTINGS.contactEmail,
@@ -849,9 +855,6 @@ export function parseSiteSettings(data: any): SiteSettings {
         announcementBanner: parseAnnouncementTexts(data.announcementBanner),
         promotionalBannerOneMedia: parseHeroMedia(data.promotionalBannerOneMedia),
         promotionalBannerTwoMedia: parseHeroMedia(data.promotionalBannerTwoMedia),
-
-        // Shipping
-        freeShippingThreshold: parseFreeShippingThreshold(data.freeShippingThreshold),
 
         // Collections - parsers return [] when empty, components handle visibility
         socialLinks: parseSocialLinks(data.socialLinksData),

@@ -46,16 +46,17 @@
 import type {Route} from "./+types/faq";
 import {getSeoMeta} from "@shopify/hydrogen";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "~/components/ui/accordion";
-import {buildCanonicalUrl, getBrandNameFromMatches} from "~/lib/seo";
+import {buildCanonicalUrl, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 import {useFaqItems} from "~/lib/site-content-context";
 
 export const meta: Route.MetaFunction = ({matches}) => {
     const brandName = getBrandNameFromMatches(matches);
+    const siteUrl = getSiteUrlFromMatches(matches);
     return (
         getSeoMeta({
             title: "Frequently Asked Questions",
             description: `Find answers to frequently asked questions about orders, shipping, returns, products, and more at ${brandName}.`,
-            url: buildCanonicalUrl("/faq")
+            url: buildCanonicalUrl("/faq", siteUrl)
         }) ?? []
     );
 };

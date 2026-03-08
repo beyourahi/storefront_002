@@ -54,7 +54,7 @@ import {getSeoMeta} from "@shopify/hydrogen";
 import {CUSTOMER_DETAILS_QUERY} from "~/graphql/customer-account/CustomerDetailsQuery";
 import {RETURNS_AVAILABILITY_QUERY, checkReturnsEnabled} from "~/graphql/customer-account/ReturnsAvailabilityQuery";
 import {cn} from "~/lib/utils";
-import {buildCanonicalUrl} from "~/lib/seo";
+import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 
@@ -63,12 +63,13 @@ import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 // =============================================================================
 
 // All account pages should not be indexed by search engines
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({matches}) => {
+    const siteUrl = getSiteUrlFromMatches(matches);
     return (
         getSeoMeta({
             title: "My Account",
             description: "Manage your account, orders, addresses, and profile settings.",
-            url: buildCanonicalUrl("/account"),
+            url: buildCanonicalUrl("/account", siteUrl),
             robots: {noIndex: true, noFollow: true}
         }) ?? []
     );

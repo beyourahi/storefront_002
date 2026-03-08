@@ -41,17 +41,18 @@
 import type {Route} from "./+types/contact";
 import {getSeoMeta} from "@shopify/hydrogen";
 import {Fragment} from "react";
-import {buildCanonicalUrl, getBrandNameFromMatches} from "~/lib/seo";
+import {buildCanonicalUrl, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 import {useContactInfo, useSocialLinks} from "~/lib/site-content-context";
 import {STORE_COUNTRY_NAME} from "~/lib/store-locale";
 
 export const meta: Route.MetaFunction = ({matches}) => {
     const brandName = getBrandNameFromMatches(matches);
+    const siteUrl = getSiteUrlFromMatches(matches);
     return (
         getSeoMeta({
             title: "Contact Us",
             description: `Get in touch with ${brandName}. Find our contact information, business hours, location, and social media links.`,
-            url: buildCanonicalUrl("/contact")
+            url: buildCanonicalUrl("/contact", siteUrl)
         }) ?? []
     );
 };

@@ -69,11 +69,18 @@ import {ShareButtons} from "~/components/blog/ShareButtons";
 import {AuthorBio} from "~/components/blog/AuthorBio";
 import {RelatedArticles} from "~/components/blog/RelatedArticles";
 import type {ArticleCardData} from "~/components/blog/ArticleCard";
-import {generateBlogPostingSchema, truncateDescription, buildCanonicalUrl, getBrandNameFromMatches} from "~/lib/seo";
+import {
+    generateBlogPostingSchema,
+    truncateDescription,
+    buildCanonicalUrl,
+    getBrandNameFromMatches,
+    getSiteUrlFromMatches
+} from "~/lib/seo";
 import {useReadingProgress} from "~/hooks/useReadingProgress";
 
 export const meta: Route.MetaFunction = ({data, matches}) => {
     const brandName = getBrandNameFromMatches(matches);
+    const siteUrl = getSiteUrlFromMatches(matches);
     const article = data?.article;
     const blogHandle = data?.blogHandle;
 
@@ -86,7 +93,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
         getSeoMeta({
             title,
             description,
-            url: buildCanonicalUrl(`/blogs/${blogHandle}/${article.handle}`),
+            url: buildCanonicalUrl(`/blogs/${blogHandle}/${article.handle}`, siteUrl),
             media: article.image?.url
                 ? {
                       url: article.image.url,

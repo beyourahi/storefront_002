@@ -55,7 +55,13 @@ import {PageTransition} from "~/components/AnimatedSection";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
 import type {ProductItemFragment} from "storefrontapi.generated";
 import type {ProductCollectionSortKeys} from "@shopify/hydrogen/storefront-api-types";
-import {generateCollectionSchema, truncateDescription, buildCanonicalUrl, getBrandNameFromMatches} from "~/lib/seo";
+import {
+    generateCollectionSchema,
+    truncateDescription,
+    buildCanonicalUrl,
+    getBrandNameFromMatches,
+    getSiteUrlFromMatches
+} from "~/lib/seo";
 import {ProductCardSkeleton, ProductListSkeleton} from "~/components/skeletons";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
@@ -67,6 +73,7 @@ import {sortWithPinnedFirst} from "~/lib/product-tags";
 
 export const meta: Route.MetaFunction = ({data, matches}) => {
     const brandName = getBrandNameFromMatches(matches);
+    const siteUrl = getSiteUrlFromMatches(matches);
     // Only show collection SEO for full page loads (not fetcher requests)
     if (!data || !("collection" in data) || !data.collection) {
         return [{title: `Collection | ${brandName}`}];
@@ -81,7 +88,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
         getSeoMeta({
             title,
             description,
-            url: buildCanonicalUrl(`/collections/${collection.handle}`),
+            url: buildCanonicalUrl(`/collections/${collection.handle}`, siteUrl),
             media: collection.image?.url
                 ? {
                       url: collection.image.url,

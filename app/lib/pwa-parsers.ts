@@ -3,19 +3,19 @@
  *
  * @description
  * Transforms site_settings and theme_settings metaobject data into W3C Web App Manifest
- * format for Progressive Web App installability. Handles color format conversion (OKLCH to HEX),
- * icon validation, and fallback data from Shop brand API.
+ * format for Progressive Web App installability. Handles color format conversion (OKLCH to HEX)
+ * and icon validation using only site_settings and theme_settings.
  *
  * @architecture
  * Manifest Generation Strategy:
- * - Data Sources: site_settings (brand, icons) + theme_settings (colors) + Shop.brand (fallbacks)
+ * - Data Sources: site_settings (brand, icons) + theme_settings (colors)
  * - Color Conversion: OKLCH → HEX for manifest compatibility
- * - Icon Validation: Returns null if required icons missing (PWA won't be installable)
+ * - Icon Validation: Uses icon fields first, then brand_logo as the last metaobject-backed fallback
  * - Hardcoded Best Practices: display, start_url, orientation, scope (never configurable)
  *
  * Data Mapping:
- * - name/short_name: site_settings.brandName → shop.name
- * - description: site_settings.missionStatement → shop.description
+ * - name/short_name: site_settings.brandName
+ * - description: site_settings.missionStatement
  * - icons: site_settings.icon_192, icon_512 (required for installability)
  * - theme_color/background_color: theme_settings.colors (OKLCH → HEX)
  * - Hardcoded: display="standalone", start_url="/", scope="/", categories=["shopping"]
@@ -97,17 +97,6 @@ export interface WebAppManifest {
     id: string;
 }
 
-/**
- * Shop brand data for fallbacks
- */
-export interface ShopBrandData {
-    name: string;
-    description: string | null;
-    shortDescription: string | null;
-    logoUrl: string | null;
-    primaryColor: string | null;
-}
-
 // =============================================================================
 // COLOR CONVERSION UTILITIES
 // =============================================================================
@@ -129,33 +118,14 @@ function toHexColor(color: string): string {
     return hex ?? "#000000";
 }
 
-// =============================================================================
-// PARSERS
-// =============================================================================
-
-/**
- * Parse shop brand data for fallbacks
- */
-export function parseShopBrand(shop: any): ShopBrandData {
-    return {
-        name: shop?.name ?? "Store",
-        description: shop?.description ?? null,
-        shortDescription: shop?.brand?.shortDescription ?? null,
-        logoUrl: shop?.brand?.logo?.image?.url ?? null,
-        // brand.colors.primary is an array - take the first color
-        primaryColor: shop?.brand?.colors?.primary?.[0]?.background ?? null
-    };
-}
-
 /**
  * Build icons array for manifest
- * Returns null if required icons are missing (PWA won't be installable)
+ * Uses site_settings icon fields first, then brand_logo if dedicated icons are missing.
  */
-function buildIconsArray(siteSettings: SiteSettings, shopLogo: string | null): ManifestIcon[] | null {
+function buildIconsArray(siteSettings: SiteSettings): ManifestIcon[] | null {
     const icons: ManifestIcon[] = [];
 
-    // 192x192 icon (required for PWA installability)
-    const icon192 = siteSettings.icon192Url ?? shopLogo;
+    const icon192 = siteSettings.icon192Url ?? siteSettings.brandLogo?.url ?? null;
     if (icon192) {
         icons.push({
             src: icon192,
@@ -165,8 +135,7 @@ function buildIconsArray(siteSettings: SiteSettings, shopLogo: string | null): M
         });
     }
 
-    // 512x512 icon (required for splash screen)
-    const icon512 = siteSettings.icon512Url ?? shopLogo;
+    const icon512 = siteSettings.icon512Url ?? siteSettings.brandLogo?.url ?? null;
     if (icon512) {
         icons.push({
             src: icon512,
@@ -176,7 +145,7 @@ function buildIconsArray(siteSettings: SiteSettings, shopLogo: string | null): M
         });
     }
 
-    // If no icons at all, return null (manifest will be invalid)
+    // If no icons at all, return null and let the route serve a minimal manifest.
     if (icons.length === 0) {
         return null;
     }
@@ -192,9 +161,9 @@ function buildIconsArray(siteSettings: SiteSettings, shopLogo: string | null): M
  * Build complete Web App Manifest from site_settings + theme_settings
  *
  * DATA SOURCES:
- * - name: siteSettings.brandName (falls back to shopBrand.name)
+ * - name: siteSettings.brandName
  * - short_name: siteSettings.brandName.slice(0, 12)
- * - description: siteSettings.missionStatement (falls back to shopBrand.description)
+ * - description: siteSettings.missionStatement
  * - theme_color: themeConfig.colors.primary (converted to HEX)
  * - background_color: themeConfig.colors.background (converted to HEX)
  * - icons: siteSettings.icon192Url, icon512Url
@@ -211,18 +180,16 @@ function buildIconsArray(siteSettings: SiteSettings, shopLogo: string | null): M
  *
  * @param siteSettings - Parsed site settings from site_settings metaobject
  * @param themeConfig - Parsed theme config from theme_settings metaobject
- * @param shopBrand - Shop brand data for fallbacks
  * @param manifestUrl - Full URL to the manifest (e.g., https://example.com/manifest.webmanifest)
  * @returns Web App Manifest or null if critical data is missing (no icons)
  */
 export function buildWebAppManifest(
     siteSettings: SiteSettings,
     themeConfig: ThemeConfig,
-    shopBrand: ShopBrandData,
     manifestUrl: string
 ): WebAppManifest | null {
     // Build icons array - returns null if no icons available
-    const icons = buildIconsArray(siteSettings, shopBrand.logoUrl);
+    const icons = buildIconsArray(siteSettings);
     if (!icons) {
         return null;
     }
@@ -233,13 +200,9 @@ export function buildWebAppManifest(
 
     return {
         // Brand identity from site_settings
-        name: siteSettings.brandName || shopBrand.name,
-        short_name: (siteSettings.brandName || shopBrand.name).slice(0, 12),
-        description:
-            siteSettings.missionStatement ||
-            shopBrand.shortDescription ||
-            shopBrand.description ||
-            `Shop at ${shopBrand.name}`,
+        name: siteSettings.brandName || "Store",
+        short_name: (siteSettings.brandName || "Store").slice(0, 12),
+        description: siteSettings.missionStatement || `Shop at ${siteSettings.brandName || "Store"}`,
 
         // HARDCODED: PWA best practices for e-commerce
         // These values should NEVER be configurable - they represent best practices
@@ -272,10 +235,21 @@ export function buildWebAppManifest(
 
 /**
  * Get Apple touch icon URL for iOS
- * Falls back through: icon180Apple -> icon192 -> shop logo
+ * Falls back through: icon180Apple -> icon192 -> brand_logo
  */
-export function getAppleTouchIconUrl(siteSettings: SiteSettings, shopBrand: ShopBrandData): string | null {
-    return siteSettings.icon180AppleUrl ?? siteSettings.icon192Url ?? shopBrand.logoUrl ?? null;
+export function getAppleTouchIconUrl(siteSettings: SiteSettings): string | null {
+    return siteSettings.icon180AppleUrl ?? siteSettings.icon192Url ?? siteSettings.brandLogo?.url ?? null;
+}
+
+export function buildLettermarkIconSvg(brandName: string): string {
+    const letter = brandName.trim().charAt(0).toUpperCase() || "S";
+    return [
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="${letter}">`,
+        `<rect width="180" height="180" rx="32" fill="#161616" />`,
+        `<text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" fill="#ffffff"`,
+        ` font-family="Inter, Arial, sans-serif" font-size="88" font-weight="700">${letter}</text>`,
+        `</svg>`
+    ].join("");
 }
 
 /**

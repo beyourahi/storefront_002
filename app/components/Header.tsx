@@ -218,12 +218,12 @@ export function Header({header, cart}: HeaderProps) {
 
 export function HeaderMenu({
     menu,
-    primaryDomainUrl,
+    siteUrl,
     viewport,
     publicStoreDomain
 }: {
     menu: HeaderProps["header"]["menu"];
-    primaryDomainUrl: HeaderProps["header"]["shop"]["primaryDomain"]["url"];
+    siteUrl?: string;
     viewport: Viewport;
     publicStoreDomain: HeaderProps["publicStoreDomain"];
 }) {
@@ -240,11 +240,13 @@ export function HeaderMenu({
             {(menu || FALLBACK_HEADER_MENU).items.map(item => {
                 if (!item.url) return null;
 
-                // if the url is internal, we strip the domain
+                const siteHost = siteUrl ? new URL(siteUrl).host : null;
+
+                // If the URL is internal, strip the domain.
                 const url =
                     item.url.includes("myshopify.com") ||
                     item.url.includes(publicStoreDomain) ||
-                    item.url.includes(primaryDomainUrl)
+                    (siteHost ? item.url.includes(siteHost) : false)
                         ? new URL(item.url).pathname
                         : item.url;
                 return (

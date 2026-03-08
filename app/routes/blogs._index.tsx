@@ -50,7 +50,7 @@ import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
 import {Button} from "~/components/ui/button";
 import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel";
 import {cn} from "~/lib/utils";
-import {buildCanonicalUrl, getBrandNameFromMatches} from "~/lib/seo";
+import {buildCanonicalUrl, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 import {useSiteSettings} from "~/lib/site-content-context";
 
 interface BlogWithArticles {
@@ -67,6 +67,7 @@ interface BlogWithArticles {
 
 export const meta: Route.MetaFunction = ({data, matches}) => {
     const brandName = getBrandNameFromMatches(matches);
+    const siteUrl = getSiteUrlFromMatches(matches);
     const featuredArticle = data?.featuredArticle;
 
     // Get blog page heading from root loader siteSettings
@@ -83,7 +84,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
         getSeoMeta({
             title: pageTitle,
             description: pageDescription,
-            url: buildCanonicalUrl("/blogs"),
+            url: buildCanonicalUrl("/blogs", siteUrl),
             media: featuredArticle?.image?.url
                 ? {
                       url: featuredArticle.image.url,

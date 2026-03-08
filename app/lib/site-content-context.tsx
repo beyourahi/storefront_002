@@ -187,7 +187,7 @@ export function useBrandMarquee(): {words: string[]} {
 }
 
 // =============================================================================
-// HOOKS FOR PROMOTIONAL & SHIPPING
+// HOOKS FOR PROMOTIONAL CONTENT
 // =============================================================================
 
 /**
@@ -205,14 +205,6 @@ export function usePromotionalBanners(): {
         bannerOneMedia: settings.promotionalBannerOneMedia,
         bannerTwoMedia: settings.promotionalBannerTwoMedia
     };
-}
-
-/**
- * Hook to access free shipping threshold
- * Returns the threshold amount in the store's smallest currency unit (e.g., cents)
- */
-export function useFreeShippingThreshold(): number | null {
-    return useSiteSettings().freeShippingThreshold;
 }
 
 // =============================================================================

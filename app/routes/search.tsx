@@ -67,7 +67,7 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "~/components/ui/tabs";
 import {Button} from "~/components/ui/button";
 import {Search, AlertCircle, Package, FolderOpen, Newspaper, SearchX, Calendar, Clock, TrendingUp} from "lucide-react";
 import {cn} from "~/lib/utils";
-import {buildCanonicalUrl} from "~/lib/seo";
+import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
@@ -85,7 +85,8 @@ const FALLBACK_POPULAR_SEARCHES = [
 // META FUNCTION
 // =============================================================================
 
-export const meta: Route.MetaFunction = ({data}) => {
+export const meta: Route.MetaFunction = ({data, matches}) => {
+    const siteUrl = getSiteUrlFromMatches(matches);
     const term = data && "term" in data ? data.term : "";
     const title = term ? `Search results for "${term}"` : "Search";
 
@@ -93,7 +94,7 @@ export const meta: Route.MetaFunction = ({data}) => {
         getSeoMeta({
             title,
             description: "Search our collection of handcrafted products, collections, and articles.",
-            url: buildCanonicalUrl("/search"),
+            url: buildCanonicalUrl("/search", siteUrl),
             robots: {noIndex: true, noFollow: false}
         }) ?? []
     );

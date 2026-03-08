@@ -50,7 +50,7 @@ import {Link, useLoaderData} from "react-router";
 import type {Route} from "./+types/policies.$handle";
 import {getSeoMeta} from "@shopify/hydrogen";
 import {type Shop} from "@shopify/hydrogen/storefront-api-types";
-import {buildCanonicalUrl, getBrandNameFromMatches} from "~/lib/seo";
+import {buildCanonicalUrl, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 import {useSiteSettings} from "~/lib/site-content-context";
 
 type SelectedPolicies = keyof Pick<Shop, "privacyPolicy" | "shippingPolicy" | "termsOfService" | "refundPolicy">;
@@ -85,6 +85,7 @@ const SIDEBAR_LINKS = [
 
 export const meta: Route.MetaFunction = ({data, matches}) => {
     const brandName = getBrandNameFromMatches(matches);
+    const siteUrl = getSiteUrlFromMatches(matches);
     const policy = data?.policy;
     if (!policy) return [{title: `Policy | ${brandName}`}];
 
@@ -94,7 +95,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
         getSeoMeta({
             title: policy.title,
             description,
-            url: buildCanonicalUrl(`/policies/${policy.handle}`)
+            url: buildCanonicalUrl(`/policies/${policy.handle}`, siteUrl)
         }) ?? []
     );
 };

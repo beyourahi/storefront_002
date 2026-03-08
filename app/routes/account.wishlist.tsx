@@ -66,7 +66,7 @@ import {AnimatedSection, PageTransition} from "~/components/AnimatedSection";
 import {useLockBodyScroll} from "~/lib/LenisProvider";
 import {toast} from "sonner";
 import {cn} from "~/lib/utils";
-import {buildCanonicalUrl} from "~/lib/seo";
+import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
 import {useScreenSize} from "~/hooks/useScreenSize";
 import {
     type GridColumns,
@@ -87,13 +87,14 @@ type WishlistSortOption = "date-newest" | "date-oldest" | "price-asc" | "price-d
 // META & LOADER
 // =============================================================================
 
-export const meta: Route.MetaFunction = () => {
+export const meta: Route.MetaFunction = ({matches}) => {
+    const siteUrl = getSiteUrlFromMatches(matches);
     return (
         getSeoMeta({
             title: "Wishlist",
             description:
                 "Your curated collection of favorites. Save the pieces you love and find them all in one place.",
-            url: buildCanonicalUrl("/account/wishlist")
+            url: buildCanonicalUrl("/account/wishlist", siteUrl)
         }) ?? []
     );
 };
