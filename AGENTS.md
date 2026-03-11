@@ -23,7 +23,13 @@ Direct commits to main only. Enables parallel AI development, eliminates branch 
 
 ## Project Overview
 
-A **commercial Shopify Hydrogen template** built to be sold to multiple client brands across different niches. High-performance storefront (React Router 7, Shopify Oxygen/Cloudflare Workers) with PWA, metaobject CMS, wishlist, blog, offline support. **Critical**: Import from `react-router`, NOT `@remix-run/react`.
+Part of the **storefront family** (`storefront_001`, `storefront_002`, `storefront_003`, etc.) — a collection of commercial Shopify Hydrogen templates built to be sold to multiple client brands across different niches. High-performance storefront (React Router 7, Shopify Oxygen/Cloudflare Workers) with PWA, metaobject CMS, wishlist, blog, offline support. **Critical**: Import from `react-router`, NOT `@remix-run/react`.
+
+Backend behavior, data flow, and Hydrogen conventions **must remain consistent** across all storefronts — the frontend layer (UI, presentation, visual identity) is where storefronts differentiate.
+
+### Hydrogen Implementation Reference
+
+`~/Desktop/projects/demo-store` is a **freshly scaffolded, unmodified Shopify Hydrogen codebase** — the **primary source of truth** for all non-frontend-visual-design patterns. Consult it first when uncertain about core Hydrogen conventions, data-fetching patterns, route/loader structure, or server-side implementation details.
 
 ### Dual Deployment Targets
 
@@ -40,7 +46,7 @@ A **commercial Shopify Hydrogen template** built to be sold to multiple client b
 
 | Category      | Tech             | Version    | Notes                               |
 | ------------- | ---------------- | ---------- | ----------------------------------- |
-| **Framework** | React            | 18.3.1     | React Compiler enabled              |
+| **Framework** | React            | 18.3.1     |                                     |
 |               | React Router     | 7.12       | Hydrogen preset, file-based routing |
 |               | Shopify Hydrogen | 2026.1.0   | Storefront + Customer Account APIs  |
 |               | Storefront API   | 2026-01    | GraphQL API version                 |
@@ -82,7 +88,7 @@ storefront_002/
 │   ├── graphql/customer-account/  # 14 queries
 │   └── styles/tailwind.css  # v4 + animations
 ├── public/sw.js             # Workbox
-├── vite.config.ts           # React Compiler
+├── vite.config.ts           # Vite build config
 └── react-router.config.ts   # Hydrogen preset
 ```
 
@@ -108,7 +114,7 @@ bun run codegen      # Regenerate GraphQL types
 
 **TypeScript**: Strict mode, ES2022, Bundler resolution, `~/` alias
 
-**React**: No manual memoization (React Compiler), import from `react-router`, JSDoc comments
+**React**: Import from `react-router`, JSDoc comments
 
 **Files**: Co-locate related files, PascalCase components, camelCase utilities
 
@@ -179,7 +185,7 @@ For portfolio Workers deploys, demo-store credentials live in `wrangler.jsonc`. 
 ## Key Files
 
 **Architecture**: `lib/pwa-queries.ts`, `lib/pwa-parsers.ts`, `lib/color/`, `lib/metaobject-*.ts`, `public/sw.js`
-**Config**: `vite.config.ts` (React Compiler), `react-router.config.ts`, `eslint.config.js`, `styles/tailwind.css`
+**Config**: `vite.config.ts`, `react-router.config.ts`, `eslint.config.js`, `styles/tailwind.css`
 **GraphQL**: `storefrontapi.generated.d.ts`, `customer-accountapi.generated.d.ts`
 **Solutions**: `lib/color/contrast.ts` (WCAG), `lib/wishlist-context.tsx` (SSR), `lib/smoothScroll.ts` (Lenis)
 **Data Source Resolver**: `app/lib/data-source.ts` — validates store env and proxies Shopify queries used by the app context
@@ -192,52 +198,54 @@ For portfolio Workers deploys, demo-store credentials live in `wrangler.jsonc`. 
 - **Problem**: `@remix-run/react` causes runtime errors
 - **Solution**: Always import from `react-router`
 
-**2. React Compiler Target**
-
-- **Problem**: Must target "18" for React 18.x
-- **Location**: `vite.config.ts` - `{target: "18"}`
-
-**3. WCAG Contrast**
+**2. WCAG Contrast**
 
 - **Problem**: 4.5:1 (text) or 3:1 (UI) required
 - **Solution**: `ensureContrastCompliance()`, test https://contrast-ratio.com
 
-**4. SSR Hydration**
+**3. SSR Hydration**
 
 - **Problem**: LocalStorage during SSR breaks hydration
 - **Solution**: `useState` + `useEffect` pattern (see `lib/wishlist-context.tsx`)
 
-**5. GraphQL Codegen**
+**4. GraphQL Codegen**
 
 - **Problem**: Stale types after query changes
 - **Solution**: `bun run codegen` after ANY GraphQL modification
 
-**6. Service Worker Cache**
+**5. Service Worker Cache**
 
 - **Problem**: Old content after deployments
 - **Dev**: Disable cache or use Incognito
 - **Production**: Auto-updates, version in `sw.js`
 
-**7. Metaobject Fallbacks**
+**6. Metaobject Fallbacks**
 
 - **Problem**: Missing data breaks pages
 - **Solution**: All parsers in `lib/metaobject-parsers.ts` have fallbacks
 
-**8. Node Version**
+**7. Node Version**
 
 - **Problem**: Node < 20.19.0 fails builds
 - **Solution**: Use nvm/nodenv, verify `node --version`
 
-**9. Path Alias**
+**8. Path Alias**
 
 - **Problem**: `~/` imports fail in tests
 - **Solution**: `vite-tsconfig-paths` plugin loaded
 
-**10. ESLint Hooks**
+**9. ESLint Hooks**
 
 - **Problem**: React hooks v7 rules disabled
 - **Status**: TODO - refactor to comply
 - **Disabled**: `set-state-in-effect`, `refs`, `purity`
+
+## Execution Strategy
+
+- Use **multiple sub-agents** for independent tasks (research, implementation, review)
+- Use **git worktrees** for parallel implementation work
+- Provide agents with **context, constraints, and objectives** — not overly prescriptive step-by-step instructions
+- Quality priorities: **clarity > technical correctness > practical usefulness > context density > signal over noise**
 
 ## Code Comments (MANDATORY)
 
@@ -269,8 +277,6 @@ Read all comments before editing. Update when changing code. Add for complex log
 **Tools**: contrast-ratio.com, oklch.com, axe DevTools, Chrome Accessibility Panel
 
 ## Performance
-
-**React Compiler**: Auto-memoization in `vite.config.ts` via Babel plugin `{target: "18"}`. Eliminates manual `useMemo`/`useCallback`.
 
 **Lenis**: GPU-accelerated smooth scrolling, `LenisProvider` in `root.tsx`, hooks: `useScrolled.ts`, `useScrollProgress.ts`
 
@@ -348,6 +354,7 @@ Read all comments before editing. Update when changing code. Add for complex log
 - Name screenshots descriptively: `tmp_screenshots/homepage-hero.png`, `tmp_screenshots/cart-drawer-open.png`
 - Take screenshots at multiple viewport sizes when responsive behavior matters (mobile + desktop)
 - After each batch of changes, compare the screenshots against the original requirements or design spec and explicitly state what matches and what still needs work
+- **MANDATORY CLEANUP**: After every successful task implementation, if the `tmp_screenshots/` directory was created during the work, it must be deleted before the task is considered complete. Do not skip this step — it is a hard requirement.
 
 ### Port Detection
 
