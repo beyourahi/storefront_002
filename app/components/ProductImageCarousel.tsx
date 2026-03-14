@@ -96,7 +96,7 @@ export function ProductImageCarousel({images, productTitle, loading = "lazy", cl
                     data={image}
                     loading={loading}
                     sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-                    className="h-auto w-full object-cover motion-image group-hover:scale-105 rounded-lg"
+                    className="sleek product-image h-auto w-full object-cover group-hover:scale-[1.03] rounded-lg"
                 />
             </div>
         );
@@ -126,7 +126,7 @@ export function ProductImageCarousel({images, productTitle, loading = "lazy", cl
                                     data={image}
                                     loading={index === 0 ? loading : "lazy"}
                                     sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-                                    className="h-auto w-full object-cover motion-image group-hover:scale-105 rounded-lg"
+                                    className="sleek product-image h-auto w-full object-cover group-hover:scale-[1.03] rounded-lg"
                                 />
                             </div>
                         </CarouselItem>

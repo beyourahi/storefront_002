@@ -58,6 +58,7 @@ import {analyzeProductDiscount, type DiscountBadgeInfo, type ProductWithVariants
 import {getSpecialTags} from "~/lib/product-tags";
 import {cn} from "~/lib/utils";
 import type {GridColumns} from "~/lib/gridColumns";
+import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 
 // =============================================================================
 // TYPOGRAPHY UTILITIES
@@ -318,6 +319,7 @@ export function ProductItem({
 }: ProductItemProps) {
     // Get dynamic font sizes based on grid columns and variant
     const fontSizes = getProductFontSizes(gridColumns, variant);
+    const {canHover} = usePointerCapabilities();
     const variantUrl = useVariantUrl(product.handle);
     const featuredImage = product.featuredImage;
 
@@ -410,8 +412,8 @@ export function ProductItem({
                 target={linkTarget}
                 prefetch="viewport"
                 className={cn(
-                    "flex items-center gap-4 md:gap-6 py-4 md:pl-6 no-underline group cursor-pointer",
-                    "motion-interactive motion-surface hover:bg-muted/30",
+                    "flex items-center gap-4 md:gap-6 py-4 md:pl-6 no-underline cursor-pointer",
+                    canHover ? "group motion-interactive motion-surface hover:bg-muted/30" : "motion-press active:bg-muted/30",
                     "animate-product-fade-in",
                     "relative overflow-visible",
                     compactMode && "py-2 gap-2 md:gap-3",
@@ -432,13 +434,19 @@ export function ProductItem({
                             data={featuredImage}
                             loading={loading}
                             sizes="96px"
-                            className="w-full h-full object-cover motion-image group-hover:scale-105 rounded-lg"
+                            className={cn(
+                                "w-full h-full object-cover motion-image rounded-lg",
+                                canHover && "group-hover:scale-105"
+                            )}
                         />
                     ) : (
                         <div className="w-full h-full bg-muted/50 rounded-lg" />
                     )}
                     {/* Hover overlay for list variant */}
-                    <div className="absolute inset-0 bg-primary/0 motion-overlay group-hover:bg-primary/5 rounded-lg" />
+                    <div className={cn(
+                        "absolute inset-0 bg-primary/0 motion-overlay rounded-lg",
+                        canHover && "group-hover:bg-primary/5"
+                    )} />
                 </div>
 
                 {/* Product info inline */}
@@ -581,7 +589,8 @@ export function ProductItem({
             target={linkTarget}
             prefetch="viewport"
             className={cn(
-                "block no-underline group animate-product-fade-in cursor-pointer relative overflow-visible rounded-lg motion-surface",
+                "block no-underline animate-product-fade-in cursor-pointer relative overflow-visible rounded-lg",
+                canHover ? "group motion-surface" : "motion-press active:scale-[var(--motion-press-scale)]",
                 layoutClasses.container,
                 className
             )}
@@ -648,15 +657,24 @@ export function ProductItem({
                 )}
 
                 {/* Hover overlay - subtle darkening effect */}
-                <div className="absolute inset-0 bg-primary/0 motion-overlay group-hover:bg-primary/5 pointer-events-none z-10" />
+                <div className={cn(
+                    "absolute inset-0 bg-primary/0 motion-overlay pointer-events-none z-10",
+                    canHover && "group-hover:bg-primary/5"
+                )} />
 
                 {/* Quick Add Button or Custom Actions - full width at bottom, visible on mobile, show on hover for desktop */}
                 {customActions ? (
-                    <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 z-20 md:opacity-0 md:group-hover:opacity-100 motion-overlay">
+                    <div className={cn(
+                        "absolute bottom-0 left-0 right-0 p-2 sm:p-3 z-20 motion-overlay",
+                        canHover && "md:opacity-0 md:group-hover:opacity-100"
+                    )}>
                         {customActions}
                     </div>
                 ) : !hideDefaultActions && showQuickAdd && "variants" in product ? (
-                    <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 z-20 md:opacity-0 md:group-hover:opacity-100 motion-overlay">
+                    <div className={cn(
+                        "absolute bottom-0 left-0 right-0 p-2 sm:p-3 z-20 motion-overlay",
+                        canHover && "md:opacity-0 md:group-hover:opacity-100"
+                    )}>
                         <QuickAddButton
                             product={product}
                             fullWidth
@@ -669,7 +687,11 @@ export function ProductItem({
             </div>
 
             {/* Product Details */}
-            <div className={cn("space-y-1 motion-link group-hover:text-primary", compactMode && "space-y-0.5")}>
+            <div className={cn(
+                "space-y-1",
+                canHover ? "motion-link group-hover:text-primary" : "",
+                compactMode && "space-y-0.5"
+            )}>
                 <ProductTitle
                     title={product.title}
                     gridColumns={gridColumns}

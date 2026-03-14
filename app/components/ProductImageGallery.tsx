@@ -292,9 +292,7 @@ export function ProductImageGallery({images, selectedVariantImage, media}: Produ
                         loading={index === 0 ? "eager" : "lazy"}
                         sizes="(min-width: 45em) 50vw, 100vw"
                         className={cn(
-                            "w-full h-full object-cover motion-image",
-                            // Subtle scale on hover to indicate interactivity
-                            "group-hover:scale-[1.02]",
+                            "sleek product-image w-full h-full object-cover hover:scale-105",
                             !isLoaded && "opacity-0"
                         )}
                     />

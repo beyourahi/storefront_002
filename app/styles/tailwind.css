@@ -1055,10 +1055,7 @@
     }
 
     .sleek {
-        transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, gap;
-        transition-duration: var(--motion-duration-standard);
-        transition-timing-function: var(--motion-ease-standard);
-        transform: translateZ(0);
+        @apply transform-gpu transition-all duration-200 ease-(--motion-ease-standard);
     }
 
     /* ─────────────────────────────────────────────────────────────────────
@@ -1266,6 +1263,41 @@ select {
     transition-property: background-color, border-color, box-shadow, color, fill, stroke, opacity, transform;
     transition-timing-function: var(--motion-ease-standard);
     transition-duration: var(--motion-duration-standard);
+}
+
+/* Class-specific transition overrides
+   These MUST follow the base selector above so they win via source order.
+   The @layer utilities versions exist but are beaten by the unlayered base;
+   these unlayered overrides restore the intended per-class timing. */
+
+.motion-image {
+    transition-property: transform, opacity, filter;
+    transition-duration: var(--motion-duration-image);
+    transition-timing-function: var(--motion-ease-emphasized);
+}
+
+.motion-overlay {
+    transition-property: opacity, transform, filter;
+    transition-duration: var(--motion-duration-overlay);
+    transition-timing-function: var(--motion-ease-emphasized);
+}
+
+.motion-link {
+    transition-property: color, opacity, text-decoration-color, transform;
+    transition-duration: var(--motion-duration-fast);
+    transition-timing-function: var(--motion-ease-standard);
+}
+
+.sleek {
+    @apply transform-gpu transition-all duration-200 ease-(--motion-ease-standard);
+}
+
+.product-image,
+.product-card,
+video,
+.carousel {
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 /* Group hover base timing */

@@ -82,7 +82,7 @@ export function QuantitySelector({quantity, onQuantityChange, min = 1, max, clas
                 onClick={handleDecrement}
                 disabled={!canDecrement}
                 className={cn(
-                    "flex min-h-10 items-center justify-center px-2.5 py-1.5 text-primary rounded-l-full sleek active:bg-primary/10",
+                    "flex min-h-10 items-center justify-center px-2.5 py-1.5 text-primary rounded-l-full sleek hover:bg-primary/5 active:bg-primary/10",
                     canDecrement ? "cursor-pointer" : "opacity-40 cursor-not-allowed"
                 )}
                 aria-label="Decrease quantity"
@@ -95,7 +95,7 @@ export function QuantitySelector({quantity, onQuantityChange, min = 1, max, clas
                 onClick={handleIncrement}
                 disabled={!canIncrement}
                 className={cn(
-                    "flex min-h-10 items-center justify-center px-2.5 py-1.5 text-primary rounded-r-full sleek active:bg-primary/10",
+                    "flex min-h-10 items-center justify-center px-2.5 py-1.5 text-primary rounded-r-full sleek hover:bg-primary/5 active:bg-primary/10",
                     canIncrement ? "cursor-pointer" : "opacity-40 cursor-not-allowed"
                 )}
                 aria-label="Increase quantity"

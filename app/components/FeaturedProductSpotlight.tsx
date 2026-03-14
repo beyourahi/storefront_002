@@ -50,7 +50,7 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                             altText: displayImage.altText || product.title
                         }}
                         sizes="(min-width: 1280px) 42vw, (min-width: 768px) 50vw, 100vw"
-                        className="aspect-[4/5] h-full w-full object-cover motion-image group-hover:scale-[1.035]"
+                        className="aspect-[4/5] h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                 ) : (
                     <div className="flex aspect-[4/5] items-center justify-center bg-gradient-to-br from-muted to-muted/30 px-10 text-center">
