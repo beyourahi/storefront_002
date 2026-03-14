@@ -184,7 +184,7 @@ function CollectionLink({
                 to={href}
                 prefetch="viewport"
                 className={cn(
-                    "group flex items-center gap-1 py-1 text-base transition-colors",
+                    "group flex items-center gap-1 py-1 text-sm motion-link hover:text-primary",
                     // SALE link gets emerald green styling to match discount badges
                     isSale
                         ? isActive
@@ -200,7 +200,7 @@ function CollectionLink({
                     {/* Animated underline - scales from left on hover */}
                     <span
                         className={cn(
-                            "absolute bottom-0 left-0 w-full h-px bg-current transition-transform duration-300 ease-out origin-left",
+                            "absolute bottom-0 left-0 w-full h-px bg-current motion-link origin-left",
                             isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                         )}
                     />

@@ -27,7 +27,6 @@
  * Performance:
  * - Efficient: Uses Lenis RAF loop
  * - Smooth: Updates on every animation frame
- * - React Compiler optimizes automatically
  *
  * @dependencies
  * - React (useState, useEffect)

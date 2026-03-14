@@ -78,7 +78,7 @@ export default function FAQ() {
                         <div className="grid gap-8 sm:gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
                             {/* Sticky FAQ Heading */}
                             <div className="lg:sticky lg:top-32 lg:self-start">
-                                <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-primary-foreground leading-none">
+                                <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary-foreground leading-none">
                                     Frequently Asked
                                     <br />
                                     Questions
@@ -136,7 +136,7 @@ export default function FAQ() {
                         </p>
                         <a
                             href="/contact"
-                            className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-primary-foreground text-primary text-sm sm:text-base font-medium hover:bg-primary-foreground/90 transition-colors min-h-12 sm:min-h-14"
+                            className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-primary-foreground text-primary text-sm sm:text-base font-medium hover:bg-primary-foreground/90 min-h-12 sm:min-h-14"
                         >
                             Contact Us
                             <span className="ml-2">&rarr;</span>

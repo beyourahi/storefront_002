@@ -96,7 +96,7 @@ export function ProductImageCarousel({images, productTitle, loading = "lazy", cl
                     data={image}
                     loading={loading}
                     sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-                    className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105 rounded-lg"
+                    className="h-auto w-full object-cover motion-image group-hover:scale-105 rounded-lg"
                 />
             </div>
         );
@@ -126,7 +126,7 @@ export function ProductImageCarousel({images, productTitle, loading = "lazy", cl
                                     data={image}
                                     loading={index === 0 ? loading : "lazy"}
                                     sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-                                    className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105 rounded-lg"
+                                    className="h-auto w-full object-cover motion-image group-hover:scale-105 rounded-lg"
                                 />
                             </div>
                         </CarouselItem>
@@ -137,7 +137,7 @@ export function ProductImageCarousel({images, productTitle, loading = "lazy", cl
             {/* Navigation arrows - custom buttons with stopPropagation */}
             <Button
                 size="icon"
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 size-8 rounded-full hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity bg-primary border-0 hover:bg-primary/90"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 size-8 rounded-full hidden md:flex opacity-0 group-hover:opacity-100 motion-overlay bg-primary border-0 hover:bg-primary/90"
                 onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -149,7 +149,7 @@ export function ProductImageCarousel({images, productTitle, loading = "lazy", cl
             </Button>
             <Button
                 size="icon"
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 size-8 rounded-full hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity bg-primary border-0 hover:bg-primary/90"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 size-8 rounded-full hidden md:flex opacity-0 group-hover:opacity-100 motion-overlay bg-primary border-0 hover:bg-primary/90"
                 onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();

@@ -40,7 +40,7 @@
  * ```
  */
 
-import {createContext, type ReactNode, useContext, useState} from "react";
+import {createContext, type ReactNode, useCallback, useContext, useMemo, useState} from "react";
 import type {AsideType, AsideContextValue} from "types";
 
 // ================================================================================
@@ -71,10 +71,12 @@ const AsideContext = createContext<AsideContextValue | null>(null);
 export function AsideProvider({children}: {children: ReactNode}) {
     const [type, setType] = useState<AsideType>("closed");
 
-    const open = (mode: AsideType) => setType(mode);
-    const close = () => setType("closed");
+    // close is stable: setType is guaranteed stable by React, and the dep array is empty
+    const close = useCallback(() => setType("closed"), []);
 
-    const value = {type, open, close};
+    // Memoize the context value so consumers only re-render when type or close changes.
+    // open is setType directly — React guarantees setState identity is stable across renders.
+    const value = useMemo(() => ({type, open: setType, close}), [type, close]);
 
     return <AsideContext.Provider value={value}>{children}</AsideContext.Provider>;
 }

@@ -96,13 +96,13 @@ function SectionHeader() {
     const {blogSectionTitle} = useSectionHeadings();
     return (
         <div className="flex items-end justify-between gap-3 sm:gap-4 mb-5 sm:mb-6 md:mb-8">
-            <h2 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-primary mb-0">
+            <h2 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary mb-0">
                 {blogSectionTitle}
             </h2>
             <Link
                 to="/blogs"
                 prefetch="viewport"
-                className="hidden md:inline-flex shrink-0 rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 lg:py-2 font-sans text-sm lg:text-base xl:text-lg font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground no-underline"
+                className="hidden md:inline-flex shrink-0 rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 lg:py-2 font-sans text-sm font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground no-underline"
             >
                 View All
             </Link>
@@ -122,7 +122,7 @@ function SingleArticleLayout({article}: {article: HomepageArticle}) {
                 className={cn(
                     "grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-responsive-lg",
                     "rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden",
-                    "transition-all duration-500"
+                    "motion-interactive"
                 )}
             >
                 {/* Image - cinematic 16:10 aspect ratio */}
@@ -133,7 +133,7 @@ function SingleArticleLayout({article}: {article: HomepageArticle}) {
                             data={article.image}
                             loading="lazy"
                             sizes="(min-width: 768px) 50vw, 100vw"
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                            className="absolute inset-0 h-full w-full object-cover motion-image group-hover:scale-[1.03]"
                         />
                     </div>
                 )}
@@ -144,7 +144,7 @@ function SingleArticleLayout({article}: {article: HomepageArticle}) {
                             {article.blog.title}
                         </span>
                     )}
-                    <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-normal leading-tight text-foreground group-hover:text-primary transition-colors mb-2 sm:mb-3 md:mb-4">
+                    <h3 className="font-serif text-xl sm:text-2xl md:text-3xl font-normal leading-tight text-foreground group-hover:text-primary motion-link mb-2 sm:mb-3 md:mb-4">
                         {article.title}
                     </h3>
                     {article.excerpt && (
@@ -164,11 +164,11 @@ function SingleArticleLayout({article}: {article: HomepageArticle}) {
                             )}
                         </div>
                         {/* Subtle CTA */}
-                        <span className="inline-flex items-center gap-1 sm:gap-1.5 text-sm sm:text-sm md:text-base font-medium text-primary transition-all group-hover:gap-2 sm:group-hover:gap-2.5">
-                            <span className="border-b border-primary/50 group-hover:border-primary transition-colors">
+                        <span className="inline-flex items-center gap-1 sm:gap-1.5 text-sm sm:text-sm md:text-base font-medium text-primary sleek group-hover:gap-2 sm:group-hover:gap-2.5">
+                            <span className="border-b border-primary/50 group-hover:border-primary motion-link">
                                 Continue reading
                             </span>
-                            <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform group-hover:translate-x-0.5" />
+                            <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 motion-link group-hover:translate-x-0.5" />
                         </span>
                     </div>
                 </div>
@@ -234,7 +234,7 @@ function FeaturedArticleCard({article}: {article: HomepageArticle}) {
                         data={article.image}
                         loading="lazy"
                         sizes="(min-width: 1536px) 50vw, (min-width: 1024px) 58vw, 100vw"
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        className="absolute inset-0 h-full w-full object-cover motion-image group-hover:scale-[1.03]"
                     />
                 )}
 
@@ -248,7 +248,7 @@ function FeaturedArticleCard({article}: {article: HomepageArticle}) {
                             {article.blog.title}
                         </span>
                     )}
-                    <h3 className="font-serif text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-normal leading-tight text-light drop-shadow-sm mb-2 lg:mb-3 group-hover:text-light/90 transition-colors">
+                    <h3 className="font-serif text-xl sm:text-2xl md:text-3xl font-normal leading-tight text-light drop-shadow-sm mb-2 lg:mb-3 group-hover:text-light/90 motion-link">
                         {article.title}
                     </h3>
                     {article.excerpt && (
@@ -283,8 +283,8 @@ function CompactArticleCard({article, index}: {article: HomepageArticle; index: 
                     "flex gap-3 lg:gap-4 p-3 lg:p-4",
                     "rounded-xl lg:rounded-2xl",
                     "bg-muted/30 border border-border/20",
-                    "transition-all duration-300",
-                    "hover:bg-muted/50 hover:border-border/40 hover:shadow-sm"
+                    "motion-interactive",
+                    "group-hover:bg-muted/50 group-hover:border-border/40 group-hover:shadow-sm"
                 )}
             >
                 {/* Thumbnail - square with rounded corners */}
@@ -295,7 +295,7 @@ function CompactArticleCard({article, index}: {article: HomepageArticle; index: 
                             data={article.image}
                             loading="lazy"
                             sizes="(min-width: 1280px) 128px, 112px"
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            className="absolute inset-0 h-full w-full object-cover motion-image group-hover:scale-105"
                         />
                     </div>
                 )}
@@ -309,7 +309,7 @@ function CompactArticleCard({article, index}: {article: HomepageArticle; index: 
                                 {article.blog.title}
                             </span>
                         )}
-                        <h4 className="font-serif text-base lg:text-lg xl:text-xl font-normal leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                        <h4 className="font-serif text-base lg:text-lg xl:text-xl font-normal leading-snug text-foreground group-hover:text-primary motion-link line-clamp-2">
                             {article.title}
                         </h4>
                     </div>
@@ -346,7 +346,7 @@ function GridArticleCard({article, index}: {article: HomepageArticle; index: num
                 className={cn(
                     "h-full flex flex-col",
                     "rounded-lg md:rounded-xl overflow-hidden",
-                    "transition-all duration-300",
+                    "motion-interactive",
                     "hover:bg-muted/5"
                 )}
             >
@@ -360,7 +360,7 @@ function GridArticleCard({article, index}: {article: HomepageArticle; index: num
                             data={article.image}
                             loading="lazy"
                             sizes="(min-width: 768px) 50vw, 100vw"
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                            className="absolute inset-0 h-full w-full object-cover motion-image group-hover:scale-[1.03]"
                         />
                     </div>
                 )}
@@ -371,7 +371,7 @@ function GridArticleCard({article, index}: {article: HomepageArticle; index: num
                             {article.blog.title}
                         </span>
                     )}
-                    <h3 className="font-serif text-base md:text-lg font-normal leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-1.5 md:mb-2">
+                    <h3 className="font-serif text-base md:text-lg font-normal leading-tight text-foreground group-hover:text-primary motion-link line-clamp-2 mb-1.5 md:mb-2">
                         {article.title}
                     </h3>
                     {article.excerpt && (
@@ -404,7 +404,7 @@ function MobileArticleCard({article, index}: {article: HomepageArticle; index: n
                 className={cn(
                     "flex flex-col",
                     "rounded-lg sm:rounded-xl overflow-hidden",
-                    "transition-all duration-300",
+                    "motion-interactive",
                     "active:scale-[0.98]" // Touch feedback
                 )}
             >
@@ -418,7 +418,7 @@ function MobileArticleCard({article, index}: {article: HomepageArticle; index: n
                             data={article.image}
                             loading="lazy"
                             sizes="100vw"
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                            className="absolute inset-0 h-full w-full object-cover motion-image group-hover:scale-[1.03]"
                         />
                     </div>
                 )}
@@ -429,7 +429,7 @@ function MobileArticleCard({article, index}: {article: HomepageArticle; index: n
                             {article.blog.title}
                         </span>
                     )}
-                    <h3 className="font-serif text-base sm:text-lg font-normal leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-1.5 sm:mb-2">
+                    <h3 className="font-serif text-base sm:text-lg font-normal leading-tight text-foreground group-hover:text-primary motion-link line-clamp-2 mb-1.5 sm:mb-2">
                         {article.title}
                     </h3>
                     {article.excerpt && (
@@ -441,7 +441,7 @@ function MobileArticleCard({article, index}: {article: HomepageArticle; index: n
                         <div className="flex items-center gap-1.5 text-sm sm:text-sm text-muted-foreground">
                             <time dateTime={article.publishedAt}>{publishedDate}</time>
                         </div>
-                        <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary shrink-0 transition-transform group-hover:translate-x-1" />
+                        <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary shrink-0 motion-link group-hover:translate-x-1" />
                     </div>
                 </div>
             </article>

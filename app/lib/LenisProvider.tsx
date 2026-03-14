@@ -166,8 +166,10 @@ export function useLenisScroll(callback: (scroll: number, lenis: Lenis) => void)
 }
 
 /**
- * Hook to lock body scroll when a modal/dialog is open
- * Stops Lenis smooth scrolling while the lock is active
+ * @deprecated Use `useScrollLock` from `~/hooks/useScrollLock` instead.
+ * This hook is NOT ref-counted — if two overlays are open and one closes,
+ * it will prematurely re-enable Lenis scrolling. The replacement hook
+ * tracks active locks so Lenis only resumes when ALL overlays close.
  */
 export function useLockBodyScroll(isLocked: boolean) {
     const {stopScroll, startScroll} = useLenis();

@@ -53,7 +53,8 @@ import type {PageLayoutProps} from "types";
 import {cn} from "~/lib/utils";
 import type {ShippingConfig} from "~/lib/shipping";
 import {AnnouncementBanner} from "~/components/AnnouncementBanner";
-import {LenisProvider, useLockBodyScroll} from "~/lib/LenisProvider";
+import {LenisProvider} from "~/lib/LenisProvider";
+import {useScrollLock} from "~/hooks/useScrollLock";
 import {AsideProvider, useAside} from "~/components/Aside";
 import {BrandAnimationProvider} from "~/components/BrandAnimation";
 import {Footer} from "~/components/Footer";
@@ -306,7 +307,7 @@ function CartErrorFallback() {
                     to="/collections/all-products"
                     onClick={close}
                     prefetch="viewport"
-                    className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-primary-foreground/20 px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-foreground/10 min-h-11"
+                    className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-primary-foreground/20 px-4 py-2.5 text-sm font-medium text-primary-foreground motion-link hover:bg-primary-foreground/10 min-h-11"
                 >
                     <ShoppingCart className="size-4" aria-hidden="true" />
                     Continue Shopping
@@ -356,14 +357,14 @@ function CartSheet({
     const {type, close} = useAside();
     const isOpen = type === "cart";
 
-    // Lock body scroll when cart is open (same as RecentlyViewed modal)
-    useLockBodyScroll(isOpen);
+    // Lock Lenis smooth scroll when cart is open (native scroll lock handled by Radix)
+    useScrollLock(isOpen);
 
     return (
         <Sheet open={isOpen} onOpenChange={open => !open && close()}>
             <SheetContent
                 side="right"
-                className="flex w-full flex-col overflow-hidden border-0 sm:max-w-xl bg-primary pb-[max(1rem,env(safe-area-inset-bottom))] inset-0! rounded-none! sm:top-4! sm:bottom-[max(1rem,env(safe-area-inset-bottom))]! sm:right-0! sm:left-auto! sm:rounded-l-3xl!"
+                className="flex w-full flex-col overflow-hidden border-0 max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl bg-primary pb-[max(1rem,env(safe-area-inset-bottom))] inset-0! rounded-none! sm:top-4! sm:bottom-[max(1rem,env(safe-area-inset-bottom))]! sm:right-0! sm:left-auto! sm:rounded-l-3xl!"
                 hideCloseButton
             >
                 <Suspense fallback={<CartLoadingSkeleton />}>

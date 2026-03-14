@@ -292,7 +292,7 @@ export function ProductImageGallery({images, selectedVariantImage, media}: Produ
                         loading={index === 0 ? "eager" : "lazy"}
                         sizes="(min-width: 45em) 50vw, 100vw"
                         className={cn(
-                            "w-full h-full object-cover transition-all duration-300",
+                            "w-full h-full object-cover motion-image",
                             // Subtle scale on hover to indicate interactivity
                             "group-hover:scale-[1.02]",
                             !isLoaded && "opacity-0"
@@ -300,7 +300,7 @@ export function ProductImageGallery({images, selectedVariantImage, media}: Produ
                     />
 
                     {/* Hover overlay - subtle darkening to indicate clickability */}
-                    <div className="absolute inset-0 bg-dark/0 group-hover:bg-dark/5 transition-colors duration-300 pointer-events-none" />
+                    <div className="absolute inset-0 bg-dark/0 group-hover:bg-dark/5 motion-overlay pointer-events-none" />
                 </div>
             </div>
         );

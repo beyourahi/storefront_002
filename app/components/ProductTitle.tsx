@@ -35,6 +35,7 @@
 
 import {cn} from "~/lib/utils";
 import type {GridColumns} from "~/lib/gridColumns";
+import {parseProductTitle} from "~/lib/product-title";
 
 interface ProductTitleProps {
     /** Full product title string (may contain " + " delimiter) */
@@ -84,12 +85,7 @@ export function ProductTitle({
     compactMode = false,
     darkContext = false
 }: ProductTitleProps) {
-    // Split title by " + " delimiter
-    // Trim to handle edge cases like "Product +  Bonus" (extra spaces)
-    const parts = title.trim().split(" + ");
-
-    // Only show second part if it exists and isn't empty after trimming
-    const hasSecondPart = parts.length > 1 && parts[1] && parts[1].trim() !== "";
+    const {primary, secondary} = parseProductTitle(title);
 
     // Get responsive font sizes
     const fontSizes = getFontSizes(gridColumns, variant, compactMode);
@@ -117,13 +113,13 @@ export function ProductTitle({
                     primaryMargin
                 )}
             >
-                {parts[0]}
+                {primary}
             </h2>
 
             {/* Secondary title part (conditional) */}
-            {hasSecondPart && (
+            {secondary && (
                 <h2 className={cn(fontFamily, "font-medium leading-tight mb-2", secondaryColor, fontSizes.secondary)}>
-                    {parts[1]}
+                    {secondary}
                 </h2>
             )}
         </div>
@@ -182,54 +178,54 @@ function getFontSizes(
     }
 
     // PDP variant - hero title sizing for product detail page
-    // Primary: 32px → 40px → 48px → 56px → 64px (4xl → 5xl → 6xl → 7xl → 8xl)
-    // Secondary: 20px → 24px → 28px → 32px → 36px (xl → 2xl → 3xl → 4xl → 5xl) - increased by one scale
-    // Maintains ~60% size ratio between primary and secondary for visual hierarchy
+    // Primary: 24px (2xl) - single clean size, no scaling
+    // Secondary: 14px (sm) - compact descriptor below primary
     if (variant === "pdp") {
         return {
-            primary: "text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl 3xl:text-8xl",
-            secondary: "text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl"
+            primary: "text-2xl",
+            secondary: "text-sm"
         };
     }
 
     // Mobile hero variant - serif font, compact spacing, mobile-optimized sizing
     // Used in ProductHeroMobile sticky section with coral background
-    // Primary: 36px (4xl) - matches original mobile hero title size
-    // Secondary: 20px (xl) - proportional secondary size, readable but distinct
+    // Primary: 24px (2xl) - matches PDP primary for consistency
+    // Secondary: 14px (sm) - compact descriptor
     if (variant === "mobile-hero") {
         return {
-            primary: "text-4xl",
-            secondary: "text-xl"
+            primary: "text-2xl",
+            secondary: "text-sm"
         };
     }
 
     // Card variant with grid-based sizing
     switch (gridColumns) {
         case 2:
-            // 2-col: Larger fonts for spacious layout
+            // 2-col: 18px → 20px → 24px
             return {
-                primary: "text-base md:text-lg xl:text-xl 3xl:text-2xl",
-                secondary: "text-sm sm:text-sm md:text-sm lg:text-base"
+                primary: "text-lg sm:text-xl lg:text-2xl",
+                secondary: "text-sm sm:text-base lg:text-lg"
             };
         case 3:
-            // 3-col: Medium fonts for balanced layout (default)
+            // 3-col: 16px → 16px
             return {
-                primary: "text-sm md:text-base lg:text-lg 2xl:text-xl",
-                secondary: "text-sm sm:text-sm"
+                primary: "text-base lg:text-base",
+                secondary: "text-xs lg:text-sm"
             };
         case 4:
-            // 4-col: Smaller fonts for dense layout
+            // 4-col: 14px → 16px → 16px
             return {
-                primary: "text-sm xl:text-base 2xl:text-lg 3xl:text-xl",
-                secondary: "text-sm sm:text-sm"
+                primary: "text-sm sm:text-base lg:text-base",
+                secondary: "text-xs lg:text-xs"
             };
         case 1:
         case undefined:
         default:
-            // Default sizing for carousels, related products (matches 2-col)
+            // Default sizing for carousels, related products (matches 3-col collection default)
+            // 16px — cohesive with collection page
             return {
-                primary: "text-base md:text-lg xl:text-xl 3xl:text-2xl",
-                secondary: "text-sm sm:text-sm md:text-sm lg:text-base"
+                primary: "text-base lg:text-base",
+                secondary: "text-xs lg:text-sm"
             };
     }
 }

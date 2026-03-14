@@ -62,7 +62,7 @@ export function RelatedProducts({products}: RelatedProductsProps) {
     const {relatedProductsTitle} = useSectionHeadings();
     return (
         <section className="px-4 py-12 md:py-16 mt-40 md:mt-52">
-            <h2 className="font-serif font-normal text-5xl md:text-7xl lg:text-8xl text-center text-primary mb-8 md:mb-12">
+            <h2 className="font-serif font-normal text-xl md:text-3xl lg:text-4xl text-center text-primary mb-8 md:mb-12">
                 {relatedProductsTitle}
             </h2>
 

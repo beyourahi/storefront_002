@@ -63,6 +63,7 @@ import {useEffect, useRef, useState} from "react";
 import {Link, useFetcher, useNavigate} from "react-router";
 import {Image} from "@shopify/hydrogen";
 import {Search, Clock, TrendingUp, Calendar, Newspaper, Package, FolderOpen} from "lucide-react";
+import {useScrollLock} from "~/hooks/useScrollLock";
 import * as Dialog from "@radix-ui/react-dialog";
 import {useAside} from "~/components/Aside";
 import {useRecentSearches} from "~/hooks/useRecentSearches";
@@ -161,9 +162,10 @@ export function FullScreenSearch({collections, popularSearchTerms = []}: FullScr
     // Show search results only when there's an active search term
     const isSearching = inputValue.trim().length > 0;
 
-    // Note: Radix Dialog handles body scroll locking automatically
-    // We don't use useLockBodyScroll here because it stops Lenis entirely,
-    // which can interfere with scrolling inside the dialog
+    // Lock Lenis smooth scroll when search is open.
+    // Radix Dialog handles native body scroll lock; this stops Lenis's virtual scroll.
+    // Ref-counted via useScrollLock so concurrent overlays don't conflict.
+    useScrollLock(isOpen);
 
     // Global keyboard shortcut (Cmd+K)
     useSearchKeyboard();
@@ -313,7 +315,7 @@ export function FullScreenSearch({collections, popularSearchTerms = []}: FullScr
                                     className={cn(
                                         "w-full bg-transparent border-0 border-b-2 border-[var(--border-strong)]",
                                         // Responsive text sizing
-                                        "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif",
+                                        "text-xl md:text-3xl font-serif",
                                         "text-primary placeholder:text-primary/40",
                                         // Responsive padding
                                         "py-3 sm:py-4 outline-none",
@@ -1019,7 +1021,7 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
             </div>
             <h3
                 className={cn(
-                    "font-serif text-sm md:text-base font-medium text-primary transition-colors",
+                    "font-serif text-sm md:text-base font-medium text-primary motion-interactive",
                     canHover && "group-hover:text-primary/70"
                 )}
             >

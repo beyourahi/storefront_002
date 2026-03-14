@@ -220,7 +220,7 @@ export function ProductDescription({html, size = "sm", className}: ProductDescri
                      * ═══════════════════════════════════════════════════════════ */
 
                     "[&_a]:text-primary [&_a]:underline [&_a]:decoration-1 [&_a]:underline-offset-2",
-                    "[&_a]:font-medium [&_a]:transition-colors [&_a]:duration-200",
+                    "[&_a]:font-medium [&_a]:sleek",
                     "hover:[&_a]:text-primary/80 hover:[&_a]:decoration-2",
 
                     /* ═══════════════════════════════════════════════════════════════
@@ -404,7 +404,7 @@ export function ProductDescription({html, size = "sm", className}: ProductDescri
                     >
                         <span>{isExpanded ? "See less" : "See more"}</span>
                         <ChevronDown
-                            className={cn("size-5 transition-transform duration-200", isExpanded && "rotate-180")}
+                            className={cn("size-5 sleek", isExpanded && "rotate-180")}
                             aria-hidden="true"
                         />
                     </Button>

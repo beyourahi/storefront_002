@@ -182,7 +182,7 @@ export function ArticleCard({
                 prefetch="viewport"
                 className={cn(
                     "flex items-start gap-3 sm:gap-4 py-3 sm:py-4 no-underline group cursor-pointer",
-                    "transition-colors hover:bg-muted/30 rounded-lg px-2 -mx-2",
+                    "motion-interactive hover:bg-muted/30 rounded-lg px-2 -mx-2",
                     "animate-product-fade-in",
                     className
                 )}
@@ -197,14 +197,14 @@ export function ArticleCard({
                             data={image}
                             loading={loading}
                             sizes="(min-width: 768px) 96px, (min-width: 640px) 80px, 64px"
-                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="h-full w-full object-cover motion-image group-hover:scale-105"
                         />
                     </div>
                 )}
 
                 {/* Content */}
                 <div className="flex-1 min-w-0 space-y-0.5 sm:space-y-1">
-                    <h3 className="font-serif text-sm sm:text-base font-normal leading-snug text-primary line-clamp-2 group-hover:text-primary/80 transition-colors">
+                    <h3 className="font-serif text-sm sm:text-base font-normal leading-snug text-primary line-clamp-2 group-hover:text-primary/80 motion-link">
                         {title}
                     </h3>
                     <p className="text-sm sm:text-sm text-muted-foreground">
@@ -247,7 +247,7 @@ export function ArticleCard({
                             data={image}
                             loading={loading || "eager"}
                             sizes="(min-width: 1024px) 70vw, (min-width: 768px) 80vw, 100vw"
-                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                            className="h-full w-full object-cover motion-image group-hover:scale-[1.02]"
                         />
                     </div>
                 )}
@@ -260,7 +260,7 @@ export function ArticleCard({
                     )}
 
                     {/* Title */}
-                    <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-normal leading-tight text-primary group-hover:text-primary/80 transition-colors line-clamp-3">
+                    <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-normal leading-tight text-primary group-hover:text-primary/80 motion-link line-clamp-3">
                         {title}
                     </h2>
 
@@ -322,7 +322,7 @@ export function ArticleCard({
                         data={image}
                         loading={loading}
                         sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="h-full w-full object-cover motion-image group-hover:scale-105"
                     />
                 </div>
             )}
@@ -333,7 +333,7 @@ export function ArticleCard({
                 {showTags && tags && tags.length > 0 && <TagList tags={tags} limit={6} variant="default" size="sm" />}
 
                 {/* Title */}
-                <h3 className="font-serif text-base sm:text-lg md:text-xl font-normal leading-snug text-primary group-hover:text-primary/80 transition-colors line-clamp-2">
+                <h3 className="font-serif text-base sm:text-lg md:text-xl font-normal leading-snug text-primary group-hover:text-primary/80 motion-link line-clamp-2">
                     {title}
                 </h3>
 

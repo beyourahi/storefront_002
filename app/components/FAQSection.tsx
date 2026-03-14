@@ -79,13 +79,13 @@ export function FAQSection({faqItems, maxItems = 10, title = "Frequently Asked Q
         <section className="py-10 sm:py-12 md:py-16">
             {/* Mobile header - shown above grid on mobile/tablet */}
             <div className="lg:hidden flex items-end justify-between gap-3 sm:gap-4 mb-5 sm:mb-6 md:mb-8">
-                <h2 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-medium text-primary mb-0">
+                <h2 className="font-serif text-2xl sm:text-3xl font-medium text-primary mb-0">
                     {title}
                 </h2>
                 <Link
                     to="/faq"
                     prefetch="viewport"
-                    className="hidden md:inline-flex shrink-0 rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 font-sans text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground no-underline"
+                    className="hidden md:inline-flex shrink-0 rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 font-sans text-sm font-medium text-primary hover:bg-primary hover:text-primary-foreground no-underline"
                 >
                     View All
                 </Link>
@@ -96,10 +96,10 @@ export function FAQSection({faqItems, maxItems = 10, title = "Frequently Asked Q
                 {/* Left: Sticky heading, description & CTA */}
                 <div className="lg:sticky lg:top-32 lg:self-start">
                     {/* Desktop heading - inside sticky container */}
-                    <h2 className="hidden lg:block font-serif text-4xl xl:text-5xl 2xl:text-6xl font-medium text-primary mb-4 xl:mb-6">
+                    <h2 className="hidden lg:block font-serif text-2xl md:text-3xl font-medium text-primary mb-4 xl:mb-6">
                         {title}
                     </h2>
-                    <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed max-w-md">
+                    <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-md">
                         Find quick answers to common questions about orders, shipping, returns, and more.
                     </p>
 
@@ -108,7 +108,7 @@ export function FAQSection({faqItems, maxItems = 10, title = "Frequently Asked Q
                         <Link
                             to="/faq"
                             prefetch="viewport"
-                            className="hidden lg:inline-flex mt-6 rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-sm lg:text-base font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground no-underline"
+                            className="hidden lg:inline-flex mt-6 rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-sm font-medium text-primary hover:bg-primary hover:text-primary-foreground no-underline"
                         >
                             View All FAQ
                         </Link>
@@ -130,9 +130,9 @@ export function FAQSection({faqItems, maxItems = 10, title = "Frequently Asked Q
                                         className={cn(
                                             "min-h-14 sm:min-h-16 py-4 sm:py-5",
                                             "gap-3 sm:gap-4 text-left",
-                                            "text-sm sm:text-base md:text-lg font-medium",
+                                            "text-base font-medium",
                                             "text-foreground hover:text-primary",
-                                            "hover:no-underline transition-colors",
+                                            "hover:no-underline hover:bg-muted/50 sleek",
                                             "[&>svg]:text-primary/60 [&>svg]:size-4 sm:[&>svg]:size-5"
                                         )}
                                     >

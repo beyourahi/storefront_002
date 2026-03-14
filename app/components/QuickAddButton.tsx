@@ -46,7 +46,7 @@
  * @see {@link https://shopify.dev/docs/api/hydrogen/2024-01/components/cartform}
  */
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import {CartForm} from "@shopify/hydrogen";
 import type {FetcherWithComponents} from "react-router";
 import {Plus, Loader2} from "lucide-react";
@@ -241,19 +241,22 @@ export function QuickAddButton({
     // Get the first available variant for single-variant products
     const defaultVariant = availableVariants[0];
 
-    // Handle click on the button
-    const handleClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
+    // Handle click on the button — stable reference prevents unnecessary re-renders of child buttons
+    const handleClick = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
 
-        if (isSoldOut) return;
+            if (isSoldOut) return;
 
-        if (!isSingleVariant) {
-            // Multi-variant: open selector
-            setIsSheetOpen(true);
-        }
-        // Single variant: CartForm handles the submission
-    };
+            if (!isSingleVariant) {
+                // Multi-variant: open selector
+                setIsSheetOpen(true);
+            }
+            // Single variant: CartForm handles the submission
+        },
+        [isSoldOut, isSingleVariant]
+    );
 
     // Icon size based on fullWidth
     const iconSize = fullWidth ? "size-6" : "size-5";
@@ -313,6 +316,7 @@ export function QuickAddButton({
                                 baseStyles,
                                 !fullWidth && "hover:scale-105",
                                 !fullWidth && "active:scale-95",
+                                "motion-interactive",
                                 "hover:bg-primary", // Override default hover:bg-primary/90 to remove opacity change
                                 isLoading && "opacity-70 cursor-wait",
                                 className
@@ -358,6 +362,7 @@ export function QuickAddButton({
                     baseStyles,
                     !fullWidth && "hover:scale-105",
                     !fullWidth && "active:scale-95",
+                    "motion-interactive",
                     "hover:bg-primary", // Override default hover:bg-primary/90 to remove opacity change
                     className
                 )}

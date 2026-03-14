@@ -39,7 +39,7 @@
 import {useState, Fragment} from "react";
 import {Ruler, Info} from "lucide-react";
 import {cn} from "~/lib/utils";
-import {useLockBodyScroll} from "~/lib/LenisProvider";
+import {useScrollLock} from "~/hooks/useScrollLock";
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody} from "~/components/ui/dialog";
 import {Tabs, TabsList, TabsTrigger, TabsContent} from "~/components/ui/tabs";
 import type {SizeChartData, MeasurementTable, MeasurementUnit, SizeConversion} from "~/lib/size-chart";
@@ -119,8 +119,8 @@ export function SizeChartDialog({sizeChart, open, onOpenChange}: SizeChartDialog
     // Unit state - allow user to toggle between inches and centimeters
     const [displayUnit, setDisplayUnit] = useState<MeasurementUnit>(sizeChart.unit);
 
-    // Lock body scroll when dialog is open
-    useLockBodyScroll(open);
+    // Lock Lenis smooth scroll when dialog is open (native scroll lock handled by Radix)
+    useScrollLock(open);
 
     // Determine default tab - first table type
     const defaultTab = sizeChart.tables[0]?.type || "body";
@@ -256,7 +256,7 @@ function UnitToggle({
                     aria-pressed={currentUnit === unit.value}
                     className={cn(
                         // Base pill styling
-                        "inline-flex min-h-9 min-w-12 select-none items-center justify-center rounded-full border-2 px-3 py-1.5 text-sm font-medium transition-all duration-200",
+                        "inline-flex min-h-9 min-w-12 select-none items-center justify-center rounded-full border-2 px-3 py-1.5 text-sm font-medium sleek",
                         "active:scale-95",
                         // Active/inactive states - matches variant selector
                         currentUnit === unit.value

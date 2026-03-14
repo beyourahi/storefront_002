@@ -222,7 +222,7 @@ export default function Article({loaderData}: Route.ComponentProps) {
                         <li>
                             <Link
                                 to="/blogs"
-                                className="transition-colors hover:text-foreground min-h-11 inline-flex items-center"
+                                className="motion-link hover:text-foreground min-h-11 inline-flex items-center"
                             >
                                 Journal
                             </Link>
@@ -233,7 +233,7 @@ export default function Article({loaderData}: Route.ComponentProps) {
                         <li>
                             <Link
                                 to={`/blogs/${blogHandle}`}
-                                className="transition-colors hover:text-foreground min-h-11 inline-flex items-center"
+                                className="motion-link hover:text-foreground min-h-11 inline-flex items-center"
                             >
                                 {blogTitle || "Blog"}
                             </Link>
@@ -357,9 +357,9 @@ export default function Article({loaderData}: Route.ComponentProps) {
                         <Link
                             to={`/blogs/${blogHandle}`}
                             prefetch="viewport"
-                            className="group inline-flex items-center gap-2 rounded-full border-2 border-primary/30 px-5 py-2.5 text-sm md:text-base text-muted-foreground transition-all hover:text-foreground hover:border-primary/60 hover:no-underline min-h-11"
+                            className="group inline-flex items-center gap-2 rounded-full border-2 border-primary/30 px-5 py-2.5 text-sm md:text-base text-muted-foreground motion-link hover:text-foreground hover:border-primary/60 hover:no-underline min-h-11"
                         >
-                            <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
+                            <ArrowLeft className="size-4 motion-link group-hover:-translate-x-0.5" />
                             <span>Back to {blogTitle || "Blog"}</span>
                         </Link>
                     </div>

@@ -4,6 +4,7 @@ import {Link} from "react-router";
 import type {FeaturedProductSection} from "types";
 import {Money} from "~/components/Money";
 import {Button} from "~/components/ui/button";
+import {parseProductTitle} from "~/lib/product-title";
 
 const getDescription = (description: string) => {
     const trimmed = description.trim();
@@ -33,6 +34,7 @@ const getDiscountPercentage = (
 export function FeaturedProductSpotlight({product}: {product: FeaturedProductSection}) {
     const discountPercentage = getDiscountPercentage(product.price, product.compareAtPrice);
     const displayImage = product.featuredImage;
+    const {primary, secondary} = parseProductTitle(product.title);
 
     return (
         <section className="grid gap-6 rounded-[var(--radius-3xl-raw)] border border-border/60 bg-card/60 p-4 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.45)] backdrop-blur md:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] md:p-6 lg:gap-8 lg:p-8">
@@ -48,7 +50,7 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                             altText: displayImage.altText || product.title
                         }}
                         sizes="(min-width: 1280px) 42vw, (min-width: 768px) 50vw, 100vw"
-                        className="aspect-[4/5] h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+                        className="aspect-[4/5] h-full w-full object-cover motion-image group-hover:scale-[1.035]"
                     />
                 ) : (
                     <div className="flex aspect-[4/5] items-center justify-center bg-gradient-to-br from-muted to-muted/30 px-10 text-center">
@@ -73,8 +75,13 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                     <div className="space-y-3">
                         <p className="text-muted-foreground text-xs uppercase tracking-[0.4em]">Featured product</p>
                         <h2 className="font-serif text-3xl leading-none uppercase sm:text-4xl lg:text-5xl">
-                            {product.title}
+                            {primary}
                         </h2>
+                        {secondary && (
+                            <p className="font-serif text-xl leading-none uppercase text-muted-foreground sm:text-2xl lg:text-3xl">
+                                {secondary}
+                            </p>
+                        )}
                         {product.vendor ? (
                             <p className="text-primary text-sm uppercase tracking-[0.28em]">{product.vendor}</p>
                         ) : null}
@@ -99,7 +106,7 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                     <Button
                         asChild
                         size="lg"
-                        className="w-full justify-between rounded-[var(--radius-pill-raw)] px-6 py-6 text-sm uppercase tracking-[0.24em] md:w-auto"
+                        className="group/cta w-full justify-between rounded-[var(--radius-pill-raw)] px-6 py-6 text-sm uppercase tracking-[0.24em] md:w-auto"
                     >
                         <Link to={`/products/${product.handle}`} prefetch="intent">
                             View featured product

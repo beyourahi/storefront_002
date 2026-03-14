@@ -188,7 +188,7 @@ export function ArticleHero({article, variant = "listing", showReadMore = true, 
                         {tags && tags.length > 0 && <TagList tags={tags} limit={3} variant="hero" size="sm" />}
 
                         {/* Title */}
-                        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal leading-tight text-light">
+                        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal leading-tight text-light">
                             {title}
                         </h2>
 
@@ -233,9 +233,9 @@ export function ArticleHero({article, variant = "listing", showReadMore = true, 
                                 Icon: CircleArrowOutUpRight rotates 45° on hover */}
                             {showReadMore && (
                                 <Link to={articleUrl} prefetch="viewport" className="no-underline">
-                                    <span className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-full bg-primary border-2 border-primary px-4 sm:px-5 md:px-6 py-3 font-sans text-sm sm:text-base font-medium text-primary-foreground hover:bg-light hover:text-primary hover:border-light active:bg-light/90 active:border-light active:scale-[0.98] cursor-pointer transition-all duration-200">
+                                    <span className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 rounded-full bg-primary border-2 border-primary px-4 sm:px-5 md:px-6 py-3 font-sans text-sm sm:text-base font-medium text-primary-foreground hover:bg-light hover:text-primary hover:border-light active:bg-light/90 active:border-light active:scale-[0.98] cursor-pointer sleek">
                                         Read Article
-                                        <CircleArrowOutUpRight className="w-5 h-5 transition-transform duration-200 group-hover:rotate-45" />
+                                        <CircleArrowOutUpRight className="w-5 h-5 sleek group-hover:rotate-45" />
                                     </span>
                                 </Link>
                             )}
@@ -273,7 +273,7 @@ export function ArticleHero({article, variant = "listing", showReadMore = true, 
                         data={image}
                         loading="eager"
                         sizes="(min-width: 1024px) 896px, (min-width: 768px) 90vw, 100vw"
-                        className="w-full h-auto max-h-[50vh] sm:max-h-[60vh] object-cover"
+                        className="w-full h-auto max-h-[50vh] sm:max-h-[60vh] object-cover motion-image"
                     />
                 </div>
             )}

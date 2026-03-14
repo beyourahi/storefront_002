@@ -57,7 +57,7 @@
  * - root.tsx - Provides cartSuggestions data
  */
 
-import {Suspense} from "react";
+import {Suspense, useCallback} from "react";
 import {useOptimisticCart, Image} from "@shopify/hydrogen";
 import {ShoppingCart} from "lucide-react";
 import {Button} from "~/components/ui/button";
@@ -255,7 +255,7 @@ function CartEmpty({hidden = false, layout}: {hidden: boolean; layout: CartLayou
                     onClick={layout === "aside" ? close : undefined}
                     prefetch="viewport"
                     className={cn(
-                        "rounded-full border-2 px-3 sm:px-4 py-2.5 sm:py-2 font-sans text-base sm:text-lg font-medium transition-colors min-h-11 inline-flex items-center justify-center cursor-pointer",
+                        "rounded-full border-2 px-3 sm:px-4 py-2.5 sm:py-2 font-sans text-base sm:text-lg font-medium motion-interactive min-h-11 inline-flex items-center justify-center cursor-pointer",
                         isPage
                             ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
                             : "border-light bg-light text-primary hover:bg-light/90"
@@ -327,15 +327,16 @@ interface CartSuggestionsProps {
 function CartSuggestions({products, layout}: CartSuggestionsProps) {
     const {close} = useAside();
 
+    // Close the aside when any product link is clicked — stable so onClickCapture doesn't recreate.
+    // Declared before any conditional return to satisfy Rules of Hooks.
+    const handleProductClick = useCallback(() => {
+        close();
+    }, [close]);
+
     // Shuffle products deterministically (consistent ordering across renders)
     const shuffledProducts = !products || products.length === 0 ? [] : shuffleArray(products).slice(0, 8);
 
     if (shuffledProducts.length === 0) return null;
-
-    // Close the aside when any product link is clicked
-    const handleProductClick = () => {
-        close();
-    };
 
     return (
         <section

@@ -423,7 +423,7 @@ function WelcomeBanner({customer}: {customer: CustomerFragment}) {
                             </AvatarFallback>
                         </Avatar>
                         <div className="space-y-1.5 min-w-0">
-                            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-primary-foreground mb-0 leading-tight tracking-tight">
+                            <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-medium text-primary-foreground mb-0 leading-tight tracking-tight">
                                 {greeting}
                             </h1>
                             <p className="text-primary-foreground/70 text-sm md:text-base truncate">
@@ -491,7 +491,7 @@ function StoreCreditWidget({balance, accounts}: StoreCreditWidgetProps) {
                                 <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide">
                                     Store Credit Balance
                                 </p>
-                                <p className="text-3xl md:text-4xl lg:text-5xl font-serif font-semibold text-foreground tracking-tight">
+                                <p className="text-xl md:text-2xl font-serif font-semibold text-foreground tracking-tight">
                                     {hasBalance ? <Money data={balance} /> : "৳0.00"}
                                 </p>
                                 {hasBalance && (
@@ -597,7 +597,7 @@ function RecentOrdersSection({orders}: {orders: ReturnType<typeof useLoaderData<
         <section className="space-y-6">
             {/* Section Header */}
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-foreground tracking-tight mb-0">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-serif text-foreground tracking-tight mb-0">
                     {accountContent.sectionRecentOrders}
                 </h2>
                 {hasOrders && (
@@ -605,13 +605,13 @@ function RecentOrdersSection({orders}: {orders: ReturnType<typeof useLoaderData<
                         <Link
                             to="/account/orders"
                             className={cn(
-                                "flex items-center gap-1.5 transition-all duration-200",
+                                "flex items-center gap-1.5 motion-link hover:text-primary",
                                 canHover ? "group-hover:gap-2" : "motion-press active:scale-[var(--motion-press-scale)]"
                             )}
                         >
                             {accountContent.viewAllOrders}{" "}
                             <ArrowRightIcon
-                                className={cn("size-4 transition-transform", canHover && "group-hover:translate-x-0.5")}
+                                className={cn("size-4 sleek", canHover && "group-hover:translate-x-0.5")}
                             />
                         </Link>
                     </Button>
@@ -647,7 +647,7 @@ function OrderCard({order}: {order: OrderNode}) {
         >
             <Card
                 className={cn(
-                    "rounded-2xl py-0 overflow-hidden h-full bg-linear-to-br from-muted/30 via-card to-muted/15 transition-all duration-300",
+                    "rounded-2xl py-0 overflow-hidden h-full bg-linear-to-br from-muted/30 via-card to-muted/15 motion-surface",
                     "shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)]",
                     canHover
                         ? "hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] hover:-translate-y-0.5"
@@ -674,7 +674,7 @@ function OrderCard({order}: {order: OrderNode}) {
                             <div
                                 key={item.id}
                                 className={cn(
-                                    "relative size-14 rounded-xl overflow-hidden bg-muted shrink-0 ring-2 ring-card shadow-sm transition-transform duration-200",
+                                    "relative size-14 rounded-xl overflow-hidden bg-muted shrink-0 ring-2 ring-card shadow-sm sleek",
                                     canHover && "group-hover:-translate-y-0.5",
                                     index === 3 && lineItems.length > 4 && "relative"
                                 )}
@@ -725,14 +725,14 @@ function OrderCard({order}: {order: OrderNode}) {
                     {/* View Details - Subtle arrow indicator */}
                     <div
                         className={cn(
-                            "mt-4 flex items-center gap-1.5 text-sm font-medium text-primary transition-all duration-200",
+                            "mt-4 flex items-center gap-1.5 text-sm font-medium text-primary sleek",
                             canHover && "group-hover:gap-2.5"
                         )}
                     >
                         <span>View Details</span>
                         <ArrowRightIcon
                             className={cn(
-                                "size-4 transition-transform duration-200",
+                                "size-4 sleek",
                                 canHover && "group-hover:translate-x-0.5"
                             )}
                         />
@@ -822,7 +822,7 @@ function QuickActionsGrid() {
 
     return (
         <section className="space-y-6">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-foreground tracking-tight mb-0">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-serif text-foreground tracking-tight mb-0">
                 {accountContent.sectionQuickActions}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
@@ -831,7 +831,7 @@ function QuickActionsGrid() {
                         key={action.label}
                         to={action.href}
                         className={cn(
-                            "flex flex-col items-center gap-4 p-6 md:p-8 lg:p-10 rounded-2xl bg-linear-to-br from-muted/30 via-card to-muted/15 transition-all duration-300",
+                            "flex flex-col items-center gap-4 p-6 md:p-8 lg:p-10 rounded-2xl bg-linear-to-br from-muted/30 via-card to-muted/15",
                             "shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)]",
                             canHover
                                 ? "group hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] hover:-translate-y-0.5"
@@ -841,14 +841,14 @@ function QuickActionsGrid() {
                     >
                         <div
                             className={cn(
-                                "flex items-center justify-center size-16 md:size-20 lg:size-24 rounded-2xl bg-muted/40 transition-all duration-300",
+                                "flex items-center justify-center size-16 md:size-20 lg:size-24 rounded-2xl bg-muted/40 motion-interactive",
                                 canHover && "group-hover:bg-primary group-hover:shadow-md"
                             )}
                         >
                             <action.icon
                                 className={cn(
-                                    "size-7 md:size-8 lg:size-9 text-muted-foreground transition-colors duration-300",
-                                    canHover && "group-hover:text-primary-foreground"
+                                    "size-7 md:size-8 lg:size-9 text-muted-foreground sleek",
+                                    canHover && "group-hover:text-primary-foreground group-hover:scale-110"
                                 )}
                             />
                         </div>
@@ -858,7 +858,7 @@ function QuickActionsGrid() {
                             </span>
                             <span
                                 className={cn(
-                                    "block text-xs text-muted-foreground transition-opacity duration-200 hidden sm:block",
+                                    "block text-xs text-muted-foreground motion-interactive hidden sm:block",
                                     canHover ? "opacity-0 group-hover:opacity-100" : "opacity-100"
                                 )}
                             >
@@ -963,7 +963,7 @@ function MemberDuration({creationDate}: {creationDate: string | null | undefined
             <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide order-1 sm:order-0">
                 {accountContent.statMemberSince}
             </p>
-            <p className="text-2xl sm:text-3xl md:text-4xl font-serif font-semibold text-foreground tracking-tight order-2 sm:order-0">
+            <p className="text-xl md:text-2xl font-serif font-semibold text-foreground tracking-tight order-2 sm:order-0">
                 {duration}
             </p>
         </>
@@ -991,19 +991,19 @@ function AccountStats({customer, orderCount}: {customer: CustomerFragment; order
 
     return (
         <section className="space-y-6">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-foreground tracking-tight mb-0">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-serif text-foreground tracking-tight mb-0">
                 {accountContent.sectionAccountStats}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
                 {staticStats.map((stat, index) => (
                     <Card
                         key={stat.label}
-                        className="rounded-2xl py-0 relative overflow-hidden group bg-linear-to-br from-muted/30 via-card to-muted/15 shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] transition-all duration-300"
+                        className="rounded-2xl py-0 relative overflow-hidden group bg-linear-to-br from-muted/30 via-card to-muted/15 shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] motion-surface"
                     >
                         {/* Subtle gradient background */}
                         <div
                             className={cn(
-                                "absolute inset-0 bg-linear-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+                                "absolute inset-0 bg-linear-to-br opacity-0 group-hover:opacity-100 motion-interactive",
                                 stat.gradient
                             )}
                         />
@@ -1015,7 +1015,7 @@ function AccountStats({customer, orderCount}: {customer: CustomerFragment; order
                                 <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide order-1 sm:order-0">
                                     {stat.label}
                                 </p>
-                                <p className="text-2xl sm:text-3xl md:text-4xl font-serif font-semibold text-foreground tracking-tight order-2 sm:order-0">
+                                <p className="text-xl md:text-2xl font-serif font-semibold text-foreground tracking-tight order-2 sm:order-0">
                                     {stat.value}
                                 </p>
                             </div>
@@ -1023,8 +1023,8 @@ function AccountStats({customer, orderCount}: {customer: CustomerFragment; order
                     </Card>
                 ))}
                 {/* Member Duration Card - Live counter */}
-                <Card className="rounded-2xl py-0 relative overflow-hidden group bg-linear-to-br from-muted/30 via-card to-muted/15 shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] transition-all duration-300">
-                    <div className="absolute inset-0 bg-linear-to-br from-success/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <Card className="rounded-2xl py-0 relative overflow-hidden group bg-linear-to-br from-muted/30 via-card to-muted/15 shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] motion-surface">
+                    <div className="absolute inset-0 bg-linear-to-br from-success/5 to-transparent opacity-0 group-hover:opacity-100 motion-interactive" />
                     <CardContent className="p-5 sm:p-6 md:p-7 relative">
                         <div className="absolute top-4 sm:top-5 right-4 sm:right-5 flex items-center justify-center size-10 md:size-12 rounded-xl bg-muted/50">
                             <CalendarIcon className="size-5 md:size-6 text-muted-foreground/60" />
@@ -1082,15 +1082,15 @@ function RecentlyViewedSection({
     return (
         <section className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-foreground tracking-tight mb-0">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-serif text-foreground tracking-tight mb-0">
                     {accountContent.sectionRecentlyViewed}
                 </h2>
                 <Button variant="link" asChild className="text-primary p-0 h-auto group">
                     <Link
                         to="/collections"
-                        className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
+                        className="flex items-center gap-1.5 group-hover:gap-2 motion-link hover:text-primary"
                     >
-                        View All <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+                        View All <ArrowRightIcon className="size-4 sleek group-hover:translate-x-0.5" />
                     </Link>
                 </Button>
             </div>
@@ -1128,16 +1128,16 @@ function RecommendedSection({products}: {products: CuratedProductFragment[]}) {
     return (
         <section className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-foreground tracking-tight mb-0">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-serif text-foreground tracking-tight mb-0">
                     {recommendedTitle}
                 </h2>
                 <Button variant="link" asChild className="text-primary p-0 h-auto group">
                     <Link
                         to="/collections/all-products"
-                        className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
+                        className="flex items-center gap-1.5 group-hover:gap-2 motion-link hover:text-primary"
                     >
                         Explore More{" "}
-                        <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
+                        <ArrowRightIcon className="size-4 sleek group-hover:translate-x-0.5" />
                     </Link>
                 </Button>
             </div>
@@ -1189,7 +1189,7 @@ function SpecialOffersBanner({
                             <GiftIcon className="size-7 md:size-8 text-accent-foreground" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-xl md:text-2xl lg:text-3xl font-serif font-medium text-accent-foreground tracking-tight">
+                            <h3 className="text-lg md:text-xl lg:text-2xl font-serif font-medium text-accent-foreground tracking-tight">
                                 Exclusive Member Benefits
                             </h3>
                             <p className="text-sm md:text-base text-accent-foreground/80 max-w-lg leading-relaxed">
@@ -1201,7 +1201,7 @@ function SpecialOffersBanner({
                     <Button
                         asChild
                         size="lg"
-                        className="bg-accent-foreground text-accent hover:bg-accent-foreground/90 shrink-0 shadow-lg"
+                        className="motion-interactive bg-accent-foreground text-accent hover:bg-accent-foreground/90 shrink-0 shadow-lg"
                     >
                         <Link to="/collections">Shop Now</Link>
                     </Button>

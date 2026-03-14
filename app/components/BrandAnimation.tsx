@@ -58,8 +58,8 @@ const DEFAULT_HEADER_HEIGHT = 68; // 4.25rem = 68px (matches --header-height in 
 const DEFAULT_ANNOUNCEMENT_GAP = 8; // Matches --announcement-gap in tailwind.css (8px)
 const HEADER_PADDING_TOP_SM = 8; // sm:pt-2 (0.5rem = 8px) - only applied at sm+ breakpoint
 const HEADER_PADDING_TOP_MOBILE = 0; // No pt-* on mobile when scrolled (Header.tsx: "px-2 sm:px-3 sm:pt-2")
-const HEADER_TEXT_SIZE_MOBILE = 24; // text-2xl (1.5rem) on mobile
-const HEADER_TEXT_SIZE_SM = 30; // text-3xl (1.875rem) on sm+ screens
+const HEADER_TEXT_SIZE_MOBILE = 16; // text-base (1rem) on mobile — matches Header.tsx brand NavLink
+const HEADER_TEXT_SIZE_SM = 20; // text-xl (1.25rem) on sm+ screens — matches Header.tsx md:text-xl
 const SM_BREAKPOINT = 640; // Tailwind sm breakpoint
 
 // Animation damping - controls how quickly the visual progress catches up to scroll progress

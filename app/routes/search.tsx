@@ -69,6 +69,7 @@ import {Button} from "~/components/ui/button";
 import {Search, AlertCircle, Package, FolderOpen, Newspaper, SearchX, Calendar, Clock, TrendingUp} from "lucide-react";
 import {cn} from "~/lib/utils";
 import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
+import {parseProductTitle} from "~/lib/product-title";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
@@ -283,7 +284,7 @@ export default function SearchPage() {
                  pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px) */}
             <AnimatedSection animation="fade" threshold={0.08}>
                 <header className="pt-(--page-breathing-room) pb-6 sm:pb-8 md:pb-12 lg:pb-16 xl:pb-20">
-                    <h1 className="font-serif text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-medium text-primary tracking-tight m-0">
+                    <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary tracking-tight m-0">
                         / Search
                     </h1>
                 </header>
@@ -311,10 +312,10 @@ export default function SearchPage() {
                             enterKeyHint="search"
                             className={cn(
                                 "w-full bg-transparent border-0 border-b-2 border-[var(--border-strong)]",
-                                "text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif",
+                                "text-xl md:text-3xl font-serif",
                                 "text-primary placeholder:text-primary/40",
                                 "py-3 sm:py-4 outline-none",
-                                "focus:border-primary transition-colors duration-300"
+                                "focus:border-primary"
                             )}
                         />
                     )}
@@ -359,7 +360,7 @@ export default function SearchPage() {
                                                 // Responsive padding and touch target - tighter on smallest screens
                                                 "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
                                                 "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
-                                                "transition-all duration-200",
+                                                "sleek",
                                                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
                                                 "data-[state=inactive]:bg-transparent data-[state=inactive]:text-primary"
                                             )}
@@ -375,7 +376,7 @@ export default function SearchPage() {
                                                 "rounded-[var(--radius-pill-raw)] border-2 border-primary",
                                                 "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
                                                 "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
-                                                "transition-all duration-200",
+                                                "sleek",
                                                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
                                                 "data-[state=inactive]:bg-transparent data-[state=inactive]:text-primary"
                                             )}
@@ -390,7 +391,7 @@ export default function SearchPage() {
                                                 "rounded-[var(--radius-pill-raw)] border-2 border-primary",
                                                 "min-h-9 px-2 py-1 sm:min-h-10 sm:px-3 sm:py-1.5 md:min-h-11 md:px-4 md:py-2",
                                                 "text-sm sm:text-sm md:text-base font-medium whitespace-nowrap",
-                                                "transition-all duration-200",
+                                                "sleek",
                                                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
                                                 "data-[state=inactive]:bg-transparent data-[state=inactive]:text-primary"
                                             )}
@@ -592,17 +593,17 @@ function SearchPageInitialState({
                                             data={collection.image}
                                             loading="lazy"
                                             sizes="(min-width: 1024px) 16vw, (min-width: 768px) 25vw, 50vw"
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            className="w-full h-full object-cover group-hover:scale-105 motion-image"
                                         />
                                     ) : (
-                                        <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                                        <div className="w-full h-full bg-linear-to-br from-primary/5 to-primary/20 flex items-center justify-center group-hover:scale-105 motion-image">
                                             <span className="text-2xl sm:text-3xl md:text-4xl font-serif text-primary/30">
                                                 {collection.title.charAt(0)}
                                             </span>
                                         </div>
                                     )}
                                 </div>
-                                <p className="text-sm sm:text-base font-medium text-primary group-hover:text-primary/70 transition-colors line-clamp-1">
+                                <p className="text-sm sm:text-base font-medium text-primary group-hover:text-primary/70 motion-surface line-clamp-1">
                                     {collection.title}
                                 </p>
                                 <p className="text-sm sm:text-sm text-muted-foreground">
@@ -725,7 +726,7 @@ function SearchProductItem({
     });
 
     const image = product.featuredImage;
-    const titleParts = product.title.trim().split(" + ");
+    const {primary, secondary} = parseProductTitle(product.title);
     const staggerDelay = Math.min(index, 11) * 40;
 
     // Get dynamic font sizes based on grid columns and variant
@@ -741,7 +742,7 @@ function SearchProductItem({
                 prefetch="viewport"
                 className={cn(
                     "flex items-center gap-4 md:gap-6 py-4 pl-4 border-b border-border/50 no-underline",
-                    canHover ? "group transition-colors hover:bg-muted/30" : "motion-press active:bg-muted/30",
+                    canHover ? "group hover:bg-muted/30" : "motion-press active:bg-muted/30",
                     "animate-product-fade-in"
                 )}
                 style={{animationDelay: `${staggerDelay}ms`}}
@@ -759,7 +760,7 @@ function SearchProductItem({
                             loading={loading}
                             sizes="96px"
                             className={cn(
-                                "w-full h-full object-cover transition-transform duration-300",
+                                "w-full h-full object-cover motion-image",
                                 canHover && "group-hover:scale-105"
                             )}
                         />
@@ -769,8 +770,8 @@ function SearchProductItem({
                 </div>
                 <div className="flex-1 min-w-0">
                     <h3 className={cn("font-sans font-medium leading-snug text-primary truncate", fontSizes.title)}>
-                        <span>{titleParts[0]}</span>
-                        {titleParts[1] && <span>, {titleParts[1]}</span>}
+                        <span>{primary}</span>
+                        {secondary && <span>, {secondary}</span>}
                     </h3>
                     <div className={cn("font-mono tabular-nums text-primary mt-1", fontSizes.price)}>
                         <ProductPrice
@@ -803,7 +804,7 @@ function SearchProductItem({
                         loading={loading}
                         sizes="(min-width: 45em) 400px, 100vw"
                         className={cn(
-                            "h-auto w-full object-cover transition-transform duration-300",
+                            "h-auto w-full object-cover motion-image",
                             canHover && "group-hover:scale-105"
                         )}
                     />
@@ -813,8 +814,8 @@ function SearchProductItem({
             </div>
             <div className="space-y-1">
                 <h3 className={cn("font-sans font-medium leading-snug text-primary line-clamp-2", fontSizes.title)}>
-                    <span>{titleParts[0]}</span>
-                    {titleParts[1] && <span>, {titleParts[1]}</span>}
+                    <span>{primary}</span>
+                    {secondary && <span>, {secondary}</span>}
                 </h3>
                 <div className={cn("font-mono tabular-nums text-primary", fontSizes.price)}>
                     <ProductPrice
@@ -889,7 +890,7 @@ function SearchCollectionCard({
                 prefetch="viewport"
                 className={cn(
                     "flex items-center gap-4 md:gap-6 py-4 border-b border-border/50 no-underline",
-                    canHover ? "group transition-colors hover:bg-muted/30" : "motion-press active:bg-muted/30",
+                    canHover ? "group hover:bg-muted/30" : "motion-press active:bg-muted/30",
                     "animate-product-fade-in"
                 )}
                 style={{animationDelay: `${staggerDelay}ms`}}
@@ -903,7 +904,7 @@ function SearchCollectionCard({
                             data={collection.image}
                             sizes="96px"
                             className={cn(
-                                "w-full h-full object-cover transition-transform duration-300",
+                                "w-full h-full object-cover motion-image",
                                 canHover && "group-hover:scale-105"
                             )}
                         />
@@ -942,7 +943,7 @@ function SearchCollectionCard({
                         data={collection.image}
                         sizes="(min-width: 768px) 25vw, 50vw"
                         className={cn(
-                            "w-full h-full object-cover transition-transform duration-300",
+                            "w-full h-full object-cover motion-image",
                             canHover && "group-hover:scale-105"
                         )}
                     />
@@ -956,7 +957,7 @@ function SearchCollectionCard({
             </div>
             <h3
                 className={cn(
-                    "font-serif text-sm md:text-base font-medium text-primary transition-colors",
+                    "font-serif text-sm md:text-base font-medium text-primary motion-surface",
                     canHover && "group-hover:text-primary/70"
                 )}
             >
@@ -1045,7 +1046,7 @@ function SearchArticleCard({
                 prefetch="viewport"
                 className={cn(
                     "flex items-center gap-4 md:gap-6 py-4 border-b border-border/50 no-underline",
-                    canHover ? "group transition-colors hover:bg-muted/30" : "motion-press active:bg-muted/30",
+                    canHover ? "group hover:bg-muted/30" : "motion-press active:bg-muted/30",
                     "animate-product-fade-in"
                 )}
                 style={{animationDelay: `${staggerDelay}ms`}}
@@ -1059,7 +1060,7 @@ function SearchArticleCard({
                             data={article.image}
                             sizes="96px"
                             className={cn(
-                                "w-full h-full object-cover transition-transform duration-300",
+                                "w-full h-full object-cover motion-image",
                                 canHover && "group-hover:scale-105"
                             )}
                         />
@@ -1105,7 +1106,7 @@ function SearchArticleCard({
                         data={article.image}
                         sizes="(min-width: 45em) 400px, 100vw"
                         className={cn(
-                            "w-full h-full object-cover transition-transform duration-300",
+                            "w-full h-full object-cover motion-image",
                             canHover && "group-hover:scale-105"
                         )}
                     />

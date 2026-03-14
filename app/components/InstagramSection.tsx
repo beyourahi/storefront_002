@@ -81,7 +81,7 @@ export function InstagramSection({media}: InstagramSectionProps) {
                     href={instagramUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 sm:py-2 font-sans text-base font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground hover:no-underline sm:text-lg md:text-xl"
+                    className="inline-flex items-center gap-2 rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 sm:py-2 font-sans text-base sm:text-lg md:text-xl font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground hover:no-underline"
                 >
                     {instagramHandle}
                 </a>
@@ -152,14 +152,14 @@ function InstagramMediaCard({
                             width={400}
                             height={400}
                             loading="lazy"
-                            className="absolute inset-0 size-full rounded-none object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-105"
                         />
                     ) : (
                         <video
                             src={media.url}
                             muted
                             playsInline
-                            className="absolute inset-0 size-full rounded-none object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-105"
                         />
                     )}
                     {/* Play icon indicator for videos */}
@@ -174,13 +174,13 @@ function InstagramMediaCard({
                     width={400}
                     height={400}
                     loading="lazy"
-                    className="absolute inset-0 size-full rounded-none object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-105"
                 />
             )}
 
             {/* Hover Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/40 group-active:bg-black/40">
-                <div className="flex flex-col items-center gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-active:opacity-100">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/0 motion-overlay group-hover:bg-black/40 group-active:bg-black/40">
+                <div className="flex flex-col items-center gap-2 opacity-0 motion-overlay group-hover:opacity-100 group-active:opacity-100">
                     <Instagram className="size-6 text-white sm:size-8" />
                     <span className="text-sm font-medium text-white sm:text-sm">View on Instagram</span>
                 </div>

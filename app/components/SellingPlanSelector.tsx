@@ -161,11 +161,11 @@ export function SellingPlanSelector({
                             type="button"
                             onClick={() => handlePlanSelect(plan)}
                             className={cn(
-                                "inline-flex min-h-10 select-none items-center justify-center rounded-full border-2 px-3 sm:px-4 py-1.5 text-base sm:text-lg font-medium transition-all duration-200",
+                                "inline-flex min-h-10 select-none items-center justify-center rounded-full border-2 px-3 sm:px-4 py-1.5 text-base sm:text-lg font-medium sleek",
                                 "active:scale-95",
                                 plan.isSelected
                                     ? "border-primary bg-primary text-primary-foreground"
-                                    : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                                    : "border-primary text-primary hover:border-primary/40 hover:bg-primary hover:text-primary-foreground"
                             )}
                         >
                             {optionLabel || plan.name}

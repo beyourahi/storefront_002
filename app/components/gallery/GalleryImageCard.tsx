@@ -14,6 +14,7 @@
 
 import type {GalleryImageData} from "~/lib/gallery";
 import {cn} from "~/lib/utils";
+import {parseProductTitle} from "~/lib/product-title";
 
 // =============================================================================
 // TYPES
@@ -50,12 +51,7 @@ export function GalleryImageCard({image, priority = false, index = 0}: GalleryIm
     // DERIVED STATE
     // =============================================================================
 
-    /**
-     * Split product title on " + " for bundle products.
-     * Allows rendering comma-separated for better readability.
-     * Example: "Product A + Product B" → ["Product A", "Product B"]
-     */
-    const titleParts = image.productTitle.trim().split(" + ");
+    const {primary, secondary} = parseProductTitle(image.productTitle);
 
     /**
      * Stagger delay calculation for cascade animation.
@@ -69,7 +65,7 @@ export function GalleryImageCard({image, priority = false, index = 0}: GalleryIm
 
     return (
         <div
-            className={cn("group block w-full animate-product-fade-in", "rounded-sm overflow-hidden")}
+            className={cn("group block w-full animate-product-fade-in motion-surface", "rounded-sm overflow-hidden")}
             style={{animationDelay: `${staggerDelay}ms`}}
         >
             <div className="aspect-[4/5] relative overflow-hidden bg-muted/20">
@@ -80,7 +76,7 @@ export function GalleryImageCard({image, priority = false, index = 0}: GalleryIm
                     loading={priority ? "eager" : "lazy"}
                     width={image.width}
                     height={image.height}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover motion-image group-hover:scale-105"
                 />
 
                 {/* Hover Overlay - slides up from bottom */}
@@ -93,8 +89,8 @@ export function GalleryImageCard({image, priority = false, index = 0}: GalleryIm
                     )}
                 >
                     <p className="text-light text-sm sm:text-sm font-medium leading-snug line-clamp-2">
-                        <span>{titleParts[0]}</span>
-                        {titleParts[1] && <span>, {titleParts[1]}</span>}
+                        <span>{primary}</span>
+                        {secondary && <span>, {secondary}</span>}
                     </p>
                     {image.collectionTitle && (
                         <p className="text-light/70 text-sm sm:text-sm mt-0.5 truncate">{image.collectionTitle}</p>

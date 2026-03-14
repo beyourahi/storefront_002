@@ -229,7 +229,7 @@ function AccountNavLink({to, end, children}: {to: string; end?: boolean; childre
                     className={cn(
                         // Responsive text sizing with ultrawide support
                         // whitespace-nowrap ensures text doesn't wrap (critical for horizontal scroll)
-                        "relative inline-block pb-1 text-base sm:text-xl md:text-2xl lg:text-3xl font-medium transition-colors whitespace-nowrap",
+                        "relative inline-block pb-1 text-sm sm:text-base font-medium motion-link whitespace-nowrap",
                         // No horizontal padding - spacing handled by parent gap
                         isPending
                             ? "text-primary/50"
@@ -244,7 +244,7 @@ function AccountNavLink({to, end, children}: {to: string; end?: boolean; childre
                     {/* Animated underline - scales from left on hover */}
                     <span
                         className={cn(
-                            "absolute bottom-0 left-0 w-full h-0.5 bg-primary transition-transform duration-300 ease-out origin-left",
+                            "absolute bottom-0 left-0 w-full h-0.5 bg-primary motion-link origin-left",
                             isActive
                                 ? "scale-x-100"
                                 : canHover

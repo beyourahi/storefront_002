@@ -50,12 +50,12 @@
  * @see {@link https://shopify.dev/docs/api/hydrogen/2024-01/components/cartform}
  */
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useMemo, useCallback} from "react";
 import {useFetcher} from "react-router";
 import {CartForm} from "@shopify/hydrogen";
 import {Loader2, Share2} from "lucide-react";
 import {cn} from "~/lib/utils";
-import {useLockBodyScroll} from "~/lib/LenisProvider";
+import {useScrollLock} from "~/hooks/useScrollLock";
 import {Money} from "~/components/Money";
 import {QuantitySelector} from "~/components/QuantitySelector";
 import {Badge} from "~/components/ui/badge";
@@ -67,6 +67,7 @@ import {SizeChartButtonCompact} from "~/components/SizeChartButton";
 import type {SizeChartData} from "~/lib/size-chart";
 import {toast} from "sonner";
 import {filterDisplayTags, getButtonLabel} from "~/lib/product-tags";
+import {parseProductTitle} from "~/lib/product-title";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -155,7 +156,7 @@ interface QuickAddDialogProps {
  * - Loading state with spinner
  *
  * Scroll Handling:
- * - useLockBodyScroll prevents background scrolling
+ * - useScrollLock prevents background Lenis scrolling (ref-counted)
  * - data-lenis-prevent on scrollable areas
  * - Smooth vertical scroll for images
  */
@@ -170,11 +171,17 @@ export function QuickAddDialog({product, open, onOpenChange, sizeChart}: QuickAd
     // Get appropriate button label ("Pre Order" for preorder products)
     const buttonLabel = getButtonLabel(product.tags, "Get it now");
 
-    // Lock body scroll when dialog is open (prevents background scrolling)
-    useLockBodyScroll(open);
+    // Lock Lenis smooth scroll when dialog is open (native scroll lock handled by Radix)
+    useScrollLock(open);
+
+    // Get available variants — memoized so the useEffect dep below is stable
+    const availableVariants = useMemo(
+        () => product.variants.nodes.filter(v => v.availableForSale),
+        [product.variants.nodes]
+    );
 
     // Handle share button click
-    const handleShare = async () => {
+    const handleShare = useCallback(async () => {
         const productUrl = `${window.location.origin}/products/${product.handle}`;
 
         // Try Web Share API first (mobile)
@@ -197,7 +204,7 @@ export function QuickAddDialog({product, open, onOpenChange, sizeChart}: QuickAd
         } catch {
             toast.error("Failed to copy link");
         }
-    };
+    }, [product.handle, product.title]);
 
     // Get all product images (fallback to featured image if no images array)
     const productImages: QuickAddImage[] =
@@ -206,9 +213,6 @@ export function QuickAddDialog({product, open, onOpenChange, sizeChart}: QuickAd
             : product.featuredImage
               ? [product.featuredImage]
               : [];
-
-    // Get available variants
-    const availableVariants = product.variants.nodes.filter(v => v.availableForSale);
 
     // Auto-select first available variant when dialog opens
     useEffect(() => {
@@ -234,11 +238,15 @@ export function QuickAddDialog({product, open, onOpenChange, sizeChart}: QuickAd
     // Get current selection for each option
     const currentSelections = getSelectedOptionsFromVariant(selectedVariant);
 
-    // Split product title
-    const titleParts = product.title.trim().split(" + ");
+    const {primary, secondary} = parseProductTitle(product.title);
 
     // Stop event propagation to prevent Link navigation (React synthetic events bubble through portals)
-    const stopPropagation = (e: React.MouseEvent | React.PointerEvent) => e.stopPropagation();
+    const stopPropagation = useCallback((e: React.MouseEvent | React.PointerEvent) => e.stopPropagation(), []);
+
+    // Stable callback passed to QuickAddCartButton so it doesn't trigger re-renders
+    const handleCartSuccess = useCallback(() => {
+        onOpenChange(false);
+    }, [onOpenChange]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -278,8 +286,8 @@ export function QuickAddDialog({product, open, onOpenChange, sizeChart}: QuickAd
                     <div className="flex-1 p-4 sm:p-6 flex flex-col overflow-y-auto" data-lenis-prevent>
                         <DialogHeader className="text-left pr-10">
                             <DialogTitle className="font-sans text-2xl sm:text-3xl font-medium leading-snug text-primary mb-0">
-                                <span>{titleParts[0]}</span>
-                                {titleParts[1] && <span>, {titleParts[1]}</span>}
+                                <span>{primary}</span>
+                                {secondary && <span>, {secondary}</span>}
                             </DialogTitle>
                             {/* Product Tags - under the title (special tags filtered out) */}
                             {displayTags.length > 0 && (
@@ -340,8 +348,7 @@ export function QuickAddDialog({product, open, onOpenChange, sizeChart}: QuickAd
 
                                             // Pill button styling - consistent for all options
                                             const buttonClasses = cn(
-                                                "inline-flex min-h-10 select-none items-center justify-center gap-2 rounded-full border-2 px-3 sm:px-4 py-1.5 text-base sm:text-lg font-medium transition-all duration-200",
-                                                "active:scale-95",
+                                                "inline-flex min-h-10 select-none items-center justify-center gap-2 rounded-full border-2 px-3 sm:px-4 py-1.5 text-base sm:text-lg font-medium sleek hover:scale-[1.02] hover:shadow-md active:scale-[0.98]",
                                                 isSelected
                                                     ? "border-primary bg-primary text-primary-foreground"
                                                     : "border-primary text-primary hover:bg-primary hover:text-primary-foreground",
@@ -406,7 +413,7 @@ export function QuickAddDialog({product, open, onOpenChange, sizeChart}: QuickAd
                                         <button
                                             type="button"
                                             onClick={() => void handleShare()}
-                                            className="flex min-h-10 min-w-10 select-none items-center justify-center rounded-full border-2 border-primary text-primary transition-colors hover:bg-primary hover:text-primary-foreground active:scale-95"
+                                            className="flex min-h-10 min-w-10 select-none items-center justify-center rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground active:scale-95"
                                             aria-label="Share product"
                                         >
                                             <Share2 className="size-5" />
@@ -418,9 +425,7 @@ export function QuickAddDialog({product, open, onOpenChange, sizeChart}: QuickAd
                                     variant={selectedVariant}
                                     quantity={quantity}
                                     buttonLabel={buttonLabel}
-                                    onSuccess={() => {
-                                        onOpenChange(false);
-                                    }}
+                                    onSuccess={handleCartSuccess}
                                 />
                             </div>
                         ) : availableVariants.length === 0 ? (
@@ -486,7 +491,8 @@ function QuickAddCartButton({
         }
     }, [fetcher.state, fetcher.data, onSuccess]);
 
-    const handleAddToCart = () => {
+    // Stable handler — only changes when variant.id, quantity, or isLoading changes
+    const handleAddToCart = useCallback(() => {
         if (isLoading || !variant.availableForSale) return;
 
         // CartForm.getFormInput expects: { cartFormInput: JSON.stringify({ action, inputs }) }
@@ -501,7 +507,7 @@ function QuickAddCartButton({
             },
             {method: "POST", action: "/cart"}
         );
-    };
+    }, [fetcher, isLoading, variant.availableForSale, variant.id, quantity]);
 
     return (
         <button
@@ -509,7 +515,7 @@ function QuickAddCartButton({
             onClick={handleAddToCart}
             disabled={isLoading || !variant.availableForSale}
             className={cn(
-                "w-full min-h-12 inline-flex select-none items-center justify-between gap-4 rounded-full border-2 border-primary bg-transparent px-3 sm:px-4 py-2 text-lg font-medium text-primary transition-all duration-200",
+                "w-full min-h-12 inline-flex select-none items-center justify-between gap-4 rounded-full border-2 border-primary bg-transparent px-3 sm:px-4 py-2 text-lg font-medium text-primary sleek",
                 "hover:bg-primary hover:text-primary-foreground active:bg-primary active:text-primary-foreground",
                 (isLoading || !variant.availableForSale) && "opacity-50 cursor-not-allowed"
             )}

@@ -128,7 +128,7 @@ export function TagBadge({tag, href, variant = "muted", size = "default", classN
     // ========================================
 
     const badgeClassName = cn(
-        "rounded-full font-medium transition-colors whitespace-nowrap",
+        "rounded-full font-medium whitespace-nowrap",
         // Size variants with touch-friendly minimum heights for clickable badges
         size === "sm"
             ? "px-2 sm:px-2.5 py-0.5 sm:py-1 text-sm sm:text-sm"

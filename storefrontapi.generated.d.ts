@@ -97,6 +97,67 @@ export type CartLineComponentFragment = Pick<
       perDeliveryPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
     }>;
   }>;
+  lineComponents: Array<
+    Pick<StorefrontAPI.CartLine, "id" | "quantity"> & {
+      attributes: Array<Pick<StorefrontAPI.Attribute, "key" | "value">>;
+      cost: {
+        totalAmount: Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">;
+        amountPerQuantity: Pick<
+          StorefrontAPI.MoneyV2,
+          "currencyCode" | "amount"
+        >;
+        compareAtAmountPerQuantity?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">
+        >;
+      };
+      merchandise: Pick<
+        StorefrontAPI.ProductVariant,
+        | "id"
+        | "availableForSale"
+        | "quantityAvailable"
+        | "requiresShipping"
+        | "title"
+      > & {
+        compareAtPrice?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">
+        >;
+        price: Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">;
+        image?: StorefrontAPI.Maybe<
+          Pick<
+            StorefrontAPI.Image,
+            "id" | "url" | "altText" | "width" | "height"
+          >
+        >;
+        product: Pick<
+          StorefrontAPI.Product,
+          "handle" | "title" | "id" | "vendor"
+        >;
+        selectedOptions: Array<
+          Pick<StorefrontAPI.SelectedOption, "name" | "value">
+        >;
+      };
+      parentRelationship?: StorefrontAPI.Maybe<{
+        parent: Pick<StorefrontAPI.CartLine, "id"> & {
+          merchandise: Pick<StorefrontAPI.ProductVariant, "title"> & {
+            product: Pick<StorefrontAPI.Product, "title" | "handle">;
+          };
+        };
+      }>;
+      sellingPlanAllocation?: StorefrontAPI.Maybe<{
+        sellingPlan: Pick<StorefrontAPI.SellingPlan, "id" | "name"> & {
+          options: Array<
+            Pick<StorefrontAPI.SellingPlanOption, "name" | "value">
+          >;
+        };
+        priceAdjustments: Array<{
+          perDeliveryPrice: Pick<
+            StorefrontAPI.MoneyV2,
+            "amount" | "currencyCode"
+          >;
+        }>;
+      }>;
+    }
+  >;
 };
 
 export type CartApiQueryFragment = Pick<
@@ -232,12 +293,82 @@ export type CartApiQueryFragment = Pick<
               >;
             }>;
           }>;
+          lineComponents: Array<
+            Pick<StorefrontAPI.CartLine, "id" | "quantity"> & {
+              attributes: Array<Pick<StorefrontAPI.Attribute, "key" | "value">>;
+              cost: {
+                totalAmount: Pick<
+                  StorefrontAPI.MoneyV2,
+                  "currencyCode" | "amount"
+                >;
+                amountPerQuantity: Pick<
+                  StorefrontAPI.MoneyV2,
+                  "currencyCode" | "amount"
+                >;
+                compareAtAmountPerQuantity?: StorefrontAPI.Maybe<
+                  Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">
+                >;
+              };
+              merchandise: Pick<
+                StorefrontAPI.ProductVariant,
+                | "id"
+                | "availableForSale"
+                | "quantityAvailable"
+                | "requiresShipping"
+                | "title"
+              > & {
+                compareAtPrice?: StorefrontAPI.Maybe<
+                  Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">
+                >;
+                price: Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">;
+                image?: StorefrontAPI.Maybe<
+                  Pick<
+                    StorefrontAPI.Image,
+                    "id" | "url" | "altText" | "width" | "height"
+                  >
+                >;
+                product: Pick<
+                  StorefrontAPI.Product,
+                  "handle" | "title" | "id" | "vendor"
+                >;
+                selectedOptions: Array<
+                  Pick<StorefrontAPI.SelectedOption, "name" | "value">
+                >;
+              };
+              parentRelationship?: StorefrontAPI.Maybe<{
+                parent: Pick<StorefrontAPI.CartLine, "id"> & {
+                  merchandise: Pick<StorefrontAPI.ProductVariant, "title"> & {
+                    product: Pick<StorefrontAPI.Product, "title" | "handle">;
+                  };
+                };
+              }>;
+              sellingPlanAllocation?: StorefrontAPI.Maybe<{
+                sellingPlan: Pick<StorefrontAPI.SellingPlan, "id" | "name"> & {
+                  options: Array<
+                    Pick<StorefrontAPI.SellingPlanOption, "name" | "value">
+                  >;
+                };
+                priceAdjustments: Array<{
+                  perDeliveryPrice: Pick<
+                    StorefrontAPI.MoneyV2,
+                    "amount" | "currencyCode"
+                  >;
+                }>;
+              }>;
+            }
+          >;
         })
     >;
   };
   cost: {
     subtotalAmount: Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">;
     totalAmount: Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">;
+    totalDutyAmount?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">
+    >;
+    totalTaxAmount?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.MoneyV2, "currencyCode" | "amount">
+    >;
   };
   attributes: Array<Pick<StorefrontAPI.Attribute, "key" | "value">>;
   discountCodes: Array<

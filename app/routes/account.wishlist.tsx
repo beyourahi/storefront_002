@@ -63,7 +63,7 @@ import {
     DialogTitle
 } from "~/components/ui/dialog";
 import {AnimatedSection} from "~/components/AnimatedSection";
-import {useLockBodyScroll} from "~/lib/LenisProvider";
+import {useScrollLock} from "~/hooks/useScrollLock";
 import {toast} from "sonner";
 import {cn} from "~/lib/utils";
 import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
@@ -230,7 +230,7 @@ export default function AccountWishlist() {
     const [sortOption, setSortOption] = useWishlistSort();
 
     // Lock body scroll when dialog is open
-    useLockBodyScroll(dialogOpen);
+    useScrollLock(dialogOpen);
 
     // Fetch products when wishlist IDs are available
     useEffect(() => {
@@ -572,7 +572,7 @@ function SharePlatformButton({
             ) : showError ? (
                 <X className="size-4 text-destructive" />
             ) : (
-                <Icon className="size-4 transition-colors duration-200 group-hover:text-primary-foreground" />
+                <Icon className="size-4 sleek group-hover:text-primary-foreground" />
             )}
             <span className="text-sm">{getDisplayText()}</span>
         </Button>
@@ -589,7 +589,7 @@ interface WishlistShareDialogProps {
 function WishlistShareDialog({open, onOpenChange, ids, products}: WishlistShareDialogProps) {
     const {siteUrl, brandName} = useSiteSettings();
 
-    useLockBodyScroll(open);
+    useScrollLock(open);
 
     const encoded = encodeWishlistIds(ids);
     const baseUrl = typeof window !== "undefined" ? window.location.origin : siteUrl;
@@ -717,7 +717,7 @@ function WishlistHeader({count, ids, products, onClearClick}: WishlistHeaderProp
                         <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
                             <HeartIcon className="size-5 md:size-6 text-muted-foreground" />
                         </div>
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-medium text-foreground tracking-tight my-0">
+                        <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-medium text-foreground tracking-tight my-0">
                             Wishlist
                         </h1>
                     </div>
@@ -857,7 +857,7 @@ function WishlistEmpty() {
                 <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-sm leading-relaxed">
                     Save products you love by clicking the heart icon. They&apos;ll appear here for easy access.
                 </p>
-                <Button asChild size="lg" className="gap-2">
+                <Button asChild size="lg" className="gap-2 motion-interactive">
                     <Link to="/collections/all-products">
                         <ShoppingBag className="size-4" />
                         Start Shopping
@@ -881,7 +881,7 @@ function WishlistUnavailable({onClearClick}: {onClearClick: () => void}) {
                 <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-sm leading-relaxed">
                     Some products in your wishlist are no longer available. They may have been removed or sold out.
                 </p>
-                <Button onClick={onClearClick} variant="outline" size="lg" className="gap-2">
+                <Button onClick={onClearClick} variant="outline" size="lg" className="gap-2 motion-interactive">
                     <Trash2 className="size-4" />
                     Clear unavailable items
                 </Button>

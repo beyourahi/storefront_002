@@ -43,7 +43,7 @@
 import {useState, useEffect, useRef} from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {cn} from "~/lib/utils";
-import {useLockBodyScroll} from "~/lib/LenisProvider";
+import {useScrollLock} from "~/hooks/useScrollLock";
 import type {ProductLightboxProps} from "types";
 
 // Child components
@@ -107,7 +107,7 @@ export function ProductLightbox({media, initialIndex, isOpen, onClose}: ProductL
 
     // Prevent page scroll when lightbox is open
     // Uses Lenis scroll lock - same mechanism as cart drawer
-    useLockBodyScroll(isOpen);
+    useScrollLock(isOpen);
 
     // ==========================================================================
     // NAVIGATION HANDLERS

@@ -36,7 +36,7 @@
  * - Aside.tsx - Cart drawer container
  */
 
-import {Suspense} from "react";
+import {Suspense, useMemo} from "react";
 import {Await, NavLink, useAsyncValue, useLocation} from "react-router";
 import {type CartViewPayload, useAnalytics, useOptimisticCart} from "@shopify/hydrogen";
 import type {CartApiQueryFragment} from "storefrontapi.generated";
@@ -138,7 +138,10 @@ export function Header({header, cart}: HeaderProps) {
     // Use light text on homepage or dark-background routes
     const isDarkBackground = isDarkBackgroundRoute(location.pathname);
     const useLightText = isHomePage || isDarkBackground;
-    const actionState = {isScrolled, useLightText};
+    // Memoize the action state object so child components that depend on it
+    // (MenuToggle, SearchToggle, etc.) don't re-render when the Header re-renders
+    // for unrelated reasons (e.g., cart count changing)
+    const actionState = useMemo(() => ({isScrolled, useLightText}), [isScrolled, useLightText]);
 
     return (
         <header
@@ -192,9 +195,9 @@ export function Header({header, cart}: HeaderProps) {
                         to="/"
                         prefetch="viewport"
                         className={cn(
-                            // Responsive logo sizing: text-xl at 320px to prevent overflow,
-                            // scales up to text-2xl at sm, text-3xl at md+
-                            "pointer-events-auto font-serif text-xl sm:text-2xl md:text-3xl uppercase tracking-wider transition-colors duration-300 cursor-pointer whitespace-nowrap",
+                            // Responsive logo sizing: text-lg at 320px to prevent overflow,
+                            // scales up to text-xl at sm, text-2xl at md+
+                            "pointer-events-auto font-serif text-base sm:text-lg md:text-xl uppercase tracking-wider motion-link hover:opacity-80 cursor-pointer whitespace-nowrap",
                             // Dark background pages: always white
                             // Other pages: primary at scroll 0, white after scrolling
                             useLightText || isScrolled ? "text-light" : "text-primary"
@@ -363,7 +366,7 @@ function CartBadge({
             className={cn(
                 // min-h-11 ensures 44px tap target for accessibility
                 // text-base font-medium matches Menu button typography
-                "min-h-11 text-base font-medium cursor-pointer transition-all duration-300 ease-out hover:bg-transparent hover:text-inherit",
+                "min-h-11 text-base font-medium cursor-pointer motion-interactive hover:bg-transparent hover:text-inherit",
                 hasItems
                     ? // Filled cart: horizontal padding for visual balance + primary styling
                       "px-3 sm:px-4 bg-primary text-primary-foreground border-transparent hover:bg-primary hover:text-primary-foreground"
@@ -411,8 +414,8 @@ function CartBanner({isScrolled, useLightText}: {isScrolled: boolean; useLightTe
 
 function getNavLinkClassName({isActive, isPending}: {isActive: boolean; isPending: boolean}) {
     return cn(
-        "text-sm font-medium transition-colors hover:text-foreground/80 cursor-pointer",
-        isActive ? "text-foreground font-semibold" : "text-foreground/60",
+        "text-sm font-medium cursor-pointer",
+        isActive ? "cool-active-underline text-foreground font-semibold" : "cool-underline text-foreground/60",
         isPending && "text-muted-foreground"
     );
 }

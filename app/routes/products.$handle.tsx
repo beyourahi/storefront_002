@@ -84,6 +84,7 @@ import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 import {hasSpecialTag} from "~/lib/product-tags";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
+import {parseProductTitle} from "~/lib/product-title";
 
 // =============================================================================
 // META FUNCTION
@@ -96,7 +97,8 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     if (!product) return [{title: `Product Not Found | ${brandName}`}];
 
     const variant = product.selectedOrFirstAvailableVariant;
-    const title = product.seo?.title || product.title;
+    const {primary, secondary} = parseProductTitle(product.title);
+    const title = product.seo?.title || (secondary ? `${primary} + ${secondary}` : primary);
     const description = product.seo?.description || truncateDescription(stripHtml(product.description));
     const image = variant?.image || product.images?.nodes?.[0];
 

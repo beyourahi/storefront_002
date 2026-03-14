@@ -41,7 +41,7 @@
  * - Platform-specific URL builders (WhatsApp, Facebook, Twitter)
  * - Custom handlers for Copy and Web Share API
  * - Analytics events tracked via trackShareEvent()
- * - Body scroll lock via useLockBodyScroll hook
+ * - Body scroll lock via useScrollLock hook
  *
  * @see {@link ~/lib/social-share.ts} for share platform configuration
  */
@@ -49,7 +49,7 @@
 import {useState} from "react";
 import {useLocation} from "react-router";
 import {Share, Loader2, Check, X} from "lucide-react";
-import {useLockBodyScroll} from "~/lib/LenisProvider";
+import {useScrollLock} from "~/hooks/useScrollLock";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "~/components/ui/dialog";
 import {cn} from "~/lib/utils";
 import {useSiteSettings} from "~/lib/site-content-context";
@@ -63,6 +63,7 @@ import {
     type SocialSharePlatform
 } from "~/lib/social-share";
 import type {ProductFragment} from "storefrontapi.generated";
+import {parseProductTitle} from "~/lib/product-title";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -164,7 +165,7 @@ function SharePlatformButton({
             type="button"
             className={cn(
                 "group inline-flex min-h-11 select-none items-center justify-center gap-2 rounded-full border-2 border-primary bg-transparent px-3 sm:px-4 py-2",
-                "text-primary font-medium transition-all duration-200",
+                "text-primary font-medium sleek",
                 "hover:bg-primary hover:text-primary-foreground active:scale-95",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
@@ -179,7 +180,7 @@ function SharePlatformButton({
             ) : showError ? (
                 <X className="size-4 text-destructive" />
             ) : (
-                <Icon className="size-4 transition-colors duration-200 group-hover:text-primary-foreground" />
+                <Icon className="size-4 sleek group-hover:text-primary-foreground" />
             )}
             <span className="text-sm">{getDisplayText()}</span>
         </button>
@@ -222,7 +223,7 @@ export function ProductShareButton({product, selectedVariant, className}: Produc
     const {brandName, siteUrl} = useSiteSettings();
 
     // Lock body scroll when dialog is open (prevents background scrolling)
-    useLockBodyScroll(open);
+    useScrollLock(open);
 
     // Get current full URL (SSR-safe)
     const currentUrl = typeof window !== "undefined" ? window.location.href : `${siteUrl}${location.pathname}`;
@@ -237,7 +238,7 @@ export function ProductShareButton({product, selectedVariant, className}: Produc
 
     // Get product info for dialog preview
     const firstImage = product.images?.nodes?.[0];
-    const titleParts = product.title.trim().split(" + ");
+    const {primary, secondary} = parseProductTitle(product.title);
 
     /**
      * Handle share button click
@@ -256,8 +257,8 @@ export function ProductShareButton({product, selectedVariant, className}: Produc
                 type="button"
                 onClick={handleShareClick}
                 className={cn(
-                    "inline-flex min-h-10 min-w-10 select-none items-center justify-center rounded-full border-2 border-primary p-1.5 text-primary transition-all duration-200",
-                    "hover:bg-primary hover:text-primary-foreground active:scale-95",
+                    "inline-flex min-h-10 min-w-10 select-none items-center justify-center rounded-full border-2 border-primary p-1.5 text-primary sleek",
+                    "motion-interactive hover:text-primary hover:bg-primary hover:text-primary-foreground active:scale-95",
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                     className
                 )}
@@ -288,8 +289,8 @@ export function ProductShareButton({product, selectedVariant, className}: Produc
                                 </div>
                             )}
                             <div className="space-y-1 text-center">
-                                <h3 className="text-base font-semibold text-foreground">{titleParts[0]}</h3>
-                                {titleParts[1] && <p className="text-sm text-muted-foreground">{titleParts[1]}</p>}
+                                <h3 className="text-base font-semibold text-foreground">{primary}</h3>
+                                {secondary && <p className="text-sm text-muted-foreground">{secondary}</p>}
                                 <p className="text-lg font-bold text-primary">{shareData.price}</p>
                             </div>
                         </div>

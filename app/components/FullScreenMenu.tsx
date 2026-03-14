@@ -61,13 +61,14 @@
  * ```
  */
 
-import {useEffect} from "react";
+import {useEffect, useCallback, useMemo} from "react";
 import {Link} from "react-router";
 import * as Dialog from "@radix-ui/react-dialog";
 import {useAside} from "~/components/Aside";
 import {cn} from "~/lib/utils";
 import {Button} from "~/components/ui/button";
 import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
+import {useScrollLock} from "~/hooks/useScrollLock";
 import {useSiteSettings} from "~/lib/site-content-context";
 import {OpenInAppButton} from "~/components/pwa/OpenInAppButton";
 import type {MenuCollection} from "types";
@@ -153,16 +154,18 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
     const {brandName} = useSiteSettings();
     const isOpen = type === "mobile";
 
-    // Handle opening search from menu
-    const handleOpenSearch = () => {
+    // Handle opening search from menu — stable reference prevents the useEffect below from re-running
+    const handleOpenSearch = useCallback(() => {
         close(); // Close menu first
         // Small delay to allow menu close animation, then open search
         setTimeout(() => open("search"), 150);
-    };
+    }, [close, open]);
 
-    // Note: Radix Dialog handles body scroll locking automatically
-    // We don't use useLockBodyScroll here because it stops Lenis entirely,
-    // which can interfere with scrolling inside the dialog
+    // Lock Lenis smooth scroll when menu is open.
+    // Radix Dialog handles native body scroll lock; this stops Lenis's virtual scroll.
+    // Ref-counted via useScrollLock so concurrent overlays don't conflict.
+    // Scrolling inside the dialog still works via overflow-y-auto + data-lenis-prevent.
+    useScrollLock(isOpen);
 
     // Handle ESC key to close menu
     useEffect(() => {
@@ -176,14 +179,12 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
         return () => document.removeEventListener("keydown", handleKeyDown);
     }, [isOpen, close]);
 
-    // Organize collections into columns
-    // Total collection count includes SALE collection if discounts exist
+    // Organize collections into columns — memoized so the expensive sort/filter only re-runs
+    // when collections or counts actually change, not on every menu re-render
     const totalCollectionCount = collections.length + (discountCount > 0 ? 1 : 0);
-    const {featuredCollections, categoryCollections} = organizeCollections(
-        collections,
-        totalProductCount,
-        totalCollectionCount,
-        discountCount
+    const {featuredCollections, categoryCollections} = useMemo(
+        () => organizeCollections(collections, totalProductCount, totalCollectionCount, discountCount),
+        [collections, totalProductCount, totalCollectionCount, discountCount]
     );
 
     return (
@@ -495,9 +496,9 @@ function MenuLink({title, url, count, onNavigate, variant = "collection", stagge
                 className={cn(
                     "relative font-medium",
                     // Collection links: larger text for visual hierarchy
-                    variant === "collection" && "text-3xl",
+                    variant === "collection" && "text-xl",
                     // Secondary links: smaller text (policies, account, etc.)
-                    variant === "secondary" && "text-xl"
+                    variant === "secondary" && "text-sm"
                 )}
             >
                 {title}

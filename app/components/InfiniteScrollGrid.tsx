@@ -253,7 +253,7 @@ export function InfiniteScrollGrid<T extends {id: string}>({
         // eslint-disable-next-line react-hooks/exhaustive-deps -- fetcher.state and fetcher.load are stable refs
     }, [cursor, hasMore, fetcher.state, searchParams, fetcher.load, error]);
 
-    // Retry function for manual reload - React Compiler handles optimization
+    // Retry function for manual reload
     const retry = () => {
         if (cursor) {
             setError(null);
@@ -361,7 +361,7 @@ export function InfiniteScrollGrid<T extends {id: string}>({
                 {error && !isLoading && (
                     <div className="flex flex-col items-center gap-3 text-center px-4">
                         <span className="text-sm text-destructive">{error}</span>
-                        <Button variant="outline" size="sm" onClick={retry} className="min-w-[120px]">
+                        <Button variant="outline" size="sm" onClick={retry} className="min-w-[120px] motion-interactive motion-press">
                             Try again
                         </Button>
                     </div>

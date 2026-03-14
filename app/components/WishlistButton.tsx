@@ -176,7 +176,7 @@
  * ```
  */
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import {Heart} from "lucide-react";
 import {toast} from "sonner";
 import {cn} from "~/lib/utils";
@@ -236,47 +236,51 @@ export function WishlistButton({
         }
     }, [justAdded]);
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        // Prevent navigation when button is inside a Link
-        e.preventDefault();
-        e.stopPropagation();
+    // Stable handler — only changes when productId, productTitle, or wishlist functions change
+    const handleClick = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            // Prevent navigation when button is inside a Link
+            e.preventDefault();
+            e.stopPropagation();
 
-        const wasInWishlist = isInWishlist;
-        toggle(productId);
+            const wasInWishlist = isInWishlist;
+            toggle(productId);
 
-        // Trigger animation on add (not remove)
-        if (!wasInWishlist) {
-            setIsAnimating(true);
-            setJustAdded(true);
-        }
+            // Trigger animation on add (not remove)
+            if (!wasInWishlist) {
+                setIsAnimating(true);
+                setJustAdded(true);
+            }
 
-        // Show toast notification
-        const displayName = productTitle || "Product";
-        if (wasInWishlist) {
-            // Get numeric ID for undo functionality
-            const numericId = extractNumericId(productId);
+            // Show toast notification
+            const displayName = productTitle || "Product";
+            if (wasInWishlist) {
+                // Get numeric ID for undo functionality
+                const numericId = extractNumericId(productId);
 
-            toast.success(`Removed from wishlist`, {
-                description: displayName,
-                duration: 4000,
-                action: {
-                    label: "Undo",
-                    onClick: () => {
-                        restore(numericId);
-                        toast.success(`Restored to wishlist`, {
-                            description: displayName,
-                            duration: 2000
-                        });
+                toast.success(`Removed from wishlist`, {
+                    description: displayName,
+                    duration: 4000,
+                    action: {
+                        label: "Undo",
+                        onClick: () => {
+                            restore(numericId);
+                            toast.success(`Restored to wishlist`, {
+                                description: displayName,
+                                duration: 2000
+                            });
+                        }
                     }
-                }
-            });
-        } else {
-            toast.success(`Added to wishlist`, {
-                description: displayName,
-                duration: 2000
-            });
-        }
-    };
+                });
+            } else {
+                toast.success(`Added to wishlist`, {
+                    description: displayName,
+                    duration: 2000
+                });
+            }
+        },
+        [isInWishlist, toggle, productId, productTitle, restore]
+    );
 
     // Primary outline variant (matches variant options button styling)
     // Active state: filled bg-primary (like selected variant options)

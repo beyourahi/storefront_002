@@ -37,6 +37,7 @@
  */
 
 import {useLocation} from "react-router";
+import {useMemo} from "react";
 import type {SelectedOption} from "@shopify/hydrogen/storefront-api-types";
 
 // =============================================================================
@@ -66,12 +67,19 @@ import type {SelectedOption} from "@shopify/hydrogen/storefront-api-types";
 export function useVariantUrl(handle: string, selectedOptions?: SelectedOption[]) {
     const {pathname} = useLocation();
 
-    return getVariantUrl({
-        handle,
-        pathname,
-        searchParams: new URLSearchParams(),
-        selectedOptions
-    });
+    // Memoize to avoid recomputing on every render when handle/selectedOptions haven't changed.
+    // selectedOptions is serialized to a string key so the memo detects content changes.
+    return useMemo(
+        () =>
+            getVariantUrl({
+                handle,
+                pathname,
+                searchParams: new URLSearchParams(),
+                selectedOptions
+            }),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [handle, pathname, JSON.stringify(selectedOptions)]
+    );
 }
 
 // =============================================================================

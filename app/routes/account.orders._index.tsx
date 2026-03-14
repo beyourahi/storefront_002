@@ -304,7 +304,7 @@ export default function Orders() {
                                 <PackageSearchIcon className="size-5 md:size-6 text-muted-foreground" />
                             </div>
                             <div>
-                                <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-foreground tracking-tight my-0">
+                                <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-medium text-foreground tracking-tight my-0">
                                     Order History
                                 </h1>
                                 <p className="text-muted-foreground text-sm md:text-base mt-1">
@@ -393,7 +393,7 @@ function OrderSearchInput({
                     <button
                         type="button"
                         onClick={onClearSearch}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                         aria-label="Clear search"
                     >
                         <XIcon className="size-4" />
@@ -573,7 +573,7 @@ function OrderListItem({
 
     return (
         <div
-            className="flex flex-col gap-4 py-10 md:py-12 animate-product-fade-in"
+            className="flex flex-col gap-4 py-10 md:py-12 animate-product-fade-in motion-surface"
             style={{animationDelay: `${Math.min(index, 11) * 50}ms`}}
         >
             {/* Top Row: Order Number Pill + Date/Time + Status Badge */}
@@ -585,7 +585,7 @@ function OrderListItem({
                         className={cn(
                             "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full",
                             "bg-muted/30 ring-1 ring-border/50",
-                            "transition-colors duration-200",
+                            "sleek",
                             "hover:bg-muted/40"
                         )}
                     >

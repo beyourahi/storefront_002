@@ -29,7 +29,7 @@
  * - app/routes/_index.tsx - Shows recently viewed section on homepage
  */
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback, useMemo} from "react";
 
 // =============================================================================
 // TYPES
@@ -173,60 +173,74 @@ export function useRecentlyViewed(config: RecentlyViewedConfig = DEFAULT_CONFIG)
         setIsHydrated(true);
     }, [config]);
 
-    const addProduct = (params: AddProductParams) => {
-        if (!isBrowser || !params.id || !params.handle) return;
+    // Wrap addProduct in useCallback so that useEffect deps in product pages don't
+    // see a new function reference every render — which previously caused an infinite loop:
+    // addProduct → setProducts → re-render → new addProduct → effect re-runs → repeat.
+    // Using functional setState for setProducts here would not help because addProduct
+    // reads fresh from localStorage intentionally to avoid race conditions; the stable
+    // dep is config, not products state.
+    const addProduct = useCallback(
+        (params: AddProductParams) => {
+            if (!isBrowser || !params.id || !params.handle) return;
 
-        // Always read fresh from localStorage to avoid race conditions
-        // between React state updates and localStorage
-        const currentProducts = loadFromStorage(config);
-        const now = Date.now();
-        const existingIndex = currentProducts.findIndex(p => p.id === params.id);
+            // Always read fresh from localStorage to avoid race conditions
+            // between React state updates and localStorage
+            const currentProducts = loadFromStorage(config);
+            const now = Date.now();
+            const existingIndex = currentProducts.findIndex(p => p.id === params.id);
 
-        // Build full product data
-        const productData: RecentlyViewedProduct = {
-            id: params.id,
-            handle: params.handle,
-            timestamp: now,
-            title: params.title,
-            imageUrl: params.imageUrl,
-            imageAlt: params.imageAlt,
-            price: params.price,
-            compareAtPrice: params.compareAtPrice
-        };
+            // Build full product data
+            const productData: RecentlyViewedProduct = {
+                id: params.id,
+                handle: params.handle,
+                timestamp: now,
+                title: params.title,
+                imageUrl: params.imageUrl,
+                imageAlt: params.imageAlt,
+                price: params.price,
+                compareAtPrice: params.compareAtPrice
+            };
 
-        let newProducts: RecentlyViewedProduct[];
+            let newProducts: RecentlyViewedProduct[];
 
-        if (existingIndex !== -1) {
-            // Update product data and timestamp, move to front
-            const updated = [...currentProducts];
-            updated.splice(existingIndex, 1);
-            newProducts = [productData, ...updated];
-        } else {
-            // Add new product to front
-            newProducts = [productData, ...currentProducts];
+            if (existingIndex !== -1) {
+                // Update product data and timestamp, move to front
+                const updated = [...currentProducts];
+                updated.splice(existingIndex, 1);
+                newProducts = [productData, ...updated];
+            } else {
+                // Add new product to front
+                newProducts = [productData, ...currentProducts];
 
-            // Enforce max limit
-            if (newProducts.length > config.maxProducts) {
-                newProducts = newProducts.slice(0, config.maxProducts);
+                // Enforce max limit
+                if (newProducts.length > config.maxProducts) {
+                    newProducts = newProducts.slice(0, config.maxProducts);
+                }
             }
-        }
 
-        // Persist to storage and update React state
-        persistToStorage(newProducts, config);
-        setProducts(newProducts);
-    };
+            // Persist to storage and update React state
+            persistToStorage(newProducts, config);
+            setProducts(newProducts);
+        },
+        [config]
+    );
 
-    const removeProduct = (id: string) => {
-        if (!isBrowser) return;
+    // removeProduct uses functional setState pattern — deps is just config for the localStorage read
+    const removeProduct = useCallback(
+        (id: string) => {
+            if (!isBrowser) return;
 
-        // Read fresh from localStorage
-        const currentProducts = loadFromStorage(config);
-        const newProducts = currentProducts.filter(p => p.id !== id);
-        persistToStorage(newProducts, config);
-        setProducts(newProducts);
-    };
+            // Read fresh from localStorage
+            const currentProducts = loadFromStorage(config);
+            const newProducts = currentProducts.filter(p => p.id !== id);
+            persistToStorage(newProducts, config);
+            setProducts(newProducts);
+        },
+        [config]
+    );
 
-    const clear = () => {
+    // clear uses functional setState (setProducts([])) — no dependency on products
+    const clear = useCallback(() => {
         if (!isBrowser) return;
 
         setProducts([]);
@@ -234,22 +248,31 @@ export function useRecentlyViewed(config: RecentlyViewedConfig = DEFAULT_CONFIG)
 
         // Also clear cookie
         document.cookie = `${config.storageKey}=; path=/; max-age=0`;
-    };
+    }, [config]);
 
-    const hasProduct = (id: string) => products.some(p => p.id === id);
+    // hasProduct depends on products state — stable when products doesn't change
+    const hasProduct = useCallback((id: string) => products.some(p => p.id === id), [products]);
 
-    return {
-        products,
-        productIds: products.map(p => p.id),
-        productHandles: products.map(p => p.handle),
-        count: products.length,
-        hasProducts: products.length > 0,
-        isHydrated,
-        addProduct,
-        removeProduct,
-        clear,
-        hasProduct
-    };
+    // Memoize derived arrays to avoid creating new references on every render
+    const productIds = useMemo(() => products.map(p => p.id), [products]);
+    const productHandles = useMemo(() => products.map(p => p.handle), [products]);
+
+    // Memoize the whole return object so consumers only re-render on actual changes
+    return useMemo(
+        () => ({
+            products,
+            productIds,
+            productHandles,
+            count: products.length,
+            hasProducts: products.length > 0,
+            isHydrated,
+            addProduct,
+            removeProduct,
+            clear,
+            hasProduct
+        }),
+        [products, productIds, productHandles, isHydrated, addProduct, removeProduct, clear, hasProduct]
+    );
 }
 
 /**

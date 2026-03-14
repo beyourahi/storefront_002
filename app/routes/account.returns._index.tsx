@@ -189,7 +189,7 @@ export default function ReturnsHistoryRoute() {
                                 <RotateCcwIcon className="size-5 md:size-6 text-muted-foreground" />
                             </div>
                             <div>
-                                <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-foreground tracking-tight my-0">
+                                <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-medium text-foreground tracking-tight my-0">
                                     Returns History
                                 </h1>
                                 <p className="text-muted-foreground text-sm md:text-base mt-1">
@@ -201,7 +201,7 @@ export default function ReturnsHistoryRoute() {
                             <Button variant="link" asChild className="text-primary p-0 h-auto group hidden sm:flex">
                                 <Link
                                     to="/account/orders"
-                                    className="flex items-center gap-1.5 group-hover:gap-2 transition-all duration-200"
+                                    className="flex items-center gap-1.5 group-hover:gap-2 motion-link hover:text-primary"
                                 >
                                     View Orders{" "}
                                     <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" />
@@ -247,13 +247,13 @@ function ReturnsEmpty() {
 
                 {/* CTA buttons - primary action to view orders */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                    <Button asChild size="lg">
+                    <Button asChild size="lg" className="motion-interactive">
                         <Link to="/account/orders" className="gap-2">
                             <PackageSearchIcon className="size-4" />
                             View Orders
                         </Link>
                     </Button>
-                    <Button asChild size="lg" variant="outline">
+                    <Button asChild size="lg" variant="outline" className="motion-interactive">
                         <Link to="/collections">Continue Shopping</Link>
                     </Button>
                 </div>
@@ -275,7 +275,7 @@ function ReturnCard({returnItem, index = 0}: {returnItem: ReturnWithOrder; index
             className="group block no-underline animate-product-fade-in"
             style={{animationDelay: `${Math.min(index, 11) * 50}ms`}}
         >
-            <Card className="hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 rounded-2xl py-0 overflow-hidden h-full group-hover:-translate-y-0.5 bg-card/80 hover:bg-card">
+            <Card className="motion-surface hover:shadow-md rounded-2xl py-0 overflow-hidden h-full group-hover:-translate-y-0.5 bg-card/80 hover:bg-card">
                 <CardContent className="p-5 md:p-6 flex flex-col h-full">
                     {/* Header with Return Name and Status Badge */}
                     <div className="flex items-center justify-between mb-4">
@@ -292,7 +292,7 @@ function ReturnCard({returnItem, index = 0}: {returnItem: ReturnWithOrder; index
                         {lineItems.slice(0, 4).map((item, idx) => (
                             <div
                                 key={item.id}
-                                className="relative size-14 rounded-xl overflow-hidden bg-muted/50 shrink-0 ring-2 ring-card shadow-sm transition-transform duration-200 group-hover:-translate-y-0.5"
+                                className="relative size-14 rounded-xl overflow-hidden bg-muted/50 shrink-0 ring-2 ring-card shadow-sm sleek group-hover:-translate-y-0.5"
                                 style={{zIndex: 10 - idx, transitionDelay: `${idx * 30}ms`}}
                             >
                                 {item.lineItem.image ? (
@@ -368,9 +368,9 @@ function ReturnCard({returnItem, index = 0}: {returnItem: ReturnWithOrder; index
                     )}
 
                     {/* View Details - Matches dashboard/orders pattern */}
-                    <div className="mt-4 flex items-center gap-1.5 text-sm font-medium text-primary group-hover:gap-2.5 transition-all duration-200">
+                    <div className="mt-4 flex items-center gap-1.5 text-sm font-medium text-primary group-hover:gap-2.5 sleek">
                         <span>View Details</span>
-                        <ArrowRightIcon className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                        <ArrowRightIcon className="size-4 sleek group-hover:translate-x-0.5" />
                     </div>
                 </CardContent>
             </Card>

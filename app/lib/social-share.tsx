@@ -41,6 +41,7 @@
 
 import type {ProductFragment} from "storefrontapi.generated";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
+import {parseProductTitle} from "~/lib/product-title";
 
 // Types
 export interface ShareData {
@@ -87,15 +88,13 @@ export function createShareData(
     shopName?: string
 ): ShareData {
     const firstImage = product.images?.nodes?.[0];
-    const titleParts = product.title.trim().split(" + ");
-    const mainTitle = titleParts[0];
-    const subtitle = titleParts[1];
+    const {primary, secondary} = parseProductTitle(product.title);
 
     return {
-        title: mainTitle,
+        title: primary,
         description:
             product.description ||
-            `Check out ${mainTitle}${subtitle ? ` - ${subtitle}` : ""} - Premium quality product available now.`,
+            `Check out ${primary}${secondary ? ` - ${secondary}` : ""} - Premium quality product available now.`,
         url: currentUrl,
         imageUrl: firstImage?.url,
         price: variant?.price ? formatPrice(variant.price) : "",

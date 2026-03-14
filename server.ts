@@ -35,10 +35,8 @@
  * Or self-hosted Cloudflare Workers
  */
 
-import {storefrontRedirect} from "@shopify/hydrogen";
-import {createRequestHandler} from "@shopify/hydrogen/oxygen";
+import {createRequestHandler, storefrontRedirect} from "@shopify/hydrogen";
 import {createHydrogenRouterContext} from "~/lib/context";
-// Static import to prevent tree-shaking of server build
 // eslint-disable-next-line import/no-unresolved
 import * as serverBuild from "virtual:react-router/server-build";
 

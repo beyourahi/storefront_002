@@ -75,7 +75,7 @@ export default function Contact() {
                             <div className="grid gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-16 items-end">
                             {/* Large Title */}
                                 <div>
-                                    <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium text-primary leading-none">
+                                    <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary leading-none">
                                         Get in
                                         <br />
                                         Touch
@@ -135,7 +135,7 @@ export default function Contact() {
                                     <p className="text-sm sm:text-sm uppercase tracking-widest text-primary-foreground/50 mb-3 sm:mb-4">
                                         Visit Us
                                     </p>
-                                    <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-primary-foreground leading-tight">
+                                    <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-medium text-primary-foreground leading-tight">
                                         Our
                                         <br />
                                         Location
@@ -179,7 +179,7 @@ export default function Contact() {
                             </p>
 
                             {/* Large Social Title */}
-                            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-primary mb-8 sm:mb-12 leading-tight">
+                            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-medium text-primary mb-8 sm:mb-12 leading-tight">
                                 Stay Connected
                             </h2>
 
@@ -212,10 +212,10 @@ interface ContactCardProps {
 
 function ContactCard({label, value, href}: ContactCardProps) {
     const content = (
-        <div className="group relative overflow-hidden rounded-2xl bg-overlay-light p-5 sm:p-6 md:p-8 transition-all duration-300 hover:bg-overlay-light-hover min-h-[100px] sm:min-h-[120px]">
+        <div className="group relative overflow-hidden rounded-2xl bg-overlay-light p-5 sm:p-6 md:p-8 motion-surface motion-interactive hover:bg-overlay-light-hover hover:shadow-md min-h-[100px] sm:min-h-[120px]">
             {/* Arrow indicator for links */}
             {href && (
-                <span className="absolute top-4 right-4 sm:top-6 sm:right-6 text-primary-foreground/40 transition-all duration-300 group-hover:text-primary-foreground group-hover:translate-x-1">
+                <span className="absolute top-4 right-4 sm:top-6 sm:right-6 text-primary-foreground/40 motion-link group-hover:text-primary-foreground group-hover:translate-x-1">
                     &rarr;
                 </span>
             )}
@@ -253,17 +253,17 @@ function SocialLink({title, handle, url}: SocialLinkProps) {
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center justify-between border-b border-border py-4 sm:py-6 transition-colors hover:border-primary hover:no-underline animate-product-fade-in min-h-[60px] sm:min-h-[72px]"
+            className="group flex items-center justify-between border-b border-border py-4 sm:py-6 motion-interactive hover:border-primary hover:no-underline animate-product-fade-in min-h-[60px] sm:min-h-[72px]"
         >
             <div className="flex items-center gap-3 sm:gap-4">
-                <span className="text-muted-foreground transition-all duration-300 group-hover:text-primary group-hover:translate-x-2">
+                <span className="text-muted-foreground motion-link group-hover:text-primary group-hover:translate-x-2">
                     &rarr;
                 </span>
-                <span className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-primary transition-colors group-hover:text-primary/80">
+                <span className="font-serif text-lg sm:text-xl md:text-2xl text-primary motion-link group-hover:text-primary/80">
                     {title}
                 </span>
             </div>
-            <span className="text-sm sm:text-base md:text-lg text-muted-foreground transition-colors group-hover:text-primary/80 hidden sm:block">
+            <span className="text-sm sm:text-base md:text-lg text-muted-foreground motion-link group-hover:text-primary/80 hidden sm:block">
                 {handle}
             </span>
         </a>

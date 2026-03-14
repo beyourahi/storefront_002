@@ -1054,6 +1054,13 @@
         transform: scale(var(--motion-press-scale));
     }
 
+    .sleek {
+        transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, gap;
+        transition-duration: var(--motion-duration-standard);
+        transition-timing-function: var(--motion-ease-standard);
+        transform: translateZ(0);
+    }
+
     /* ─────────────────────────────────────────────────────────────────────
      * Fluid Typography System
      * Uses CSS clamp() for smooth scaling between breakpoints
@@ -1063,47 +1070,47 @@
      * - max: Largest size (for desktop/ultrawide)
      * ───────────────────────────────────────────────────────────────────── */
 
-    /* Fluid Display - Hero headings: 40px (mobile) → 96px (ultrawide) */
+    /* Fluid Display - Hero headings: 24px (mobile) → 72px (ultrawide) */
     .text-fluid-display {
-        font-size: clamp(2.5rem, 5vw + 1rem, 6rem);
+        font-size: clamp(1.5rem, 3.5vw, 4.5rem);
         line-height: 1.1;
         letter-spacing: -0.02em;
     }
 
-    /* Fluid H1 - Page titles: 32px → 72px */
+    /* Fluid H1 - Page titles: 32px → 64px */
     .text-fluid-h1 {
-        font-size: clamp(2rem, 4vw + 0.5rem, 4.5rem);
+        font-size: clamp(2rem, 1.5rem + 2.5vw, 4rem);
         line-height: 1.15;
         letter-spacing: -0.01em;
     }
 
-    /* Fluid H2 - Section headings: 24px → 48px */
+    /* Fluid H2 - Section headings: 24px → 40px */
     .text-fluid-h2 {
-        font-size: clamp(1.5rem, 3vw + 0.25rem, 3rem);
+        font-size: clamp(1.5rem, 1.25rem + 1.5vw, 2.5rem);
         line-height: 1.2;
     }
 
-    /* Fluid H3 - Subsection headings: 20px → 32px */
+    /* Fluid H3 - Subsection headings: 20px → 30px */
     .text-fluid-h3 {
-        font-size: clamp(1.25rem, 2vw + 0.25rem, 2rem);
+        font-size: clamp(1.25rem, 1rem + 1vw, 1.875rem);
         line-height: 1.25;
     }
 
-    /* Fluid H4 - Card titles: 18px → 24px */
+    /* Fluid H4 - Card titles: 16px → 20px */
     .text-fluid-h4 {
-        font-size: clamp(1.125rem, 1vw + 0.75rem, 1.5rem);
+        font-size: clamp(1rem, 0.875rem + 0.5vw, 1.25rem);
         line-height: 1.3;
     }
 
-    /* Fluid Body Large - Lead paragraphs: 16px → 20px */
+    /* Fluid Body Large - Lead paragraphs: 14px → 17px */
     .text-fluid-body-lg {
-        font-size: clamp(1rem, 0.5vw + 0.875rem, 1.25rem);
+        font-size: clamp(0.875rem, 0.3vw + 0.8rem, 1.0625rem);
         line-height: 1.6;
     }
 
-    /* Fluid Body - Standard text: 14px → 18px */
+    /* Fluid Body - Standard text: 14px → 16px */
     .text-fluid-body {
-        font-size: clamp(0.875rem, 0.25vw + 0.8rem, 1.125rem);
+        font-size: clamp(0.875rem, 0.15vw + 0.8rem, 1rem);
         line-height: 1.7;
     }
 
@@ -1223,6 +1230,117 @@
         margin-left: 0;
         margin-right: 0;
     }
+
+    /* ─────────────────────────────────────────────────────────────────────
+     * Surface transition class — for cards and panels that need smooth
+     * background, border, shadow, and transform transitions on hover.
+     * ───────────────────────────────────────────────────────────────────── */
+    .motion-surface {
+        transition-property: background-color, border-color, box-shadow, opacity, transform;
+        transition-duration: var(--motion-duration-standard);
+        transition-timing-function: var(--motion-ease-standard);
+    }
+}
+
+/* ==========================================
+   Global Base Transitions
+   Default transitions for ALL interactive element types.
+   This ensures every button, link, input, and card transitions
+   smoothly without needing an explicit motion class.
+   ========================================== */
+
+.motion-interactive,
+.motion-link,
+.motion-overlay,
+.motion-image,
+.motion-field,
+.sleek,
+[data-slot="button"],
+[data-slot="card"],
+button,
+a,
+.card,
+input:not([type="range"]),
+textarea,
+select {
+    transition-property: background-color, border-color, box-shadow, color, fill, stroke, opacity, transform;
+    transition-timing-function: var(--motion-ease-standard);
+    transition-duration: var(--motion-duration-standard);
+}
+
+/* Group hover base timing */
+.group:hover {
+    transition-duration: var(--motion-duration-standard);
+    transition-timing-function: var(--motion-ease-standard);
+}
+
+/* Button press feedback */
+button:active {
+    transition-property: transform;
+    transition-duration: var(--motion-duration-fast);
+    transition-timing-function: var(--motion-ease-standard);
+}
+
+/* Input hover states — visible hover-distinct-from-focus feedback */
+input:not([type="range"]):not(:disabled):not(:focus):hover,
+textarea:not(:disabled):not(:focus):hover,
+select:not(:disabled):not(:focus):hover {
+    border-color: var(--ring);
+}
+
+/* ==========================================
+   Cool Underline — Animated nav link pattern
+   Expanding underline from center on hover
+   ========================================== */
+
+.cool-underline {
+    @apply after:bg-primary hover:text-primary relative transform-gpu after:absolute after:-bottom-0 after:left-1/2 after:h-[2px] after:w-0 after:-translate-x-1/2 hover:after:w-[35%];
+    transition-property: color, opacity, transform;
+    transition-duration: var(--motion-duration-standard);
+    transition-timing-function: var(--motion-ease-standard);
+}
+
+.cool-underline::after {
+    transition-property: width;
+    transition-duration: var(--motion-duration-fast);
+    transition-timing-function: var(--motion-ease-standard);
+}
+
+.cool-active-underline {
+    @apply text-primary after:bg-primary relative transform-gpu after:absolute after:-bottom-0 after:left-1/2 after:h-[2px] after:w-[35%] after:-translate-x-1/2;
+    transition-property: color, opacity, transform;
+    transition-duration: var(--motion-duration-standard);
+    transition-timing-function: var(--motion-ease-standard);
+}
+
+.cool-active-underline::after {
+    transition-property: width;
+    transition-duration: var(--motion-duration-fast);
+    transition-timing-function: var(--motion-ease-standard);
+}
+
+/* ==========================================
+   Mobile Nav Link — Touch-optimized nav pattern
+   Active-press background highlight for mobile
+   ========================================== */
+
+.mobile-nav-link {
+    @apply relative;
+    transition-property: color, opacity, transform, background-color;
+    transition-duration: var(--motion-duration-fast);
+    transition-timing-function: var(--motion-ease-standard);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-nav-link::before {
+    content: "";
+    @apply bg-accent/60 absolute inset-0 rounded-md opacity-0;
+    transition: opacity var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.mobile-nav-link:active::before {
+    opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1231,13 +1349,35 @@
     .motion-link,
     .motion-overlay,
     .motion-image,
-    .motion-field {
+    .motion-field,
+    .motion-surface,
+    .sleek,
+    .cool-underline,
+    .cool-active-underline,
+    .mobile-nav-link,
+    [data-slot="button"],
+    [data-slot="card"],
+    button,
+    a,
+    .card,
+    input,
+    textarea,
+    select {
         transition-duration: 1ms !important;
     }
 
     .motion-lift:hover,
     .motion-press:active {
         transform: none !important;
+    }
+
+    .cool-underline::after,
+    .cool-active-underline::after {
+        transition-duration: 1ms !important;
+    }
+
+    .mobile-nav-link::before {
+        transition-duration: 1ms !important;
     }
 }
 
@@ -1271,26 +1411,26 @@
 }
 
 .policy-content h1 {
-    @apply text-3xl md:text-4xl;
+    @apply text-xl md:text-3xl;
 }
 
 .policy-content h2 {
-    @apply text-2xl md:text-3xl;
+    @apply text-xl md:text-2xl;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border);
 }
 
 .policy-content h3 {
-    @apply text-xl md:text-2xl;
+    @apply text-lg md:text-xl;
 }
 
 .policy-content h4 {
-    @apply text-lg md:text-xl;
+    @apply text-base md:text-lg;
 }
 
 .policy-content h5,
 .policy-content h6 {
-    @apply text-base md:text-lg uppercase tracking-wide;
+    @apply text-sm md:text-base uppercase tracking-wide;
 }
 
 /* First heading - no top margin */

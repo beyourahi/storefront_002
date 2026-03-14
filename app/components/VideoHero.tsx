@@ -221,7 +221,7 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
     }, [setIsHomePage]);
 
     return (
-        <section ref={heroRef} className="grid h-dvh overflow-hidden w-full p-0">
+        <section ref={heroRef} className="group grid h-dvh overflow-hidden w-full p-0">
             {/* Background Media (Video or Image) with Gradient */}
             <div className="relative col-start-1 row-start-1 w-full h-full overflow-hidden @container">
                 <ParallaxLayer className="size-full" contentClassName="size-full" amplitude={32} scale={1.08}>
@@ -232,8 +232,8 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                     />
                 </ParallaxLayer>
 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-linear-to-t from-dark/60 via-dark/10 to-transparent" />
+                {/* Dark Overlay */}
+                <div className="absolute inset-0 bg-black/50 motion-surface lg:bg-black/60 lg:group-hover:bg-black/50" />
 
                 {/* Hero Content - Center-left
                      Responsive positioning and max-width to prevent overflow at 320px
@@ -251,12 +251,12 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                              Allow text wrapping on mobile (no whitespace-nowrap)
                              whitespace-nowrap applied at sm+ where there's enough space
                              Extended breakpoints for large desktop (2xl) and ultrawide (3xl) */}
-                        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl 3xl:text-9xl text-light font-medium leading-[1.1] sm:leading-none my-3 sm:my-4 md:my-6 sm:whitespace-nowrap">
+                        <h1 className="font-serif text-light font-medium leading-[1.1] sm:leading-none my-3 sm:my-4 md:my-6 sm:whitespace-nowrap" style={{fontSize: "clamp(1.5rem, 3.5vw, 4.5rem)"}}>
                             {heroHeading}
                         </h1>
 
                         {/* Description - scales up for larger screens */}
-                        <p className="font-sans text-sm sm:text-base md:text-lg lg:text-lg xl:text-xl text-light/85 leading-relaxed">
+                        <p className="font-sans text-xs md:text-sm text-light/85 leading-relaxed">
                             {heroDescription}
                         </p>
                     </div>
@@ -281,10 +281,10 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                         Mobile: wider padding and full-width option for better tap area */}
                     <Link
                         to="/collections/all-products"
-                        className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 md:gap-3 rounded-[var(--radius-pill-raw)] bg-primary border-2 border-primary px-4 sm:px-5 md:px-6 py-3 md:py-3.5 font-sans text-sm sm:text-base md:text-lg font-medium text-primary-foreground no-underline hover:no-underline transition-all duration-200 hover:bg-light hover:text-primary hover:border-light active:bg-light/90 active:border-light active:scale-[0.98] cursor-pointer"
+                        className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 md:gap-3 rounded-[var(--radius-pill-raw)] bg-primary border-2 border-primary px-4 sm:px-5 md:px-6 py-3 md:py-3.5 font-sans text-sm md:text-base font-medium text-primary-foreground no-underline hover:no-underline sleek hover:bg-light hover:text-primary hover:border-light active:bg-light/90 active:border-light active:scale-[0.98] cursor-pointer"
                     >
                         Shop Now
-                        <CircleArrowOutUpRight className="w-5 h-5 md:w-6 md:h-6 transition-transform duration-200 group-hover:rotate-45" />
+                        <CircleArrowOutUpRight className="w-5 h-5 md:w-6 md:h-6 sleek group-hover:rotate-45" />
                     </Link>
                 </div>
 
@@ -296,7 +296,7 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                      Link: /collections/{handle} > /collections/all-products */}
                 <Link
                     to={cardLink}
-                    className="hidden md:flex absolute top-[65%] right-8 z-60 w-90 lg:w-105 h-auto rounded-2xl overflow-hidden bg-overlay-light-hover backdrop-blur-md border border-light/30 no-underline hover:no-underline group transition-all hover:bg-light/30 animate-bounce-slow will-change-transform motion-reduce:animate-none cursor-pointer"
+                    className="hidden md:flex absolute top-[65%] right-8 z-60 w-90 lg:w-105 h-auto rounded-2xl overflow-hidden bg-overlay-light-hover backdrop-blur-md border border-light/30 no-underline hover:no-underline group sleek hover:bg-light/30 animate-bounce-slow will-change-transform motion-reduce:animate-none cursor-pointer"
                 >
                     {/* Image container with fixed aspect ratio - prevents flex stretching */}
                     <div className="w-36 lg:w-44 shrink-0 aspect-video overflow-hidden">
@@ -316,7 +316,7 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                         <p className="font-serif text-sm lg:text-base text-light leading-snug mb-2 line-clamp-3">
                             {cardText}
                         </p>
-                        <span className="font-sans text-sm lg:text-base font-semibold text-light group-hover:text-primary transition-colors shrink-0">
+                        <span className="font-sans text-sm lg:text-base font-semibold text-light group-hover:text-primary motion-interactive shrink-0">
                             {cardCtaText}
                         </span>
                     </div>

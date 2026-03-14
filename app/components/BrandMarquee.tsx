@@ -51,7 +51,7 @@ export function BrandMarquee() {
                     {words.map(word => (
                         <span
                             key={`first-${word}`}
-                            className="mx-8 md:mx-14 text-5xl md:text-7xl lg:text-8xl font-sans font-medium text-primary uppercase whitespace-nowrap"
+                            className="mx-8 md:mx-14 text-4xl sm:text-5xl md:text-6xl font-sans font-medium text-primary uppercase whitespace-nowrap"
                         >
                             {word}
                         </span>
@@ -67,7 +67,7 @@ export function BrandMarquee() {
                     {words.map(word => (
                         <span
                             key={`second-${word}`}
-                            className="mx-8 md:mx-14 text-5xl md:text-7xl lg:text-8xl font-sans font-medium text-primary uppercase whitespace-nowrap"
+                            className="mx-8 md:mx-14 text-4xl sm:text-5xl md:text-6xl font-sans font-medium text-primary uppercase whitespace-nowrap"
                         >
                             {word}
                         </span>

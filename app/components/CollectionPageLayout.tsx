@@ -206,23 +206,23 @@ export function CollectionPageLayout({
             <header className="pt-(--page-breathing-room-dense) pb-6 sm:pb-8 md:pb-12 lg:pb-16 xl:pb-20 2xl:pb-24 md:ml-68 lg:ml-84 xl:ml-96 2xl:ml-104">
                 <div className="flex flex-wrap items-baseline gap-x-3 sm:gap-x-4 gap-y-2">
                     {/* Fluid title sizing with product count superscript (matching full-screen menu style)
-                         Title scales from text-4xl (36px) at 320px to text-9xl (128px) at 3xl (1921px+)
+                         Title uses bold scale: text-4xl → md:text-6xl → lg:text-7xl → xl:text-8xl
                          break-words and hyphens-auto prevent overflow on long collection names
                          Product count positioned at top-right via transform translate */}
                     <div className="relative inline-block">
-                        <h1 className="font-serif text-4xl xs:text-5xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl 3xl:text-[10rem] font-medium text-primary tracking-tight m-0 wrap-break-word hyphens-auto">
+                        <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium text-primary tracking-tight m-0 wrap-break-word hyphens-auto">
                             / {title}
                         </h1>
                         {/* Product count - positioned at top-right of title with small gap */}
                         {collectionProductCount !== undefined && collectionProductCount > 0 && (
-                            <sup className="absolute top-0 left-[calc(100%+0.25rem)] sm:left-[calc(100%+0.5rem)] font-mono tabular-nums text-primary/60 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl">
+                            <sup className="absolute top-0 left-[calc(100%+0.25rem)] sm:left-[calc(100%+0.5rem)] font-mono tabular-nums text-primary/60 text-xs sm:text-sm">
                                 {collectionProductCount >= 250 ? "250+" : collectionProductCount}
                             </sup>
                         )}
                     </div>
                     {/* Discount badge - only shown when maxDiscount is provided and > 0 */}
                     {maxDiscount !== undefined && maxDiscount > 0 && (
-                        <span className="font-sans text-[12px] sm:text-base md:text-lg lg:text-xl xl:text-2xl font-medium text-primary/70 whitespace-nowrap">
+                        <span className="font-sans text-xs sm:text-sm md:text-base font-medium text-primary/70 whitespace-nowrap">
                             upto {maxDiscount}% off
                         </span>
                     )}

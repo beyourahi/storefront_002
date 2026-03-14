@@ -42,6 +42,7 @@
  * - ~/routes/cart.tsx - Cart line quantity updates
  */
 
+import {useCallback} from "react";
 import {Minus, Plus} from "lucide-react";
 import {cn} from "~/lib/utils";
 
@@ -58,17 +59,18 @@ interface QuantitySelectorProps {
 // =============================================================================
 
 export function QuantitySelector({quantity, onQuantityChange, min = 1, max, className}: QuantitySelectorProps) {
-    const handleDecrement = () => {
+    // Stable handlers — only change when quantity, min, max, or onQuantityChange change
+    const handleDecrement = useCallback(() => {
         if (quantity > min) {
             onQuantityChange(quantity - 1);
         }
-    };
+    }, [quantity, min, onQuantityChange]);
 
-    const handleIncrement = () => {
+    const handleIncrement = useCallback(() => {
         if (max === undefined || quantity < max) {
             onQuantityChange(quantity + 1);
         }
-    };
+    }, [quantity, max, onQuantityChange]);
 
     const canDecrement = quantity > min;
     const canIncrement = max === undefined || quantity < max;
@@ -80,7 +82,7 @@ export function QuantitySelector({quantity, onQuantityChange, min = 1, max, clas
                 onClick={handleDecrement}
                 disabled={!canDecrement}
                 className={cn(
-                    "flex min-h-10 items-center justify-center px-2.5 py-1.5 text-primary rounded-l-full transition-colors active:bg-primary/10",
+                    "flex min-h-10 items-center justify-center px-2.5 py-1.5 text-primary rounded-l-full sleek active:bg-primary/10",
                     canDecrement ? "cursor-pointer" : "opacity-40 cursor-not-allowed"
                 )}
                 aria-label="Decrease quantity"
@@ -93,7 +95,7 @@ export function QuantitySelector({quantity, onQuantityChange, min = 1, max, clas
                 onClick={handleIncrement}
                 disabled={!canIncrement}
                 className={cn(
-                    "flex min-h-10 items-center justify-center px-2.5 py-1.5 text-primary rounded-r-full transition-colors active:bg-primary/10",
+                    "flex min-h-10 items-center justify-center px-2.5 py-1.5 text-primary rounded-r-full sleek active:bg-primary/10",
                     canIncrement ? "cursor-pointer" : "opacity-40 cursor-not-allowed"
                 )}
                 aria-label="Increase quantity"

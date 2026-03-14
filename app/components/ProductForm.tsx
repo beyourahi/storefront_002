@@ -49,7 +49,7 @@
  * - ProductPrice.tsx - Price display
  */
 
-import {useState, useEffect} from "react";
+import {useState, useEffect, useMemo, useCallback} from "react";
 import {Link, useNavigate, useLocation} from "react-router";
 import {type MappedProductOptions} from "@shopify/hydrogen";
 import {AddToCartButton} from "./AddToCartButton";
@@ -184,29 +184,36 @@ export function ProductForm({
     }, [search]);
 
     // Clear selling plan from URL when switching to one-time
-    const handlePurchaseTypeChange = (type: PurchaseType) => {
-        setPurchaseType(type);
-        if (type === "one-time") {
-            const params = new URLSearchParams(search);
-            params.delete("selling_plan");
-            void navigate(`${pathname}?${params.toString()}`, {
-                replace: true,
-                preventScrollReset: true
-            });
-        }
-    };
+    const handlePurchaseTypeChange = useCallback(
+        (type: PurchaseType) => {
+            setPurchaseType(type);
+            if (type === "one-time") {
+                const params = new URLSearchParams(search);
+                params.delete("selling_plan");
+                void navigate(`${pathname}?${params.toString()}`, {
+                    replace: true,
+                    preventScrollReset: true
+                });
+            }
+        },
+        [search, pathname, navigate]
+    );
 
     // =============================================================================
     // VARIANT FILTERING & DISPLAY LOGIC
     // =============================================================================
 
     // Filter options to only show available variants
-    const filteredOptions = productOptions
-        .map(option => ({
-            ...option,
-            optionValues: option.optionValues.filter(value => value.available)
-        }))
-        .filter(option => option.optionValues.length > 0);
+    const filteredOptions = useMemo(
+        () =>
+            productOptions
+                .map(option => ({
+                    ...option,
+                    optionValues: option.optionValues.filter(value => value.available)
+                }))
+                .filter(option => option.optionValues.length > 0),
+        [productOptions]
+    );
 
     // Check if there are any displayable variant options (options with more than 1 value)
     const hasDisplayableVariants = filteredOptions.some(option => option.optionValues.length > 1);
@@ -252,17 +259,23 @@ export function ProductForm({
         return isPreorder ? productContent.addToCartPreorder : productContent.addToCartStandard;
     };
 
-    // Build cart line with optional selling plan
-    const cartLines = selectedVariant
-        ? [
-              {
-                  merchandiseId: selectedVariant.id,
-                  quantity,
-                  selectedVariant,
-                  ...(isSubscriptionMode && selectedSellingPlan ? {sellingPlanId: selectedSellingPlan.id} : {})
-              }
-          ]
-        : [];
+    // Build cart line with optional selling plan — memoized to avoid new array reference every render
+    const cartLines = useMemo(
+        () =>
+            selectedVariant
+                ? [
+                      {
+                          merchandiseId: selectedVariant.id,
+                          quantity,
+                          selectedVariant,
+                          ...(isSubscriptionMode && selectedSellingPlan
+                              ? {sellingPlanId: selectedSellingPlan.id}
+                              : {})
+                      }
+                  ]
+                : [],
+        [selectedVariant, quantity, isSubscriptionMode, selectedSellingPlan]
+    );
 
     // Determine price to show on button
     const displayPrice = isSubscriptionMode && subscriptionPrice ? subscriptionPrice : selectedVariant?.price;
@@ -271,12 +284,15 @@ export function ProductForm({
     // ADD TO CART BUTTON
     // =============================================================================
 
+    // Stable callback for opening the cart drawer — only changes if open() identity changes
+    const handleOpenCart = useCallback(() => {
+        open("cart");
+    }, [open]);
+
     const addToCartButton = (
         <AddToCartButton
             disabled={!selectedVariant || !selectedVariant.availableForSale || needsSellingPlan}
-            onClick={() => {
-                open("cart");
-            }}
+            onClick={handleOpenCart}
             lines={cartLines}
             price={displayPrice}
             compareAtPrice={isSubscriptionMode ? selectedVariant?.price : selectedVariant?.compareAtPrice}
@@ -299,7 +315,7 @@ export function ProductForm({
                     type="button"
                     onClick={() => handlePurchaseTypeChange("one-time")}
                     className={cn(
-                        "flex select-none flex-col items-start p-3 rounded-xl border-2 text-left transition-all",
+                        "flex select-none flex-col items-start p-3 rounded-xl border-2 text-left sleek",
                         purchaseType === "one-time"
                             ? "border-primary bg-primary/5"
                             : "border-muted hover:border-primary/50"
@@ -318,7 +334,7 @@ export function ProductForm({
                     type="button"
                     onClick={() => handlePurchaseTypeChange("subscription")}
                     className={cn(
-                        "flex select-none flex-col items-start p-3 rounded-xl border-2 text-left transition-all",
+                        "flex select-none flex-col items-start p-3 rounded-xl border-2 text-left sleek",
                         purchaseType === "subscription"
                             ? "border-primary bg-primary/5"
                             : "border-muted hover:border-primary/50"
@@ -424,8 +440,7 @@ export function ProductForm({
                                 // Pill button styling - consistent for both swatch and non-swatch options
                                 // Reduced padding and text size for 320px viewport while maintaining 44px touch target
                                 const buttonClasses = cn(
-                                    "inline-flex min-h-11 select-none items-center justify-center gap-1.5 sm:gap-2 rounded-full border-2 px-2.5 sm:px-4 py-1.5 text-sm sm:text-base lg:text-lg font-medium transition-all duration-200",
-                                    "active:scale-95",
+                                    "inline-flex min-h-11 select-none items-center justify-center gap-1.5 sm:gap-2 rounded-full border-2 px-2.5 sm:px-4 py-1.5 text-sm sm:text-base lg:text-lg font-medium sleek hover:scale-[1.02] hover:shadow-md active:scale-[0.98]",
                                     selected
                                         ? "border-primary bg-primary text-primary-foreground"
                                         : "border-primary text-primary hover:bg-primary hover:text-primary-foreground",

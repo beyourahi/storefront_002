@@ -96,7 +96,7 @@ import {AnimatedSection} from "~/components/AnimatedSection";
 import {Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent} from "~/components/ui/empty";
 import {useEffect, useRef, useState} from "react";
 import {toast} from "sonner";
-import {useLockBodyScroll} from "~/lib/LenisProvider";
+import {useScrollLock} from "~/hooks/useScrollLock";
 
 // =============================================================================
 // TYPES
@@ -500,7 +500,7 @@ export default function AccountProfile() {
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    useLockBodyScroll(isAddDialogOpen || !!editingAddress);
+    useScrollLock(isAddDialogOpen || !!editingAddress);
 
     // Show success indicator when profile save completes
     useEffect(() => {
@@ -637,7 +637,7 @@ export default function AccountProfile() {
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="space-y-1.5 min-w-0">
-                                        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif font-medium text-primary-foreground mb-0 leading-tight tracking-tight">
+                                        <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-medium text-primary-foreground mb-0 leading-tight tracking-tight">
                                             {customer.displayName || "Your Profile"}
                                         </h1>
                                         <p className="text-primary-foreground/70 text-sm md:text-base truncate">
@@ -674,7 +674,7 @@ export default function AccountProfile() {
                                     <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
                                         <UserCogIcon className="size-5 md:size-6 text-muted-foreground" />
                                     </div>
-                                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-foreground tracking-tight mb-0">
+                                    <h2 className="text-xl md:text-2xl lg:text-3xl font-serif text-foreground tracking-tight mb-0">
                                         Personal Information
                                     </h2>
                                 </div>
@@ -796,7 +796,7 @@ export default function AccountProfile() {
                                     <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
                                         <MapPinIcon className="size-5 md:size-6 text-muted-foreground" />
                                     </div>
-                                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-foreground tracking-tight mb-0">
+                                    <h2 className="text-xl md:text-2xl lg:text-3xl font-serif text-foreground tracking-tight mb-0">
                                         Saved Addresses
                                     </h2>
                                 </div>
@@ -848,7 +848,7 @@ export default function AccountProfile() {
                                                 <Button
                                                     onClick={() => setIsAddDialogOpen(true)}
                                                     size="lg"
-                                                    className="gap-2"
+                                                    className="gap-2 motion-interactive"
                                                 >
                                                     <PlusIcon className="size-4" />
                                                     Add your first address
@@ -881,7 +881,7 @@ export default function AccountProfile() {
                                 <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
                                     <BellIcon className="size-5 md:size-6 text-muted-foreground" />
                                 </div>
-                                <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-foreground tracking-tight mb-0">
+                                <h2 className="text-xl md:text-2xl lg:text-3xl font-serif text-foreground tracking-tight mb-0">
                                     Preferences
                                 </h2>
                             </div>
@@ -941,7 +941,7 @@ export default function AccountProfile() {
                                                 }}
                                                 className={`
                                             relative inline-flex h-8 w-14 md:h-10 md:w-18 shrink-0 cursor-pointer items-center
-                                            rounded-full border-2 border-transparent transition-colors duration-300
+                                            rounded-full border-2 border-transparent
                                             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
                                             disabled:cursor-not-allowed disabled:opacity-50
                                             ${isEmailSubscribed ? "bg-primary" : "bg-muted"}
@@ -1261,7 +1261,7 @@ function AddressFormModal({
                             />
                             <Label
                                 htmlFor={`${mode}-defaultAddress`}
-                                className="text-sm cursor-pointer text-foreground hover:text-foreground/80 transition-colors"
+                                className="text-sm cursor-pointer text-foreground hover:text-foreground/80 motion-interactive"
                             >
                                 Set as default address
                             </Label>
@@ -1329,18 +1329,18 @@ function AddressCard({
         navigation.formData?.get("addressId") === address.id;
 
     // Lock body scroll when delete confirmation dialog is open
-    useLockBodyScroll(isDeleteDialogOpen);
+    useScrollLock(isDeleteDialogOpen);
 
     return (
         <Card
-            className={`group relative py-0 overflow-hidden rounded-2xl transition-all duration-300 shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] hover:-translate-y-0.5 ${isDefault ? "bg-linear-to-br from-primary/5 via-card to-primary/3" : "bg-linear-to-br from-muted/30 via-card to-muted/15"}`}
+            className={`group relative py-0 overflow-hidden rounded-2xl motion-surface shadow-[0_0_0_1px_oklch(0.94_0_0/0.3),0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_0_0_1px_oklch(0.92_0_0/0.4),0_4px_8px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.07)] hover:-translate-y-0.5 ${isDefault ? "bg-linear-to-br from-primary/5 via-card to-primary/3" : "bg-linear-to-br from-muted/30 via-card to-muted/15"}`}
         >
             <CardContent className="p-5 md:p-6 flex flex-col h-full">
                 {/* Header with Name and Default Badge */}
                 <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3 md:gap-4 min-w-0 flex-1">
                         {/* Address Icon */}
-                        <div className="flex items-center justify-center size-12 md:size-14 rounded-2xl bg-muted/40 shrink-0 ring-2 ring-card shadow-sm transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:shadow-md">
+                        <div className="flex items-center justify-center size-12 md:size-14 rounded-2xl bg-muted/40 shrink-0 ring-2 ring-card shadow-sm sleek group-hover:-translate-y-0.5 group-hover:shadow-md">
                             <HomeIcon className="size-6 md:size-7 text-muted-foreground/70" />
                         </div>
                         {/* Name and Company */}
@@ -1381,7 +1381,7 @@ function AddressCard({
 
                 {/* Actions */}
                 <div className="flex items-center gap-3 pt-3">
-                    <Button variant="outline" size="sm" onClick={onEdit} className="flex-1 gap-2">
+                    <Button variant="outline" size="sm" onClick={onEdit} className="flex-1 gap-2 motion-interactive">
                         <PencilIcon className="size-4" />
                         Edit
                     </Button>

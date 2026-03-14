@@ -153,7 +153,7 @@ export function NewsletterForm({variant = "footer", className}: NewsletterFormPr
                             type="submit"
                             disabled={isSubmitting || !email}
                             className={cn(
-                                "h-12 min-w-[140px] rounded-xl font-medium transition-all",
+                                "h-12 min-w-[140px] rounded-xl font-medium motion-interactive motion-press sleek",
                                 isFooter
                                     ? "bg-primary-foreground text-primary hover:bg-primary-foreground/90"
                                     : "bg-primary text-primary-foreground hover:bg-primary/90"
@@ -191,7 +191,7 @@ export function NewsletterForm({variant = "footer", className}: NewsletterFormPr
                         <a
                             href="/policies/privacy-policy"
                             className={cn(
-                                "underline underline-offset-2 transition-colors",
+                                "underline underline-offset-2",
                                 isFooter
                                     ? "text-primary-foreground/60 hover:text-primary-foreground"
                                     : "text-muted-foreground hover:text-foreground"

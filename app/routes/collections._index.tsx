@@ -141,7 +141,7 @@ export default function Collections() {
                 <header className="pt-(--page-breathing-room-dense) pb-6 md:pb-8">
                     {/* Title with collection count superscript (matching menu style) */}
                     <div className="relative inline-block">
-                        <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-medium text-primary tracking-tight my-0">
+                        <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary tracking-tight my-0">
                             / Collections
                         </h1>
                         {/* Collection count - positioned at top-right of title with small gap */}
@@ -276,17 +276,17 @@ function CollectionCard({collection, index}: {collection: CollectionFragment; in
                         data={collection.image}
                         loading={index < 12 ? "eager" : "lazy"}
                         sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="absolute inset-0 h-full w-full object-cover motion-image group-hover:scale-105"
                     />
                 ) : (
                     <div className="absolute inset-0 bg-muted" />
                 )}
 
                 {/* Always-visible gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-dark/30 to-transparent transition-opacity duration-300 group-hover:from-dark/80 group-hover:via-dark/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-dark/30 to-transparent motion-overlay group-hover:from-dark/80 group-hover:via-dark/40" />
 
                 {/* Text content - always visible with enhanced padding on hover */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 transition-all duration-300 group-hover:pb-5 group-hover:sm:pb-6">
+                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 motion-interactive group-hover:pb-5 group-hover:sm:pb-6">
                     {/* Title with product count as superscript (matching full-screen menu style) */}
                     <div className="flex items-baseline gap-1">
                         <h3 className="font-serif text-base font-medium text-light sm:text-lg md:text-xl">
@@ -296,7 +296,7 @@ function CollectionCard({collection, index}: {collection: CollectionFragment; in
                             {hasMore ? "250+" : productCount}
                         </sup>
                     </div>
-                    <p className="mt-1 text-xs text-light/80 sm:text-sm transition-opacity duration-300 group-hover:opacity-100">
+                    <p className="mt-1 text-xs text-light/80 sm:text-sm motion-overlay group-hover:opacity-100">
                         Explore collection →
                     </p>
                 </div>

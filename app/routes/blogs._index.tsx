@@ -184,7 +184,7 @@ export default function Blogs({loaderData}: Route.ComponentProps) {
                      pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px) */}
             <AnimatedSection animation="hero" threshold={0.1}>
                 <header className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-end pt-(--page-breathing-room) pb-6 sm:pb-8 md:pb-12">
-                    <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium text-primary leading-none">
+                    <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary leading-none">
                         {blogPageHeading}
                     </h1>
                     <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-primary leading-relaxed max-w-xl">
@@ -217,7 +217,7 @@ export default function Blogs({loaderData}: Route.ComponentProps) {
                                         onClick={() => handleCategorySelect(blog.handle)}
                                         size="sm"
                                         className={cn(
-                                            "rounded-full border-2 transition-all duration-300 min-h-11 text-sm sm:text-base",
+                                            "rounded-full border-2 min-h-11 text-sm sm:text-base",
                                             selectedCategoryHandle === blog.handle
                                                 ? "bg-primary text-primary-foreground border-primary"
                                                 : "border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground"

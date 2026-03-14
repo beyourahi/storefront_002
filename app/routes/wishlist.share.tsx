@@ -189,7 +189,7 @@ function SharedWishlistHeader({count, onSaveAll}: {count: number; onSaveAll?: ()
                     <span className="inline-block mb-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
                         Shared Wishlist
                     </span>
-                    <h1 className="font-serif text-4xl font-medium text-primary md:text-5xl lg:text-6xl mb-0 mt-0">
+                    <h1 className="font-serif text-xl font-medium text-primary md:text-3xl lg:text-4xl mb-0 mt-0">
                         Wishlist
                     </h1>
                     <p className="mt-1 text-base text-muted-foreground md:text-lg">
@@ -205,7 +205,7 @@ function SharedWishlistHeader({count, onSaveAll}: {count: number; onSaveAll?: ()
                         type="button"
                         size="lg"
                         onClick={onSaveAll}
-                        className="hidden sm:inline-flex text-xl md:text-2xl"
+                        className="hidden sm:inline-flex text-sm"
                     >
                         <Plus className="size-5" />
                         Save All
@@ -238,7 +238,7 @@ function SharedWishlistEmpty() {
                 <Heart className="size-20 sm:size-24 text-muted-foreground/30" strokeWidth={1} />
             </div>
 
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-medium text-primary mb-4">
+            <h2 className="font-serif text-xl md:text-2xl lg:text-3xl font-medium text-primary mb-4">
                 This wishlist is empty
             </h2>
 

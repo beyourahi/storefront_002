@@ -75,7 +75,7 @@ export function CuratedCollections({collections}: CuratedCollectionsProps) {
                                                 <TabsTrigger
                                                     key={tab.key}
                                                     value={tab.key}
-                                                    className="px-2 sm:px-3 md:px-6 lg:px-8 py-2 font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl text-primary bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none opacity-25 data-[state=active]:opacity-100 transition-opacity whitespace-nowrap cursor-pointer shrink-0"
+                                                    className="px-2 sm:px-3 md:px-6 lg:px-8 py-2 font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl text-primary bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none opacity-25 data-[state=active]:opacity-100 whitespace-nowrap cursor-pointer shrink-0"
                                                 >
                                                     {tab.label}
                                                 </TabsTrigger>

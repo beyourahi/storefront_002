@@ -85,6 +85,7 @@ import type {CartLineUpdateInput} from "@shopify/hydrogen/storefront-api-types";
 import type {CartLayout} from "~/components/CartMain";
 import {CartForm, Image, type OptimisticCartLine} from "@shopify/hydrogen";
 import {useVariantUrl} from "~/lib/variants";
+import {useCallback, useMemo} from "react";
 import {Link} from "react-router";
 import {ProductPrice} from "./ProductPrice";
 import {ProductTitle} from "./ProductTitle";
@@ -110,17 +111,22 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
     const {canHover} = usePointerCapabilities();
     const isPage = layout === "page";
 
-    const handleLinkClick = () => {
+    // Stable — only changes when layout or close changes
+    const handleLinkClick = useCallback(() => {
         if (layout === "aside") {
             close();
         }
-    };
+    }, [layout, close]);
 
-    // Format selected options as comma-separated values
-    const formattedOptions = selectedOptions
-        .filter(opt => opt.value !== "Default Title")
-        .map(opt => opt.value)
-        .join(", ");
+    // Format selected options as comma-separated values — only recomputed when selectedOptions changes
+    const formattedOptions = useMemo(
+        () =>
+            selectedOptions
+                .filter(opt => opt.value !== "Default Title")
+                .map(opt => opt.value)
+                .join(", "),
+        [selectedOptions]
+    );
 
     // Child lines (warranties, add-ons, bundles) have parentRelationship populated
     const parentRelationship = (line as any).parentRelationship as
@@ -175,7 +181,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                                 height={isChildLine ? 56 : 80}
                                 loading="lazy"
                                 width={isChildLine ? 56 : 80}
-                                className={cn("motion-image size-full object-cover", canHover && "hover:scale-[1.03]")}
+                                className={cn("motion-image size-full object-cover", canHover && "group-hover/item:scale-[1.03]")}
                             />
                         )}
                     </Link>
@@ -190,7 +196,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                                 onClick={handleLinkClick}
                                 className={cn(
                                     "motion-link flex-1 min-w-0 cursor-pointer",
-                                    canHover ? "hover:opacity-85" : "active:opacity-85"
+                                    canHover ? "group-hover/item:opacity-85" : "active:opacity-85"
                                 )}
                             >
                                 <ProductTitle title={product.title} variant="cart" darkContext />
@@ -266,7 +272,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                             height={isChildLine ? 64 : 96}
                             loading="lazy"
                             width={isChildLine ? 64 : 96}
-                            className={cn("motion-image size-full object-cover", canHover && "hover:scale-[1.03]")}
+                            className={cn("motion-image size-full object-cover", canHover && "group-hover/item:scale-[1.03]")}
                         />
                     )}
                 </Link>
@@ -279,7 +285,7 @@ export function CartLineItem({layout, line}: {layout: CartLayout; line: CartLine
                             prefetch="viewport"
                             to={lineItemUrl}
                             onClick={handleLinkClick}
-                            className="motion-link flex-1 min-w-0 cursor-pointer hover:opacity-80"
+                            className="motion-link flex-1 min-w-0 cursor-pointer group-hover/item:opacity-80"
                         >
                             <ProductTitle title={product.title} variant="cart" />
                         </Link>

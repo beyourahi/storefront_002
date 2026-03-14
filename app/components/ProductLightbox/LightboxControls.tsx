@@ -111,7 +111,7 @@ export function LightboxControls({
                     variant="ghost"
                     size="icon"
                     onClick={onClose}
-                    className="bg-dark/60 hover:bg-dark/80 text-light/80 hover:text-light rounded-full backdrop-blur-sm transition-all focus-visible:ring-2 focus-visible:ring-light"
+                    className="bg-dark/60 hover:bg-dark/80 text-light/80 hover:text-light rounded-full backdrop-blur-sm sleek focus-visible:ring-2 focus-visible:ring-light"
                     aria-label="Close lightbox"
                 >
                     <XIcon className="size-5" />
@@ -131,7 +131,7 @@ export function LightboxControls({
                         variant="ghost"
                         size="icon"
                         onClick={onPrevious}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-dark/60 hover:bg-dark/80 text-light/80 hover:text-light rounded-full backdrop-blur-sm transition-all focus-visible:ring-2 focus-visible:ring-light"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-dark/60 hover:bg-dark/80 text-light/80 hover:text-light rounded-full backdrop-blur-sm sleek focus-visible:ring-2 focus-visible:ring-light"
                         aria-label="Previous image"
                     >
                         <ChevronLeftIcon className="size-6" />
@@ -143,7 +143,7 @@ export function LightboxControls({
                         variant="ghost"
                         size="icon"
                         onClick={onNext}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-dark/60 hover:bg-dark/80 text-light/80 hover:text-light rounded-full backdrop-blur-sm transition-all focus-visible:ring-2 focus-visible:ring-light"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-dark/60 hover:bg-dark/80 text-light/80 hover:text-light rounded-full backdrop-blur-sm sleek focus-visible:ring-2 focus-visible:ring-light"
                         aria-label="Next image"
                     >
                         <ChevronRightIcon className="size-6" />

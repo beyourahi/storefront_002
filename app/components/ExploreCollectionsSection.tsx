@@ -87,13 +87,13 @@ export function ExploreCollectionsSection({collections}: ExploreCollectionsSecti
         <section className="py-12 md:py-16 lg:py-20">
             {/* Header - stacks on mobile, inline on tablet+ */}
             <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
-                <h2 className="m-0 font-serif text-3xl font-medium text-primary sm:text-4xl md:text-5xl lg:text-6xl">
+                <h2 className="m-0 font-serif text-xl font-medium text-primary md:text-3xl lg:text-4xl">
                     {collectionsTitle}
                 </h2>
                 <Link
                     to="/collections"
                     className={cn(
-                        "motion-interactive motion-press hidden w-fit rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 py-1.5 font-sans text-base font-medium text-primary active:scale-[var(--motion-press-scale)] cursor-pointer sm:block sm:px-4 sm:py-2 sm:text-lg md:text-xl",
+                        "motion-interactive motion-press hidden w-fit rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 py-1.5 font-sans text-sm font-medium text-primary active:scale-[var(--motion-press-scale)] cursor-pointer sm:block sm:px-4 sm:py-2",
                         canHover
                             ? "hover:bg-primary hover:text-primary-foreground hover:no-underline"
                             : "active:bg-primary active:text-primary-foreground"
@@ -139,7 +139,7 @@ export function ExploreCollectionsSection({collections}: ExploreCollectionsSecti
                     <Link
                         to="/collections"
                         className={cn(
-                            "motion-interactive motion-press rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-base font-medium text-primary transition-colors active:scale-[var(--motion-press-scale)] cursor-pointer",
+                            "motion-interactive motion-press rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-sm font-medium text-primary active:scale-[var(--motion-press-scale)] cursor-pointer",
                             canHover
                                 ? "hover:bg-primary hover:text-primary-foreground hover:no-underline"
                                 : "active:bg-primary active:text-primary-foreground"
@@ -191,7 +191,7 @@ function CollectionCard({collection, isExpanded, onTap}: CollectionCardProps) {
             prefetch="viewport"
             onClick={handleClick}
             className={cn(
-                "relative flex-1 transition-all duration-500 ease-out cursor-pointer",
+                "relative flex-1 cursor-pointer",
                 "motion-interactive-strong",
                 canHover
                     ? "group hover:flex-2 hover:no-underline"

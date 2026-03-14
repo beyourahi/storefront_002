@@ -258,7 +258,6 @@ export function useThemeColors(): ThemeCoreColors {
 /**
  * Hook to generate complete theme from theme config
  * Returns generated CSS variables, Google Fonts URL, and font config
- * React Compiler optimizes automatically
  */
 export function useGeneratedTheme(): GeneratedTheme | null {
     const themeConfig = useThemeConfig();

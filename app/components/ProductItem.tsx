@@ -67,59 +67,56 @@ import type {GridColumns} from "~/lib/gridColumns";
  * Get dynamic font size classes based on grid columns and view mode.
  *
  * Typography Scale (px):
- * - text-sm: 12px  | text-sm: 14px  | text-base: 16px
- * - text-lg: 18px  | text-xl: 20px  | text-2xl: 24px
+ * - text-sm: 14px  | text-base: 16px  | text-lg: 18px
+ * - text-xl: 20px  | text-2xl: 24px
  *
- * Font sizing strategy (now with 3xl ultrawide support):
- * - 2-col: Larger fonts (spacious layout, scales to 24px on ultrawide)
- * - 3-col: Medium fonts (balanced, 14px → 20px progression)
- * - 4-col: Smaller fonts (dense, 14px → 20px with ultrawide support)
- * - list: Optimized for horizontal layout (18px → 24px titles)
- * - undefined: Default sizing for carousels/related products (matches 2-col)
+ * Font sizing strategy:
+ * - 2-col: 18px → 20px → 24px titles, 16px prices
+ * - 3-col: 16px titles, 16px prices
+ * - 4-col: 14px → 16px titles, 16px prices
+ * - list: 18px → 20px → 24px titles, 16px prices
+ * - undefined: Default (matches 3-col for cohesive sizing)
  *
- * Bounds: Names 14-24px, Prices 12-20px (WCAG readable, scales for ultrawide)
+ * Bounds: Names 14-24px, Prices 16px (WCAG readable)
  */
 export function getProductFontSizes(gridColumns: GridColumns | undefined, variant: "card" | "list") {
     // List variant - optimized for horizontal layout with full width
-    // Extended for ultrawide: 18px → 20px → 24px
+    // 18px → 20px → 24px titles, 16px prices
     if (variant === "list") {
         return {
-            title: "text-lg md:text-xl 2xl:text-2xl", // 18px → 20px → 24px
-            price: "text-base md:text-lg 2xl:text-xl" // 16px → 18px → 20px
+            title: "text-lg sm:text-xl lg:text-2xl", // 18px → 20px → 24px
+            price: "text-base" // 16px
         };
     }
 
     // Card variant with grid-based sizing
     switch (gridColumns) {
         case 2:
-            // 2-col: Larger fonts for spacious layout
-            // Extended for ultrawide: 16px → 18px → 20px → 24px
+            // 2-col: 18px → 20px → 24px titles, 16px prices
             return {
-                title: "text-base md:text-lg xl:text-xl 3xl:text-2xl", // 16px → 18px → 20px → 24px
-                price: "text-sm md:text-base xl:text-lg 3xl:text-xl" // 14px → 16px → 18px → 20px
+                title: "text-lg sm:text-xl lg:text-2xl", // 18px → 20px → 24px
+                price: "text-base" // 16px
             };
         case 3:
-            // 3-col: Medium fonts for balanced layout
-            // Extended for ultrawide: 14px → 16px → 18px → 20px
+            // 3-col: 16px titles, 16px prices
             return {
-                title: "text-sm md:text-base lg:text-lg 2xl:text-xl", // 14px → 16px → 18px → 20px
-                price: "text-sm lg:text-base 2xl:text-lg" // 14px → 16px → 18px
+                title: "text-base lg:text-base", // 16px
+                price: "text-base" // 16px
             };
         case 4:
-            // 4-col: Smaller fonts for dense layout with ultrawide support
-            // Extended for 3xl: 14px → 16px → 18px → 20px
+            // 4-col: 14px → 16px titles, 16px prices
             return {
-                title: "text-sm xl:text-base 2xl:text-lg 3xl:text-xl", // 14px → 16px → 18px → 20px
-                price: "text-sm sm:text-sm 2xl:text-base 3xl:text-lg" // 12px → 14px → 16px → 18px
+                title: "text-sm sm:text-base lg:text-base", // 14px → 16px
+                price: "text-base" // 16px
             };
         case 1:
         case undefined:
         default:
-            // Default sizing for carousels, related products
-            // Extended for ultrawide: 16px → 18px → 20px → 24px
+            // Default sizing for carousels, related products (matches 3-col collection default)
+            // 16px titles, 16px prices — cohesive with collection page
             return {
-                title: "text-base md:text-lg xl:text-xl 3xl:text-2xl", // 16px → 18px → 20px → 24px
-                price: "text-sm md:text-base xl:text-lg 3xl:text-xl" // 14px → 16px → 18px → 20px
+                title: "text-base lg:text-base", // 16px
+                price: "text-base" // 16px
             };
     }
 }
@@ -414,7 +411,7 @@ export function ProductItem({
                 prefetch="viewport"
                 className={cn(
                     "flex items-center gap-4 md:gap-6 py-4 md:pl-6 no-underline group cursor-pointer",
-                    "transition-colors hover:bg-muted/30",
+                    "motion-interactive motion-surface hover:bg-muted/30",
                     "animate-product-fade-in",
                     "relative overflow-visible",
                     compactMode && "py-2 gap-2 md:gap-3",
@@ -435,13 +432,13 @@ export function ProductItem({
                             data={featuredImage}
                             loading={loading}
                             sizes="96px"
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 rounded-lg"
+                            className="w-full h-full object-cover motion-image group-hover:scale-105 rounded-lg"
                         />
                     ) : (
                         <div className="w-full h-full bg-muted/50 rounded-lg" />
                     )}
                     {/* Hover overlay for list variant */}
-                    <div className="absolute inset-0 bg-primary/0 transition-colors duration-300 group-hover:bg-primary/5 rounded-lg" />
+                    <div className="absolute inset-0 bg-primary/0 motion-overlay group-hover:bg-primary/5 rounded-lg" />
                 </div>
 
                 {/* Product info inline */}
@@ -584,7 +581,7 @@ export function ProductItem({
             target={linkTarget}
             prefetch="viewport"
             className={cn(
-                "block no-underline group animate-product-fade-in cursor-pointer relative overflow-visible rounded-lg",
+                "block no-underline group animate-product-fade-in cursor-pointer relative overflow-visible rounded-lg motion-surface",
                 layoutClasses.container,
                 className
             )}
@@ -651,15 +648,15 @@ export function ProductItem({
                 )}
 
                 {/* Hover overlay - subtle darkening effect */}
-                <div className="absolute inset-0 bg-primary/0 transition-colors duration-300 group-hover:bg-primary/5 pointer-events-none z-10" />
+                <div className="absolute inset-0 bg-primary/0 motion-overlay group-hover:bg-primary/5 pointer-events-none z-10" />
 
                 {/* Quick Add Button or Custom Actions - full width at bottom, visible on mobile, show on hover for desktop */}
                 {customActions ? (
-                    <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 z-20 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 z-20 md:opacity-0 md:group-hover:opacity-100 motion-overlay">
                         {customActions}
                     </div>
                 ) : !hideDefaultActions && showQuickAdd && "variants" in product ? (
-                    <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 z-20 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 z-20 md:opacity-0 md:group-hover:opacity-100 motion-overlay">
                         <QuickAddButton
                             product={product}
                             fullWidth
@@ -672,7 +669,7 @@ export function ProductItem({
             </div>
 
             {/* Product Details */}
-            <div className={cn("space-y-1", compactMode && "space-y-0.5")}>
+            <div className={cn("space-y-1 motion-link group-hover:text-primary", compactMode && "space-y-0.5")}>
                 <ProductTitle
                     title={product.title}
                     gridColumns={gridColumns}

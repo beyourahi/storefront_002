@@ -193,7 +193,7 @@ export function ShareButtons({article, variant = "inline", className, shopName}:
                             className={cn(
                                 "rounded-full gap-1.5 sm:gap-2 border-2 border-primary/50 text-primary",
                                 "hover:bg-primary hover:text-primary-foreground hover:border-primary",
-                                "transition-colors",
+                                "sleek hover:scale-110 hover:shadow-md",
                                 // Touch-friendly sizing: icon-only on mobile, with text on larger screens
                                 "size-10 sm:size-auto sm:min-h-11 sm:min-w-0 p-0 sm:px-4"
                             )}
@@ -271,6 +271,7 @@ export function ShareButtons({article, variant = "inline", className, shopName}:
                             className={cn(
                                 "rounded-lg sm:rounded-xl gap-1.5 sm:gap-2 min-h-11 sm:min-h-12",
                                 "hover:bg-primary hover:text-primary-foreground",
+                                "sleek hover:scale-110 hover:shadow-md",
                                 "text-sm sm:text-sm md:text-base"
                             )}
                             onClick={() => void handleShare(platform, shareData)}

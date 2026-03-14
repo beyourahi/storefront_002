@@ -98,7 +98,7 @@ export function Footer({footer: footerPromise, header: _header}: FooterProps) {
                                     href="https://beyourahi.com"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors hover:no-underline cursor-pointer"
+                                    className="inline-flex items-center text-sm text-primary-foreground/60 hover:text-primary-foreground hover:no-underline cursor-pointer"
                                 >
                                     Designed by Rahi Khan
                                 </a>
@@ -121,7 +121,7 @@ export function Footer({footer: footerPromise, header: _header}: FooterProps) {
 function FooterLogo() {
     const {brandName} = useSiteSettings();
     return (
-        <NavLink to="/" prefetch="viewport" className="block hover:no-underline cursor-pointer">
+        <NavLink to="/" prefetch="viewport" className="block motion-link hover:opacity-80 hover:no-underline cursor-pointer">
             {/* Responsive text sizing: text-4xl at 320px to prevent overflow,
                  scales progressively to text-[10rem] on ultrawide (3xl) screens */}
             <span className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl 3xl:text-[10rem] font-normal tracking-wide uppercase">
@@ -238,7 +238,7 @@ function FooterLinks() {
                                         href={link.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center min-h-11 sm:min-h-0 py-1 sm:py-0.5 text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors hover:no-underline cursor-pointer"
+                                        className="inline-flex items-center min-h-11 sm:min-h-0 py-1 sm:py-0.5 text-sm text-primary-foreground/80 hover:text-primary-foreground hover:no-underline cursor-pointer"
                                     >
                                         {link.title}
                                     </a>
@@ -246,7 +246,7 @@ function FooterLinks() {
                                     <NavLink
                                         to={link.url}
                                         prefetch="viewport"
-                                        className="inline-flex items-center min-h-11 sm:min-h-0 py-1 sm:py-0.5 text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors hover:no-underline cursor-pointer"
+                                        className="inline-flex items-center min-h-11 sm:min-h-0 py-1 sm:py-0.5 text-sm text-primary-foreground/80 hover:text-primary-foreground hover:no-underline cursor-pointer"
                                     >
                                         {link.title}
                                     </NavLink>
@@ -279,7 +279,7 @@ function NewsletterSection() {
                 <NavLink
                     to="/account"
                     prefetch="viewport"
-                    className="inline-flex items-center gap-2 min-h-11 py-2 sm:min-h-0 sm:py-1 text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors hover:no-underline cursor-pointer group"
+                    className="inline-flex items-center gap-2 min-h-11 py-2 sm:min-h-0 sm:py-1 text-sm text-primary-foreground/80 hover:text-primary-foreground hover:no-underline cursor-pointer group"
                 >
                     <span className="font-medium">Log in to your account</span>
                     <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
@@ -300,7 +300,7 @@ function Copyright({shopName}: {shopName: string}) {
     const currentYear = new Date().getFullYear();
 
     return (
-        <div className="inline-flex items-center gap-1 text-sm text-primary-foreground/60">
+        <div className="inline-flex items-center gap-1 text-base font-medium text-primary-foreground/60">
             <CopyrightIcon size={16} className="shrink-0" />
             <span>
                 {currentYear} {shopName}. All rights reserved.

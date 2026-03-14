@@ -119,7 +119,7 @@ export default function Gallery() {
                  pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px) */}
             <AnimatedSection animation="fade" threshold={0.08}>
                 <header className="pt-(--page-breathing-room) mb-6 md:mb-10 lg:mb-12">
-                    <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-primary mb-2 md:mb-3">
+                    <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary mb-2 md:mb-3">
                         {galleryPageHeading}
                     </h1>
                     <p className="text-muted-foreground text-sm sm:text-base max-w-2xl">{galleryPageDescription}</p>

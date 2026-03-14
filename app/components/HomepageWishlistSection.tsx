@@ -34,6 +34,7 @@ import {WishlistButton} from "~/components/WishlistButton";
 import {Skeleton} from "~/components/ui/skeleton";
 import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {cn} from "~/lib/utils";
+import {parseProductTitle} from "~/lib/product-title";
 
 // ============================================================================
 // Types
@@ -137,7 +138,7 @@ export function HomepageWishlistSection({className}: HomepageWishlistSectionProp
                 <div className="flex items-center justify-between">
                     {/* Heading and subheading on the left */}
                     <div>
-                        <h2 className="font-serif text-4xl font-medium text-primary md:text-5xl lg:text-6xl mb-0">
+                        <h2 className="font-serif text-xl font-medium text-primary md:text-3xl lg:text-4xl mb-0">
                             Wishlist
                         </h2>
                         <p className="mt-1 text-base text-muted-foreground md:text-lg">
@@ -147,7 +148,7 @@ export function HomepageWishlistSection({className}: HomepageWishlistSectionProp
                     {/* View All Button - Desktop (pill style matching Recently Viewed) */}
                     <Link
                         to="/wishlist"
-                        className="hidden rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground md:text-2xl sm:inline-flex"
+                        className="hidden rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-sm font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground sm:inline-flex"
                     >
                         View all
                     </Link>
@@ -186,7 +187,7 @@ export function HomepageWishlistSection({className}: HomepageWishlistSectionProp
             <div className="mt-6 flex justify-center sm:hidden">
                 <Link
                     to="/wishlist"
-                    className="rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                    className="rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-sm font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground"
                 >
                     View all
                 </Link>
@@ -200,7 +201,7 @@ export function HomepageWishlistSection({className}: HomepageWishlistSectionProp
  */
 function FeaturedWishlistCard({product}: {product: ProductItemFragment}) {
     const {canHover} = usePointerCapabilities();
-    const titleParts = product.title.trim().split(" + ");
+    const {primary, secondary} = parseProductTitle(product.title);
 
     return (
         <Link
@@ -217,7 +218,7 @@ function FeaturedWishlistCard({product}: {product: ProductItemFragment}) {
                     data={product.featuredImage}
                     sizes="(min-width: 768px) 50vw, 100vw"
                     className={cn(
-                        "w-full h-full object-cover aspect-square sm:aspect-auto transition-transform duration-700",
+                        "w-full h-full object-cover aspect-square sm:aspect-auto motion-image",
                         canHover && "group-hover:scale-105"
                     )}
                 />
@@ -245,8 +246,8 @@ function FeaturedWishlistCard({product}: {product: ProductItemFragment}) {
             {/* Product Info - Bottom overlay */}
             <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6">
                 <h3 className="text-white text-lg sm:text-2xl font-medium mb-2 sm:mb-3 line-clamp-1">
-                    <span>{titleParts[0]}</span>
-                    {titleParts[1] && <span>, {titleParts[1]}</span>}
+                    <span>{primary}</span>
+                    {secondary && <span>, {secondary}</span>}
                 </h3>
                 <div className="flex items-center gap-3">
                     <span className="text-white text-lg sm:text-xl font-bold">
@@ -254,7 +255,7 @@ function FeaturedWishlistCard({product}: {product: ProductItemFragment}) {
                     </span>
                     <span
                         className={cn(
-                            "text-sm hidden sm:inline transition-colors",
+                            "text-sm hidden sm:inline motion-link",
                             canHover ? "text-white/60 group-hover:text-white" : "text-white/80"
                         )}
                     >
@@ -279,7 +280,7 @@ function WishlistCard({
     spanFullOnMobile?: boolean;
 }) {
     const {canHover} = usePointerCapabilities();
-    const titleParts = product.title.trim().split(" + ");
+    const {primary, secondary} = parseProductTitle(product.title);
 
     return (
         <Link
@@ -300,7 +301,7 @@ function WishlistCard({
                     data={product.featuredImage}
                     sizes="(min-width: 768px) 25vw, 50vw"
                     className={cn(
-                        "w-full h-full object-cover transition-transform duration-500",
+                        "w-full h-full object-cover motion-image",
                         canHover && "group-hover:scale-105"
                     )}
                 />
@@ -309,14 +310,14 @@ function WishlistCard({
             {/* Overlay with Info - Always visible on mobile, hover on desktop */}
             <div
                 className={cn(
-                    "absolute inset-0 bg-gradient-to-t from-black/70 to-transparent transition-opacity duration-300",
+                    "absolute inset-0 bg-gradient-to-t from-black/70 to-transparent motion-overlay",
                     canHover ? "sm:opacity-0 sm:group-hover:opacity-100" : "opacity-100"
                 )}
             >
                 <div className="absolute bottom-3 left-3 right-3">
                     <h4 className="text-white font-medium text-sm line-clamp-1">
-                        <span>{titleParts[0]}</span>
-                        {titleParts[1] && <span>, {titleParts[1]}</span>}
+                        <span>{primary}</span>
+                        {secondary && <span>, {secondary}</span>}
                     </h4>
                     <div className="text-white/70 text-sm mt-0.5">
                         <ProductPrice price={product.priceRange.minVariantPrice} />
@@ -349,7 +350,7 @@ function ViewMoreTile({count}: {count: number}) {
             to="/wishlist"
             prefetch="viewport"
             className={cn(
-                "flex flex-col items-center justify-center rounded-xl sm:rounded-2xl bg-black text-white cursor-pointer aspect-[4/5] sm:aspect-auto transition-colors",
+                "flex flex-col items-center justify-center rounded-xl sm:rounded-2xl bg-black text-white cursor-pointer aspect-[4/5] sm:aspect-auto motion-interactive",
                 canHover
                     ? "group hover:bg-gray-900"
                     : "motion-press active:bg-gray-900 active:scale-[var(--motion-press-scale)]"
@@ -357,7 +358,7 @@ function ViewMoreTile({count}: {count: number}) {
         >
             <span
                 className={cn(
-                    "text-3xl sm:text-4xl font-light mb-1 transition-transform",
+                    "text-3xl sm:text-4xl font-light mb-1 motion-interactive",
                     canHover && "group-hover:scale-110"
                 )}
             >

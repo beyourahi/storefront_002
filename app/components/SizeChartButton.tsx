@@ -130,7 +130,7 @@ export function SizeChartButton({sizeChart, variant = "link", className}: SizeCh
         link: cn(
             "inline-flex select-none items-center gap-1.5 text-sm font-medium",
             "text-primary underline underline-offset-4",
-            "hover:text-primary/80 transition-colors",
+            "hover:text-primary/80",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         ),
         outline: cn(
@@ -139,7 +139,7 @@ export function SizeChartButton({sizeChart, variant = "link", className}: SizeCh
             "border-2 border-primary text-primary",
             "font-medium text-sm",
             "hover:bg-primary hover:text-primary-foreground",
-            "active:scale-95 transition-all duration-200",
+            "active:scale-95 sleek",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         ),
         ghost: cn(
@@ -147,7 +147,6 @@ export function SizeChartButton({sizeChart, variant = "link", className}: SizeCh
             "min-h-10 px-3 sm:px-4 py-2 rounded-md",
             "text-muted-foreground text-sm",
             "hover:text-primary hover:bg-muted/50",
-            "transition-colors",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         ),
         // Mobile variant: white on coral/primary background
@@ -155,14 +154,14 @@ export function SizeChartButton({sizeChart, variant = "link", className}: SizeCh
         mobile: cn(
             "inline-flex select-none items-center gap-1.5 text-sm font-medium",
             "text-primary-foreground underline underline-offset-4",
-            "hover:text-primary-foreground/80 transition-colors",
+            "hover:text-primary-foreground/80",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
         )
     };
 
     return (
         <>
-            <button type="button" onClick={() => setIsOpen(true)} className={cn(variantStyles[variant], className)}>
+            <button type="button" onClick={() => setIsOpen(true)} className={cn(variantStyles[variant], "motion-interactive hover:text-primary", className)}>
                 <Ruler className="size-4" />
                 <span>Size Guide</span>
             </button>
@@ -192,7 +191,6 @@ export function SizeChartButtonCompact({sizeChart, className}: {sizeChart: SizeC
                     "min-h-10 min-w-10 px-2 sm:px-3 py-2 rounded-md",
                     "text-muted-foreground text-sm",
                     "hover:text-primary hover:bg-muted/50",
-                    "transition-colors",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     className
                 )}

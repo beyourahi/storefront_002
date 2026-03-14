@@ -25,11 +25,11 @@
  * - LenisProvider.tsx - Smooth scroll locking for dialogs
  */
 
-import {useState} from "react";
+import {useState, useCallback, useMemo} from "react";
 import {Link} from "react-router";
 import type {ProductItemFragment, CuratedProductFragment} from "storefrontapi.generated";
 import {useRecentlyViewed, type RecentlyViewedProduct} from "~/lib/recently-viewed";
-import {useLockBodyScroll} from "~/lib/LenisProvider";
+import {useScrollLock} from "~/hooks/useScrollLock";
 import {ProductItem} from "~/components/ProductItem";
 import {RecentlyViewedSkeleton} from "~/components/skeletons";
 import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel";
@@ -42,6 +42,7 @@ import {
     DialogTitle
 } from "~/components/ui/dialog";
 import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
+import {parseProductTitle} from "~/lib/product-title";
 
 // ============================================================================
 // Types
@@ -76,9 +77,12 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
     const [historyCleared, setHistoryCleared] = useState(false);
 
     const recentlyViewed = useRecentlyViewed();
+    // Destructure stable callbacks so we can use them as exhaustive-deps without
+    // depending on the whole recentlyViewed object reference
+    const {clear: clearRecentlyViewed} = recentlyViewed;
 
     // Lock body scroll when dialog is open
-    useLockBodyScroll(dialogOpen);
+    useScrollLock(dialogOpen);
 
     // Derive the products to display
     // Priority: localStorage (full data for offline) > allProducts lookup > SSR products
@@ -86,7 +90,9 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
         | {type: "server"; data: ProductItemFragment | CuratedProductFragment}
         | {type: "offline"; data: RecentlyViewedProduct};
 
-    const displayProducts: DisplayProduct[] = (() => {
+    // Memoize so the array reference is stable when inputs haven't changed,
+    // preventing the carousel from unnecessarily re-rendering
+    const displayProducts = useMemo<DisplayProduct[]>(() => {
         if (historyCleared) return [];
 
         // After hydration, localStorage has full product data for offline display
@@ -122,7 +128,7 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
         }
 
         return [];
-    })();
+    }, [historyCleared, recentlyViewed.isHydrated, recentlyViewed.products, recentlyViewed.productIds, allProducts, products]);
 
     // Determine if section should show
     // Don't hide until we've checked localStorage (wait for hydration)
@@ -134,11 +140,12 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
         return displayProducts.length >= 1;
     })();
 
-    const handleClearHistory = () => {
-        recentlyViewed.clear();
+    // Stable — only changes when clear() changes (which is itself stable via useCallback in the hook)
+    const handleClearHistory = useCallback(() => {
+        clearRecentlyViewed();
         setDialogOpen(false);
         setHistoryCleared(true);
-    };
+    }, [clearRecentlyViewed]);
 
     if (!shouldShowSection) return null;
 
@@ -152,7 +159,7 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
                     <div className="flex items-center justify-between">
                         {/* Heading and subheading on the left */}
                         <div>
-                            <h2 className="font-serif text-4xl font-medium text-primary md:text-5xl lg:text-6xl mb-0">
+                            <h2 className="font-serif text-xl font-medium text-primary md:text-3xl lg:text-4xl mb-0">
                                 Recently Viewed
                             </h2>
                             <p className="mt-1 text-base text-muted-foreground md:text-lg">
@@ -166,7 +173,7 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
                             <button
                                 type="button"
                                 onClick={() => setDialogOpen(true)}
-                                className="hidden select-none rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground md:text-2xl sm:inline-flex"
+                                className="hidden select-none rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-sm font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground sm:inline-flex"
                             >
                                 Clear
                             </button>
@@ -211,7 +218,7 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
                         <button
                             type="button"
                             onClick={() => setDialogOpen(true)}
-                            className="select-none rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-xl font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                            className="select-none rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-sm font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground"
                         >
                             Clear
                         </button>
@@ -223,7 +230,7 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="rounded-2xl border-0 p-8 sm:max-w-md" showCloseButton={false}>
                     <DialogHeader className="space-y-3 pr-0 sm:pr-0">
-                        <DialogTitle className="font-serif text-2xl font-medium text-primary md:text-3xl">
+                        <DialogTitle className="font-serif text-lg font-medium text-primary">
                             Clear History
                         </DialogTitle>
                         <DialogDescription className="text-base text-muted-foreground">
@@ -240,14 +247,14 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
                         <button
                             type="button"
                             onClick={() => setDialogOpen(false)}
-                            className="w-full select-none rounded-full border-2 border-primary px-3 sm:px-4 py-2.5 font-sans text-base font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground sm:w-auto"
+                            className="w-full select-none rounded-full border-2 border-primary px-3 sm:px-4 py-2.5 font-sans text-base font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground sm:w-auto"
                         >
                             Keep History
                         </button>
                         <button
                             type="button"
                             onClick={handleClearHistory}
-                            className="w-full select-none rounded-full bg-primary px-3 sm:px-4 py-2.5 font-sans text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto"
+                            className="w-full select-none rounded-full bg-primary px-3 sm:px-4 py-2.5 font-sans text-base font-medium text-primary-foreground motion-interactive hover:bg-primary/90 sm:w-auto"
                         >
                             Clear All
                         </button>
@@ -264,10 +271,7 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
  * Styled to match ProductItem for visual consistency.
  */
 function OfflineProductCard({product}: {product: RecentlyViewedProduct}) {
-    // Split title for consistent styling with ProductItem
-    const titleParts = product.title.trim().split(" + ");
-    const mainTitle = titleParts[0];
-    const subtitle = titleParts[1];
+    const {primary: mainTitle, secondary: subtitle} = parseProductTitle(product.title);
 
     return (
         <Link to={`/products/${product.handle}`} className="group block">
@@ -277,7 +281,7 @@ function OfflineProductCard({product}: {product: RecentlyViewedProduct}) {
                     <img
                         src={product.imageUrl}
                         alt={product.imageAlt || product.title}
-                        className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="size-full object-cover motion-image group-hover:scale-105"
                         loading="lazy"
                     />
                 ) : (
@@ -296,7 +300,7 @@ function OfflineProductCard({product}: {product: RecentlyViewedProduct}) {
 
             {/* Product Info */}
             <div className="mt-3 space-y-1">
-                <h3 className="line-clamp-2 text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                <h3 className="line-clamp-2 text-sm font-medium text-foreground group-hover:text-primary motion-link">
                     {mainTitle}
                 </h3>
                 {subtitle && <p className="text-sm text-muted-foreground line-clamp-1">{subtitle}</p>}

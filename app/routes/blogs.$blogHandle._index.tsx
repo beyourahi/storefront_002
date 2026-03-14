@@ -161,7 +161,7 @@ export default function Blog({loaderData}: Route.ComponentProps) {
             {/* Blog Header with fluid title sizing
                  pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px) */}
             <header className="space-y-3 sm:space-y-4 md:space-y-5 text-center max-w-3xl xl:max-w-4xl mx-auto pt-(--page-breathing-room)">
-                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-medium text-primary">
+                <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary">
                     {blog.title}
                 </h1>
                 {blog.seo?.description && (

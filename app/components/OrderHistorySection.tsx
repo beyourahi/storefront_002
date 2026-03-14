@@ -65,7 +65,7 @@ export function OrderHistorySection({products, loading = false}: OrderHistorySec
                 <div className="flex items-center justify-between">
                     {/* Heading and subheading on the left */}
                     <div>
-                        <h2 className="mb-0 font-serif text-4xl font-medium text-primary md:text-5xl lg:text-6xl">
+                        <h2 className="mb-0 font-serif text-xl font-medium text-primary md:text-3xl lg:text-4xl">
                             Your Orders
                         </h2>
                         <p className="mt-1 text-base text-muted-foreground md:text-lg">
@@ -78,7 +78,7 @@ export function OrderHistorySection({products, loading = false}: OrderHistorySec
                     {!isLoading && products.length > 0 && (
                         <Link
                             to="/account/orders"
-                            className="hidden rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-lg font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground hover:no-underline sm:inline-flex md:text-xl"
+                            className="hidden rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-lg md:text-xl font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground hover:no-underline sm:inline-flex"
                         >
                             View All
                         </Link>
@@ -122,7 +122,7 @@ export function OrderHistorySection({products, loading = false}: OrderHistorySec
                 <div className="mt-6 flex justify-center sm:hidden">
                     <Link
                         to="/account/orders"
-                        className="rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-lg font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground hover:no-underline"
+                        className="rounded-full border-2 border-primary px-3 sm:px-4 py-2 font-sans text-lg font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground hover:no-underline"
                     >
                         View All
                     </Link>

@@ -48,7 +48,7 @@
  * ```
  */
 
-import {createContext, useContext, useState, useEffect, type ReactNode} from "react";
+import {createContext, useCallback, useContext, useMemo, useState, useEffect, type ReactNode} from "react";
 import {extractNumericId, getWishlistIds, setWishlistIds, clearWishlist as clearStorage} from "./wishlist-utils";
 
 // =============================================================================
@@ -138,8 +138,12 @@ export function WishlistProvider({children}: WishlistProviderProps) {
         return () => window.removeEventListener("storage", handleStorageChange);
     }, []);
 
+    // All mutating callbacks use functional setState so they never close over stale ids —
+    // this means their dep arrays can be [] (truly stable references across all renders).
+    // This prevents every wishlist consumer from re-rendering unnecessarily.
+
     // Add product to wishlist
-    const add = (productId: string) => {
+    const add = useCallback((productId: string) => {
         const numericId = extractNumericId(productId);
         if (numericId === 0) return;
 
@@ -150,10 +154,10 @@ export function WishlistProvider({children}: WishlistProviderProps) {
             setWishlistIds(updated);
             return updated;
         });
-    };
+    }, []);
 
     // Remove product from wishlist
-    const remove = (productId: string) => {
+    const remove = useCallback((productId: string) => {
         const numericId = extractNumericId(productId);
         if (numericId === 0) return;
 
@@ -162,10 +166,10 @@ export function WishlistProvider({children}: WishlistProviderProps) {
             setWishlistIds(updated);
             return updated;
         });
-    };
+    }, []);
 
     // Toggle product in wishlist
-    const toggle = (productId: string) => {
+    const toggle = useCallback((productId: string) => {
         const numericId = extractNumericId(productId);
         if (numericId === 0) return;
 
@@ -175,22 +179,25 @@ export function WishlistProvider({children}: WishlistProviderProps) {
             setWishlistIds(updated);
             return updated;
         });
-    };
+    }, []);
 
-    // Check if product is in wishlist
-    const has = (productId: string): boolean => {
-        const numericId = extractNumericId(productId);
-        return ids.includes(numericId);
-    };
+    // Check if product is in wishlist — depends on ids so consumers re-render when ids change
+    const has = useCallback(
+        (productId: string): boolean => {
+            const numericId = extractNumericId(productId);
+            return ids.includes(numericId);
+        },
+        [ids]
+    );
 
     // Clear all items from wishlist
-    const clear = () => {
+    const clear = useCallback(() => {
         setIds([]);
         clearStorage();
-    };
+    }, []);
 
     // Restore a single product by numeric ID (for undo single remove)
-    const restore = (numericId: number) => {
+    const restore = useCallback((numericId: number) => {
         if (numericId === 0) return;
 
         setIds(prev => {
@@ -200,10 +207,10 @@ export function WishlistProvider({children}: WishlistProviderProps) {
             setWishlistIds(updated);
             return updated;
         });
-    };
+    }, []);
 
     // Restore multiple products by numeric IDs (for undo clear all)
-    const restoreMany = (numericIds: number[]) => {
+    const restoreMany = useCallback((numericIds: number[]) => {
         if (numericIds.length === 0) return;
 
         setIds(prev => {
@@ -216,20 +223,24 @@ export function WishlistProvider({children}: WishlistProviderProps) {
             setWishlistIds(updated);
             return updated;
         });
-    };
+    }, []);
 
-    const value: WishlistContextType = {
-        ids,
-        count: ids.length,
-        isHydrated,
-        add,
-        remove,
-        toggle,
-        has,
-        clear,
-        restore,
-        restoreMany
-    };
+    // Memoize provider value so consumers only re-render when ids/isHydrated or a callback changes
+    const value: WishlistContextType = useMemo(
+        () => ({
+            ids,
+            count: ids.length,
+            isHydrated,
+            add,
+            remove,
+            toggle,
+            has,
+            clear,
+            restore,
+            restoreMany
+        }),
+        [ids, isHydrated, add, remove, toggle, has, clear, restore, restoreMany]
+    );
 
     return <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>;
 }
