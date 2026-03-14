@@ -78,13 +78,17 @@ storefront_002/
 │   ├── components/          # 114+ components
 │   │   ├── ui/              # 27 shadcn
 │   │   ├── blog/            # 7 blog
-│   │   └── pwa/             # 6 PWA
-│   ├── lib/                 # 45 utilities
+│   │   ├── pwa/             # 4 PWA
+│   │   ├── motion/          # Parallax
+│   │   ├── gallery/         # Gallery grid
+│   │   ├── icons/           # Custom icons
+│   │   └── ProductLightbox/ # Lightbox system
+│   ├── lib/                 # 44 utilities
 │   │   ├── metaobject-*.ts  # CMS
 │   │   ├── pwa-*.ts         # PWA
 │   │   ├── color/           # WCAG
-│   │   └── fragments/       # GraphQL
-│   ├── hooks/               # 9 hooks
+│   │   └── fragments.ts     # GraphQL fragments
+│   ├── hooks/               # 11 hooks
 │   ├── graphql/customer-account/  # 14 queries
 │   └── styles/tailwind.css  # v4 + animations
 ├── public/sw.js             # Workbox
@@ -278,7 +282,7 @@ Read all comments before editing. Update when changing code. Add for complex log
 
 ## Performance
 
-**Lenis**: GPU-accelerated smooth scrolling, `LenisProvider` in `root.tsx`, hooks: `useScrolled.ts`, `useScrollProgress.ts`
+**Lenis**: GPU-accelerated smooth scrolling, `LenisProvider` in `PageLayout.tsx`, scroll hooks: `lib/useScrolled.ts`, `lib/useScrollProgress.ts`
 
 **Service Worker**: Workbox 7.0.0, 5 caching strategies:
 
@@ -288,7 +292,7 @@ Read all comments before editing. Update when changing code. Add for complex log
 4. Product images: CacheFirst, 7 days
 5. Pages: NetworkFirst + `/offline` fallback
 
-**PWA Components**: ServiceWorkerRegistration, ServiceWorkerUpdateBanner, PwaAppIcon, IosInstallInstructions, OpenInAppButton, NetworkStatusIndicator
+**PWA Components**: `components/pwa/` (ServiceWorkerUpdateBanner, PwaAppIcon, IosInstallInstructions, OpenInAppButton) + root `components/` (ServiceWorkerRegistration, NetworkStatusIndicator)
 
 **PWA Hooks**: usePwaInstall, useServiceWorkerUpdate, useNetworkStatus, usePwaAnalytics
 
@@ -322,9 +326,9 @@ Read all comments before editing. Update when changing code. Add for complex log
 
 **Color System**: `lib/color/` - OKLCH parsing, sRGB conversion, dual contrast (WCAG 2.1 + APCA), swatch borders, 500+ color names, `ensureContrastCompliance()`
 
-**Hooks** (9): useInView, useScrolled, useScrollProgress, useNetworkStatus, useServiceWorkerUpdate, usePwaInstall, useRecentSearches, useSearchKeyboard, usePwaAnalytics
+**Hooks** (11 in `hooks/`): useInView, useNetworkStatus, usePointerCapabilities, usePwaAnalytics, usePwaInstall, useReadingProgress, useRecentSearches, useScreenSize, useScrollLock, useSearchKeyboard, useServiceWorkerUpdate. Additional scroll hooks in `lib/`: useScrolled, useScrollProgress
 
-**Animations**: 30+ `@keyframes` in `tailwind.css` - product (fade-in, image-hover), wishlist (heart-beat, heart-glow, burst-ring), hero (shimmer), GPU-accelerated, respects `prefers-reduced-motion`
+**Animations**: 22 `@keyframes` in `tailwind.css` - product (fade-in, image-hover), wishlist (heart-beat, heart-glow, burst-ring), hero (shimmer), GPU-accelerated, respects `prefers-reduced-motion`
 
 **Search**: Regular (full data), predictive (autocomplete), popular terms, recent (LocalStorage), keyboard (Cmd/Ctrl+K), full-screen overlay
 
