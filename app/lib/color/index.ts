@@ -78,6 +78,10 @@ export {
     // Main contrast function
     calculateContrast,
     calculateContrastWithOpacity,
+    meetsContrastRequirement,
+    adjustColorForContrast,
+    lightenColor,
+    darkenColor,
     // Compliance helpers
     ensureContrastCompliance,
     getContrastForeground,

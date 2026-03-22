@@ -63,7 +63,7 @@ import {
     type SocialSharePlatform
 } from "~/lib/social-share";
 import type {ProductFragment} from "storefrontapi.generated";
-import {parseProductTitle} from "~/lib/product-title";
+import {parseProductTitle} from "~/lib/product";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

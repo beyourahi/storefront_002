@@ -3,98 +3,83 @@
  *
  * @description
  * Provides a global keyboard shortcut (Cmd+K / Ctrl+K) to quickly open the search
- * interface. This is a common UX pattern used by modern web applications and
- * developer tools. The hook should be mounted once at the app level to avoid
- * duplicate event listeners.
+ * interface. Accepts a generic callback so it stays decoupled from any specific
+ * overlay system (Aside, Dialog, etc.).
+ *
+ * Mount this hook once at the app level to avoid duplicate event listeners.
  *
  * @architecture
- * - Single global event listener for keydown events
- * - Platform-aware: Uses Meta key on Mac, Ctrl on Windows/Linux
- * - Integrates with Aside component system for search overlay
- * - Prevents default browser behavior (e.g., Chrome's bookmark search)
- *
- * @dependencies
- * - React useEffect hook
- * - Aside context (from ~/components/Aside)
- * - Browser keyboard event API
- * - navigator.platform for OS detection
- *
- * @related
- * - Aside.tsx - Provides open/close functionality
- * - FullScreenSearch.tsx - The search UI opened by this shortcut
- * - Header.tsx - Mounts this hook for global availability
- * - PageLayout.tsx - Alternative mounting location
- *
- * @accessibility
- * The keyboard shortcut provides an accessible way to access search
- * without mouse interaction. The shortcut label helper function
- * returns the appropriate symbol for the user's platform.
+ * - Single global keydown listener, cleaned up on unmount
+ * - Platform-aware modifier detection (Meta on Mac, Ctrl elsewhere)
+ * - SSR-safe: guards against missing `navigator`
+ * - Calls `stopPropagation` after `preventDefault` to prevent other handlers
+ *   from reacting to the same keystroke
  *
  * @example
  * ```tsx
- * // Mount once at app level
+ * // Mount once at app level with a callback
  * function PageLayout() {
- *   useSearchKeyboard();
- *   return <main>...</main>;
+ *     const {open} = useAside();
+ *     useSearchKeyboard(() => open("search"));
+ *     return <main>...</main>;
  * }
  *
  * // Display shortcut hint to users
  * <button>
- *   Search <kbd>{getKeyboardShortcutLabel()}</kbd>
+ *     Search <kbd>{getKeyboardShortcutLabel()}</kbd>
  * </button>
  * ```
  */
 
 import {useEffect} from "react";
-import {useAside} from "~/components/Aside";
 
 // =============================================================================
 // HOOK
 // =============================================================================
 
 /**
- * Registers a global keyboard shortcut (Cmd+K / Ctrl+K) to open the search overlay.
+ * Registers a global keyboard shortcut (Cmd+K / Ctrl+K) that fires the
+ * provided callback. The hook is intentionally generic — pass whatever
+ * "open search" logic your component tree needs.
  *
- * Should be mounted ONCE at the app level (Header or PageLayout) to prevent
- * duplicate event listeners. Uses the Aside context to trigger search open.
- *
+ * @param onOpen - Callback invoked when the shortcut is pressed
  * @sideeffect Adds and removes a global keydown event listener
  */
-export function useSearchKeyboard() {
-    const {open, type} = useAside();
-
+export function useSearchKeyboard(onOpen: () => void) {
     useEffect(() => {
         function handleKeyDown(event: KeyboardEvent) {
-            // Check for Cmd+K (Mac) or Ctrl+K (Windows/Linux)
-            const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+            // SSR guard — navigator may not exist during server render
+            const isMac =
+                typeof navigator !== "undefined"
+                    ? navigator.platform?.toUpperCase().indexOf("MAC") >= 0
+                    : false;
+
             const modifier = isMac ? event.metaKey : event.ctrlKey;
 
             if (modifier && event.key.toLowerCase() === "k") {
                 event.preventDefault();
                 event.stopPropagation();
-
-                // Toggle search: if already open, close it; otherwise open
-                if (type === "search") {
-                    // Let ESC handle closing, or do nothing
-                    return;
-                }
-
-                open("search");
+                onOpen();
             }
         }
 
         document.addEventListener("keydown", handleKeyDown);
         return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [open, type]);
+    }, [onOpen]);
 }
 
+// =============================================================================
+// HELPER
+// =============================================================================
+
 /**
- * Returns keyboard shortcut display based on platform.
- * @returns "⌘K" for Mac, "Ctrl+K" for others
+ * Returns the platform-appropriate keyboard shortcut label.
+ * SSR-safe — falls back to "Ctrl+K" when `navigator` is unavailable.
+ *
+ * @returns "⌘K" on Mac, "Ctrl+K" elsewhere
  */
 export function getKeyboardShortcutLabel(): string {
-    // Guard against SSR where navigator or navigator.platform may be undefined
-    if (typeof navigator === "undefined" || !navigator.platform) return "⌘K";
+    if (typeof navigator === "undefined" || !navigator.platform) return "Ctrl+K";
     const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
     return isMac ? "⌘K" : "Ctrl+K";
 }

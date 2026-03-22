@@ -11,9 +11,10 @@
  * - Case-insensitive deduplication (newer searches bubble to top)
  * - Graceful degradation for SSR and private browsing modes
  * - Maximum 8 searches to prevent localStorage bloat
+ * - Memoized callbacks and return value to prevent unnecessary re-renders
  *
  * @dependencies
- * - React hooks (useState, useEffect)
+ * - React hooks (useState, useEffect, useCallback, useMemo)
  * - Browser localStorage API
  *
  * @related
@@ -44,7 +45,7 @@
  * ```
  */
 
-import {useState, useEffect} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 
 // =============================================================================
 // CONSTANTS
@@ -98,40 +99,30 @@ export function useRecentSearches(): UseRecentSearchesReturn {
     // -------------------------------------------------------------------------
     // INITIALIZATION: Load from localStorage on mount
     // -------------------------------------------------------------------------
-    // Only runs once on client-side. Gracefully handles:
-    // - SSR (localStorage undefined)
-    // - Private browsing (localStorage may throw)
-    // - Corrupted data (validates array structure)
     useEffect(() => {
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                const parsed = JSON.parse(stored) as unknown;
-                if (Array.isArray(parsed) && parsed.every((item): item is string => typeof item === "string")) {
-                    setRecentSearches(parsed.slice(0, MAX_RECENT_SEARCHES));
-                }
+            if (!stored) return;
+
+            const parsed = JSON.parse(stored) as unknown;
+            if (Array.isArray(parsed) && parsed.every(item => typeof item === "string")) {
+                setRecentSearches(parsed.slice(0, MAX_RECENT_SEARCHES));
             }
         } catch {
-            // Ignore localStorage errors (SSR, private browsing, etc.)
+            // Ignore localStorage parse and availability errors.
         }
     }, []);
 
     // -------------------------------------------------------------------------
     // PERSISTENCE: Save to localStorage
     // -------------------------------------------------------------------------
-    /**
-     * Persists search array to localStorage.
-     * Called internally by mutation methods.
-     *
-     * @param searches - Updated array to persist
-     */
-    const saveToStorage = (searches: string[]) => {
+    const saveToStorage = useCallback((searches: string[]) => {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(searches));
         } catch {
-            // Ignore localStorage errors
+            // Ignore localStorage write errors.
         }
-    };
+    }, []);
 
     // -------------------------------------------------------------------------
     // MUTATION METHODS
@@ -139,59 +130,51 @@ export function useRecentSearches(): UseRecentSearchesReturn {
 
     /**
      * Adds a search term to history.
-     *
-     * Behavior:
-     * - Trims whitespace and normalizes for comparison
-     * - If term already exists (case-insensitive), removes old and adds to front
-     * - Respects MAX_RECENT_SEARCHES limit (oldest removed)
-     * - Empty/whitespace-only terms are ignored
-     *
-     * @param term - Search term to add
+     * If term already exists (case-insensitive), removes old and adds to front.
+     * Empty/whitespace-only terms are ignored.
      */
-    const addSearch = (term: string) => {
-        const trimmed = term.trim().toLowerCase();
+    const addSearch = useCallback((term: string) => {
+        const trimmed = term.trim();
         if (!trimmed) return;
 
         setRecentSearches(prev => {
-            // Remove if already exists, add to front
-            const filtered = prev.filter(s => s.toLowerCase() !== trimmed);
-            const updated = [term.trim(), ...filtered].slice(0, MAX_RECENT_SEARCHES);
+            const normalized = trimmed.toLowerCase();
+            const filtered = prev.filter(item => item.toLowerCase() !== normalized);
+            const updated = [trimmed, ...filtered].slice(0, MAX_RECENT_SEARCHES);
             saveToStorage(updated);
             return updated;
         });
-    };
+    }, [saveToStorage]);
 
     /**
      * Removes a specific search term from history.
      * Case-insensitive matching.
-     *
-     * @param term - Search term to remove
      */
-    const removeSearch = (term: string) => {
+    const removeSearch = useCallback((term: string) => {
         setRecentSearches(prev => {
-            const updated = prev.filter(s => s.toLowerCase() !== term.toLowerCase());
+            const updated = prev.filter(item => item.toLowerCase() !== term.toLowerCase());
             saveToStorage(updated);
             return updated;
         });
-    };
+    }, [saveToStorage]);
 
     /**
      * Clears all search history.
      * Removes both state and localStorage data.
      */
-    const clearSearches = () => {
+    const clearSearches = useCallback(() => {
         setRecentSearches([]);
         try {
             localStorage.removeItem(STORAGE_KEY);
         } catch {
-            // Ignore localStorage errors
+            // Ignore localStorage remove errors.
         }
-    };
+    }, []);
 
-    return {
+    return useMemo(() => ({
         recentSearches,
         addSearch,
         removeSearch,
         clearSearches
-    };
+    }), [recentSearches, addSearch, removeSearch, clearSearches]);
 }

@@ -14,7 +14,7 @@
 
 import type {GalleryImageData} from "~/lib/gallery";
 import {cn} from "~/lib/utils";
-import {parseProductTitle} from "~/lib/product-title";
+import {parseProductTitle} from "~/lib/product";
 
 // =============================================================================
 // TYPES

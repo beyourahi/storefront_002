@@ -103,7 +103,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
                       type: "image" as const
                   }
                 : undefined,
-            jsonLd: generateBlogPostingSchema(article, blogHandle || "news")
+            jsonLd: generateBlogPostingSchema(article, blogHandle || "news") as any
         }) ?? []
     );
 };

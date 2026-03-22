@@ -33,6 +33,7 @@
 // Fetches recent orders with line items for the homepage order history carousel
 
 import type {CustomerOrderHistoryQuery} from "customer-accountapi.generated";
+import type {CurrencyCode} from "@shopify/hydrogen/customer-account-api-types";
 
 export const ORDER_HISTORY_LINE_ITEM_FRAGMENT = `#graphql
   fragment OrderHistoryLineItem on LineItem {
@@ -107,7 +108,7 @@ export interface OrderHistoryProduct {
     } | null;
     price: {
         amount: string;
-        currencyCode: string;
+        currencyCode: CurrencyCode;
     } | null;
     orderDate: string;
     orderNumber: string;

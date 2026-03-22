@@ -43,6 +43,51 @@ import Color from "colorjs.io";
 import {parseColor, toSrgb} from "./core";
 import type {ContrastResult, ContrastAlgorithm, RGB, APCAResult} from "./types";
 
+type AdjustContrastOptions = {
+    minRatio?: number;
+    maxIterations?: number;
+    lightnessStep?: number;
+    preserveHue?: boolean;
+    preserveChroma?: boolean;
+};
+
+type ContrastSize = "normal" | "large" | "ui";
+type ContrastLevel = "AA" | "AAA";
+
+const DEFAULT_MIN_CONTRAST = 3;
+const DEFAULT_TARGET_CONTRAST = 4.5;
+
+const WHITE_FALLBACK = "oklch(0.98 0 0)";
+const BLACK_FALLBACK = "oklch(0.05 0 0)";
+
+function clamp(value: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, value));
+}
+
+function clamp01(value: number): number {
+    return clamp(value, 0, 1);
+}
+
+function normalizeHue(hue: number): number {
+    const normalized = hue % 360;
+    return normalized < 0 ? normalized + 360 : normalized;
+}
+
+function formatOklch(l: number, c: number, h: number): string {
+    return `oklch(${l.toFixed(4)} ${c.toFixed(4)} ${h.toFixed(4)})`;
+}
+
+function getPerceptualDistance(base: {l: number; c: number; h: number}, target: {l: number; c: number; h: number}): number {
+    const hueDelta = Math.abs(((target.h - base.h + 540) % 360) - 180) / 180;
+    return Math.abs(target.l - base.l) + Math.abs(target.c - base.c) * 0.8 + hueDelta * 0.1;
+}
+
+function getWcagRatio(foreground: string, background: string): number | null {
+    const result = calculateContrast(foreground, background, "WCAG21");
+    if (!result) return null;
+    return result.ratio;
+}
+
 // =============================================================================
 // WCAG 2.1 CONTRAST
 // =============================================================================
@@ -82,6 +127,16 @@ export function contrastRatio(color1: RGB, color2: RGB): number {
     const darker = Math.min(l1, l2);
 
     return (lighter + 0.05) / (darker + 0.05);
+}
+
+export function meetsContrastRequirement(ratio: number, level: ContrastLevel, size: ContrastSize): boolean {
+    if (level === "AAA") {
+        if (size === "normal") return ratio >= 7;
+        return ratio >= 4.5;
+    }
+
+    if (size === "normal") return ratio >= 4.5;
+    return ratio >= 3;
 }
 
 // =============================================================================
@@ -284,6 +339,160 @@ export function calculateContrastWithOpacity(
     const blendedHex = `#${toHexPart(blended.r)}${toHexPart(blended.g)}${toHexPart(blended.b)}`;
 
     return calculateContrast(blendedHex, background, algorithm);
+}
+
+// =============================================================================
+// COLOR ADJUSTMENT UTILITIES
+// =============================================================================
+
+export function lightenColor(color: string, amount: number): string {
+    const parsedColor = parseColor(color);
+    if (!parsedColor) return color;
+
+    try {
+        const oklchColor = parsedColor.to("oklch");
+        const lightness = oklchColor.coords[0] ?? 0.5;
+        oklchColor.coords[0] = clamp01(lightness + Math.abs(amount));
+        return oklchColor.toString({format: "oklch"});
+    } catch {
+        return color;
+    }
+}
+
+export function darkenColor(color: string, amount: number): string {
+    const parsedColor = parseColor(color);
+    if (!parsedColor) return color;
+
+    try {
+        const oklchColor = parsedColor.to("oklch");
+        const lightness = oklchColor.coords[0] ?? 0.5;
+        oklchColor.coords[0] = clamp01(lightness - Math.abs(amount));
+        return oklchColor.toString({format: "oklch"});
+    } catch {
+        return color;
+    }
+}
+
+export function adjustColorForContrast(
+    foreground: string,
+    background: string,
+    targetRatio: number = DEFAULT_TARGET_CONTRAST,
+    options: AdjustContrastOptions = {}
+): string {
+    const {
+        minRatio = DEFAULT_MIN_CONTRAST,
+        maxIterations = 24,
+        lightnessStep = 0.02,
+        preserveHue = true,
+        preserveChroma = true
+    } = options;
+
+    const initialRatio = getWcagRatio(foreground, background);
+    if (initialRatio == null || initialRatio >= targetRatio) {
+        return foreground;
+    }
+
+    const fgRgb = toSrgb(foreground);
+    const bgRgb = toSrgb(background);
+    const fgColor = parseColor(foreground);
+    if (!fgRgb || !bgRgb || !fgColor) return foreground;
+
+    let baseL = 0.5;
+    let baseC = 0;
+    let baseH = 0;
+
+    try {
+        const oklch = fgColor.to("oklch");
+        baseL = clamp01(oklch.coords[0] ?? 0.5);
+        baseC = clamp(oklch.coords[1] ?? 0, 0, 0.4);
+        baseH = normalizeHue(oklch.coords[2] ?? 0);
+    } catch {
+        return foreground;
+    }
+
+    const fgLuminance = relativeLuminance(fgRgb);
+    const bgLuminance = relativeLuminance(bgRgb);
+    const primaryDirection: "lighten" | "darken" = fgLuminance >= bgLuminance ? "lighten" : "darken";
+    const directions: Array<"lighten" | "darken"> =
+        primaryDirection === "lighten" ? ["lighten", "darken"] : ["darken", "lighten"];
+
+    const chromaScales = preserveChroma ? [1, 0.92, 0.84, 0.76, 0.68] : [1, 0.85, 0.7, 0.55];
+    const hueShifts = preserveHue ? [0] : [0, 8, -8];
+
+    let bestTarget: {color: string; ratio: number; distance: number} | null = null;
+    let bestMinimum: {color: string; ratio: number; distance: number} | null = null;
+    let bestOverall: {color: string; ratio: number; distance: number} = {
+        color: foreground,
+        ratio: initialRatio,
+        distance: 0
+    };
+
+    for (const direction of directions) {
+        for (const chromaScale of chromaScales) {
+            for (const hueShift of hueShifts) {
+                for (let step = 1; step <= Math.max(1, Math.floor(maxIterations)); step++) {
+                    const delta = step * Math.max(0.001, lightnessStep);
+                    const nextLightness = clamp01(direction === "lighten" ? baseL + delta : baseL - delta);
+                    const nextChroma = clamp(baseC * chromaScale, 0, 0.4);
+                    const nextHue = normalizeHue(baseH + hueShift);
+
+                    const candidate = formatOklch(nextLightness, nextChroma, nextHue);
+                    const ratio = getWcagRatio(candidate, background);
+                    if (ratio == null) continue;
+
+                    const distance = getPerceptualDistance(
+                        {l: baseL, c: baseC, h: baseH},
+                        {l: nextLightness, c: nextChroma, h: nextHue}
+                    );
+
+                    if (ratio > bestOverall.ratio || (ratio === bestOverall.ratio && distance < bestOverall.distance)) {
+                        bestOverall = {color: candidate, ratio, distance};
+                    }
+
+                    if (ratio >= targetRatio) {
+                        if (!bestTarget || distance < bestTarget.distance) {
+                            bestTarget = {color: candidate, ratio, distance};
+                        }
+                    } else if (ratio >= minRatio) {
+                        if (
+                            !bestMinimum ||
+                            ratio > bestMinimum.ratio ||
+                            (ratio === bestMinimum.ratio && distance < bestMinimum.distance)
+                        ) {
+                            bestMinimum = {color: candidate, ratio, distance};
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (bestTarget) return bestTarget.color;
+    if (bestMinimum) return bestMinimum.color;
+
+    const fallbackCandidates = [WHITE_FALLBACK, BLACK_FALLBACK]
+        .map(color => {
+            const ratio = getWcagRatio(color, background);
+            if (ratio == null) return null;
+
+            const rgb = toSrgb(color);
+            if (!rgb) return null;
+
+            const fallbackLuminance = relativeLuminance(rgb);
+            const distance = Math.abs(fallbackLuminance - baseL);
+            return {color, ratio, distance};
+        })
+        .filter((candidate): candidate is {color: string; ratio: number; distance: number} => candidate !== null)
+        .sort((a, b) => {
+            if (b.ratio !== a.ratio) return b.ratio - a.ratio;
+            return a.distance - b.distance;
+        });
+
+    if (fallbackCandidates.length > 0) {
+        return fallbackCandidates[0].color;
+    }
+
+    return bestOverall.color;
 }
 
 // =============================================================================

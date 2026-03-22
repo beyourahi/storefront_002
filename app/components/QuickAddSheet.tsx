@@ -68,7 +68,7 @@ import {SizeChartButtonCompact} from "~/components/SizeChartButton";
 import type {SizeChartData} from "~/lib/size-chart";
 import {toast} from "sonner";
 import {filterDisplayTags, getButtonLabel} from "~/lib/product-tags";
-import {parseProductTitle} from "~/lib/product-title";
+import {parseProductTitle} from "~/lib/product";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

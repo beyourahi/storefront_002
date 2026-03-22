@@ -4,7 +4,7 @@ import {Link} from "react-router";
 import type {FeaturedProductSection} from "types";
 import {Money} from "~/components/Money";
 import {Button} from "~/components/ui/button";
-import {parseProductTitle} from "~/lib/product-title";
+import {parseProductTitle} from "~/lib/product";
 
 const getDescription = (description: string) => {
     const trimmed = description.trim();

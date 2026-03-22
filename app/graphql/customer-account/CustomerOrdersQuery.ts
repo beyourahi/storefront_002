@@ -61,6 +61,10 @@ export const ORDER_LIST_ITEM_FRAGMENT = `#graphql
         status
       }
     }
+    totalPrice {
+      amount
+      currencyCode
+    }
     lineItems(first: 20) {
       nodes {
         id

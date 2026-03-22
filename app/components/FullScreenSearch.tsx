@@ -136,7 +136,7 @@ interface FullScreenSearchProps {
 // =============================================================================
 
 export function FullScreenSearch({collections, popularSearchTerms = []}: FullScreenSearchProps) {
-    const {type, close} = useAside();
+    const {type, open, close} = useAside();
     const isOpen = type === "search";
     const {recentSearches, addSearch, clearSearches} = useRecentSearches();
     const searchContent = FALLBACK_SEARCH_CONTENT;
@@ -168,7 +168,7 @@ export function FullScreenSearch({collections, popularSearchTerms = []}: FullScr
     useScrollLock(isOpen);
 
     // Global keyboard shortcut (Cmd+K)
-    useSearchKeyboard();
+    useSearchKeyboard(() => open("search"));
 
     // Auto-focus input on open, reset state when closed
     useEffect(() => {

@@ -4,8 +4,8 @@
  * @description
  * Centralized analytics utilities for tracking progressive web app (PWA) events via
  * Google Tag Manager dataLayer. Provides type-safe event tracking for error boundaries,
- * service worker lifecycle events, offline states, and cache performance. All events
- * are automatically timestamped for accurate analytics reporting.
+ * service worker lifecycle events, install prompts, updates, offline states, and cache
+ * performance. All events are automatically timestamped for accurate analytics reporting.
  *
  * @architecture
  * - SSR-safe: only pushes to dataLayer when window is available
@@ -29,6 +29,12 @@
  * - pwa_service_worker_error - Service worker registration/update failed
  * - pwa_offline_page_viewed - User landed on /offline fallback
  * - pwa_cache_miss - SW failed to serve request from cache
+ * - pwa_install_prompt_shown - Browser install prompt was displayed
+ * - pwa_install_accepted - User accepted the install prompt
+ * - pwa_install_dismissed - User dismissed the install prompt
+ * - pwa_update_available - A new service worker version is available
+ * - pwa_update_applied - User applied the service worker update
+ * - pwa_service_worker_registered - Service worker registered successfully
  *
  * @usage
  * ```tsx
@@ -39,6 +45,9 @@
  *
  * // Track SW error
  * trackServiceWorkerError("Registration failed", "registration_failed");
+ *
+ * // Track install prompt
+ * trackInstallPrompt();
  *
  * // Generic event
  * trackPwaEvent("pwa_cache_miss", { url: "/api/products" });
@@ -55,7 +64,19 @@
  */
 export type PwaAnalyticsEvent =
     // Error events
-    "pwa_error_boundary_triggered" | "pwa_service_worker_error" | "pwa_offline_page_viewed" | "pwa_cache_miss";
+    | "pwa_error_boundary_triggered"
+    | "pwa_service_worker_error"
+    | "pwa_offline_page_viewed"
+    | "pwa_cache_miss"
+    // Install events
+    | "pwa_install_prompt_shown"
+    | "pwa_install_accepted"
+    | "pwa_install_dismissed"
+    // Update events
+    | "pwa_update_available"
+    | "pwa_update_applied"
+    // Registration events
+    | "pwa_service_worker_registered";
 
 /**
  * Data payload for error boundary events.
@@ -118,6 +139,10 @@ export function trackPwaEvent(event: PwaAnalyticsEvent, data?: Record<string, un
     }
 }
 
+// =============================================================================
+// ERROR TRACKING
+// =============================================================================
+
 /**
  * Track an error boundary trigger with full context.
  * Convenience wrapper for error boundary events.
@@ -154,6 +179,10 @@ export function trackServiceWorkerError(
     });
 }
 
+// =============================================================================
+// OFFLINE & CACHE TRACKING
+// =============================================================================
+
 /**
  * Track an offline page view.
  * Called when user lands on /offline fallback page.
@@ -176,6 +205,64 @@ export function trackCacheMiss(url: string): void {
     trackPwaEvent("pwa_cache_miss", {
         url
     });
+}
+
+// =============================================================================
+// INSTALL TRACKING
+// =============================================================================
+
+/**
+ * Track when the browser install prompt is shown to the user.
+ * Fired when the `beforeinstallprompt` event triggers.
+ */
+export function trackInstallPrompt(): void {
+    trackPwaEvent("pwa_install_prompt_shown");
+}
+
+/**
+ * Track when the user accepts the PWA install prompt.
+ */
+export function trackInstallAccepted(): void {
+    trackPwaEvent("pwa_install_accepted");
+}
+
+/**
+ * Track when the user dismisses the PWA install prompt.
+ */
+export function trackInstallDismissed(): void {
+    trackPwaEvent("pwa_install_dismissed");
+}
+
+// =============================================================================
+// UPDATE TRACKING
+// =============================================================================
+
+/**
+ * Track when a new service worker version is available.
+ * Fired when `updatefound` detects a new SW in the `installed` state.
+ */
+export function trackUpdateAvailable(): void {
+    trackPwaEvent("pwa_update_available");
+}
+
+/**
+ * Track when the user applies a service worker update.
+ * Fired when the user triggers `skipWaiting()` via the update banner.
+ */
+export function trackUpdateApplied(): void {
+    trackPwaEvent("pwa_update_applied");
+}
+
+// =============================================================================
+// REGISTRATION TRACKING
+// =============================================================================
+
+/**
+ * Track successful service worker registration.
+ * Fired after `navigator.serviceWorker.register()` resolves.
+ */
+export function trackServiceWorkerRegistered(): void {
+    trackPwaEvent("pwa_service_worker_registered");
 }
 
 // Note: Window.dataLayer type is declared in ~/components/GoogleTagManager.tsx

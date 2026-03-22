@@ -34,7 +34,7 @@ import {WishlistButton} from "~/components/WishlistButton";
 import {Skeleton} from "~/components/ui/skeleton";
 import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {cn} from "~/lib/utils";
-import {parseProductTitle} from "~/lib/product-title";
+import {parseProductTitle} from "~/lib/product";
 
 // ============================================================================
 // Types

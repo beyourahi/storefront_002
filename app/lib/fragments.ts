@@ -98,7 +98,6 @@ export const CART_QUERY_FRAGMENT = `#graphql
           altText
           width
           height
-
         }
         product {
           handle
@@ -404,9 +403,23 @@ export const MENU_COLLECTIONS_QUERY = `#graphql
     allProducts: products(first: 250) {
       nodes {
         id
+        handle
         title
         productType
         availableForSale
+        featuredImage {
+          id
+          url
+          altText
+          width
+          height
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
         variants(first: 10) {
           nodes {
             availableForSale
@@ -424,3 +437,4 @@ export const MENU_COLLECTIONS_QUERY = `#graphql
     }
   }
 ` as const;
+

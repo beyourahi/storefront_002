@@ -1,0 +1,83 @@
+import type {Route} from "./+types/api.product.recommendations";
+
+export const loader = async ({request, context}: Route.LoaderArgs) => {
+    const url = new URL(request.url);
+    const productId = url.searchParams.get("productId");
+
+    if (!productId) {
+        return new Response(JSON.stringify({error: "productId is required"}), {
+            status: 400,
+            headers: {"Content-Type": "application/json"}
+        });
+    }
+
+    const {productRecommendations} = await context.dataAdapter.query(PRODUCT_RECOMMENDATIONS_QUERY, {
+        variables: {productId}
+    });
+
+    return new Response(JSON.stringify({products: (productRecommendations ?? []).filter((p: any) => p.availableForSale)}), {
+        status: 200,
+        headers: {"Content-Type": "application/json"}
+    });
+};
+
+const PRODUCT_RECOMMENDATIONS_QUERY = `#graphql
+  query ProductRecommendations(
+    $country: CountryCode
+    $language: LanguageCode
+    $productId: ID!
+  ) @inContext(country: $country, language: $language) {
+    productRecommendations(productId: $productId) {
+      id
+      title
+      handle
+      availableForSale
+      featuredImage {
+        id
+        url
+        altText
+        width
+        height
+      }
+      images(first: 4) {
+        nodes {
+          id
+          url
+          altText
+          width
+          height
+        }
+      }
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      variants(first: 100) {
+        nodes {
+          id
+          title
+          availableForSale
+          quantityAvailable
+          selectedOptions {
+            name
+            value
+          }
+          price {
+            amount
+            currencyCode
+          }
+          compareAtPrice {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
+  }
+` as const;

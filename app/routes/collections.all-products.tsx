@@ -10,7 +10,7 @@
  *
  * @features
  * - All available products
- * - Sorting (featured, price, date, name)
+ * - Sorting (newest, price, name A-Z/Z-A)
  * - Grid columns toggle (2-4)
  * - Grid/list layout toggle
  * - Infinite scroll pagination
@@ -97,7 +97,7 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
     const url = new URL(request.url);
 
     // Parse sorting params
-    const sortParam = url.searchParams.get("sort") || "featured";
+    const sortParam = url.searchParams.get("sort") || "newest";
     const {sortKey, reverse} = mapSortToProductSortKey(sortParam);
 
     // Use official Hydrogen pagination pattern (24 items per page)
@@ -154,7 +154,7 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 export default function Collection() {
     const {products, collectionsWithCounts, totalProductCount, discountCount} = useLoaderData<typeof loader>();
     const [gridColumns, setGridColumns] = useGridColumns();
-    const [sortOption, setSortOption] = useSortOption("featured");
+    const [sortOption, setSortOption] = useSortOption("newest");
     const [layoutMode, setLayoutMode] = useLayoutMode();
 
     // Dynamic class based on layout mode and grid columns

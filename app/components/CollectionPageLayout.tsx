@@ -13,7 +13,7 @@
  * @features
  * - Sticky sidebar navigation with collection links and product counts
  * - Responsive grid columns (1-4 cols) with screen size constraints
- * - Sort options: Featured, Newest, A-Z, Price (↑/↓)
+ * - Sort options: Newest, A-Z, Z-A, Price (↑/↓)
  * - Layout modes: Grid (multi-column) and List (single column)
  * - localStorage persistence for user preferences (grid columns, layout mode)
  * - URL param-based sorting for server-side sort implementation
@@ -35,12 +35,12 @@
  * - useSortOption - Manages sort option via URL params
  *   - Enables server-side sorting
  *   - Resets pagination cursor on sort change
- *   - Defaults to "featured"
+ *   - Defaults to "newest"
  *
  * @utilities
  * - mapSortToCollectionSortKey - Converts UI sort to Collection products GraphQL params
  * - mapSortToProductSortKey - Converts UI sort to root Products GraphQL params
- *   (Note: COLLECTION_DEFAULT vs BEST_SELLING for featured)
+ *   (Note: CREATED vs CREATED_AT for newest across Collection vs root Products queries)
  *
  * @props
  * CollectionPageLayout:
@@ -167,7 +167,7 @@ interface CollectionPageLayoutProps {
     showSortOptions?: boolean;
 }
 
-export type SortOption = "featured" | "title-asc" | "title-desc" | "price-asc" | "price-desc" | "newest";
+export type SortOption = "title-asc" | "title-desc" | "price-asc" | "price-desc" | "newest";
 export type LayoutMode = "grid" | "list";
 
 export function CollectionPageLayout({
@@ -294,9 +294,9 @@ type PillOption =
 
 const PILL_OPTIONS: PillOption[] = [
     // Sort options
-    {id: "featured", label: "Featured", type: "sort", value: "featured"},
     {id: "newest", label: "Newest", type: "sort", value: "newest"},
     {id: "az", label: "A-Z", type: "sort", value: "title-asc"},
+    {id: "za", label: "Z-A", type: "sort", value: "title-desc"},
     {id: "price-low", label: "Price ↑", type: "sort", value: "price-asc"},
     {id: "price-high", label: "Price ↓", type: "sort", value: "price-desc"},
     // Grid column options (4-col on desktop only)
@@ -519,10 +519,10 @@ export function useLayoutMode(storageKey: string = "collection-layout-mode"): [L
 }
 
 // Valid sort options for URL validation
-const VALID_SORT_OPTIONS: SortOption[] = ["featured", "title-asc", "title-desc", "price-asc", "price-desc", "newest"];
+const VALID_SORT_OPTIONS: SortOption[] = ["title-asc", "title-desc", "price-asc", "price-desc", "newest"];
 
 // Hook to manage sort option with URL params for server-side sorting
-export function useSortOption(defaultSort: SortOption = "featured"): [SortOption, (sort: SortOption) => void] {
+export function useSortOption(defaultSort: SortOption = "newest"): [SortOption, (sort: SortOption) => void] {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -533,8 +533,8 @@ export function useSortOption(defaultSort: SortOption = "featured"): [SortOption
 
     const setSort = (newSort: SortOption) => {
         const params = new URLSearchParams(searchParams);
-        if (newSort === "featured") {
-            // Remove sort params for default
+        if (newSort === "newest") {
+            // Remove sort params for default (clean URL)
             params.delete("sort");
             params.delete("reverse");
         } else {
@@ -560,10 +560,8 @@ export function mapSortToCollectionSortKey(sort: string): {sortKey: string; reve
         case "price-desc":
             return {sortKey: "PRICE", reverse: true};
         case "newest":
-            return {sortKey: "CREATED", reverse: true};
-        case "featured":
         default:
-            return {sortKey: "COLLECTION_DEFAULT", reverse: false};
+            return {sortKey: "CREATED", reverse: true};
     }
 }
 
@@ -579,9 +577,7 @@ export function mapSortToProductSortKey(sort: string): {sortKey: string; reverse
         case "price-desc":
             return {sortKey: "PRICE", reverse: true};
         case "newest":
-            return {sortKey: "CREATED_AT", reverse: true};
-        case "featured":
         default:
-            return {sortKey: "BEST_SELLING", reverse: false};
+            return {sortKey: "CREATED_AT", reverse: true};
     }
 }

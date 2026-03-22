@@ -702,6 +702,7 @@ export type OrderListItemFragment = Pick<
   fulfillments: {
     nodes: Array<Pick<CustomerAccountAPI.Fulfillment, "status">>;
   };
+  totalPrice: Pick<CustomerAccountAPI.MoneyV2, "amount" | "currencyCode">;
   lineItems: {
     nodes: Array<
       Pick<
@@ -735,6 +736,7 @@ export type CustomerOrdersListFragment = {
         fulfillments: {
           nodes: Array<Pick<CustomerAccountAPI.Fulfillment, "status">>;
         };
+        totalPrice: Pick<CustomerAccountAPI.MoneyV2, "amount" | "currencyCode">;
         lineItems: {
           nodes: Array<
             Pick<
@@ -1082,6 +1084,10 @@ export type CustomerOrdersListQuery = {
           fulfillments: {
             nodes: Array<Pick<CustomerAccountAPI.Fulfillment, "status">>;
           };
+          totalPrice: Pick<
+            CustomerAccountAPI.MoneyV2,
+            "amount" | "currencyCode"
+          >;
           lineItems: {
             nodes: Array<
               Pick<
@@ -1907,7 +1913,7 @@ interface GeneratedQueryTypes {
     return: CustomerOrdersQuery;
     variables: CustomerOrdersQueryVariables;
   };
-  "#graphql\n  #graphql\n  fragment CustomerOrdersList on Customer {\n    orders(\n      sortKey: PROCESSED_AT,\n      reverse: true,\n      first: $first,\n      last: $last,\n      before: $startCursor,\n      after: $endCursor\n    ) {\n      nodes {\n        ...OrderListItem\n      }\n      pageInfo {\n        hasPreviousPage\n        hasNextPage\n        endCursor\n        startCursor\n      }\n    }\n  }\n  #graphql\n  fragment OrderListItem on Order {\n    id\n    name\n    number\n    processedAt\n    fulfillmentStatus\n    fulfillments(first: 1) {\n      nodes {\n        status\n      }\n    }\n    lineItems(first: 20) {\n      nodes {\n        id\n        title\n        name\n        quantity\n        productId\n        variantId\n        price {\n          amount\n          currencyCode\n        }\n        image {\n          url\n          altText\n          width\n          height\n        }\n        variantTitle\n      }\n    }\n  }\n\n\n  query CustomerOrdersList(\n    $endCursor: String\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $language: LanguageCode\n  ) @inContext(language: $language) {\n    customer {\n      ...CustomerOrdersList\n    }\n  }\n": {
+  "#graphql\n  #graphql\n  fragment CustomerOrdersList on Customer {\n    orders(\n      sortKey: PROCESSED_AT,\n      reverse: true,\n      first: $first,\n      last: $last,\n      before: $startCursor,\n      after: $endCursor\n    ) {\n      nodes {\n        ...OrderListItem\n      }\n      pageInfo {\n        hasPreviousPage\n        hasNextPage\n        endCursor\n        startCursor\n      }\n    }\n  }\n  #graphql\n  fragment OrderListItem on Order {\n    id\n    name\n    number\n    processedAt\n    fulfillmentStatus\n    fulfillments(first: 1) {\n      nodes {\n        status\n      }\n    }\n    totalPrice {\n      amount\n      currencyCode\n    }\n    lineItems(first: 20) {\n      nodes {\n        id\n        title\n        name\n        quantity\n        productId\n        variantId\n        price {\n          amount\n          currencyCode\n        }\n        image {\n          url\n          altText\n          width\n          height\n        }\n        variantTitle\n      }\n    }\n  }\n\n\n  query CustomerOrdersList(\n    $endCursor: String\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $language: LanguageCode\n  ) @inContext(language: $language) {\n    customer {\n      ...CustomerOrdersList\n    }\n  }\n": {
     return: CustomerOrdersListQuery;
     variables: CustomerOrdersListQueryVariables;
   };

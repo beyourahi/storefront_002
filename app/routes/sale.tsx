@@ -168,7 +168,7 @@ export default function SalePage() {
             maxDiscount={maxDiscount}
             gridColumns={gridColumns}
             onGridColumnsChange={setGridColumns}
-            sortOption="featured"
+            sortOption="newest"
             onSortChange={noOpSort}
             layoutMode={layoutMode}
             onLayoutModeChange={setLayoutMode}

@@ -35,7 +35,7 @@
 
 import {cn} from "~/lib/utils";
 import type {GridColumns} from "~/lib/gridColumns";
-import {parseProductTitle} from "~/lib/product-title";
+import {parseProductTitle} from "~/lib/product";
 
 interface ProductTitleProps {
     /** Full product title string (may contain " + " delimiter) */

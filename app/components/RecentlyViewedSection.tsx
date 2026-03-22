@@ -42,7 +42,7 @@ import {
     DialogTitle
 } from "~/components/ui/dialog";
 import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
-import {parseProductTitle} from "~/lib/product-title";
+import {parseProductTitle} from "~/lib/product";
 
 // ============================================================================
 // Types

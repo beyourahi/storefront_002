@@ -84,7 +84,7 @@ import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 import {hasSpecialTag} from "~/lib/product-tags";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
-import {parseProductTitle} from "~/lib/product-title";
+import {parseProductTitle} from "~/lib/product";
 
 // =============================================================================
 // META FUNCTION
@@ -116,7 +116,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
                       type: "image" as const
                   }
                 : undefined,
-            jsonLd: generateProductSchema(product, variant)
+            jsonLd: generateProductSchema(product, variant) as any
         }) ?? []
     );
 };
@@ -817,7 +817,7 @@ const RECOMMENDED_PRODUCT_FRAGMENT = `#graphql
 
 // Query to fetch product recommendations
 const RECOMMENDATIONS_QUERY = `#graphql
-  query ProductRecommendations(
+  query ProductPageRecommendations(
     $productId: ID!
     $country: CountryCode
     $language: LanguageCode

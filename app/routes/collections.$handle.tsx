@@ -5,7 +5,7 @@
  * Displays products from a specific Shopify collection with filtering,
  * sorting, and infinite scroll pagination. Features include:
  * - Product grid with configurable layout (grid/list)
- * - Sort options (price, title, date, bestselling)
+ * - Sort options (price, title, date)
  * - Infinite scroll pagination
  * - Sale badge with discounted product count
  * - Responsive column configuration
@@ -98,7 +98,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
                       type: "image" as const
                   }
                 : undefined,
-            jsonLd: generateCollectionSchema(collection, products)
+            jsonLd: generateCollectionSchema(collection, products) as any
         }) ?? []
     );
 };
@@ -123,7 +123,7 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     const url = new URL(request.url);
 
     // Parse sorting params
-    const sortParam = url.searchParams.get("sort") || "featured";
+    const sortParam = url.searchParams.get("sort") || "newest";
     const {sortKey, reverse} = mapSortToCollectionSortKey(sortParam);
 
     if (!handle) {
@@ -206,7 +206,7 @@ export default function Collection() {
     const {collection, collectionsWithCounts, totalProductCount, collectionProductCount, discountCount} =
         useLoaderData<typeof loader>();
     const [gridColumns, setGridColumns] = useGridColumns();
-    const [sortOption, setSortOption] = useSortOption("featured");
+    const [sortOption, setSortOption] = useSortOption("newest");
     const [layoutMode, setLayoutMode] = useLayoutMode();
 
     // Dynamic class based on layout mode and grid columns
@@ -235,8 +235,8 @@ export default function Collection() {
             case "title-desc":
                 comparator = (a, b) => b.title.localeCompare(a.title);
                 break;
-            // For "featured" and "newest", rely on Shopify's pre-sorting (no comparator needed)
-            // Shopify's COLLECTION_DEFAULT and CREATED sortKeys provide the correct order
+            // For "newest", rely on Shopify's pre-sorting (no comparator needed)
+            // Shopify's CREATED sortKey provides the correct order
         }
 
         return sortWithPinnedFirst(products, comparator);

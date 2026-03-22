@@ -18,16 +18,6 @@ import {useEffect} from "react";
 // Type Definitions
 // ================================================================================
 
-/**
- * Extend Window interface to include GTM dataLayer
- * dataLayer is an array of event objects pushed by GTM integration
- */
-declare global {
-    interface Window {
-        dataLayer: Record<string, unknown>[];
-    }
-}
-
 // ================================================================================
 // GTM Analytics Component
 // ================================================================================

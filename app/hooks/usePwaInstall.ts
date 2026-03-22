@@ -84,6 +84,16 @@ interface ManifestData {
     icons?: Array<{src: string; sizes: string; type?: string}>;
 }
 
+declare global {
+    interface Window {
+        __pwaInstallPromptEvent?: BeforeInstallPromptEvent;
+        dataLayer?: Array<Record<string, unknown>>;
+    }
+    interface Navigator {
+        standalone?: boolean;
+    }
+}
+
 interface UsePwaInstallReturn {
     /** beforeinstallprompt event is available (Android/Desktop Chrome) */
     canInstall: boolean;
@@ -139,7 +149,7 @@ function detectStandaloneMode(): boolean {
     const matchesStandalone = window.matchMedia("(display-mode: standalone)").matches;
 
     // Check iOS-specific property
-    const iosStandalone = (navigator as {standalone?: boolean}).standalone === true;
+    const iosStandalone = navigator.standalone === true;
 
     return matchesStandalone || iosStandalone;
 }
@@ -246,7 +256,7 @@ export function usePwaInstall(): UsePwaInstallReturn {
 
         // Check for pre-captured event from head script (for mobile browsers)
         if (window.__pwaInstallPromptEvent) {
-            deferredPromptRef.current = window.__pwaInstallPromptEvent as BeforeInstallPromptEvent;
+            deferredPromptRef.current = window.__pwaInstallPromptEvent;
             setCanInstall(true);
             delete window.__pwaInstallPromptEvent;
         }

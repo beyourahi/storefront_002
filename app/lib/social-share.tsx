@@ -41,7 +41,7 @@
 
 import type {ProductFragment} from "storefrontapi.generated";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
-import {parseProductTitle} from "~/lib/product-title";
+import {parseProductTitle} from "~/lib/product";
 
 // Types
 export interface ShareData {

@@ -496,8 +496,20 @@ export type MenuCollectionsQuery = {
     nodes: Array<
       Pick<
         StorefrontAPI.Product,
-        "id" | "title" | "productType" | "availableForSale"
+        "id" | "handle" | "title" | "productType" | "availableForSale"
       > & {
+        featuredImage?: StorefrontAPI.Maybe<
+          Pick<
+            StorefrontAPI.Image,
+            "id" | "url" | "altText" | "width" | "height"
+          >
+        >;
+        priceRange: {
+          minVariantPrice: Pick<
+            StorefrontAPI.MoneyV2,
+            "amount" | "currencyCode"
+          >;
+        };
         variants: {
           nodes: Array<
             Pick<StorefrontAPI.ProductVariant, "availableForSale"> & {
@@ -1441,6 +1453,37 @@ export type PwaManifestQuery = {
   >;
 };
 
+export type PolicyFragment = Pick<
+  StorefrontAPI.ShopPolicy,
+  "body" | "handle" | "id" | "title" | "url"
+>;
+
+export type PolicyContentQueryVariables = StorefrontAPI.Exact<{
+  privacyPolicy: StorefrontAPI.Scalars["Boolean"]["input"];
+  shippingPolicy: StorefrontAPI.Scalars["Boolean"]["input"];
+  termsOfService: StorefrontAPI.Scalars["Boolean"]["input"];
+  refundPolicy: StorefrontAPI.Scalars["Boolean"]["input"];
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+}>;
+
+export type PolicyContentQuery = {
+  shop: {
+    privacyPolicy?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ShopPolicy, "body" | "handle" | "id" | "title" | "url">
+    >;
+    shippingPolicy?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ShopPolicy, "body" | "handle" | "id" | "title" | "url">
+    >;
+    termsOfService?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ShopPolicy, "body" | "handle" | "id" | "title" | "url">
+    >;
+    refundPolicy?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ShopPolicy, "body" | "handle" | "id" | "title" | "url">
+    >;
+  };
+};
+
 export type ShopShippingMetafieldFragment = {
   freeShippingThreshold?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Metafield, "value" | "type">
@@ -2131,6 +2174,130 @@ export type CustomerCreateMutation = {
       Pick<StorefrontAPI.CustomerUserError, "code" | "field" | "message">
     >;
   }>;
+};
+
+export type ProductRecommendationsQueryVariables = StorefrontAPI.Exact<{
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+  productId: StorefrontAPI.Scalars["ID"]["input"];
+}>;
+
+export type ProductRecommendationsQuery = {
+  productRecommendations?: StorefrontAPI.Maybe<
+    Array<
+      Pick<
+        StorefrontAPI.Product,
+        "id" | "title" | "handle" | "availableForSale"
+      > & {
+        featuredImage?: StorefrontAPI.Maybe<
+          Pick<
+            StorefrontAPI.Image,
+            "id" | "url" | "altText" | "width" | "height"
+          >
+        >;
+        images: {
+          nodes: Array<
+            Pick<
+              StorefrontAPI.Image,
+              "id" | "url" | "altText" | "width" | "height"
+            >
+          >;
+        };
+        priceRange: {
+          minVariantPrice: Pick<
+            StorefrontAPI.MoneyV2,
+            "amount" | "currencyCode"
+          >;
+          maxVariantPrice: Pick<
+            StorefrontAPI.MoneyV2,
+            "amount" | "currencyCode"
+          >;
+        };
+        variants: {
+          nodes: Array<
+            Pick<
+              StorefrontAPI.ProductVariant,
+              "id" | "title" | "availableForSale" | "quantityAvailable"
+            > & {
+              selectedOptions: Array<
+                Pick<StorefrontAPI.SelectedOption, "name" | "value">
+              >;
+              price: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+              compareAtPrice?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">
+              >;
+            }
+          >;
+        };
+      }
+    >
+  >;
+};
+
+export type QuickAddProductQueryVariables = StorefrontAPI.Exact<{
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  handle: StorefrontAPI.Scalars["String"]["input"];
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+}>;
+
+export type QuickAddProductQuery = {
+  product?: StorefrontAPI.Maybe<
+    Pick<
+      StorefrontAPI.Product,
+      | "id"
+      | "title"
+      | "handle"
+      | "description"
+      | "tags"
+      | "vendor"
+      | "productType"
+      | "availableForSale"
+    > & {
+      featuredImage?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+      >;
+      images: {
+        nodes: Array<
+          Pick<
+            StorefrontAPI.Image,
+            "id" | "url" | "altText" | "width" | "height"
+          >
+        >;
+      };
+      options: Array<
+        Pick<StorefrontAPI.ProductOption, "name"> & {
+          optionValues: Array<Pick<StorefrontAPI.ProductOptionValue, "name">>;
+        }
+      >;
+      priceRange: {
+        minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+        maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+      };
+      variants: {
+        nodes: Array<
+          Pick<
+            StorefrontAPI.ProductVariant,
+            "id" | "title" | "availableForSale" | "quantityAvailable"
+          > & {
+            selectedOptions: Array<
+              Pick<StorefrontAPI.SelectedOption, "name" | "value">
+            >;
+            price: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+            compareAtPrice?: StorefrontAPI.Maybe<
+              Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">
+            >;
+            image?: StorefrontAPI.Maybe<
+              Pick<
+                StorefrontAPI.Image,
+                "id" | "url" | "altText" | "width" | "height"
+              >
+            >;
+          }
+        >;
+      };
+      seo: Pick<StorefrontAPI.Seo, "title" | "description">;
+    }
+  >;
 };
 
 export type WishlistProductFragment = { __typename: "Product" } & Pick<
@@ -2940,11 +3107,6 @@ export type GalleryProductsQuery = {
     pageInfo: Pick<StorefrontAPI.PageInfo, "hasNextPage" | "endCursor">;
   };
 };
-
-export type PolicyFragment = Pick<
-  StorefrontAPI.ShopPolicy,
-  "body" | "handle" | "id" | "title" | "url"
->;
 
 export type PolicyQueryVariables = StorefrontAPI.Exact<{
   country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
@@ -3771,13 +3933,13 @@ export type RecommendedProductFragment = Pick<
   };
 };
 
-export type ProductRecommendationsQueryVariables = StorefrontAPI.Exact<{
+export type ProductPageRecommendationsQueryVariables = StorefrontAPI.Exact<{
   productId: StorefrontAPI.Scalars["ID"]["input"];
   country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
   language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
 }>;
 
-export type ProductRecommendationsQuery = {
+export type ProductPageRecommendationsQuery = {
   productRecommendations?: StorefrontAPI.Maybe<
     Array<
       Pick<
@@ -4495,7 +4657,7 @@ interface GeneratedQueryTypes {
     return: FooterQuery;
     variables: FooterQueryVariables;
   };
-  "#graphql\n  query MenuCollections(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        products(first: 250) {\n          nodes {\n            id\n            title\n            productType\n            availableForSale\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      nodes {\n        id\n        title\n        productType\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
+  "#graphql\n  query MenuCollections(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        products(first: 250) {\n          nodes {\n            id\n            title\n            productType\n            availableForSale\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      nodes {\n        id\n        handle\n        title\n        productType\n        availableForSale\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
     return: MenuCollectionsQuery;
     variables: MenuCollectionsQueryVariables;
   };
@@ -4510,6 +4672,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query PwaManifest(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    # Site settings for brand identity and PWA icons\n    siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {\n      ...SiteSettings\n    }\n    # Theme settings for colors (converted to HEX for manifest)\n    themeSettings: metaobject(handle: {type: "theme_settings", handle: "main"}) {\n      ...ThemeSettings\n    }\n  }\n  #graphql\n  fragment SiteSettings on Metaobject {\n    id\n    handle\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # BRAND IDENTITY\n    # ─────────────────────────────────────────────────────────────────────────\n    brandName: field(key: "brand_name") { value }\n    # List of single line text - Shopify returns JSON array of strings\n    brandWords: field(key: "words_to_describe_your_brand") { value }\n    missionStatement: field(key: "brand_mission") { value }\n    brandLogo: field(key: "brand_logo") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # HERO SECTION\n    # ─────────────────────────────────────────────────────────────────────────\n    heroHeading: field(key: "hero_main_heading") { value }\n    heroDescription: field(key: "hero_description_text") { value }\n    featuredProductSection: field(key: "featured_product_section") {\n      reference {\n        ... on Product {\n          __typename\n          id\n          handle\n          title\n          vendor\n          description\n          availableForSale\n          featuredImage {\n            url\n            altText\n            width\n            height\n          }\n          priceRange {\n            minVariantPrice {\n              amount\n              currencyCode\n            }\n            maxVariantPrice {\n              amount\n              currencyCode\n            }\n          }\n          compareAtPriceRange {\n            minVariantPrice {\n              amount\n              currencyCode\n            }\n          }\n          selectedOrFirstAvailableVariant(\n            selectedOptions: []\n            ignoreUnknownOptions: true\n            caseInsensitiveMatch: true\n          ) {\n            id\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n        }\n      }\n    }\n    heroMediaMobile: field(key: "hero_background_media_mobile") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    heroMediaLargeScreen: field(key: "hero_background_media_large_screen") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SEO DEFAULTS\n    # ─────────────────────────────────────────────────────────────────────────\n    siteUrl: field(key: "website_url") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # CONTACT INFORMATION\n    # ─────────────────────────────────────────────────────────────────────────\n    contactEmail: field(key: "contact_email") { value }\n    contactPhone: field(key: "contact_phone") { value }\n    businessHours: field(key: "business_hours") { value }\n    streetAddress: field(key: "street_address") { value }\n    city: field(key: "city") { value }\n    state: field(key: "state_province") { value }\n    zipCode: field(key: "postal_code") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SECTION HEADINGS\n    # ─────────────────────────────────────────────────────────────────────────\n    blogSectionTitle: field(key: "blog_section_heading") { value }\n    collectionsTitle: field(key: "collections_section_heading") { value }\n    relatedProductsTitle: field(key: "related_products_heading") { value }\n    recommendedTitle: field(key: "recommended_products_heading") { value }\n    instagramTitle: field(key: "instagram_section_heading") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PAGE HEADINGS (Gallery & Blog)\n    # ─────────────────────────────────────────────────────────────────────────\n    galleryPageHeading: field(key: "gallery_page_heading") { value }\n    galleryPageDescription: field(key: "gallery_page_description") { value }\n    blogPageHeading: field(key: "blog_page_heading") { value }\n    blogPageDescription: field(key: "blog_page_description") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PROMOTIONAL BANNERS\n    # ─────────────────────────────────────────────────────────────────────────\n    # announcement_banner_text is now a "List of single line text" field in Shopify\n    # Returns JSON array of strings: ["text1", "text2", ...]\n    announcementBanner: field(key: "announcement_banner_text") { value }\n    promotionalBannerOneMedia: field(key: "promotional_banner_one_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    promotionalBannerTwoMedia: field(key: "promotional_banner_two_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # COLLECTIONS\n    # ─────────────────────────────────────────────────────────────────────────\n\n    # List of links field - Shopify returns [{text, url}, ...] where text is the platform name\n    socialLinksData: field(key: "social_links_data") { value }\n\n    # JSON array: [{customerName, location, rating, text, avatarUrl}, ...]\n    testimonialsData: field(key: "testimonials_data") { value }\n\n    # JSON array: [{question, answer}, ...]\n    faqItemsData: field(key: "faq_items_data") { value }\n\n    # List of file references (images/videos)\n    instagramMediaData: field(key: "instagram_images_data") {\n      references(first: 20) {\n        nodes {\n          ... on MediaImage {\n            __typename\n            id\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n          ... on Video {\n            __typename\n            id\n            sources {\n              url\n              mimeType\n            }\n            previewImage {\n              url\n              altText\n            }\n            alt\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # FAVICON (File reference - MediaImage only)\n    # Dynamic favicon served from /favicon.ico route\n    # ─────────────────────────────────────────────────────────────────────────\n    favicon: field(key: "favicon") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PWA ICONS (File references - MediaImage only)\n    # Required for Progressive Web App installability\n    # ─────────────────────────────────────────────────────────────────────────\n    icon192: field(key: "icon_192") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon512: field(key: "icon_512") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon180Apple: field(key: "icon_180_apple") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment ThemeSettings on Metaobject {\n    id\n    handle\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # FONTS (Google Font family names)\n    # These semantic names map to CSS variable roles:\n    # - body_font → --font-sans (paragraphs, buttons, labels, UI text)\n    # - heading_font → --font-serif (h1-h6, hero text, section titles)\n    # - price_font → --font-mono (prices, quantities, codes, tabular data)\n    # ─────────────────────────────────────────────────────────────────────────\n    fontBody: field(key: "body_font") { value }\n    fontHeading: field(key: "heading_font") { value }\n    fontPrice: field(key: "price_font") { value }\n    borderRadius: field(key: "border_radius") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # COLORS (OKLCH or HEX format)\n    # 5 core colors that derive 25+ CSS variables via theme-utils.ts\n    # ─────────────────────────────────────────────────────────────────────────\n    colorPrimary: field(key: "color_primary") { value }\n    colorSecondary: field(key: "color_secondary") { value }\n    colorBackground: field(key: "color_background") { value }\n    colorForeground: field(key: "color_foreground") { value }\n    colorAccent: field(key: "color_accent") { value }\n  }\n\n': {
     return: PwaManifestQuery;
     variables: PwaManifestQueryVariables;
+  };
+  '#graphql\n    #graphql\n    fragment Policy on ShopPolicy {\n        body       # HTML content of the policy\n        handle     # URL-safe identifier (e.g., "privacy-policy")\n        id         # Shopify global ID\n        title      # Display title (e.g., "Privacy Policy")\n        url        # Canonical URL for the policy\n    }\n\n\n    query PolicyContent(\n        $privacyPolicy: Boolean!\n        $shippingPolicy: Boolean!\n        $termsOfService: Boolean!\n        $refundPolicy: Boolean!\n        $country: CountryCode\n        $language: LanguageCode\n    ) @inContext(country: $country, language: $language) {\n        shop {\n            privacyPolicy @include(if: $privacyPolicy) {\n                ...Policy\n            }\n            shippingPolicy @include(if: $shippingPolicy) {\n                ...Policy\n            }\n            termsOfService @include(if: $termsOfService) {\n                ...Policy\n            }\n            refundPolicy @include(if: $refundPolicy) {\n                ...Policy\n            }\n        }\n    }\n': {
+    return: PolicyContentQuery;
+    variables: PolicyContentQueryVariables;
   };
   "#graphql\n  fragment CartSuggestionProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    variants(first: 1) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CartSuggestions(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 16, sortKey: BEST_SELLING) {\n      nodes {\n        ...CartSuggestionProduct\n      }\n    }\n  }\n": {
     return: CartSuggestionsQuery;
@@ -4570,6 +4736,14 @@ interface GeneratedQueryTypes {
   "#graphql\n  query OrderProductHandles(\n    $ids: [ID!]!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    nodes(ids: $ids) {\n      ... on Product {\n        __typename\n        id\n        handle\n      }\n    }\n  }\n": {
     return: OrderProductHandlesQuery;
     variables: OrderProductHandlesQueryVariables;
+  };
+  "#graphql\n  query ProductRecommendations(\n    $country: CountryCode\n    $language: LanguageCode\n    $productId: ID!\n  ) @inContext(country: $country, language: $language) {\n    productRecommendations(productId: $productId) {\n      id\n      title\n      handle\n      availableForSale\n      featuredImage {\n        id\n        url\n        altText\n        width\n        height\n      }\n      images(first: 4) {\n        nodes {\n          id\n          url\n          altText\n          width\n          height\n        }\n      }\n      priceRange {\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n        maxVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      variants(first: 100) {\n        nodes {\n          id\n          title\n          availableForSale\n          quantityAvailable\n          selectedOptions {\n            name\n            value\n          }\n          price {\n            amount\n            currencyCode\n          }\n          compareAtPrice {\n            amount\n            currencyCode\n          }\n        }\n      }\n    }\n  }\n": {
+    return: ProductRecommendationsQuery;
+    variables: ProductRecommendationsQueryVariables;
+  };
+  "#graphql\n  query QuickAddProduct(\n    $country: CountryCode\n    $handle: String!\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    product(handle: $handle) {\n      id\n      title\n      handle\n      description\n      tags\n      vendor\n      productType\n      availableForSale\n      featuredImage {\n        id\n        url\n        altText\n        width\n        height\n      }\n      images(first: 20) {\n        nodes {\n          id\n          url\n          altText\n          width\n          height\n        }\n      }\n      options {\n        name\n        optionValues {\n          name\n        }\n      }\n      priceRange {\n        minVariantPrice {\n          amount\n          currencyCode\n        }\n        maxVariantPrice {\n          amount\n          currencyCode\n        }\n      }\n      variants(first: 100) {\n        nodes {\n          id\n          title\n          availableForSale\n          quantityAvailable\n          selectedOptions {\n            name\n            value\n          }\n          price {\n            amount\n            currencyCode\n          }\n          compareAtPrice {\n            amount\n            currencyCode\n          }\n          image {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n      seo {\n        title\n        description\n      }\n    }\n  }\n": {
+    return: QuickAddProductQuery;
+    variables: QuickAddProductQueryVariables;
   };
   "#graphql\n    fragment WishlistProduct on Product {\n        __typename\n        id\n        title\n        handle\n        availableForSale\n        featuredImage {\n            id\n            url\n            altText\n            width\n            height\n        }\n        images(first: 4) {\n            nodes {\n                id\n                url\n                altText\n                width\n                height\n            }\n        }\n        priceRange {\n            minVariantPrice {\n                amount\n                currencyCode\n            }\n            maxVariantPrice {\n                amount\n                currencyCode\n            }\n        }\n        compareAtPriceRange {\n            minVariantPrice {\n                amount\n                currencyCode\n            }\n        }\n        variants(first: 100) {\n            nodes {\n                id\n                title\n                availableForSale\n                selectedOptions {\n                    name\n                    value\n                }\n                price {\n                    amount\n                    currencyCode\n                }\n                compareAtPrice {\n                    amount\n                    currencyCode\n                }\n            }\n        }\n    }\n\n    query WishlistProducts($ids: [ID!]!) {\n        nodes(ids: $ids) {\n            ... on Product {\n                ...WishlistProduct\n            }\n        }\n    }\n": {
     return: WishlistProductsQuery;
@@ -4639,9 +4813,9 @@ interface GeneratedQueryTypes {
     return: SidebarCollectionsProductQuery;
     variables: SidebarCollectionsProductQueryVariables;
   };
-  "#graphql\n  query ProductRecommendations(\n    $productId: ID!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    productRecommendations(productId: $productId) {\n      ...RecommendedProduct\n    }\n  }\n  #graphql\n  fragment RecommendedProduct on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n": {
-    return: ProductRecommendationsQuery;
-    variables: ProductRecommendationsQueryVariables;
+  "#graphql\n  query ProductPageRecommendations(\n    $productId: ID!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    productRecommendations(productId: $productId) {\n      ...RecommendedProduct\n    }\n  }\n  #graphql\n  fragment RecommendedProduct on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n": {
+    return: ProductPageRecommendationsQuery;
+    variables: ProductPageRecommendationsQueryVariables;
   };
   '#graphql\n  query DiscountsPage(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    products(\n      first: $first\n      last: $last\n      before: $startCursor\n      after: $endCursor\n      query: "available_for_sale:true"\n    ) {\n      nodes {\n        ...DiscountProduct\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment DiscountProduct on Product {\n    id\n    handle\n    title\n    availableForSale\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 250) {\n      nodes {\n        ...DiscountVariant\n      }\n    }\n  }\n  #graphql\n  fragment DiscountVariant on ProductVariant {\n    id\n    availableForSale\n    price {\n      amount\n      currencyCode\n    }\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n  }\n\n\n': {
     return: DiscountsPageQuery;

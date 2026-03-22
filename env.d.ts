@@ -11,4 +11,10 @@ declare global {
     interface Env {
         PUBLIC_GTM_CONTAINER_ID?: string;
     }
+
+    interface Window {
+        dataLayer?: Array<Record<string, unknown>>;
+    }
 }
+
+export {};

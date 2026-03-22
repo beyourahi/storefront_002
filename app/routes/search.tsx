@@ -69,7 +69,7 @@ import {Button} from "~/components/ui/button";
 import {Search, AlertCircle, Package, FolderOpen, Newspaper, SearchX, Calendar, Clock, TrendingUp} from "lucide-react";
 import {cn} from "~/lib/utils";
 import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
-import {parseProductTitle} from "~/lib/product-title";
+import {parseProductTitle} from "~/lib/product";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";

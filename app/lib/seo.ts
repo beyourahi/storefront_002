@@ -49,19 +49,30 @@
  * ```
  */
 
+/**
+ * schema-dts types (WithContext<Product>, etc.) are deeply recursive unions that
+ * can cause TypeScript "Maximum call stack size exceeded" errors during type
+ * checking. We import them only for JSDoc documentation; runtime return objects
+ * conform to Schema.org spec without formal type annotations on the return
+ * position. If TypeScript is upgraded or the issue is resolved upstream, the
+ * return types can be restored.
+ */
 import type {WithContext, Organization, WebSite, Product, ItemList, BlogPosting, FAQPage} from "schema-dts";
 import type {SiteSettings, ThemeConfig} from "types";
 import {STORE_LOCALE} from "~/lib/store-locale";
 import {toHex} from "./color";
 
+/** Lightweight stand-in for schema-dts WithContext — avoids TS stack overflow on deep union resolution */
+type JsonLdSchema = Record<string, unknown>;
+
 type SeoSiteSettings = Partial<Pick<SiteSettings, "brandName" | "brandLogo" | "missionStatement" | "siteUrl">>;
 
-const FALLBACK_BRAND_NAME = "Your Store";
+const FALLBACK_BRAND_NAME = "Store";
 const FALLBACK_SITE_URL = "https://example.com";
 const FALLBACK_SEO_TITLE_SUFFIX = "Quality Products";
 const FALLBACK_SEO_TITLE = `${FALLBACK_BRAND_NAME} | ${FALLBACK_SEO_TITLE_SUFFIX}`;
 const FALLBACK_SEO_DESCRIPTION =
-    "Quality products curated for the discerning shopper. Find items built to last, designed with purpose, and selected for their exceptional value.";
+    "Your store. Your story. Built to sell.";
 
 // Site-wide SEO configuration (uses centralized fallbacks, can be overridden with metaobject data)
 export const SEO_CONFIG = {
@@ -166,7 +177,7 @@ export function formatSchemaDate(date: string | Date): string {
 export function generateOrganizationSchema(
     siteSettings?: SeoSiteSettings | null,
     socialLinks?: Array<{url: string}>
-): WithContext<Organization> {
+): JsonLdSchema {
     const defaults = getSeoDefaults(siteSettings);
     return {
         "@context": "https://schema.org",
@@ -184,7 +195,7 @@ export function generateOrganizationSchema(
  */
 export function generateWebsiteSchema(
     siteSettings?: SeoSiteSettings | null
-): WithContext<WebSite> {
+): JsonLdSchema {
     const defaults = getSeoDefaults(siteSettings);
     return {
         "@context": "https://schema.org",
@@ -219,7 +230,7 @@ export function generateProductSchema(
         compareAtPrice?: {amount: string; currencyCode: string} | null;
         availableForSale?: boolean;
     } | null
-): WithContext<Product> {
+): JsonLdSchema {
     const images = product.images?.nodes?.map(img => img.url) || [];
 
     return {
@@ -263,7 +274,7 @@ export function generateCollectionSchema(
         title: string;
         handle: string;
     }> | null
-): WithContext<ItemList> {
+): JsonLdSchema {
     return {
         "@context": "https://schema.org",
         "@type": "ItemList",
@@ -295,7 +306,7 @@ export function generateBlogPostingSchema(
     },
     blogHandle: string,
     brandName?: string
-): WithContext<BlogPosting> {
+): JsonLdSchema {
     const siteName = brandName || SEO_CONFIG.siteName;
     return {
         "@context": "https://schema.org",
@@ -329,7 +340,7 @@ export function generateBlogPostingSchema(
 /**
  * Generate FAQPage schema
  */
-export function generateFAQPageSchema(faqs: Array<{question: string; answer: string}>): WithContext<FAQPage> {
+export function generateFAQPageSchema(faqs: Array<{question: string; answer: string}>): JsonLdSchema {
     return {
         "@context": "https://schema.org",
         "@type": "FAQPage",
