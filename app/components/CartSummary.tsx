@@ -247,8 +247,8 @@ function FreeShippingProgress({cart, shippingConfig, isPage = true}: FreeShippin
                         ? "bg-success/10 ring-1 ring-success/20"
                         : "bg-success-on-dark/20 ring-1 ring-success-on-dark/30"
                     : isPage
-                      ? "bg-muted/50"
-                      : "bg-overlay-light"
+                      ? "bg-muted/40"
+                      : "bg-primary-foreground/[0.07]"
             )}
         >
             {/* Success celebration glow effect */}
@@ -586,7 +586,7 @@ function CartOrderNote({note, isPage}: {note?: string | null; isPage: boolean}) 
                     className={cn(
                         "min-h-16 sm:min-h-20 resize-none text-sm sm:text-base",
                         !isPage &&
-                            "bg-overlay-light border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/70 focus-visible:border-primary-foreground focus-visible:ring-primary-foreground/30"
+                            "bg-primary-foreground/[0.07] border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/70 focus-visible:border-primary-foreground/50 focus-visible:ring-primary-foreground/30"
                     )}
                 />
                 <div className="flex items-center justify-between text-sm sm:text-sm">

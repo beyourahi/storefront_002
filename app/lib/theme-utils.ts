@@ -671,17 +671,22 @@ function deriveBrandRoles(
         l: clamp(parseOklch(seeds.brandAccent)?.l ?? primaryParsed.l, seeds.isDark ? 0.70 : 0.42, seeds.isDark ? 0.88 : 0.76)
     });
 
+    // Canvas-adaptive subtle backgrounds: derive lightness relative to surfaceCanvas
+    // so subtle colors always sit just below the canvas rather than at a fixed value.
+    // Chroma caps are intentionally low to produce "barely there" tints, not visible washes.
+    const canvasL = parseOklch(surfaces.surfaceCanvas)?.l ?? (seeds.isDark ? 0.15 : 0.98);
+
     const brandPrimarySubtle = seeds.isDark
-        ? makeOklch(0.30, Math.min(primaryParsed.c * 0.45, 0.09), primaryParsed.h)
-        : makeOklch(0.93, Math.min(primaryParsed.c * 0.30, 0.06), primaryParsed.h);
+        ? makeOklch(clamp(canvasL + 0.08, 0.20, 0.28), Math.min(primaryParsed.c * 0.30, 0.05), primaryParsed.h)
+        : makeOklch(clamp(canvasL - 0.015, 0.95, 0.98), Math.min(primaryParsed.c * 0.18, 0.03), primaryParsed.h);
 
     const brandSecondarySubtle = seeds.isDark
-        ? makeOklch(0.28, Math.min((parseOklch(secondary)?.c ?? primaryParsed.c) * 0.45, 0.08), parseOklch(secondary)?.h ?? primaryParsed.h)
-        : makeOklch(0.94, Math.min((parseOklch(secondary)?.c ?? primaryParsed.c) * 0.28, 0.05), parseOklch(secondary)?.h ?? primaryParsed.h);
+        ? makeOklch(clamp(canvasL + 0.06, 0.18, 0.26), Math.min((parseOklch(secondary)?.c ?? primaryParsed.c) * 0.30, 0.04), parseOklch(secondary)?.h ?? primaryParsed.h)
+        : makeOklch(clamp(canvasL - 0.010, 0.96, 0.985), Math.min((parseOklch(secondary)?.c ?? primaryParsed.c) * 0.16, 0.025), parseOklch(secondary)?.h ?? primaryParsed.h);
 
     const brandAccentSubtle = seeds.isDark
-        ? makeOklch(0.32, Math.min((parseOklch(accent)?.c ?? primaryParsed.c) * 0.45, 0.10), parseOklch(accent)?.h ?? primaryParsed.h)
-        : makeOklch(0.92, Math.min((parseOklch(accent)?.c ?? primaryParsed.c) * 0.30, 0.07), parseOklch(accent)?.h ?? primaryParsed.h);
+        ? makeOklch(clamp(canvasL + 0.10, 0.22, 0.30), Math.min((parseOklch(accent)?.c ?? primaryParsed.c) * 0.30, 0.06), parseOklch(accent)?.h ?? primaryParsed.h)
+        : makeOklch(clamp(canvasL - 0.020, 0.94, 0.975), Math.min((parseOklch(accent)?.c ?? primaryParsed.c) * 0.18, 0.035), parseOklch(accent)?.h ?? primaryParsed.h);
 
     return {
         brandPrimary: primary,
