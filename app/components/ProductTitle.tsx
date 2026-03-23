@@ -98,8 +98,8 @@ export function ProductTitle({
     const primaryColor = useLightText ? "text-primary-foreground" : "text-primary";
     const secondaryColor = useLightText ? "text-primary-foreground/70" : "text-muted-foreground opacity-75";
 
-    // PDP variant uses negative margin to reduce gap between title parts
-    const primaryMargin = variant === "pdp" ? "-mb-2" : "";
+    // PDP variant adds spacing between primary and secondary title parts
+    const primaryMargin = variant === "pdp" ? "mb-2" : "";
 
     return (
         <div className={cn(className)}>
@@ -107,10 +107,11 @@ export function ProductTitle({
             <h2
                 className={cn(
                     fontFamily,
-                    "font-medium leading-tight mb-0",
+                    "font-medium mb-0",
                     primaryColor,
                     fontSizes.primary,
-                    primaryMargin
+                    primaryMargin,
+                    "leading-none"
                 )}
             >
                 {primary}
@@ -178,23 +179,23 @@ function getFontSizes(
     }
 
     // PDP variant - hero title sizing for product detail page
-    // Primary: 24px (2xl) - single clean size, no scaling
-    // Secondary: 14px (sm) - compact descriptor below primary
+    // Bold, prominent visual anchor that scales proportionally across breakpoints.
+    // Mobile (full-width container): 30px → Desktop (half-width grid column): 36px → 44px → 48px
+    // Secondary maintains ~1.6–2.0x ratio with primary for cohesive title treatment.
     if (variant === "pdp") {
         return {
-            primary: "text-2xl",
-            secondary: "text-sm"
+            primary: "text-3xl md:text-4xl xl:text-[2.75rem] 2xl:text-5xl",
+            secondary: "text-lg md:text-xl xl:text-2xl"
         };
     }
 
     // Mobile hero variant - serif font, compact spacing, mobile-optimized sizing
     // Used in ProductHeroMobile sticky section with coral background
-    // Primary: 24px (2xl) - matches PDP primary for consistency
-    // Secondary: 14px (sm) - compact descriptor
+    // Matches PDP mobile sizing for consistency (mobile-only context, no md+ breakpoints needed)
     if (variant === "mobile-hero") {
         return {
-            primary: "text-2xl",
-            secondary: "text-sm"
+            primary: "text-3xl",
+            secondary: "text-lg"
         };
     }
 

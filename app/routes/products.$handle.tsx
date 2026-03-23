@@ -405,7 +405,7 @@ export default function Product() {
                                      allowing users to read long descriptions without losing sight of the product image. */}
                             <div className="space-y-6 animate-slide-left-fade" style={{animationDelay: "100ms"}}>
                                 {/* Product Title and Discount Badge
-                                         Title scales progressively: 32px → 40px → 48px → 56px → 64px */}
+                                         Title scales progressively: 30px → 36px → 44px → 48px */}
                                 <div className="space-y-3 mb-12 lg:mb-16 xl:mb-20 2xl:mb-24">
                                     <ProductTitle title={title} variant="pdp" />
                                     <ProductDiscountBadge selectedVariant={selectedVariant} product={product} />
