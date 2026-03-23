@@ -1017,7 +1017,7 @@
     }
 
     .motion-interactive-strong {
-        transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+        transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, flex-grow;
         transition-duration: var(--motion-duration-slow);
         transition-timing-function: var(--motion-ease-emphasized);
     }
@@ -1288,6 +1288,12 @@ select {
     transition-timing-function: var(--motion-ease-standard);
 }
 
+.motion-interactive-strong {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, flex-grow;
+    transition-duration: var(--motion-duration-slow);
+    transition-timing-function: var(--motion-ease-emphasized);
+}
+
 .sleek {
     @apply transform-gpu transition-all duration-200 ease-(--motion-ease-standard);
 }
@@ -1300,8 +1306,8 @@ video,
     transform: translateZ(0);
 }
 
-/* Group hover base timing */
-.group:hover {
+/* Group hover base timing — exclude elements with their own motion override */
+.group:hover:not(.motion-interactive-strong) {
     transition-duration: var(--motion-duration-standard);
     transition-timing-function: var(--motion-ease-standard);
 }

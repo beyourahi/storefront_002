@@ -48,7 +48,7 @@ export type {CuratedCollectionsData, CuratedTab};
  *
  * Tab behavior:
  * - Defaults to second tab (index 1) if available, otherwise first tab
- * - Large serif typography (3xl → 4xl → 6xl → 7xl)
+ * - Large serif typography (3xl → 4xl → 5xl → 6xl → 7xl)
  * - Opacity transition on inactive tabs (25% → 100%)
  */
 export function CuratedCollections({collections}: CuratedCollectionsProps) {
@@ -75,7 +75,7 @@ export function CuratedCollections({collections}: CuratedCollectionsProps) {
                                                 <TabsTrigger
                                                     key={tab.key}
                                                     value={tab.key}
-                                                    className="px-2 sm:px-3 md:px-6 lg:px-8 py-2 font-serif text-xl sm:text-2xl md:text-3xl lg:text-4xl text-primary bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none opacity-25 data-[state=active]:opacity-100 whitespace-nowrap cursor-pointer shrink-0"
+                                                    className="px-2 sm:px-3 md:px-6 lg:px-8 py-2 font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-primary bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none opacity-25 data-[state=active]:opacity-100 whitespace-nowrap cursor-pointer shrink-0"
                                                 >
                                                     {tab.label}
                                                 </TabsTrigger>
@@ -126,7 +126,7 @@ function CuratedCollectionsSkeleton() {
         <div className="space-y-6 sm:space-y-8 md:space-y-12">
             {/* Tab skeleton - responsive sizing matching actual tabs */}
             <div className="flex justify-start sm:justify-center px-3 sm:px-4 md:px-0">
-                <Skeleton className="h-8 sm:h-10 md:h-14 lg:h-16 xl:h-20 w-48 sm:w-64 md:w-100 lg:w-125 rounded-full" />
+                <Skeleton className="h-10 sm:h-12 md:h-16 lg:h-20 xl:h-24 w-48 sm:w-64 md:w-100 lg:w-125 rounded-full" />
             </div>
 
             {/* Product carousel skeleton - matches carousel grid sizing */}
