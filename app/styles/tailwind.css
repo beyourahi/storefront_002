@@ -914,13 +914,25 @@
         @apply text-foreground no-underline;
     }
 
-    /* Keep pointer affordance scoped to real click targets, not generic layout containers. */
+    /* Keep pointer affordance scoped to real click targets, not generic layout containers.
+       Covers native HTML controls, ARIA widget roles (WAI-ARIA 1.2), and Radix UI data-slot triggers. */
     button:not(:disabled),
     a[href],
     label[for],
     [role="button"]:not([aria-disabled="true"]),
     [role="tab"]:not([aria-disabled="true"]),
+    [role="menuitem"]:not([aria-disabled="true"]),
+    [role="menuitemcheckbox"]:not([aria-disabled="true"]),
+    [role="menuitemradio"]:not([aria-disabled="true"]),
+    [role="option"]:not([aria-disabled="true"]),
+    [role="switch"]:not([aria-disabled="true"]),
+    [role="combobox"]:not([aria-disabled="true"]),
+    [role="link"]:not([aria-disabled="true"]),
+    [role="treeitem"]:not([aria-disabled="true"]),
+    [role="gridcell"]:not([aria-disabled="true"]),
     [data-slot="button"]:not([aria-disabled="true"]),
+    [data-slot="collapsible-trigger"]:not([aria-disabled="true"]),
+    [data-slot="alert-dialog-trigger"]:not([aria-disabled="true"]),
     input[type="submit"]:not(:disabled),
     input[type="button"]:not(:disabled),
     input[type="checkbox"]:not(:disabled),

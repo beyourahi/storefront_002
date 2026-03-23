@@ -107,6 +107,10 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                         asChild
                         size="lg"
                         className="group/cta w-full justify-between rounded-[var(--radius-pill-raw)] px-6 py-6 text-sm uppercase tracking-[0.24em] md:w-auto"
+                        style={{
+                            transitionProperty: "background-color, border-color, box-shadow, color, opacity",
+                            backfaceVisibility: "hidden"
+                        }}
                     >
                         <Link to={`/products/${product.handle}`} prefetch="intent">
                             View featured product
