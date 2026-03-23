@@ -7,9 +7,9 @@
  *
  * @features
  * - **Infinite Scroll**: Duplicate tracks create seamless loop effect
- * - **Auto-scroll**: CSS animation with pause on hover/active
+ * - **Auto-scroll**: CSS animation, continuous (no pause on hover)
  * - **Responsive Typography**: 48px → 72px → 96px across breakpoints
- * - **Accessibility**: Respects prefers-reduced-motion, pauses on interaction
+ * - **Accessibility**: Respects prefers-reduced-motion
  * - **CMS Integration**: Brand words from site_settings metaobject
  *
  * @props
@@ -27,26 +27,24 @@ import {useBrandMarquee} from "~/lib/site-content-context";
  *
  * Animation behavior:
  * - Continuous scroll via CSS animation (animate-marquee)
- * - Pauses on hover (desktop) and active/tap (mobile)
+ * - Runs continuously (no pause on hover/tap)
  * - Pauses for users with prefers-reduced-motion
  *
  * Responsive Features:
  * - Font size: 48px → 72px → 96px (mobile → tablet → desktop)
  * - Animation speed: 60s → 80s → 100s (faster on mobile due to smaller content width)
  * - Gap: 32px → 56px (mobile → tablet+)
- * - Pause: Hover on desktop, tap on mobile
  * - Accessibility: Respects prefers-reduced-motion
  */
 export function BrandMarquee() {
     const {words} = useBrandMarquee();
     return (
         <section className="-mx-2 md:-mx-4 py-8 md:py-12 overflow-hidden" aria-label="Brand values">
-            {/* Group container enables hover/active pause on child animations */}
-            <div className="group relative flex cursor-default select-none">
+            <div className="relative flex cursor-default select-none">
                 {/* First marquee track */}
                 <div
                     className="flex shrink-0 animate-marquee will-change-transform
-                        group-hover:paused group-active:paused motion-reduce:paused"
+                        motion-reduce:paused"
                 >
                     {words.map(word => (
                         <span
@@ -61,7 +59,7 @@ export function BrandMarquee() {
                 {/* Duplicate track for seamless loop */}
                 <div
                     className="flex shrink-0 animate-marquee will-change-transform
-                        group-hover:paused group-active:paused motion-reduce:paused"
+                        motion-reduce:paused"
                     aria-hidden="true"
                 >
                     {words.map(word => (
