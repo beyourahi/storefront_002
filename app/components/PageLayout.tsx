@@ -47,8 +47,9 @@
  * - FullScreenMenu.tsx - Mobile navigation menu
  */
 
-import {Await, Link, useLocation} from "react-router";
-import {Suspense, useEffect} from "react";
+import {Await, Link, useAsyncValue, useLocation} from "react-router";
+import {Suspense, useEffect, useState} from "react";
+import type {CartApiQueryFragment} from "storefrontapi.generated";
 import type {PageLayoutProps} from "types";
 import {cn} from "~/lib/utils";
 import type {ShippingConfig} from "~/lib/shipping";
@@ -343,6 +344,37 @@ function CartErrorFallback() {
  * @see root.tsx loadDeferredData - Timeout wrapper implementation
  * @see lib/promise-utils.ts - withTimeoutAndFallback utility
  */
+/**
+ * Resolves auth promises without blocking cart rendering.
+ * Auth status is a progressive enhancement — cart works with defaults (false/false)
+ * while these promises resolve. This prevents auth promises from interfering
+ * with cart reactivity during revalidation.
+ */
+function useResolvedAuth(
+    isLoggedIn: PageLayoutProps["isLoggedIn"],
+    hasStoreCredit: PageLayoutProps["hasStoreCredit"]
+): {isLoggedIn: boolean; hasStoreCredit: boolean} {
+    const [auth, setAuth] = useState({isLoggedIn: false, hasStoreCredit: false});
+
+    useEffect(() => {
+        let cancelled = false;
+        Promise.all([isLoggedIn, hasStoreCredit])
+            .then(([loggedIn, storeCredit]) => {
+                if (!cancelled) {
+                    setAuth({isLoggedIn: !!loggedIn, hasStoreCredit: !!storeCredit});
+                }
+            })
+            .catch(() => {
+                // Defaults (false/false) are safe — features degrade gracefully
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [isLoggedIn, hasStoreCredit]);
+
+    return auth;
+}
+
 function CartSheet({
     cart,
     isLoggedIn,
@@ -360,6 +392,11 @@ function CartSheet({
     // Lock Lenis smooth scroll when cart is open (native scroll lock handled by Radix)
     useScrollLock(isOpen);
 
+    // Resolve auth promises separately so they don't block cart reactivity.
+    // Cart promise must be passed directly to <Await> for React Router to track
+    // it across revalidation cycles — wrapping in Promise.all() breaks this tracking.
+    const resolvedAuth = useResolvedAuth(isLoggedIn, hasStoreCredit);
+
     return (
         <Sheet open={isOpen} onOpenChange={open => !open && close()}>
             <SheetContent
@@ -368,33 +405,42 @@ function CartSheet({
                 hideCloseButton
             >
                 <Suspense fallback={<CartLoadingSkeleton />}>
-                    {/*
-                     * errorElement handles promise rejections gracefully.
-                     * Without this, rejected promises would bubble up and potentially
-                     * crash the app or leave the UI in an inconsistent state.
-                     *
-                     * Note: With withTimeoutAndFallback in root.tsx, promises should
-                     * resolve to fallback values instead of rejecting. The errorElement
-                     * is a safety net for any edge cases we haven't anticipated.
-                     */}
-                    <Await
-                        resolve={Promise.all([cart, isLoggedIn, hasStoreCredit])}
-                        errorElement={<CartErrorFallback />}
-                    >
-                        {([cartData, loggedIn, storeCredit]) => {
-                            return (
-                                <CartMain
-                                    cart={cartData}
-                                    layout="aside"
-                                    isLoggedIn={!!loggedIn}
-                                    hasStoreCredit={!!storeCredit}
-                                    shippingConfig={shippingConfig}
-                                />
-                            );
-                        }}
+                    <Await resolve={cart} errorElement={<CartErrorFallback />}>
+                        <CartSheetContent
+                            isLoggedIn={resolvedAuth.isLoggedIn}
+                            hasStoreCredit={resolvedAuth.hasStoreCredit}
+                            shippingConfig={shippingConfig}
+                        />
                     </Await>
                 </Suspense>
             </SheetContent>
         </Sheet>
+    );
+}
+
+/**
+ * Inner content of the cart sheet, rendered inside <Await resolve={cart}>.
+ * Uses useAsyncValue() to access the resolved cart data — same pattern as
+ * the Header's CartBanner component, which correctly receives optimistic updates.
+ */
+function CartSheetContent({
+    isLoggedIn,
+    hasStoreCredit,
+    shippingConfig
+}: {
+    isLoggedIn: boolean;
+    hasStoreCredit: boolean;
+    shippingConfig?: ShippingConfig;
+}) {
+    const cart = useAsyncValue() as CartApiQueryFragment | null;
+
+    return (
+        <CartMain
+            cart={cart}
+            layout="aside"
+            isLoggedIn={isLoggedIn}
+            hasStoreCredit={hasStoreCredit}
+            shippingConfig={shippingConfig}
+        />
     );
 }
