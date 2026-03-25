@@ -637,6 +637,7 @@ export default function SubscriptionDetail() {
                                                 type="submit"
                                                 name="intent"
                                                 value={SUBSCRIPTION_ACTIONS.CANCEL}
+                                                disabled={isSubmitting}
                                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                             >
                                                 Yes, Cancel Subscription

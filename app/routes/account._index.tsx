@@ -37,7 +37,7 @@
  * - ~/routes/account.tsx - Parent layout route
  */
 
-import {data as remixData, Form, Link, useLoaderData, useOutletContext, useRouteLoaderData} from "react-router";
+import {data as remixData, Form, Link, useLoaderData, useNavigation, useOutletContext, useRouteLoaderData} from "react-router";
 import type {Route} from "./+types/account._index";
 import type {RootLoader} from "~/root";
 import type {CustomerFragment} from "customer-accountapi.generated";
@@ -398,6 +398,8 @@ function WelcomeBanner({customer}: {customer: CustomerFragment}) {
     // Client-side only to avoid hydration mismatch
     // Use fallback greeting initially, then update with time-based greeting
     const [greeting, setGreeting] = useState<string>(accountContent.greetingFallback);
+    const navigation = useNavigation();
+    const isLoggingOut = navigation.state !== "idle" && navigation.formAction === "/account/logout";
 
     useEffect(() => {
         const hour = new Date().getHours();
@@ -438,6 +440,7 @@ function WelcomeBanner({customer}: {customer: CustomerFragment}) {
                             type="submit"
                             variant="outline"
                             size="sm"
+                            disabled={isLoggingOut}
                             className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground hover:border-primary-foreground/50"
                         >
                             {accountContent.logoutButton}
@@ -451,6 +454,7 @@ function WelcomeBanner({customer}: {customer: CustomerFragment}) {
                         type="submit"
                         variant="outline"
                         size="sm"
+                        disabled={isLoggingOut}
                         className="w-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground hover:border-primary-foreground/50"
                     >
                         {accountContent.logoutButton}
