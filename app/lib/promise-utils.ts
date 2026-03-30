@@ -157,5 +157,9 @@ export const TIMEOUT_DEFAULTS = {
     /** Store credit balance - non-critical */
     STORE_CREDIT: 5000, // 5 seconds
     /** General API calls */
-    API: 8000 // 8 seconds
+    API: 8000, // 8 seconds
+    /** Footer menu - deferred, below the fold */
+    FOOTER: 8000, // 8 seconds
+    /** Cart suggestion products - deferred */
+    SUGGESTIONS: 8000 // 8 seconds
 } as const;

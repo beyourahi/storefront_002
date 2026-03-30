@@ -58,8 +58,10 @@ import {parseGid} from "@shopify/hydrogen";
 export async function loader({request, context}: Route.LoaderArgs) {
     const url = new URL(request.url);
 
-    // Fetch shop ID for shop-specific path blocking
-    const {shop} = await context.dataAdapter.query(ROBOTS_QUERY);
+    // Fetch shop ID for shop-specific path blocking (cached: shop ID never changes)
+    const {shop} = await context.dataAdapter.query(ROBOTS_QUERY, {
+        cache: context.dataAdapter.CacheLong()
+    });
 
     const shopId = parseGid(shop.id).id;
     const body = robotsTxtData({url: url.origin, shopId});
@@ -202,3 +204,5 @@ const ROBOTS_QUERY = `#graphql
     }
   }
 ` as const;
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

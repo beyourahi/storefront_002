@@ -59,14 +59,48 @@ import type {Route} from "./+types/api.$version.[graphql.json]";
  * @note Uses checkout domain (not store domain) for API access.
  *       Response body is streamed for optimal performance.
  */
+const VALID_VERSION_PATTERN = /^\d{4}-\d{2}$|^unstable$/;
+
+const ALLOWED_HEADERS = [
+    "content-type",
+    "accept",
+    "x-shopify-storefront-access-token",
+    "x-sdk-version",
+    "x-sdk-variant"
+];
+
+const MAX_BODY_SIZE = 100_000; // 100KB
+
 export async function action({params, context, request}: Route.ActionArgs) {
-    // Proxy the request to Shopify's GraphQL endpoint
+    // Validate API version parameter (YYYY-MM or "unstable")
+    if (!params.version || !VALID_VERSION_PATTERN.test(params.version)) {
+        return new Response(
+            JSON.stringify({error: "Invalid API version"}),
+            {status: 400, headers: {"Content-Type": "application/json"}}
+        );
+    }
+
+    // Reject oversized request bodies
+    const contentLength = request.headers.get("content-length");
+    if (contentLength && parseInt(contentLength, 10) > MAX_BODY_SIZE) {
+        return new Response(
+            JSON.stringify({error: "Request too large"}),
+            {status: 413, headers: {"Content-Type": "application/json"}}
+        );
+    }
+
+    // Forward only allowlisted headers to Shopify (strip cookies, auth, ambient headers)
+    const forwardHeaders = new Headers();
+    for (const name of ALLOWED_HEADERS) {
+        const value = request.headers.get(name);
+        if (value) forwardHeaders.set(name, value);
+    }
+
     const response = await fetch(`https://${context.env.PUBLIC_CHECKOUT_DOMAIN}/api/${params.version}/graphql.json`, {
         method: "POST",
         body: request.body,
-        headers: request.headers
+        headers: forwardHeaders
     });
 
-    // Return the proxied response with original headers
     return new Response(response.body, {headers: new Headers(response.headers)});
 }

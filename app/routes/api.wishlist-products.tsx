@@ -68,14 +68,27 @@ export async function action({request, context}: Route.ActionArgs) {
             return Response.json({products: [], error: null});
         }
 
-        const ids = JSON.parse(idsString) as string[];
+        let ids: unknown;
+        try {
+            ids = JSON.parse(idsString);
+        } catch {
+            return Response.json({products: [], error: "Invalid JSON"}, {status: 400});
+        }
 
         if (!Array.isArray(ids) || ids.length === 0) {
             return Response.json({products: [], error: null});
         }
 
-        // Limit to prevent abuse
-        const limitedIds = ids.slice(0, 50);
+        const GID_PATTERN = /^gid:\/\/shopify\/Product\/\d+$/;
+        const validIds = ids.filter(
+            (id): id is string => typeof id === "string" && GID_PATTERN.test(id)
+        );
+
+        if (validIds.length === 0) {
+            return Response.json({products: [], error: null});
+        }
+
+        const limitedIds = validIds.slice(0, 50);
 
         const response = await dataAdapter.query(WISHLIST_PRODUCTS_QUERY, {
             variables: {ids: limitedIds}
@@ -91,7 +104,7 @@ export async function action({request, context}: Route.ActionArgs) {
         return Response.json({products, error: null});
     } catch (error) {
         console.error("[Wishlist API] Error:", error);
-        return Response.json({products: [], error: "Failed to fetch products"});
+        return Response.json({products: [], error: "Failed to fetch products"}, {status: 500});
     }
 }
 

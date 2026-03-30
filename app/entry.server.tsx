@@ -93,9 +93,6 @@ export default async function handleRequest(
         // Allow video/audio from Shopify CDN (required for hero video metaobject)
         mediaSrc: ["'self'", "https://cdn.shopify.com", "https://*.shopify.com", "https://*.myshopify.com"],
         connectSrc: [
-            // ngrok domain for local development with Customer Account API
-            "wss://hermelinda-nonsegmentary-hettie.ngrok-free.dev:*",
-            "https://hermelinda-nonsegmentary-hettie.ngrok-free.dev",
             // Shopify domains for Customer Account API
             "https://*.shopify.com",
             "https://*.myshopify.com",
@@ -103,7 +100,9 @@ export default async function handleRequest(
             "https://*.google-analytics.com",
             "https://*.analytics.google.com",
             "https://*.googletagmanager.com"
-        ]
+        ],
+        // Prevent clickjacking by blocking all iframe embedding
+        frameAncestors: ["'none'"]
     });
 
     // -------------------------------------------------------------------------

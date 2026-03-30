@@ -73,11 +73,18 @@ export async function loader({request, context, params}: Route.LoaderArgs) {
         const variantId = lineDetails[0];
         const quantity = parseInt(lineDetails[1], 10);
 
+        if (!variantId || !/^\d+$/.test(variantId) || isNaN(quantity) || quantity < 1) {
+            return null;
+        }
+
         return {
             merchandiseId: `gid://shopify/ProductVariant/${variantId}`,
             quantity
         };
-    });
+    }).filter(Boolean);
+
+    // If all lines were invalid, redirect to home
+    if (linesMap.length === 0) return redirect("/");
 
     const url = new URL(request.url);
     const searchParams = new URLSearchParams(url.search);
@@ -123,3 +130,5 @@ export async function loader({request, context, params}: Route.LoaderArgs) {
 export default function Component() {
     return null;
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

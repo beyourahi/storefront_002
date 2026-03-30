@@ -86,19 +86,19 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
     const paginationVariables = getPaginationVariables(request, {pageBy: 24});
 
     const [{products}, sidebarData, {products: allDiscountedProducts}] = await Promise.all([
-        // Discounted products with prices (real-time, no cache) - paginated for display
+        // Discounted products with prices (cached: short for availability)
         dataAdapter.query(DISCOUNTS_QUERY, {
             variables: paginationVariables,
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheShort()
         }),
-        // Sidebar collections with product counts (real-time, no cache)
+        // Sidebar collections with product counts (cached: catalog metadata)
         dataAdapter.query(SIDEBAR_COLLECTIONS_QUERY, {
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheLong()
         }),
-        // Fetch first 250 products to get accurate total count (not paginated)
+        // Fetch first 250 products to get accurate total count (cached: short)
         dataAdapter.query(DISCOUNTS_QUERY, {
             variables: {first: 250},
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheShort()
         })
     ]);
 
@@ -369,3 +369,5 @@ const SIDEBAR_COLLECTIONS_QUERY = `#graphql
     }
   }
 ` as const;
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

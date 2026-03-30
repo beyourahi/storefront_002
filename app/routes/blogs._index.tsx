@@ -139,7 +139,10 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
         blogs.nodes.some((blog: {articles?: {nodes?: unknown[]}}) => (blog.articles?.nodes?.length ?? 0) > 0);
 
     if (!hasRealContent) {
-        throw new Response("Not found", {status: 404});
+        return {
+            blogs: {nodes: [], pageInfo: {hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null}},
+            featuredArticle: null
+        };
     }
 
     return {
@@ -432,3 +435,5 @@ const LATEST_ARTICLES_QUERY = `#graphql
     }
   }
 ` as const;
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

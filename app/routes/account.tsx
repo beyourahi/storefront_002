@@ -48,6 +48,7 @@
  * - account_.login.tsx - Login route (outside layout)
  */
 
+import {useEffect} from "react";
 import {data as remixData, NavLink, Outlet, useLoaderData, useRouteError, isRouteErrorResponse} from "react-router";
 import type {Route} from "./+types/account";
 import {getSeoMeta} from "@shopify/hydrogen";
@@ -278,14 +279,26 @@ export function ErrorBoundary() {
         errorMessage = error.message;
     }
 
-    // Track error via analytics (SSR-safe, runs on client only)
     const errorType = isRouteErrorResponse(error) ? "route_error" : "js_error";
-    if (typeof window !== "undefined") {
-        setTimeout(() => trackErrorBoundary(statusCode, errorType, "account"), 0);
-    }
-
-    // Contextual title for account errors
     const title = statusCode === 404 ? "Account Not Found" : "Account Error";
 
-    return <OfflineAwareErrorPage statusCode={statusCode} title={title} message={errorMessage} />;
+    return (
+        <>
+            <AccountErrorTracker statusCode={statusCode} errorType={errorType} />
+            <OfflineAwareErrorPage statusCode={statusCode} title={title} message={errorMessage} />
+        </>
+    );
+}
+
+function AccountErrorTracker({
+    statusCode,
+    errorType
+}: {
+    statusCode: number;
+    errorType: "route_error" | "js_error";
+}) {
+    useEffect(() => {
+        trackErrorBoundary(statusCode, errorType, "account");
+    }, [statusCode, errorType]);
+    return null;
 }

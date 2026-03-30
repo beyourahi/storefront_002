@@ -29,7 +29,6 @@
  * - LinesUpdate: Change quantities
  * - LinesRemove: Remove items
  * - DiscountCodesUpdate: Apply discount codes
- * - GiftCardCodesUpdate: Apply gift cards (replace all)
  * - GiftCardCodesAdd: Append gift card codes (2026.1.0+)
  * - GiftCardCodesRemove: Remove gift cards
  * - BuyerIdentityUpdate: Set customer info
@@ -102,18 +101,6 @@ export async function action({request, context}: Route.ActionArgs) {
             result = await cart.updateDiscountCodes(discountCodes);
             break;
         }
-        case CartForm.ACTIONS.GiftCardCodesUpdate: {
-            const formGiftCardCode = inputs.giftCardCode;
-
-            // User inputted gift card code
-            const giftCardCodes = (formGiftCardCode ? [formGiftCardCode] : []) as string[];
-
-            // Combine gift card codes already applied on cart
-            giftCardCodes.push(...inputs.giftCardCodes);
-
-            result = await cart.updateGiftCardCodes(giftCardCodes);
-            break;
-        }
         case CartForm.ACTIONS.GiftCardCodesAdd: {
             const giftCardCodes = inputs.giftCardCodes as string[];
             result = await cart.addGiftCardCodes(giftCardCodes);
@@ -167,8 +154,13 @@ export async function action({request, context}: Route.ActionArgs) {
             }
 
             // Step 2: Not a valid discount - remove it from discount codes and try as gift card
-            // First, remove the invalid discount code we just added
-            await cart.updateDiscountCodes(existingDiscountCodes);
+            // Remove the invalid discount code (defensive: don't let cleanup failure block gift card attempt)
+            try {
+                await cart.updateDiscountCodes(existingDiscountCodes);
+            } catch {
+                // Cleanup failed — cart may still have the invalid discount code.
+                // Proceed to gift card attempt regardless.
+            }
 
             // Try as gift card
             const giftCardResult = await cart.updateGiftCardCodes([promoCode, ...existingGiftCardCodes]);
@@ -183,12 +175,17 @@ export async function action({request, context}: Route.ActionArgs) {
     }
 
     const cartId = result?.cart?.id;
-    const headers = cartId ? cart.setCartId(result.cart.id) : new Headers();
+    const headers = cartId ? cart.setCartId(cartId) : new Headers();
     const {cart: cartResult, errors, warnings} = result;
 
     const redirectTo = formData.get("redirectTo") ?? null;
     if (typeof redirectTo === "string") {
-        const destination = redirectTo === "__checkout_url__" ? (cartResult?.checkoutUrl ?? null) : redirectTo;
+        let destination: string | null = null;
+        if (redirectTo === "__checkout_url__") {
+            destination = cartResult?.checkoutUrl ?? null;
+        } else if (redirectTo.startsWith("/") && !redirectTo.startsWith("//")) {
+            destination = redirectTo;
+        }
         if (destination) {
             status = 303;
             headers.set("Location", destination);

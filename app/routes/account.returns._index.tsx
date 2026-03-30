@@ -377,3 +377,5 @@ function ReturnCard({returnItem, index = 0}: {returnItem: ReturnWithOrder; index
         </Link>
     );
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

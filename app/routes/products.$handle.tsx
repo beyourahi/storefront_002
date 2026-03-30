@@ -99,7 +99,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     const variant = product.selectedOrFirstAvailableVariant;
     const {primary, secondary} = parseProductTitle(product.title);
     const title = product.seo?.title || (secondary ? `${primary} + ${secondary}` : primary);
-    const description = product.seo?.description || truncateDescription(stripHtml(product.description));
+    const description = truncateDescription(product.seo?.description || stripHtml(product.description));
     const image = variant?.image || product.images?.nodes?.[0];
 
     return (
@@ -144,14 +144,14 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     }
 
     const [{product}, sidebarData] = await Promise.all([
-        // Product data - variants, prices, inventory (real-time, no cache)
+        // Product data - variants, prices, inventory (cached: short for availability)
         dataAdapter.query(PRODUCT_QUERY, {
             variables: {handle, selectedOptions: getSelectedProductOptions(request)},
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheShort()
         }),
-        // Sidebar collections with product counts (real-time, no cache)
+        // Sidebar collections with product counts (cached: catalog metadata)
         dataAdapter.query(SIDEBAR_COLLECTIONS_QUERY, {
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheLong()
         })
     ]);
 

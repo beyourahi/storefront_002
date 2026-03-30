@@ -457,3 +457,5 @@ function ReturnPolicySection() {
         </Card>
     );
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

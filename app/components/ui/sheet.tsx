@@ -89,19 +89,25 @@ function SheetPortal({...props}: React.ComponentProps<typeof SheetPrimitive.Port
 
 /**
  * Backdrop overlay with blur effect
+ *
+ * Uses forwardRef because SheetContent wraps this in <SheetPrimitive.Close asChild>,
+ * which needs to attach a ref for Radix's focus management and DOM measurement.
  */
-function SheetOverlay({className, ...props}: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
-    return (
-        <SheetPrimitive.Overlay
-            data-slot="sheet-overlay"
-            className={cn(
-                "motion-overlay data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-10000 bg-overlay-dark backdrop-blur-md",
-                className
-            )}
-            {...props}
-        />
-    );
-}
+const SheetOverlay = React.forwardRef<
+    React.ComponentRef<typeof SheetPrimitive.Overlay>,
+    React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
+>(({className, ...props}, ref) => (
+    <SheetPrimitive.Overlay
+        ref={ref}
+        data-slot="sheet-overlay"
+        className={cn(
+            "motion-overlay data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-10000 bg-overlay-dark backdrop-blur-md",
+            className
+        )}
+        {...props}
+    />
+));
+SheetOverlay.displayName = "SheetOverlay";
 
 /**
  * Main sheet content panel with slide animations

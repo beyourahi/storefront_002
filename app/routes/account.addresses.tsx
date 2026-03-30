@@ -46,3 +46,5 @@ export default function Addresses() {
     // This component should never render as the loader always redirects
     return null;
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

@@ -149,3 +149,5 @@ const OrderDetailPage = () => {
 };
 
 export default OrderDetailPage;
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

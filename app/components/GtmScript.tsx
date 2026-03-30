@@ -54,6 +54,9 @@ export function GtmScript({gtmContainerId}: GtmScriptProps) {
     // Don't render anything if no container ID is provided or during SSR
     if (!gtmContainerId || !isClient) return null;
 
+    // Validate GTM container ID format to prevent script injection
+    if (!/^GTM-[A-Z0-9]+$/.test(gtmContainerId)) return null;
+
     return (
         <>
             {/* GTM Head Script - Initializes dataLayer and loads GTM */}

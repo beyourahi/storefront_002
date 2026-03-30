@@ -89,9 +89,10 @@ const CUSTOMER_CREATE_MUTATION = `#graphql
  */
 function generateSecurePassword(): string {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+    const randomBytes = crypto.getRandomValues(new Uint8Array(24));
     let password = "";
     for (let i = 0; i < 24; i++) {
-        password += chars.charAt(Math.floor(Math.random() * chars.length));
+        password += chars.charAt(randomBytes[i] % chars.length);
     }
     return password;
 }
@@ -113,6 +114,13 @@ function generateSecurePassword(): string {
  * Already exists: { success: true, message: "You're already subscribed!" }
  * Error: { success: false, error: "Error message" }
  */
+export async function loader() {
+    return new Response("Method not allowed", {
+        status: 405,
+        headers: {"Allow": "POST"}
+    });
+}
+
 export async function action({request, context}: Route.ActionArgs) {
     const formData = await request.formData();
     const email = formData.get("email");

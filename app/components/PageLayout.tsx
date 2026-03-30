@@ -63,7 +63,7 @@ import {Header} from "~/components/Header";
 import {CartMain} from "~/components/CartMain";
 import {FullScreenMenu} from "~/components/FullScreenMenu";
 import {FullScreenSearch} from "~/components/FullScreenSearch";
-import {Sheet, SheetContent} from "~/components/ui/sheet";
+import {Sheet, SheetContent, SheetTitle, SheetDescription} from "~/components/ui/sheet";
 import {Skeleton} from "~/components/ui/skeleton";
 import {Button} from "~/components/ui/button";
 import {AlertCircle, RefreshCw, ShoppingCart} from "lucide-react";
@@ -404,6 +404,10 @@ function CartSheet({
                 className="flex w-full flex-col overflow-hidden border-0 max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl bg-primary pb-[max(1rem,env(safe-area-inset-bottom))] inset-0! rounded-none! sm:top-4! sm:bottom-[max(1rem,env(safe-area-inset-bottom))]! sm:right-0! sm:left-auto! sm:rounded-l-3xl!"
                 hideCloseButton
             >
+                <SheetTitle className="sr-only">Shopping Cart</SheetTitle>
+                <SheetDescription className="sr-only">
+                    Your cart items and checkout options
+                </SheetDescription>
                 <Suspense fallback={<CartLoadingSkeleton />}>
                     <Await resolve={cart} errorElement={<CartErrorFallback />}>
                         <CartSheetContent

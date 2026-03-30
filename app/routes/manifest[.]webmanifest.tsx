@@ -84,7 +84,13 @@ export async function loader({context, request}: Route.LoaderArgs) {
                 JSON.stringify(
                     {
                         name: siteSettings.brandName || "Store",
-                        short_name: (siteSettings.brandName || "Store").slice(0, 12),
+                        short_name: (() => {
+                            const name = siteSettings.brandName || "Store";
+                            if (name.length <= 12) return name;
+                            const truncated = name.slice(0, 12);
+                            const lastSpace = truncated.lastIndexOf(" ");
+                            return lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated;
+                        })(),
                         description: siteSettings.missionStatement || `Shop at ${siteSettings.brandName || "Store"}`,
                         start_url: "/",
                         scope: "/",
@@ -148,3 +154,5 @@ export async function loader({context, request}: Route.LoaderArgs) {
         });
     }
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

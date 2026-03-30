@@ -11,22 +11,30 @@ export const loader = async ({params, context}: Route.LoaderArgs) => {
         });
     }
 
-    const {product} = await context.dataAdapter.query(QUICK_ADD_PRODUCT_QUERY, {
-        variables: {handle},
-        cache: context.dataAdapter.CacheNone()
-    });
+    try {
+        const {product} = await context.dataAdapter.query(QUICK_ADD_PRODUCT_QUERY, {
+            variables: {handle},
+            cache: context.dataAdapter.CacheNone()
+        });
 
-    if (!product) {
-        return new Response(JSON.stringify({error: "Product not found"}), {
-            status: 404,
+        if (!product) {
+            return new Response(JSON.stringify({error: "Product not found"}), {
+                status: 404,
+                headers: {"Content-Type": "application/json"}
+            });
+        }
+
+        return new Response(JSON.stringify({product: normalizeQuickAddProduct(product)}), {
+            status: 200,
+            headers: {"Content-Type": "application/json"}
+        });
+    } catch (error) {
+        console.error("[api.products.$handle] Error:", error);
+        return new Response(JSON.stringify({error: "Failed to fetch product"}), {
+            status: 500,
             headers: {"Content-Type": "application/json"}
         });
     }
-
-    return new Response(JSON.stringify({product: normalizeQuickAddProduct(product)}), {
-        status: 200,
-        headers: {"Content-Type": "application/json"}
-    });
 };
 
 function normalizeQuickAddProduct(product: any): ShopifyProduct {

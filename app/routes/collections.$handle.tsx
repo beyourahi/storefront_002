@@ -133,8 +133,8 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     // Use official Hydrogen pagination pattern (24 items per page)
     const paginationVariables = getPaginationVariables(request, {pageBy: 24});
 
-    const [{collection}, sidebarData] = await Promise.all([
-        // Collection products - availability and prices (real-time, no cache)
+    const [{collection}, sidebarData, collectionCountData] = await Promise.all([
+        // Collection products - availability and prices (cached: short for availability)
         dataAdapter.query(COLLECTION_QUERY, {
             variables: {
                 handle,
@@ -143,11 +143,16 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
                 reverse,
                 filters: [{available: true}]
             },
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheShort()
         }),
-        // Sidebar collections with product counts (real-time, no cache)
+        // Sidebar collections with product counts (cached: catalog metadata)
         dataAdapter.query(SIDEBAR_COLLECTIONS_QUERY, {
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheLong()
+        }),
+        // Lightweight count query for accurate collection product count (cached: catalog metadata)
+        dataAdapter.query(COLLECTION_COUNT_QUERY, {
+            variables: {handle},
+            cache: dataAdapter.CacheLong()
         })
     ]);
 
@@ -180,9 +185,9 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     // Count discounted products for sidebar
     const discountCount = countDiscountedProducts(allProducts.nodes as LightweightProduct[]);
 
-    // Count products in the current collection (only available products)
-    // This includes products fetched in the first page and respects the 250 max limit
-    const collectionProductCount = collection.products.nodes.filter((p: any) => p.availableForSale).length;
+    // Accurate collection product count from lightweight count query (up to 250)
+    // The main COLLECTION_QUERY paginates at 24, so its .nodes.length would be inaccurate
+    const collectionProductCount = collectionCountData?.collection?.products?.nodes?.length ?? 0;
 
     return {
         collection,
@@ -482,6 +487,23 @@ const SIDEBAR_COLLECTIONS_QUERY = `#graphql
             }
           }
         }
+      }
+    }
+  }
+` as const;
+
+// Lightweight query to get accurate product count for a collection
+// The main COLLECTION_QUERY paginates at 24, so .nodes.length caps at page size
+const COLLECTION_COUNT_QUERY = `#graphql
+  query CollectionCount(
+    $handle: String!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      products(first: 250, filters: [{available: true}]) {
+        nodes { id }
+        pageInfo { hasNextPage }
       }
     }
   }

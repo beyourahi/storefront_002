@@ -137,7 +137,7 @@ export default function Policy() {
     return (
         <div className="min-h-dvh bg-primary  ">
             <AnimatedSection animation="fade" threshold={0.08}>
-                <section className="pt-32 sm:pt-36 md:pt-44 lg:pt-52 xl:pt-64 pb-12 sm:pb-16 md:pb-24 lg:pb-32">
+                <section className="pt-24 sm:pt-28 md:pt-32 lg:pt-36 pb-12 sm:pb-16 md:pb-24 lg:pb-32">
                     <div className="px-4 sm:px-6 lg:px-8">
                         <div>
                             <div className="grid gap-8 sm:gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
@@ -258,3 +258,5 @@ const POLICY_CONTENT_QUERY = `#graphql
     }
   }
 ` as const;
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

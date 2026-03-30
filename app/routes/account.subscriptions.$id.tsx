@@ -658,3 +658,5 @@ export default function SubscriptionDetail() {
         </div>
     );
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

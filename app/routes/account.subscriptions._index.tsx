@@ -231,3 +231,5 @@ function SubscriptionCard({subscription}: {subscription: SubscriptionContract}) 
         </Card>
     );
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

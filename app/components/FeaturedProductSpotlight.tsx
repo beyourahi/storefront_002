@@ -106,11 +106,7 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                     <Button
                         asChild
                         size="lg"
-                        className="group/cta w-full justify-between rounded-[var(--radius-pill-raw)] px-6 py-6 text-sm uppercase tracking-[0.24em] md:w-auto"
-                        style={{
-                            transitionProperty: "background-color, border-color, box-shadow, color, opacity",
-                            backfaceVisibility: "hidden"
-                        }}
+                        className="group/cta w-full justify-between rounded-[var(--radius-pill-raw)] px-6 py-6 text-sm uppercase tracking-[0.24em] md:w-auto transition-[background-color,border-color,box-shadow,color,opacity] [backface-visibility:hidden]"
                     >
                         <Link to={`/products/${product.handle}`} prefetch="intent">
                             View featured product

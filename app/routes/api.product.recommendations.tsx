@@ -11,14 +11,23 @@ export const loader = async ({request, context}: Route.LoaderArgs) => {
         });
     }
 
-    const {productRecommendations} = await context.dataAdapter.query(PRODUCT_RECOMMENDATIONS_QUERY, {
-        variables: {productId}
-    });
+    try {
+        const {productRecommendations} = await context.dataAdapter.query(PRODUCT_RECOMMENDATIONS_QUERY, {
+            variables: {productId},
+            cache: context.dataAdapter.CacheShort()
+        });
 
-    return new Response(JSON.stringify({products: (productRecommendations ?? []).filter((p: any) => p.availableForSale)}), {
-        status: 200,
-        headers: {"Content-Type": "application/json"}
-    });
+        return new Response(JSON.stringify({products: (productRecommendations ?? []).filter((p: any) => p.availableForSale)}), {
+            status: 200,
+            headers: {"Content-Type": "application/json"}
+        });
+    } catch (error) {
+        console.error("[api.product.recommendations] Error:", error);
+        return new Response(JSON.stringify({error: "Failed to fetch recommendations"}), {
+            status: 500,
+            headers: {"Content-Type": "application/json"}
+        });
+    }
 };
 
 const PRODUCT_RECOMMENDATIONS_QUERY = `#graphql

@@ -242,8 +242,6 @@ export const CART_QUERY_FRAGMENT = `#graphql
     lines(first: $numCartLines) {
       nodes {
         ...CartLine
-      }
-      nodes {
         ...CartLineComponent
       }
     }
@@ -317,20 +315,39 @@ const MENU_FRAGMENT = `#graphql
 // =============================================================================
 
 /**
- * Header data query - fetches the main navigation menu.
+ * Header data query - fetches the main navigation menu and shop info.
  *
  * @param $headerMenuHandle - Handle of the header menu in Shopify admin
  * @param $country - Country code for localized content
  * @param $language - Language code for localized content
  *
  * Used in root.tsx loader to fetch layout data.
+ * Includes shop data for analytics (shop.id, shop.name) and fallback brand info.
  */
 export const HEADER_QUERY = `#graphql
+  fragment Shop on Shop {
+    id
+    name
+    description
+    primaryDomain {
+      url
+    }
+    brand {
+      logo {
+        image {
+          url
+        }
+      }
+    }
+  }
   query Header(
     $country: CountryCode
     $headerMenuHandle: String!
     $language: LanguageCode
   ) @inContext(language: $language, country: $country) {
+    shop {
+      ...Shop
+    }
     menu(handle: $headerMenuHandle) {
       ...Menu
     }
@@ -390,17 +407,17 @@ export const MENU_COLLECTIONS_QUERY = `#graphql
           width
           height
         }
-        products(first: 250) {
+        products(first: 250, filters: [{available: true}]) {
           nodes {
             id
-            title
-            productType
-            availableForSale
           }
         }
       }
     }
     allProducts: products(first: 250) {
+      pageInfo {
+        hasNextPage
+      }
       nodes {
         id
         handle

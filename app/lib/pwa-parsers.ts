@@ -98,6 +98,22 @@ export interface WebAppManifest {
 }
 
 // =============================================================================
+// STRING UTILITIES
+// =============================================================================
+
+/**
+ * Truncate a name at a word boundary to fit within maxLength.
+ * Used for PWA short_name which appears on the home screen icon.
+ * Prefers a clean word break over a hard character cut.
+ */
+function truncateToWordBoundary(name: string, maxLength: number): string {
+    if (name.length <= maxLength) return name;
+    const truncated = name.slice(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(" ");
+    return lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated;
+}
+
+// =============================================================================
 // COLOR CONVERSION UTILITIES
 // =============================================================================
 
@@ -145,9 +161,12 @@ function buildIconsArray(siteSettings: SiteSettings): ManifestIcon[] | null {
         });
     }
 
-    // If no icons at all, return null and let the route serve a minimal manifest.
+    // Last resort: reference /favicon.ico so the manifest always has at least one icon.
+    // Note: a single favicon is insufficient for full PWA installability (Chrome requires
+    // 192x192 + 512x512), but it prevents a completely empty icons array.
+    // Proper PWA icons should be uploaded via the site_settings metaobject.
     if (icons.length === 0) {
-        return null;
+        icons.push({src: "/favicon.ico", sizes: "48x48", type: "image/x-icon"});
     }
 
     return icons;
@@ -201,7 +220,7 @@ export function buildWebAppManifest(
     return {
         // Brand identity from site_settings
         name: siteSettings.brandName || "Store",
-        short_name: (siteSettings.brandName || "Store").slice(0, 12),
+        short_name: truncateToWordBoundary(siteSettings.brandName || "Store", 12),
         description: siteSettings.missionStatement || `Shop at ${siteSettings.brandName || "Store"}`,
 
         // HARDCODED: PWA best practices for e-commerce

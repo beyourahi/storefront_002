@@ -19,3 +19,5 @@ import type {Route} from "./+types/wishlist";
 export async function loader(_args: Route.LoaderArgs) {
     return redirect("/account/wishlist", {status: 301});
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

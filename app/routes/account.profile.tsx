@@ -237,8 +237,64 @@ export async function action({request, context}: Route.ActionArgs) {
             );
         }
 
-        // Handle address operations
-        if (intent === "createAddress" || intent === "updateAddress" || intent === "deleteAddress") {
+        // Handle address creation (no addressId needed — the address doesn't exist yet)
+        if (intent === "createAddress") {
+            const isLoggedIn = await customerAccount.isLoggedIn();
+            if (!isLoggedIn) {
+                return remixData(
+                    {error: {create: "Unauthorized"}},
+                    {
+                        status: 401,
+                        headers: {"Set-Cookie": await context.session.commit()}
+                    }
+                );
+            }
+
+            const defaultAddress = form.has("defaultAddress") ? String(form.get("defaultAddress")) === "on" : false;
+            const address = parseAddressForm(form);
+
+            const {data, errors} = await customerAccount.mutate(CREATE_ADDRESS_MUTATION, {
+                variables: {
+                    address,
+                    defaultAddress,
+                    language: customerAccount.i18n.language
+                }
+            });
+
+            if (errors?.length) {
+                throw new Error(errors[0].message);
+            }
+
+            if (data?.customerAddressCreate?.userErrors?.length) {
+                return remixData(
+                    {error: {create: data.customerAddressCreate.userErrors[0].message}},
+                    {
+                        status: 400,
+                        headers: {"Set-Cookie": await context.session.commit()}
+                    }
+                );
+            }
+
+            if (!data?.customerAddressCreate?.customerAddress) {
+                throw new Error("Customer address create failed.");
+            }
+
+            return remixData(
+                {
+                    error: null,
+                    createdAddress: data.customerAddressCreate.customerAddress
+                },
+                {
+                    headers: {
+                        "Set-Cookie": await context.session.commit(),
+                        "Cache-Control": "no-cache, no-store, must-revalidate"
+                    }
+                }
+            );
+        }
+
+        // Handle address update/delete (addressId required)
+        if (intent === "updateAddress" || intent === "deleteAddress") {
             const addressId = form.has("addressId") ? String(form.get("addressId")) : null;
             if (!addressId) {
                 throw new Error("You must provide an address id.");
@@ -256,67 +312,7 @@ export async function action({request, context}: Route.ActionArgs) {
             }
 
             const defaultAddress = form.has("defaultAddress") ? String(form.get("defaultAddress")) === "on" : false;
-            const address: CustomerAddressInput = {};
-            const keys: (keyof CustomerAddressInput)[] = [
-                "address1",
-                "address2",
-                "city",
-                "company",
-                "territoryCode",
-                "firstName",
-                "lastName",
-                "phoneNumber",
-                "zoneCode",
-                "zip"
-            ];
-
-            for (const key of keys) {
-                const value = form.get(key);
-                if (typeof value === "string") {
-                    address[key] = value;
-                }
-            }
-
-            if (intent === "createAddress") {
-                const {data, errors} = await customerAccount.mutate(CREATE_ADDRESS_MUTATION, {
-                    variables: {
-                        address,
-                        defaultAddress,
-                        language: customerAccount.i18n.language
-                    }
-                });
-
-                if (errors?.length) {
-                    throw new Error(errors[0].message);
-                }
-
-                if (data?.customerAddressCreate?.userErrors?.length) {
-                    return remixData(
-                        {error: {[addressId]: data.customerAddressCreate.userErrors[0].message}},
-                        {
-                            status: 400,
-                            headers: {"Set-Cookie": await context.session.commit()}
-                        }
-                    );
-                }
-
-                if (!data?.customerAddressCreate?.customerAddress) {
-                    throw new Error("Customer address create failed.");
-                }
-
-                return remixData(
-                    {
-                        error: null,
-                        createdAddress: data.customerAddressCreate.customerAddress
-                    },
-                    {
-                        headers: {
-                            "Set-Cookie": await context.session.commit(),
-                            "Cache-Control": "no-cache, no-store, must-revalidate"
-                        }
-                    }
-                );
-            }
+            const address = parseAddressForm(form);
 
             if (intent === "updateAddress") {
                 const {data, errors} = await customerAccount.mutate(UPDATE_ADDRESS_MUTATION, {
@@ -400,6 +396,20 @@ export async function action({request, context}: Route.ActionArgs) {
 
         // Handle profile update (PUT method without intent)
         if (request.method === "PUT") {
+            const isLoggedIn = await customerAccount.isLoggedIn();
+            if (!isLoggedIn) {
+                return remixData(
+                    {error: {profile: "Unauthorized"}, customer: null},
+                    {
+                        status: 401,
+                        headers: {
+                            "Set-Cookie": await context.session.commit(),
+                            "Cache-Control": "no-cache, no-store, must-revalidate"
+                        }
+                    }
+                );
+            }
+
             const customer: CustomerUpdateInput = {};
             const validInputKeys = ["firstName", "lastName"] as const;
             for (const [key, value] of form.entries()) {
@@ -459,6 +469,36 @@ export async function action({request, context}: Route.ActionArgs) {
             }
         );
     }
+}
+
+// =============================================================================
+// HELPERS
+// =============================================================================
+
+/** Extract address fields from form data into a CustomerAddressInput object. */
+function parseAddressForm(form: FormData): CustomerAddressInput {
+    const address: CustomerAddressInput = {};
+    const keys: (keyof CustomerAddressInput)[] = [
+        "address1",
+        "address2",
+        "city",
+        "company",
+        "territoryCode",
+        "firstName",
+        "lastName",
+        "phoneNumber",
+        "zoneCode",
+        "zip"
+    ];
+
+    for (const key of keys) {
+        const value = form.get(key);
+        if (typeof value === "string") {
+            address[key] = value;
+        }
+    }
+
+    return address;
 }
 
 // =============================================================================
@@ -1445,3 +1485,5 @@ function AddressCard({
         </Card>
     );
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

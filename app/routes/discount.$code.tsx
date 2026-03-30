@@ -72,15 +72,24 @@ export async function loader({request, context, params}: Route.LoaderArgs) {
     const searchParams = new URLSearchParams(url.search);
     let redirectParam = searchParams.get("redirect") || searchParams.get("return_to") || "/";
 
-    if (redirectParam.includes("//")) {
-        // Avoid redirecting to external URLs to prevent phishing attacks
+    // Validate redirect is a safe relative path (not an external URL)
+    try {
+        const parsed = new URL(redirectParam, "http://localhost");
+        if (parsed.origin !== "http://localhost") {
+            redirectParam = "/";
+        }
+    } catch {
+        redirectParam = "/";
+    }
+    if (!redirectParam.startsWith("/")) {
         redirectParam = "/";
     }
 
     searchParams.delete("redirect");
     searchParams.delete("return_to");
 
-    const redirectUrl = `${redirectParam}?${searchParams}`;
+    const qs = searchParams.toString();
+    const redirectUrl = qs ? `${redirectParam}?${qs}` : redirectParam;
 
     if (!code) {
         return redirect(redirectUrl);
@@ -97,3 +106,5 @@ export async function loader({request, context, params}: Route.LoaderArgs) {
         headers
     });
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

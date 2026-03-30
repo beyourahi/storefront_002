@@ -148,3 +148,5 @@ export default function FAQ() {
         </div>
     );
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

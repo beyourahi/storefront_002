@@ -12,19 +12,8 @@
  * Request Flow:
  * 1. User clicks share button on product/wishlist
  * 2. Client sends share analytics data to this endpoint
- * 3. Rate limiting prevents abuse
- * 4. Data is validated and acknowledged
- * 5. (Future) Store in analytics database
- *
- * @rate-limiting
- * - 10 requests per IP per minute
- * - In-memory store (resets on worker restart)
- * - Returns 429 with Retry-After header when exceeded
- *
- * @cors
- * Supports CORS for cross-origin requests:
- * - Allows all origins (configurable in production)
- * - Supports POST and OPTIONS methods
+ * 3. Data is validated and acknowledged
+ * 4. (Future) Store in analytics database
  *
  * @data-collected
  * - platform: Which social platform (twitter, facebook, copy, etc.)
@@ -35,7 +24,6 @@
  * - referrer: Page URL (optional)
  *
  * @privacy
- * - IP used only for rate limiting (not stored)
  * - No personal identification data collected
  * - Aggregate analytics only
  *
@@ -47,76 +35,9 @@
 
 import type {Route} from "./+types/api.share.track";
 
-// =============================================================================
-// RATE LIMITING
-// =============================================================================
-
-/**
- * In-memory rate limit store.
- *
- * @note In a multi-worker environment, each worker has its own store.
- *       For stricter rate limiting, use a shared store (KV, Redis).
- */
-const rateLimitStore = new Map<string, {count: number; resetTime: number}>();
-
-/** Maximum requests per window */
-const RATE_LIMIT = 10;
-
-/** Rate limit window duration (1 minute) */
-const RATE_WINDOW = 60 * 1000;
-
-/**
- * Extracts client IP from request headers.
- *
- * @param request - Incoming HTTP request
- * @returns Client IP address or "unknown"
- *
- * @priority
- * 1. CF-Connecting-IP (Cloudflare)
- * 2. X-Real-IP (Nginx proxy)
- * 3. X-Forwarded-For (Generic proxy, first IP)
- */
-function getClientIp(request: Request): string {
-    // Try various headers for client IP
-    const cfConnectingIp = request.headers.get("cf-connecting-ip");
-    const xRealIp = request.headers.get("x-real-ip");
-    const xForwardedFor = request.headers.get("x-forwarded-for");
-
-    if (cfConnectingIp) return cfConnectingIp;
-    if (xRealIp) return xRealIp;
-    if (xForwardedFor) return xForwardedFor.split(",")[0].trim();
-
-    return "unknown";
-}
-
-/**
- * Checks if request is within rate limit.
- *
- * @param ip - Client IP address
- * @returns true if allowed, false if rate limited
- *
- * @algorithm
- * - New IP: Create entry with count=1
- * - Expired window: Reset count
- * - Within limit: Increment count
- * - Over limit: Deny request
- */
-function checkRateLimit(ip: string): boolean {
-    const now = Date.now();
-    const entry = rateLimitStore.get(ip);
-
-    if (!entry || now > entry.resetTime) {
-        rateLimitStore.set(ip, {count: 1, resetTime: now + RATE_WINDOW});
-        return true;
-    }
-
-    if (entry.count >= RATE_LIMIT) {
-        return false;
-    }
-
-    entry.count++;
-    return true;
-}
+// NOTE: When analytics storage is implemented, add rate limiting via
+// Cloudflare Rate Limiting rules or KV-backed limiting — not in-memory.
+// Module-scope state is per-isolate and ephemeral on Cloudflare Workers.
 
 // =============================================================================
 // VALIDATION
@@ -148,28 +69,14 @@ function isValidAnalyticsData(data: unknown): data is {
 }
 
 // =============================================================================
-// LOADER (CORS PREFLIGHT)
+// LOADER
 // =============================================================================
 
-/**
- * Handles OPTIONS requests for CORS preflight.
- *
- * @param request - HTTP request
- * @returns 204 No Content with CORS headers for OPTIONS, 405 otherwise
- */
-export async function loader({request}: Route.LoaderArgs) {
-    if (request.method === "OPTIONS") {
-        return new Response(null, {
-            status: 204,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type"
-            }
-        });
-    }
-
-    return new Response("Method not allowed", {status: 405});
+export async function loader() {
+    return new Response("Method not allowed", {
+        status: 405,
+        headers: {"Allow": "POST"}
+    });
 }
 
 // =============================================================================
@@ -185,27 +92,8 @@ export async function loader({request}: Route.LoaderArgs) {
  *
  * @error-codes
  * - 400: Invalid request body or data structure
- * - 405: Non-POST method
- * - 429: Rate limit exceeded
  */
 export async function action({request}: Route.ActionArgs) {
-    // Only allow POST
-    if (request.method !== "POST") {
-        return new Response("Method not allowed", {status: 405});
-    }
-
-    // Rate limiting
-    const clientIp = getClientIp(request);
-    if (!checkRateLimit(clientIp)) {
-        return new Response(JSON.stringify({error: "Rate limit exceeded"}), {
-            status: 429,
-            headers: {
-                "Content-Type": "application/json",
-                "Retry-After": "60"
-            }
-        });
-    }
-
     try {
         const data = await request.json();
 

@@ -3,3 +3,5 @@ import {redirect} from "react-router";
 export const loader = async () => {
     return redirect("/collections/all-products");
 };
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

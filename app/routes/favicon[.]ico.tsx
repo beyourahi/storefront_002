@@ -24,10 +24,6 @@
  * - Shopify CDN serves images efficiently
  * - Favicon changes are reflected after cache expires
  *
- * @debug-logging
- * Includes console.log statements for development debugging.
- * These can be removed in production if desired.
- *
  * @related
  * - root.tsx - Links to /favicon.ico
  * - apple-touch-icon[.]png.tsx - iOS icon route
@@ -77,35 +73,15 @@ const FAVICON_QUERY = `#graphql
 export async function loader({context}: Route.LoaderArgs) {
     const {dataAdapter} = context;
 
-    // DEBUG: Log that the route is being hit
-    // eslint-disable-next-line no-console -- intentional debug logging for favicon route
-    console.log("[Favicon] Route loader called");
-
     try {
         const data = await dataAdapter.query(FAVICON_QUERY, {
             cache: dataAdapter.CacheLong() // Favicon changes rarely
         });
 
-        // DEBUG: Log the query result
-        // eslint-disable-next-line no-console -- intentional debug logging for favicon route
-        console.log("[Favicon] Query result:", JSON.stringify(data, null, 2));
-
         const siteSettings = parseSiteSettings(data?.siteSettings);
         const faviconUrl = siteSettings.faviconUrl || siteSettings.brandLogo?.url || siteSettings.icon192Url;
 
-        // DEBUG: Log which favicon is being used
-        // eslint-disable-next-line no-console -- intentional debug logging for favicon route
-        console.log("[Favicon] Sources:", {
-            metaobjectFavicon: siteSettings.faviconUrl,
-            brandLogo: siteSettings.brandLogo?.url,
-            icon192: siteSettings.icon192Url,
-            selectedUrl: faviconUrl,
-        });
-
         if (faviconUrl) {
-            // Redirect to the actual favicon URL with long caching
-            // eslint-disable-next-line no-console -- intentional debug logging for favicon route
-            console.log("[Favicon] Redirecting to:", faviconUrl);
             return redirect(faviconUrl, {
                 status: 302,
                 headers: {
@@ -132,3 +108,5 @@ export async function loader({context}: Route.LoaderArgs) {
         });
     }
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

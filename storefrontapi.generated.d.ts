@@ -414,6 +414,18 @@ export type MenuFragment = Pick<StorefrontAPI.Menu, "id"> & {
   >;
 };
 
+export type ShopFragment = Pick<
+  StorefrontAPI.Shop,
+  "id" | "name" | "description"
+> & {
+  primaryDomain: Pick<StorefrontAPI.Domain, "url">;
+  brand?: StorefrontAPI.Maybe<{
+    logo?: StorefrontAPI.Maybe<{
+      image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "url">>;
+    }>;
+  }>;
+};
+
 export type HeaderQueryVariables = StorefrontAPI.Exact<{
   country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
   headerMenuHandle: StorefrontAPI.Scalars["String"]["input"];
@@ -421,6 +433,14 @@ export type HeaderQueryVariables = StorefrontAPI.Exact<{
 }>;
 
 export type HeaderQuery = {
+  shop: Pick<StorefrontAPI.Shop, "id" | "name" | "description"> & {
+    primaryDomain: Pick<StorefrontAPI.Domain, "url">;
+    brand?: StorefrontAPI.Maybe<{
+      logo?: StorefrontAPI.Maybe<{
+        image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "url">>;
+      }>;
+    }>;
+  };
   menu?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Menu, "id"> & {
       items: Array<
@@ -481,18 +501,12 @@ export type MenuCollectionsQuery = {
             "id" | "url" | "altText" | "width" | "height"
           >
         >;
-        products: {
-          nodes: Array<
-            Pick<
-              StorefrontAPI.Product,
-              "id" | "title" | "productType" | "availableForSale"
-            >
-          >;
-        };
+        products: { nodes: Array<Pick<StorefrontAPI.Product, "id">> };
       }
     >;
   };
   allProducts: {
+    pageInfo: Pick<StorefrontAPI.PageInfo, "hasNextPage">;
     nodes: Array<
       Pick<
         StorefrontAPI.Product,
@@ -1541,7 +1555,8 @@ export type CartSuggestionsQuery = {
 };
 
 export type ShopShippingConfigQueryVariables = StorefrontAPI.Exact<{
-  [key: string]: never;
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
 }>;
 
 export type ShopShippingConfigQuery = {
@@ -1549,6 +1564,7 @@ export type ShopShippingConfigQuery = {
     freeShippingThreshold?: StorefrontAPI.Maybe<
       Pick<StorefrontAPI.Metafield, "value" | "type">
     >;
+    paymentSettings: Pick<StorefrontAPI.PaymentSettings, "currencyCode">;
   };
 };
 
@@ -2782,6 +2798,21 @@ export type SidebarCollectionsHandleQuery = {
       }
     >;
   };
+};
+
+export type CollectionCountQueryVariables = StorefrontAPI.Exact<{
+  handle: StorefrontAPI.Scalars["String"]["input"];
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+}>;
+
+export type CollectionCountQuery = {
+  collection?: StorefrontAPI.Maybe<{
+    products: {
+      nodes: Array<Pick<StorefrontAPI.Product, "id">>;
+      pageInfo: Pick<StorefrontAPI.PageInfo, "hasNextPage">;
+    };
+  }>;
 };
 
 export type CollectionFragment = Pick<
@@ -4623,7 +4654,7 @@ export type SharedWishlistProductsQuery = {
 };
 
 interface GeneratedQueryTypes {
-  "#graphql\n  query Header(\n    $country: CountryCode\n    $headerMenuHandle: String!\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    menu(handle: $headerMenuHandle) {\n      ...Menu\n    }\n  }\n  #graphql\n  fragment MenuItem on MenuItem {\n    id\n    resourceId\n    tags\n    title\n    type\n    url\n  }\n  fragment ChildMenuItem on MenuItem {\n    ...MenuItem\n  }\n  fragment ParentMenuItem on MenuItem {\n    ...MenuItem\n    items {\n      ...ChildMenuItem\n    }\n  }\n  fragment Menu on Menu {\n    id\n    items {\n      ...ParentMenuItem\n    }\n  }\n\n": {
+  "#graphql\n  fragment Shop on Shop {\n    id\n    name\n    description\n    primaryDomain {\n      url\n    }\n    brand {\n      logo {\n        image {\n          url\n        }\n      }\n    }\n  }\n  query Header(\n    $country: CountryCode\n    $headerMenuHandle: String!\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    shop {\n      ...Shop\n    }\n    menu(handle: $headerMenuHandle) {\n      ...Menu\n    }\n  }\n  #graphql\n  fragment MenuItem on MenuItem {\n    id\n    resourceId\n    tags\n    title\n    type\n    url\n  }\n  fragment ChildMenuItem on MenuItem {\n    ...MenuItem\n  }\n  fragment ParentMenuItem on MenuItem {\n    ...MenuItem\n    items {\n      ...ChildMenuItem\n    }\n  }\n  fragment Menu on Menu {\n    id\n    items {\n      ...ParentMenuItem\n    }\n  }\n\n": {
     return: HeaderQuery;
     variables: HeaderQueryVariables;
   };
@@ -4631,7 +4662,7 @@ interface GeneratedQueryTypes {
     return: FooterQuery;
     variables: FooterQueryVariables;
   };
-  "#graphql\n  query MenuCollections(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        products(first: 250) {\n          nodes {\n            id\n            title\n            productType\n            availableForSale\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      nodes {\n        id\n        handle\n        title\n        productType\n        availableForSale\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
+  "#graphql\n  query MenuCollections(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        products(first: 250, filters: [{available: true}]) {\n          nodes {\n            id\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      pageInfo {\n        hasNextPage\n      }\n      nodes {\n        id\n        handle\n        title\n        productType\n        availableForSale\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
     return: MenuCollectionsQuery;
     variables: MenuCollectionsQueryVariables;
   };
@@ -4651,7 +4682,7 @@ interface GeneratedQueryTypes {
     return: CartSuggestionsQuery;
     variables: CartSuggestionsQueryVariables;
   };
-  '#graphql\n  query ShopShippingConfig {\n    shop {\n      freeShippingThreshold: metafield(namespace: "custom", key: "free_shipping_threshold") {\n        value\n        type\n      }\n    }\n  }\n': {
+  '#graphql\n  query ShopShippingConfig(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    shop {\n      freeShippingThreshold: metafield(namespace: "custom", key: "free_shipping_threshold") {\n        value\n        type\n      }\n      paymentSettings {\n        currencyCode\n      }\n    }\n  }\n': {
     return: ShopShippingConfigQuery;
     variables: ShopShippingConfigQueryVariables;
   };
@@ -4746,6 +4777,10 @@ interface GeneratedQueryTypes {
   "#graphql\n  query SidebarCollectionsHandle(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 250) {\n          nodes {\n            id\n            availableForSale\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      nodes {\n        id\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
     return: SidebarCollectionsHandleQuery;
     variables: SidebarCollectionsHandleQueryVariables;
+  };
+  "#graphql\n  query CollectionCount(\n    $handle: String!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collection(handle: $handle) {\n      products(first: 250, filters: [{available: true}]) {\n        nodes { id }\n        pageInfo { hasNextPage }\n      }\n    }\n  }\n": {
+    return: CollectionCountQuery;
+    variables: CollectionCountQueryVariables;
   };
   "#graphql\n  fragment Collection on Collection {\n    id\n    title\n    handle\n    products(first: 250) {\n      nodes {\n        id\n        availableForSale\n      }\n    }\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n  }\n  query StoreCollections(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    collections(\n      first: $first\n      last: $last\n      before: $startCursor\n      after: $endCursor\n    ) {\n      nodes {\n        ...Collection\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n": {
     return: StoreCollectionsQuery;

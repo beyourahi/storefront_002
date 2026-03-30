@@ -917,3 +917,5 @@ function WishlistSkeleton({count = 8, layoutMode = "grid"}: {count?: number; lay
         </div>
     );
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

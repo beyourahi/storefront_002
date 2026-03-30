@@ -790,3 +790,5 @@ function EmptySearchResults({searchQuery}: {searchQuery: string}) {
 // This ensures that when an order has status "FULFILLED", both the order header badge
 // and ALL product badges in that order show the SAME color (green) and SAME label
 // ("Delivered"), preventing user confusion from mismatched status displays.
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

@@ -66,3 +66,5 @@ export async function loader({request}: Route.LoaderArgs) {
 export default function CatchAllPage() {
     return null;
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

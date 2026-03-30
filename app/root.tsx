@@ -69,7 +69,6 @@ import {Toaster} from "~/components/ui/sonner";
 import {FOOTER_QUERY, HEADER_QUERY, MENU_COLLECTIONS_QUERY} from "~/lib/fragments";
 import {extractPopularSearchTerms} from "~/lib/popularSearches";
 import {parseShippingConfig, type ShippingConfig} from "~/lib/shipping";
-import {STORE_COUNTRY_CODE} from "~/lib/store-locale";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
 import {STORE_CREDIT_BALANCE_QUERY} from "~/graphql/customer-account/StoreCreditQueries";
 import tailwindCss from "./styles/tailwind.css?url";
@@ -191,7 +190,7 @@ export async function loader(args: Route.LoaderArgs) {
             storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
             withPrivacyBanner: false,
             // localize the privacy banner
-            country: STORE_COUNTRY_CODE,
+            country: args.context.storefront.i18n.country,
             language: args.context.storefront.i18n.language
         }
     };
@@ -205,55 +204,61 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
     const {dataAdapter} = context;
 
     const [header, menuCollectionsData, shopData, blogData, siteContentData, themeSettingsData] = await Promise.all([
-        // Header - navigation menu and shop brand info (real-time, no cache)
+        // Header - navigation menu and shop brand info (cached: layout data)
         dataAdapter.query(HEADER_QUERY, {
-            cache: dataAdapter.CacheNone(),
+            cache: dataAdapter.CacheLong(),
             variables: {
                 headerMenuHandle: "main-menu"
             }
         }),
-        // Menu collections with product counts (real-time, no cache)
+        // Menu collections with product counts (cached: catalog metadata)
         dataAdapter.query(MENU_COLLECTIONS_QUERY, {
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheLong()
         }),
-        // Shipping config (real-time, no cache)
+        // Shipping config (cached: metafield, changes rarely)
         dataAdapter.query(SHOP_SHIPPING_CONFIG_QUERY, {
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheLong()
         }),
-        // Blog existence check (real-time, no cache)
+        // Blog existence check (cached: blog existence barely changes)
         dataAdapter.query(HAS_BLOG_QUERY, {
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheLong()
         }),
-        // Site content - brand name, announcements, social links (real-time, no cache)
+        // Site content - brand name, announcements, social links (cached: CMS metaobject)
         dataAdapter.query(SITE_CONTENT_QUERY, {
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheLong()
         }),
-        // Theme settings - colors and fonts (real-time, no cache)
+        // Theme settings - colors and fonts (cached: merchant-updated)
         dataAdapter.query(THEME_SETTINGS_QUERY, {
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheLong()
         })
     ]);
 
     // Parse shipping config from shop metafields
-    // Always use BDT for this store
-    const shippingConfig = parseShippingConfig(shopData?.shop?.freeShippingThreshold?.value, "BDT");
+    // Currency derived from shop payment settings with BDT fallback
+    const shippingConfig = parseShippingConfig(
+        shopData?.shop?.freeShippingThreshold?.value,
+        shopData?.shop?.paymentSettings?.currencyCode ?? "BDT"
+    );
 
     // Process collections to compute product counts (only available products)
+    // Per-collection products are pre-filtered by available:true in the query, so .length = available count
     // Filter out collections with no available products
     const menuCollections = menuCollectionsData.collections.nodes
         .map((collection: any) => ({
             id: collection.id,
             handle: collection.handle,
             title: collection.title,
-            productsCount: collection.products.nodes.filter((p: any) => p.availableForSale).length,
+            productsCount: collection.products.nodes.length,
             image: collection.image
         }))
         .filter((collection: any) => collection.productsCount > 0);
 
     // Count all available products for "All" link
+    // allProducts is unfiltered, so we still need client-side availability check
     const totalProductCount = menuCollectionsData.allProducts.nodes.filter(
         (p: any) => p.availableForSale && p.variants.nodes.some((v: any) => v.availableForSale)
     ).length;
+    const isApproximateTotal = menuCollectionsData.allProducts.pageInfo?.hasNextPage ?? false;
 
     // Count discounted products for "SALE" link
     const discountCount = countDiscountedProducts(menuCollectionsData.allProducts.nodes as LightweightProduct[]);
@@ -288,6 +293,7 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
         header,
         menuCollections,
         totalProductCount,
+        isApproximateTotal,
         discountCount,
         popularSearchTerms,
         shippingConfig,
@@ -313,10 +319,10 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
 function loadDeferredData({context}: Route.LoaderArgs) {
     const {dataAdapter, customerAccount, cart} = context;
 
-    // Footer menu - deferred, below the fold (real-time, no cache)
+    // Footer menu - deferred, below the fold (cached: layout data)
     const footer = dataAdapter
         .query(FOOTER_QUERY, {
-            cache: dataAdapter.CacheNone(),
+            cache: dataAdapter.CacheLong(),
             variables: {
                 footerMenuHandle: "footer"
             }
@@ -326,10 +332,10 @@ function loadDeferredData({context}: Route.LoaderArgs) {
             return null;
         });
 
-    // Cart suggestion products - deferred (real-time, no cache)
+    // Cart suggestion products - deferred (cached: catalog shifts slowly)
     const cartSuggestions: Promise<CartSuggestionProductFragment[] | null> = dataAdapter
         .query(CART_SUGGESTIONS_QUERY, {
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheShort()
         })
         .then((response: any) => {
             if (!response?.products?.nodes) return null;
@@ -395,12 +401,28 @@ function loadDeferredData({context}: Route.LoaderArgs) {
         TIMEOUT_DEFAULTS.STORE_CREDIT
     );
 
+    // Footer with 8 second timeout
+    // Falls back to null if footer menu hangs
+    const footerWithTimeout = withTimeoutAndFallback(
+        footer,
+        null, // Fallback: no footer
+        TIMEOUT_DEFAULTS.FOOTER
+    );
+
+    // Cart suggestions with 8 second timeout
+    // Falls back to null if suggestions hang
+    const cartSuggestionsWithTimeout = withTimeoutAndFallback(
+        cartSuggestions,
+        null, // Fallback: no suggestions
+        TIMEOUT_DEFAULTS.SUGGESTIONS
+    );
+
     return {
         cart: cartWithTimeout,
         isLoggedIn: isLoggedInWithTimeout,
         hasStoreCredit: hasStoreCreditWithTimeout,
-        footer,
-        cartSuggestions
+        footer: footerWithTimeout,
+        cartSuggestions: cartSuggestionsWithTimeout
     };
 }
 
@@ -537,8 +559,26 @@ function CachedThemeInjector() {
     return null;
 }
 
+/**
+ * Tracks error boundary events via analytics using useEffect (not during render).
+ * Returns null — purely a side-effect component.
+ */
+function ErrorTracker({
+    statusCode,
+    errorType,
+    route
+}: {
+    statusCode: number;
+    errorType: "route_error" | "js_error";
+    route: string;
+}) {
+    useEffect(() => {
+        trackErrorBoundary(statusCode, errorType, route);
+    }, [statusCode, errorType, route]);
+    return null;
+}
+
 export function ErrorBoundary() {
-    const nonce = useNonce();
     const error = useRouteError();
     let errorMessage: string | undefined;
     let errorStatus = 500;
@@ -550,34 +590,17 @@ export function ErrorBoundary() {
         errorMessage = error.message;
     }
 
-    // Track error via analytics (SSR-safe, runs on client only)
     const errorType = isRouteErrorResponse(error) ? "route_error" : "js_error";
-    if (typeof window !== "undefined") {
-        // Using setTimeout to ensure this runs after hydration
-        setTimeout(() => trackErrorBoundary(errorStatus, errorType, "root"), 0);
-    }
 
-    // Determine appropriate title based on status code
     const title =
         errorStatus === 404 ? "Page Not Found" : errorStatus >= 500 ? "Something Went Wrong" : "An Error Occurred";
 
     return (
-        <html lang="en">
-            <head>
-                <meta charSet="utf-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <title>{`${errorStatus} - ${title}`}</title>
-                <link rel="stylesheet" href={tailwindCss} />
-                <Meta />
-                <Links />
-            </head>
-            <body>
-                {/* CachedThemeInjector kept as progressive enhancement fallback */}
-                <CachedThemeInjector />
-                <OfflineAwareErrorPage statusCode={errorStatus} title={title} message={errorMessage} />
-                <Scripts nonce={nonce} />
-            </body>
-        </html>
+        <>
+            <CachedThemeInjector />
+            <ErrorTracker statusCode={errorStatus} errorType={errorType} route="root" />
+            <OfflineAwareErrorPage statusCode={errorStatus} title={title} message={errorMessage} />
+        </>
     );
 }
 
@@ -642,11 +665,17 @@ const CART_SUGGESTIONS_QUERY = `#graphql
 
 // GraphQL query to fetch shop metafields for shipping configuration
 const SHOP_SHIPPING_CONFIG_QUERY = `#graphql
-  query ShopShippingConfig {
+  query ShopShippingConfig(
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
     shop {
       freeShippingThreshold: metafield(namespace: "custom", key: "free_shipping_threshold") {
         value
         type
+      }
+      paymentSettings {
+        currencyCode
       }
     }
   }

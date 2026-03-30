@@ -31,3 +31,5 @@ import type {Route} from "./+types/account.$";
 export async function loader(_args: Route.LoaderArgs) {
     return redirect("/account");
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

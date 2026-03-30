@@ -113,21 +113,24 @@ export async function loader({request, context}: Route.LoaderArgs) {
 
     // Handle predictive search (for FullScreenSearch)
     if (isPredictive) {
-        const searchPromise = predictiveSearch({request, context});
-        searchPromise.catch((error: Error) => {
+        return await predictiveSearch({request, context}).catch((error: Error) => {
             console.error(error);
-            return {term: "", result: null, error: error.message};
+            return {type: "predictive" as const, term: "", result: getEmptyPredictiveSearchResult()};
         });
-        return await searchPromise;
     }
 
     // Handle regular categorized search
-    const searchPromise = regularSearch({request, context});
-    searchPromise.catch((error: Error) => {
+    return await regularSearch({request, context}).catch((error: Error) => {
         console.error(error);
+        return {
+            type: "categorized" as const,
+            term: "",
+            error: error.message,
+            products: {nodes: [], pageInfo: {hasNextPage: false, endCursor: null}, totalCount: 0},
+            collections: {nodes: [], totalCount: 0},
+            articles: {nodes: [], pageInfo: {hasNextPage: false, endCursor: null}, totalCount: 0}
+        } satisfies CategorizedSearchResult;
     });
-
-    return await searchPromise;
 }
 
 /**

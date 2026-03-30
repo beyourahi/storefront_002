@@ -269,3 +269,5 @@ function SocialLink({title, handle, url}: SocialLinkProps) {
         </a>
     );
 }
+
+export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";
