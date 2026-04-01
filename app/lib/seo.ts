@@ -342,6 +342,29 @@ export function generateBlogPostingSchema(
 }
 
 /**
+ * Generate BreadcrumbList schema for rich breadcrumb snippets in search results.
+ * Each item must have a `name` and `url` (except the last item, which is the current page).
+ *
+ * @see https://schema.org/BreadcrumbList
+ * @see https://developers.google.com/search/docs/appearance/structured-data/breadcrumb
+ */
+export function generateBreadcrumbListSchema(
+    items: Array<{name: string; url?: string}>,
+    siteUrl: string = SEO_CONFIG.siteUrl
+): JsonLdSchema {
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: items.map((item, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            name: item.name,
+            ...(item.url ? {item: item.url.startsWith("http") ? item.url : buildCanonicalUrl(item.url, siteUrl)} : {})
+        }))
+    };
+}
+
+/**
  * Generate FAQPage schema
  */
 export function generateFAQPageSchema(faqs: Array<{question: string; answer: string}>): JsonLdSchema {
