@@ -159,13 +159,20 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
                     <div className="flex items-center justify-between">
                         {/* Heading and subheading on the left */}
                         <div>
-                            <h2 className="font-serif text-xl font-medium text-primary md:text-3xl lg:text-4xl mb-0">
-                                Recently Viewed
-                            </h2>
+                            <div className="flex items-center gap-2 md:gap-3">
+                                <h2 className="font-serif text-xl font-medium text-primary md:text-3xl lg:text-4xl mb-0">
+                                    Recently Viewed
+                                </h2>
+                                {!isLoading && displayProducts.length > 0 && (
+                                    <span className="inline-flex items-center justify-center rounded-full bg-primary/10 px-2 py-0.5 font-sans text-xs font-medium text-primary md:px-2.5 md:text-sm">
+                                        {displayProducts.length}
+                                    </span>
+                                )}
+                            </div>
                             <p className="mt-1 text-base text-muted-foreground md:text-lg">
                                 {isLoading
                                     ? "Loading your history..."
-                                    : `${displayProducts.length} item${displayProducts.length !== 1 ? "s" : ""} you've browsed`}
+                                    : "Products you've recently browsed"}
                             </p>
                         </div>
                         {/* Clear History Button - Desktop (pill style matching Instagram handle) */}
