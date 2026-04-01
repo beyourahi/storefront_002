@@ -114,7 +114,8 @@ export const AnimatedSection = ({
         threshold,
         delay: totalDelay,
         triggerOnce: true,
-        disabled
+        disabled,
+        rootMargin: "200px 0px"
     });
 
     const staggerStyle =
