@@ -142,7 +142,7 @@ export default function Collections() {
                     {/* Title with collection count superscript (matching menu style) */}
                     <div className="relative inline-block">
                         <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary tracking-tight my-0">
-                            / Collections
+                            Collections
                         </h1>
                         {/* Collection count - positioned at top-right of title with small gap */}
                         <sup className="absolute top-0 left-[calc(100%+0.25rem)] sm:left-[calc(100%+0.5rem)] font-mono tabular-nums text-primary/60 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">

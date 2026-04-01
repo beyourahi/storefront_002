@@ -211,7 +211,7 @@ export function CollectionPageLayout({
                          Product count positioned at top-right via transform translate */}
                     <div className="relative inline-block">
                         <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium text-primary tracking-tight m-0 wrap-break-word hyphens-auto">
-                            / {title}
+                            {title}
                         </h1>
                         {/* Product count - positioned at top-right of title with small gap */}
                         {collectionProductCount !== undefined && collectionProductCount > 0 && (
