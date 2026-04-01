@@ -10,6 +10,7 @@
  * @features
  * - Hero section with large typography
  * - Contact cards (email, phone, hours)
+ * - Contact form (mailto: approach — opens user's email client)
  * - Location/address section
  * - Social media links
  * - CMS-driven content with a fixed Bangladesh country label
@@ -40,8 +41,13 @@
 
 import type {Route} from "./+types/contact";
 import {getSeoMeta} from "@shopify/hydrogen";
-import {Fragment} from "react";
+import {Fragment, useCallback, useState, type FormEvent} from "react";
+import {Send} from "lucide-react";
 import {AnimatedSection} from "~/components/AnimatedSection";
+import {Button} from "~/components/ui/button";
+import {Input} from "~/components/ui/input";
+import {Label} from "~/components/ui/label";
+import {Textarea} from "~/components/ui/textarea";
 import {buildCanonicalUrl, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 import {useContactInfo, useSocialLinks} from "~/lib/site-content-context";
 import {STORE_COUNTRY_NAME} from "~/lib/store-locale";
@@ -119,6 +125,32 @@ export default function Contact() {
                                     delay={1}
                                 />
                                 <ContactCard label="Hours" value={contactInfo.businessHours} delay={2} />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </AnimatedSection>
+
+            {/* Contact Form Section - Background matches hero for visual rhythm */}
+            <AnimatedSection animation="slide-up" threshold={0.1}>
+                <section className="bg-background py-12 sm:py-16 md:py-24">
+                    <div className="px-4 sm:px-6 lg:px-8">
+                        <div className="grid gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-24">
+                            {/* Form Heading */}
+                            <div>
+                                <p className="text-sm sm:text-sm uppercase tracking-widest text-muted-foreground mb-3 sm:mb-4">
+                                    Send a Message
+                                </p>
+                                <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-medium text-primary leading-tight">
+                                    Drop Us
+                                    <br />
+                                    a Line
+                                </h2>
+                            </div>
+
+                            {/* Contact Form */}
+                            <div>
+                                <ContactForm email={contactInfo.email} />
                             </div>
                         </div>
                     </div>
@@ -267,6 +299,126 @@ function SocialLink({title, handle, url}: SocialLinkProps) {
                 {handle}
             </span>
         </a>
+    );
+}
+
+// =============================================================================
+// CONTACT FORM
+// =============================================================================
+
+interface ContactFormProps {
+    /** Recipient email address from site_settings metaobject */
+    email: string;
+}
+
+/**
+ * Contact form that constructs a mailto: link on submit.
+ *
+ * Uses a mailto: approach so the template works universally without backend
+ * configuration. Clients can replace this with Formspree, a custom API, etc.
+ *
+ * @accessibility
+ * - All inputs have associated <Label> elements (WCAG 1.3.1)
+ * - Required fields use aria-required (WCAG 3.3.2)
+ * - Touch targets meet 44px minimum via shadcn Input/Textarea defaults (WCAG 2.5.5)
+ * - Focus-visible rings on all controls (WCAG 2.4.7)
+ */
+function ContactForm({email}: ContactFormProps) {
+    const [name, setName] = useState("");
+    const [senderEmail, setSenderEmail] = useState("");
+    const [subject, setSubject] = useState("");
+    const [message, setMessage] = useState("");
+
+    const handleSubmit = useCallback(
+        (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+
+            const body = [
+                `Name: ${name}`,
+                `Email: ${senderEmail}`,
+                "",
+                message
+            ].join("\n");
+
+            const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoUrl;
+        },
+        [name, senderEmail, subject, message, email]
+    );
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+            {/* Name + Email — side by side on desktop, stacked on mobile */}
+            <div className="grid gap-5 sm:gap-6 sm:grid-cols-2">
+                <div className="space-y-2">
+                    <Label htmlFor="contact-name">Name</Label>
+                    <Input
+                        id="contact-name"
+                        name="name"
+                        type="text"
+                        placeholder="Your name"
+                        required
+                        aria-required="true"
+                        value={name}
+                        onChange={e => setName(e.target.value)}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="contact-email">Email</Label>
+                    <Input
+                        id="contact-email"
+                        name="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        required
+                        aria-required="true"
+                        value={senderEmail}
+                        onChange={e => setSenderEmail(e.target.value)}
+                    />
+                </div>
+            </div>
+
+            {/* Subject — full width */}
+            <div className="space-y-2">
+                <Label htmlFor="contact-subject">Subject</Label>
+                <Input
+                    id="contact-subject"
+                    name="subject"
+                    type="text"
+                    placeholder="What is this about?"
+                    required
+                    aria-required="true"
+                    value={subject}
+                    onChange={e => setSubject(e.target.value)}
+                />
+            </div>
+
+            {/* Message — textarea with adequate height */}
+            <div className="space-y-2">
+                <Label htmlFor="contact-message">Message</Label>
+                <Textarea
+                    id="contact-message"
+                    name="message"
+                    placeholder="Tell us more..."
+                    required
+                    aria-required="true"
+                    className="min-h-[160px] sm:min-h-[140px]"
+                    value={message}
+                    onChange={e => setMessage(e.target.value)}
+                />
+            </div>
+
+            {/* Submit button + mailto note */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <Button type="submit" size="lg" className="gap-2">
+                    <Send className="size-4" aria-hidden="true" />
+                    Send Message
+                </Button>
+                <p className="text-sm text-muted-foreground">
+                    This will open your email client
+                </p>
+            </div>
+        </form>
     );
 }
 
