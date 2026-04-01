@@ -389,7 +389,7 @@ body {
     --announcement-scroll-duration: 20s;
 }
 
-/* Slow bounce animation for promo cards */
+/* Slow bounce animation for promo cards (legacy — retained for backward compat) */
 @keyframes bounce-slow {
     0%,
     100% {
@@ -399,6 +399,17 @@ body {
     50% {
         transform: translateY(calc(-65% - 15%));
         animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+}
+
+/* Gentle float animation — subtle vertical drift for interactive cards */
+@keyframes float-gentle {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-4px);
     }
 }
 
@@ -785,6 +796,13 @@ body {
         transform: none;
         filter: none;
     }
+
+    /* Catch-all safety net for any animation class not explicitly listed above */
+    [class*="animate-"] {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
 }
 
 /* Custom theme configuration */
@@ -792,6 +810,7 @@ body {
     --animate-marquee: marquee var(--marquee-duration) linear infinite;
     --animate-announcement-scroll: announcement-scroll var(--announcement-scroll-duration) linear infinite;
     --animate-bounce-slow: bounce-slow 2s infinite;
+    --animate-float-gentle: float-gentle 3s ease-in-out infinite;
     /* Pure black/white - used for overlays, lightbox, glassmorphism (bg-dark, text-light, etc.) */
     --color-dark: oklch(0 0 0);
     --color-light: oklch(1 0 0);

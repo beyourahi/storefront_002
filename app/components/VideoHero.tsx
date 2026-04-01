@@ -296,7 +296,7 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                      Link: /collections/{handle} > /collections/all-products */}
                 <Link
                     to={cardLink}
-                    className="hidden md:flex absolute top-[65%] right-8 z-60 w-90 lg:w-105 h-auto rounded-2xl overflow-hidden bg-overlay-light-hover backdrop-blur-md border border-light/30 no-underline hover:no-underline group sleek hover:bg-light/30 animate-bounce-slow will-change-transform motion-reduce:animate-none cursor-pointer"
+                    className="hidden md:flex absolute top-[65%] right-8 z-60 w-90 lg:w-105 h-auto rounded-2xl overflow-hidden bg-overlay-light-hover backdrop-blur-md border border-light/30 no-underline hover:no-underline group sleek hover:bg-light/30 animate-float-gentle will-change-transform motion-reduce:animate-none cursor-pointer"
                 >
                     {/* Image container with fixed aspect ratio - prevents flex stretching */}
                     <div className="w-36 lg:w-44 shrink-0 aspect-video overflow-hidden">
