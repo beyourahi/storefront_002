@@ -65,6 +65,11 @@ export function InstagramSection({media}: InstagramSectionProps) {
     const instagramUrl = instagramLink?.url || "https://instagram.com";
     const instagramHandle = instagramLink?.handle || "@beyourahi_";
 
+    // Detect generic platform URLs that don't point to a real brand profile.
+    // When no brand profile is configured, hide the follow CTA to avoid
+    // linking users to the Instagram homepage or a placeholder URL.
+    const isGenericInstagramUrl = /^https?:\/\/(www\.)?instagram\.com\/?$/i.test(instagramUrl);
+
     // Return null if no media
     if (!media || media.length === 0) {
         return null;
@@ -77,14 +82,17 @@ export function InstagramSection({media}: InstagramSectionProps) {
                 <h2 className="m-0 font-serif text-xl font-normal text-foreground sm:text-2xl md:text-3xl">
                     {instagramTitle}
                 </h2>
-                <a
-                    href={instagramUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 sm:py-2 font-sans text-base sm:text-lg md:text-xl font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground hover:no-underline"
-                >
-                    {instagramHandle}
-                </a>
+                {/* Hide follow CTA when the URL is a generic platform homepage (no brand profile configured) */}
+                {!isGenericInstagramUrl && (
+                    <a
+                        href={instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 sm:py-2 font-sans text-base sm:text-lg md:text-xl font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground hover:no-underline"
+                    >
+                        {instagramHandle}
+                    </a>
+                )}
             </div>
 
             {/* Carousel - edge-to-edge with no gaps, auto-scrolling */}
