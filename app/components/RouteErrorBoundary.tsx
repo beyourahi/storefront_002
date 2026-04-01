@@ -12,8 +12,10 @@ export function RouteErrorBoundary() {
     let errorStatus = 500;
 
     if (isRouteErrorResponse(error)) {
-        errorMessage = error?.data?.message ?? error.data;
         errorStatus = error.status;
+        errorMessage = errorStatus === 404
+            ? "The page you're looking for doesn't exist or has been moved."
+            : error?.data?.message ?? error.data;
     } else if (error instanceof Error) {
         errorMessage = error.message;
     }
