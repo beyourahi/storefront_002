@@ -66,7 +66,14 @@ if (!window.location.origin.includes("webcache.googleusercontent.com")) {
                 <NonceProvider value={existingNonce}>
                     <HydratedRouter />
                 </NonceProvider>
-            </StrictMode>
+            </StrictMode>,
+            {
+                onRecoverableError(error) {
+                    if (process.env.NODE_ENV === "development") {
+                        console.warn("[Hydration] Recoverable error:", error);
+                    }
+                }
+            }
         );
     });
 }

@@ -9,6 +9,21 @@ export default defineConfig({
     plugins: [tailwindcss(), hydrogen(), oxygen(), reactRouter(), tsconfigPaths()],
 
     // -------------------------------------------------------------------------
+    // RESOLVE OPTIONS — Prevent duplicate module instances
+    // -------------------------------------------------------------------------
+    resolve: {
+        dedupe: [
+            "react",
+            "react-dom",
+            "react-router",
+            "react/jsx-runtime",
+            "react/jsx-dev-runtime",
+            "react-dom/client",
+            "@shopify/hydrogen"
+        ]
+    },
+
+    // -------------------------------------------------------------------------
     // BUILD OPTIONS
     // -------------------------------------------------------------------------
     build: {
@@ -35,9 +50,14 @@ export default defineConfig({
             include: [
                 "set-cookie-parser",
                 "cookie",
+                "react",
+                "react-dom",
+                "react/jsx-runtime",
+                "react/jsx-dev-runtime",
                 "react-router",
                 "use-sync-external-store/shim",
-                "@radix-ui/react-use-is-hydrated"
+                "@radix-ui/react-use-is-hydrated",
+                "embla-carousel-autoplay"
             ],
             exclude: ["@shopify/hydrogen"]
         }
