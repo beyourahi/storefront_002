@@ -47,7 +47,7 @@ interface OpenInAppButtonProps {
  * ```
  */
 export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
-    const {canInstall, isIOS, isStandalone, triggerInstall, appName, appIcon} = usePwaInstall();
+    const {canInstall, isIOS, isStandalone, isAppDetectedAsInstalled, triggerInstall, appName, appIcon} = usePwaInstall();
     const [showIosInstructions, setShowIosInstructions] = useState(false);
 
     // =============================================================================
@@ -103,6 +103,16 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
             </div>
         );
     }
+
+    /**
+     * Installability guard: only render when the PWA is actually installable.
+     * The button is meaningful when at least one of these is true:
+     * - canInstall: beforeinstallprompt fired (native install prompt available)
+     * - isIOS: iOS Safari detected (manual "Add to Home Screen" instructions available)
+     * - isAppDetectedAsInstalled: app was previously installed (deep-link back to PWA)
+     * Without any of these, the button has no actionable behavior and should not render.
+     */
+    if (!canInstall && !isIOS && !isAppDetectedAsInstalled) return null;
 
     const isFixed = variant === "desktop-fixed";
     const isMenuItem = variant === "menu-item";
