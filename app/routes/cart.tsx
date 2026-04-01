@@ -213,8 +213,19 @@ export async function action({request, context}: Route.ActionArgs) {
     );
 }
 
-export async function loader({context}: Route.LoaderArgs) {
+export async function loader({context, request}: Route.LoaderArgs) {
     const {cart} = context;
+
+    // Document requests (browser navigation): redirect to homepage.
+    // The cart UI is the drawer — there is no full-page cart view.
+    if (request.headers.get("Accept")?.includes("text/html")) {
+        return new Response(null, {
+            status: 302,
+            headers: {Location: "/"}
+        });
+    }
+
+    // Fetch/resource requests (from CartForm): return cart data
     return await cart.get();
 }
 
@@ -223,9 +234,11 @@ export async function loader({context}: Route.LoaderArgs) {
 // =============================================================================
 
 /**
- * Resource route - returns 404 if accessed directly.
- * Cart is only accessible via the cart drawer (aside).
+ * Resource route — cart UI is the drawer.
+ * This component should never render (loader redirects document requests).
  */
 export default function Cart() {
-    throw new Response("Not Found", {status: 404});
+    // Resource route — cart UI is the drawer.
+    // This component should never render (loader redirects document requests).
+    return null;
 }
