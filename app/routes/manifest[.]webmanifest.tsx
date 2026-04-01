@@ -115,7 +115,8 @@ export async function loader({context, request}: Route.LoaderArgs) {
                 {
                     status: 200,
                     headers: {
-                        "Content-Type": "application/manifest+json",
+                        "Content-Type": "application/manifest+json; charset=utf-8",
+                        "X-Content-Type-Options": "nosniff",
                         "Cache-Control": "public, max-age=300"
                     }
                 }
@@ -126,7 +127,8 @@ export async function loader({context, request}: Route.LoaderArgs) {
         return new Response(JSON.stringify(manifest, null, 2), {
             status: 200,
             headers: {
-                "Content-Type": "application/manifest+json",
+                "Content-Type": "application/manifest+json; charset=utf-8",
+                "X-Content-Type-Options": "nosniff",
                 // Cache for 1 hour in browser, 24 hours at CDN edge
                 "Cache-Control": "public, max-age=3600, s-maxage=86400"
             }
@@ -147,7 +149,8 @@ export async function loader({context, request}: Route.LoaderArgs) {
         return new Response(JSON.stringify(fallbackManifest, null, 2), {
             status: 200,
             headers: {
-                "Content-Type": "application/manifest+json",
+                "Content-Type": "application/manifest+json; charset=utf-8",
+                "X-Content-Type-Options": "nosniff",
                 // Short cache on error to allow recovery
                 "Cache-Control": "public, max-age=300"
             }

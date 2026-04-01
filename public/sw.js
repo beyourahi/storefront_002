@@ -27,6 +27,16 @@ if (!workbox) {
     const {CacheableResponsePlugin} = workbox.cacheableResponse;
 
     // ==========================================================================
+    // MANIFEST — always network, never cache (prevents parse errors)
+    // Must be registered BEFORE any catch-all strategies that could intercept it.
+    // The .webmanifest extension could otherwise match the static assets handler.
+    // ==========================================================================
+    registerRoute(
+        ({url}) => url.pathname === "/manifest.webmanifest",
+        new NetworkOnly()
+    );
+
+    // ==========================================================================
     // OFFLINE FALLBACK PAGE
     // ==========================================================================
     const OFFLINE_PAGE = "/offline";

@@ -162,7 +162,8 @@ export function links() {
         // Favicon - dynamic route that redirects to Shopify CDN or static fallback
         {rel: "icon", href: "/favicon.ico"},
         // PWA manifest (dynamic route)
-        {rel: "manifest", href: "/manifest.webmanifest"},
+        // crossOrigin="use-credentials" is required for browsers that enforce CORS on manifest requests
+        {rel: "manifest", href: "/manifest.webmanifest", crossOrigin: "use-credentials" as const},
         // Apple Touch Icon (dynamic route that redirects to actual icon)
         {rel: "apple-touch-icon", href: "/apple-touch-icon.png"}
     ];
