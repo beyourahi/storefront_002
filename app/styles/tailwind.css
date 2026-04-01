@@ -9,6 +9,12 @@
 /*---break---
  */
 
+/* Prevent mobile horizontal overflow without creating a new block formatting context.
+   clip (vs hidden) avoids breaking position: sticky elements. */
+body {
+    overflow-x: clip;
+}
+
 /* ==========================================
    Default Theme CSS Variables (OKLCH color space)
    Monochromatic black/white - neutral base for any brand

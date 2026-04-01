@@ -63,6 +63,20 @@ import type {
 } from "types";
 
 // =============================================================================
+// METAOBJECT TYPE HELPERS
+// =============================================================================
+
+/** A single Shopify metaobject field — value, reference, or multi-reference */
+type MetaobjectField = {
+    value?: string | null;
+    reference?: Record<string, unknown> | null;
+    references?: {nodes: Record<string, unknown>[]} | null;
+};
+
+/** A parsed metaobject — keys map to their field values */
+type MetaobjectData = Record<string, MetaobjectField | undefined>;
+
+// =============================================================================
 // FALLBACK CONSTANTS (previously in fallback-data.ts)
 // =============================================================================
 
@@ -415,34 +429,39 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = FALLBACK_SITE_SETTINGS as Sit
 /**
  * Parse hero media from metaobject reference (supports both image and video)
  */
-function parseHeroMedia(heroMediaField: any): HeroMedia | undefined {
+function parseHeroMedia(heroMediaField: MetaobjectField | undefined): HeroMedia | undefined {
     const ref = heroMediaField?.reference;
     if (!ref) return undefined;
 
     // Check __typename to determine media type
-    if (ref.__typename === "MediaImage" && ref.image?.url) {
-        return {
-            mediaType: "image",
-            url: ref.image.url,
-            altText: ref.image.altText,
-            width: ref.image.width,
-            height: ref.image.height
-        };
+    if (ref.__typename === "MediaImage") {
+        const image = ref.image as Record<string, unknown> | undefined;
+        if (image?.url) {
+            return {
+                mediaType: "image",
+                url: image.url as string,
+                altText: image.altText as string | undefined,
+                width: image.width as number | undefined,
+                height: image.height as number | undefined
+            };
+        }
     }
 
-    if (ref.__typename === "Video" && ref.sources?.length > 0) {
+    const sources = ref.sources as Record<string, unknown>[] | undefined;
+    if (ref.__typename === "Video" && sources && sources.length > 0) {
         // Prefer mp4 source, fallback to first available
-        const mp4Source = ref.sources.find((s: any) => s.mimeType === "video/mp4");
-        const videoSource = mp4Source || ref.sources[0];
+        const mp4Source = sources.find((s: Record<string, unknown>) => s.mimeType === "video/mp4");
+        const videoSource = mp4Source || sources[0];
 
+        const previewImage = ref.previewImage as Record<string, unknown> | undefined;
         return {
             mediaType: "video",
-            url: videoSource.url,
-            altText: ref.alt,
-            previewImage: ref.previewImage?.url
+            url: videoSource.url as string,
+            altText: previewImage?.altText as string | undefined,
+            previewImage: previewImage?.url
                 ? {
-                      url: ref.previewImage.url,
-                      altText: ref.previewImage.altText
+                      url: previewImage.url as string,
+                      altText: previewImage.altText as string | undefined
                   }
                 : undefined
         };
@@ -455,7 +474,7 @@ function parseHeroMedia(heroMediaField: any): HeroMedia | undefined {
  * Parse brand words from list of single line text
  * Shopify "List of single line text" field returns JSON array: ["word1", "word2", ...]
  */
-function parseBrandWords(brandWordsField: any): string[] {
+function parseBrandWords(brandWordsField: MetaobjectField | undefined): string[] {
     if (!brandWordsField?.value) {
         return DEFAULT_words_to_describe_your_brand;
     }
@@ -480,7 +499,7 @@ function parseBrandWords(brandWordsField: any): string[] {
  * Shopify "List of single line text" field returns JSON array: ["text1", "text2", ...]
  * Returns empty array if field is empty or invalid — component hides when no texts exist
  */
-function parseAnnouncementTexts(announcementField: any): string[] {
+function parseAnnouncementTexts(announcementField: MetaobjectField | undefined): string[] {
     if (!announcementField?.value) {
         return [];
     }
@@ -506,7 +525,7 @@ function warnFeaturedProductSection(reason: string) {
     }
 }
 
-function parseFeaturedProductSection(featuredProductField: any): SiteSettings["featuredProductSection"] {
+function parseFeaturedProductSection(featuredProductField: MetaobjectField | undefined): SiteSettings["featuredProductSection"] {
     const reference = featuredProductField?.reference;
 
     if (!reference) return null;
@@ -516,33 +535,37 @@ function parseFeaturedProductSection(featuredProductField: any): SiteSettings["f
         return null;
     }
 
-    const selectedVariant = reference.selectedOrFirstAvailableVariant;
+    const selectedVariant = reference.selectedOrFirstAvailableVariant as Record<string, unknown> | undefined;
     if (!reference.availableForSale || !selectedVariant?.availableForSale) {
         warnFeaturedProductSection(`product "${reference.handle ?? reference.id}" is unavailable`);
         return null;
     }
 
-    if (!selectedVariant.price?.amount || !selectedVariant.price.currencyCode) {
+    const variantPrice = selectedVariant.price as Record<string, unknown> | undefined;
+    if (!variantPrice?.amount || !variantPrice.currencyCode) {
         warnFeaturedProductSection(`product "${reference.handle ?? reference.id}" is missing sellable pricing`);
         return null;
     }
 
-    const featuredImage = reference.featuredImage?.url
+    const refFeaturedImage = reference.featuredImage as Record<string, unknown> | undefined;
+    const variantImage = selectedVariant.image as Record<string, unknown> | undefined;
+    const featuredImage = refFeaturedImage?.url
         ? {
-              url: reference.featuredImage.url as string,
-              altText: (reference.featuredImage.altText as string | null) ?? null,
-              width: (reference.featuredImage.width as number | null) ?? null,
-              height: (reference.featuredImage.height as number | null) ?? null
+              url: refFeaturedImage.url as string,
+              altText: (refFeaturedImage.altText as string | null) ?? null,
+              width: (refFeaturedImage.width as number | null) ?? null,
+              height: (refFeaturedImage.height as number | null) ?? null
           }
-        : reference.selectedOrFirstAvailableVariant?.image?.url
+        : variantImage?.url
           ? {
-                url: reference.selectedOrFirstAvailableVariant.image.url as string,
-                altText: (reference.selectedOrFirstAvailableVariant.image.altText as string | null) ?? null,
-                width: (reference.selectedOrFirstAvailableVariant.image.width as number | null) ?? null,
-                height: (reference.selectedOrFirstAvailableVariant.image.height as number | null) ?? null
+                url: variantImage.url as string,
+                altText: (variantImage.altText as string | null) ?? null,
+                width: (variantImage.width as number | null) ?? null,
+                height: (variantImage.height as number | null) ?? null
             }
           : null;
 
+    const compareAtPrice = selectedVariant.compareAtPrice as Record<string, unknown> | undefined;
     return {
         id: reference.id as string,
         handle: reference.handle as string,
@@ -552,14 +575,14 @@ function parseFeaturedProductSection(featuredProductField: any): SiteSettings["f
         availableForSale: true,
         featuredImage,
         price: {
-            amount: selectedVariant.price.amount as string,
-            currencyCode: selectedVariant.price.currencyCode as string
+            amount: variantPrice.amount as string,
+            currencyCode: variantPrice.currencyCode as string
         },
         compareAtPrice:
-            selectedVariant.compareAtPrice?.amount && selectedVariant.compareAtPrice.currencyCode
+            compareAtPrice?.amount && compareAtPrice.currencyCode
                 ? {
-                      amount: selectedVariant.compareAtPrice.amount as string,
-                      currencyCode: selectedVariant.compareAtPrice.currencyCode as string
+                      amount: compareAtPrice.amount as string,
+                      currencyCode: compareAtPrice.currencyCode as string
                   }
                 : null
     };
@@ -569,7 +592,7 @@ function parseFeaturedProductSection(featuredProductField: any): SiteSettings["f
  * Parse free shipping threshold from Decimal field
  * Shopify Decimal fields return numeric strings (e.g., "50.00")
  */
-function parseFreeShippingThreshold(value: any): number | null {
+function parseFreeShippingThreshold(value: MetaobjectField | undefined): number | null {
     if (!value?.value) return null;
 
     const parsed = parseFloat(value.value);
@@ -607,7 +630,7 @@ function extractHandleFromUrl(url: string, platform: string): string {
  * Shopify "List of links" field returns: [{text, url}, ...] where text is the platform name
  * (Note: Shopify uses "text" not "label" for the link text)
  */
-function parseSocialLinks(jsonField: any): SocialLink[] {
+function parseSocialLinks(jsonField: MetaobjectField | undefined): SocialLink[] {
     if (!jsonField?.value) return [];
 
     try {
@@ -616,11 +639,11 @@ function parseSocialLinks(jsonField: any): SocialLink[] {
             return [];
         }
 
-        const links = parsed
-            .map((item: any, index: number) => {
+        const links = (parsed as Record<string, unknown>[])
+            .map((item, index) => {
                 // Shopify "List of links" field uses "text" for label, not "label"
-                const platform = item.text || item.label || "";
-                const url = item.url || "";
+                const platform = (item.text as string) || (item.label as string) || "";
+                const url = (item.url as string) || "";
                 return {
                     id: `social-${index}`,
                     platform,
@@ -641,24 +664,24 @@ function parseSocialLinks(jsonField: any): SocialLink[] {
  * Parse testimonials from JSON field
  * Expected format: [{customerName, location, rating, text, avatarUrl}, ...]
  */
-function parseTestimonialsJson(jsonField: any): Testimonial[] {
+function parseTestimonialsJson(jsonField: MetaobjectField | undefined): Testimonial[] {
     if (!jsonField?.value) return [];
 
     try {
         const parsed = JSON.parse(jsonField.value) as unknown;
         if (!Array.isArray(parsed)) return [];
 
-        return parsed
-            .map((item: any, index: number) => ({
-                id: item.id || `testimonial-${index}`,
-                customerName: item.customerName || "Anonymous",
-                location: item.location || "",
-                rating: parseInt(item.rating || "5", 10),
-                text: item.text || "",
+        return (parsed as Record<string, unknown>[])
+            .map((item, index) => ({
+                id: (item.id as string) || `testimonial-${index}`,
+                customerName: (item.customerName as string) || "Anonymous",
+                location: (item.location as string) || "",
+                rating: parseInt((item.rating as string) || "5", 10),
+                text: (item.text as string) || "",
                 avatar: item.avatarUrl
                     ? {
-                          url: item.avatarUrl,
-                          altText: item.avatarAltText || item.customerName
+                          url: item.avatarUrl as string,
+                          altText: (item.avatarAltText as string) || (item.customerName as string)
                       }
                     : undefined
             }))
@@ -672,18 +695,18 @@ function parseTestimonialsJson(jsonField: any): Testimonial[] {
  * Parse FAQ items from JSON field
  * Expected format: [{question, answer}, ...]
  */
-function parseFaqItemsJson(jsonField: any): FAQItem[] {
+function parseFaqItemsJson(jsonField: MetaobjectField | undefined): FAQItem[] {
     if (!jsonField?.value) return [];
 
     try {
         const parsed = JSON.parse(jsonField.value) as unknown;
         if (!Array.isArray(parsed)) return [];
 
-        return parsed
-            .map((item: any, index: number) => ({
-                id: item.id || `faq-${index}`,
-                question: item.question || "",
-                answer: item.answer || ""
+        return (parsed as Record<string, unknown>[])
+            .map((item, index) => ({
+                id: (item.id as string) || `faq-${index}`,
+                question: (item.question as string) || "",
+                answer: (item.answer as string) || ""
             }))
             .filter((f: FAQItem) => f.question && f.answer);
     } catch {
@@ -695,47 +718,51 @@ function parseFaqItemsJson(jsonField: any): FAQItem[] {
  * Extract image URL from a metaobject file reference field
  * Used for PWA icons and other single image references
  */
-function extractImageUrl(field: {reference?: {__typename?: string; image?: {url?: string}}} | null): string | null {
-    if (!field?.reference) return null;
-    if (field.reference.__typename !== "MediaImage") return null;
-    return field.reference.image?.url ?? null;
+function extractImageUrl(field: MetaobjectField | undefined): string | null {
+    const ref = field?.reference;
+    if (!ref || ref.__typename !== "MediaImage") return null;
+    const image = ref.image as Record<string, unknown> | undefined;
+    return (image?.url as string) ?? null;
 }
 
 /**
  * Parse Instagram media from list of file references
  * Each reference can be MediaImage or Video
  */
-function parseInstagramMedia(mediaField: any): InstagramMedia[] {
+function parseInstagramMedia(mediaField: MetaobjectField | undefined): InstagramMedia[] {
     const nodes = mediaField?.references?.nodes;
     if (!Array.isArray(nodes) || nodes.length === 0) return [];
 
     return nodes
-        .map((ref: any, index: number): InstagramMedia | null => {
-            if (ref.__typename === "MediaImage" && ref.image?.url) {
+        .map((ref: Record<string, unknown>, index: number): InstagramMedia | null => {
+            const image = ref.image as Record<string, unknown> | undefined;
+            if (ref.__typename === "MediaImage" && image?.url) {
                 return {
-                    id: ref.id || `instagram-${index}`,
+                    id: (ref.id as string) || `instagram-${index}`,
                     mediaType: "image",
-                    url: ref.image.url,
-                    altText: ref.image.altText || `Instagram post ${index + 1}`,
-                    width: ref.image.width,
-                    height: ref.image.height
+                    url: image.url as string,
+                    altText: (image.altText as string) || `Instagram post ${index + 1}`,
+                    width: image.width as number | undefined,
+                    height: image.height as number | undefined
                 };
             }
 
-            if (ref.__typename === "Video" && ref.sources?.length > 0) {
+            const sources = ref.sources as Record<string, unknown>[] | undefined;
+            if (ref.__typename === "Video" && sources && sources.length > 0) {
                 // Prefer mp4 source, fallback to first available
-                const mp4Source = ref.sources.find((s: any) => s.mimeType === "video/mp4");
-                const videoSource = mp4Source || ref.sources[0];
+                const mp4Source = sources.find((s: Record<string, unknown>) => s.mimeType === "video/mp4");
+                const videoSource = mp4Source || sources[0];
 
+                const previewImage = ref.previewImage as Record<string, unknown> | undefined;
                 return {
-                    id: ref.id || `instagram-${index}`,
+                    id: (ref.id as string) || `instagram-${index}`,
                     mediaType: "video",
-                    url: videoSource.url,
-                    altText: ref.alt || `Instagram video ${index + 1}`,
-                    previewImage: ref.previewImage?.url
+                    url: videoSource.url as string,
+                    altText: (ref.alt as string) || `Instagram video ${index + 1}`,
+                    previewImage: previewImage?.url
                         ? {
-                              url: ref.previewImage.url,
-                              altText: ref.previewImage.altText
+                              url: previewImage.url as string,
+                              altText: previewImage.altText as string | undefined
                           }
                         : undefined
                 };
@@ -757,7 +784,7 @@ function parseInstagramMedia(mediaField: any): InstagramMedia[] {
  * - heading_font → --font-serif (Headings & titles)
  * - price_font → --font-mono (Prices & numerical data)
  */
-function parseThemeFonts(data: any): ThemeFonts {
+function parseThemeFonts(data: MetaobjectData): ThemeFonts {
     return {
         // body_font → --font-sans: paragraphs, buttons, labels, UI text
         sans: data.fontBody?.value || FALLBACK_THEME_FONTS.sans,
@@ -794,12 +821,12 @@ function isValidColor(color: string): boolean {
  * Parse theme colors from metaobject fields
  * Validates color format and falls back to defaults for invalid values
  */
-function parseThemeColors(data: any): ThemeCoreColors {
-    const primary = data.colorPrimary?.value;
-    const secondary = data.colorSecondary?.value;
-    const background = data.colorBackground?.value;
-    const foreground = data.colorForeground?.value;
-    const accent = data.colorAccent?.value;
+function parseThemeColors(data: MetaobjectData): ThemeCoreColors {
+    const primary = data.colorPrimary?.value ?? "";
+    const secondary = data.colorSecondary?.value ?? "";
+    const background = data.colorBackground?.value ?? "";
+    const foreground = data.colorForeground?.value ?? "";
+    const accent = data.colorAccent?.value ?? "";
 
     return {
         primary: isValidColor(primary) ? primary.trim() : FALLBACK_THEME_COLORS.primary,
@@ -830,8 +857,10 @@ export const DEFAULT_THEME_CONFIG: ThemeConfig = {
  * @param data - Raw GraphQL response for theme_settings metaobject
  * @returns Parsed theme configuration with fonts and colors
  */
-export function parseThemeSettings(data: any): ThemeConfig {
-    if (!data) return DEFAULT_THEME_CONFIG;
+export function parseThemeSettings(rawData: unknown): ThemeConfig {
+    if (!rawData) return DEFAULT_THEME_CONFIG;
+
+    const data = rawData as MetaobjectData;
 
     // Debug: Log raw values from Shopify metaobject (dev only)
     if (process.env.NODE_ENV === "development") {
@@ -864,8 +893,10 @@ export function parseThemeSettings(data: any): ThemeConfig {
  * Parse site settings from metaobject response
  * Now contains ALL site configuration including collections
  */
-export function parseSiteSettings(data: any): SiteSettings {
-    if (!data) return DEFAULT_SITE_SETTINGS;
+export function parseSiteSettings(rawData: unknown): SiteSettings {
+    if (!rawData) return DEFAULT_SITE_SETTINGS;
+
+    const data = rawData as MetaobjectData;
 
     // Parse collections once and fall back to defaults if empty
     const parsedTestimonials = parseTestimonialsJson(data.testimonialsData);
@@ -877,12 +908,14 @@ export function parseSiteSettings(data: any): SiteSettings {
         brandName: data.brandName?.value || DEFAULT_SITE_SETTINGS.brandName,
         brandLogo: (() => {
             const ref = data.brandLogo?.reference;
-            if (!ref || ref.__typename !== "MediaImage" || !ref.image?.url) return null;
+            if (!ref || ref.__typename !== "MediaImage") return null;
+            const image = ref.image as Record<string, unknown> | undefined;
+            if (!image?.url) return null;
             return {
-                url: ref.image.url as string,
-                altText: (ref.image.altText as string | null) ?? null,
-                width: (ref.image.width as number | null) ?? null,
-                height: (ref.image.height as number | null) ?? null
+                url: image.url as string,
+                altText: (image.altText as string | null) ?? null,
+                width: (image.width as number | null) ?? null,
+                height: (image.height as number | null) ?? null
             };
         })(),
         brandWords: parseBrandWords(data.brandWords),

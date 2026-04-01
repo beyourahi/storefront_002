@@ -68,7 +68,7 @@ type JsonLdSchema = Record<string, unknown>;
 type SeoSiteSettings = Partial<Pick<SiteSettings, "brandName" | "brandLogo" | "missionStatement" | "siteUrl">>;
 
 const FALLBACK_BRAND_NAME = "Store";
-const FALLBACK_SITE_URL = "https://example.com";
+const FALLBACK_SITE_URL = "";
 const FALLBACK_SEO_TITLE_SUFFIX = "Quality Products";
 const FALLBACK_SEO_TITLE = `${FALLBACK_BRAND_NAME} | ${FALLBACK_SEO_TITLE_SUFFIX}`;
 const FALLBACK_SEO_DESCRIPTION =
@@ -121,10 +121,13 @@ export function getSeoDefaults(
 }
 
 /**
- * Build canonical URL from path
+ * Build canonical URL from path.
+ * When siteUrl is empty (no site URL configured), returns path-only to avoid
+ * generating URLs like "/products/foo" with no origin prefix.
  */
 export function buildCanonicalUrl(path: string, siteUrl: string = SEO_CONFIG.siteUrl): string {
     const cleanPath = path.startsWith("/") ? path : `/${path}`;
+    if (!siteUrl) return cleanPath;
     return `${siteUrl}${cleanPath}`;
 }
 
@@ -315,6 +318,7 @@ export function generateBlogPostingSchema(
         description: article.excerpt || undefined,
         image: article.image?.url || undefined,
         datePublished: article.publishedAt ? formatSchemaDate(article.publishedAt) : undefined,
+        // dateModified = datePublished: Shopify only exposes `publishedAt` on articles, not a separate `updatedAt`
         dateModified: article.publishedAt ? formatSchemaDate(article.publishedAt) : undefined,
         author: article.author?.name
             ? {

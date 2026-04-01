@@ -12,8 +12,19 @@
  * Request Flow:
  * 1. User clicks share button on product/wishlist
  * 2. Client sends share analytics data to this endpoint
- * 3. Data is validated and acknowledged
- * 4. (Future) Store in analytics database
+ * 3. Rate limiting prevents abuse
+ * 4. Data is validated and acknowledged
+ * 5. (Future) Store in analytics database
+ *
+ * @rate-limiting
+ * - 30 requests per IP per minute
+ * - In-memory store (resets on worker restart)
+ * - Returns 429 with Retry-After header when exceeded
+ *
+ * @cors
+ * Supports CORS for cross-origin requests:
+ * - Allows all origins (configurable in production)
+ * - Supports POST and OPTIONS methods
  *
  * @data-collected
  * - platform: Which social platform (twitter, facebook, copy, etc.)
@@ -24,6 +35,7 @@
  * - referrer: Page URL (optional)
  *
  * @privacy
+ * - IP used only for rate limiting (not stored)
  * - No personal identification data collected
  * - Aggregate analytics only
  *
@@ -34,10 +46,9 @@
  */
 
 import type {Route} from "./+types/api.share.track";
+import {createRateLimiter, getClientIP, getRateLimitResponse} from "~/lib/rate-limit";
 
-// NOTE: When analytics storage is implemented, add rate limiting via
-// Cloudflare Rate Limiting rules or KV-backed limiting — not in-memory.
-// Module-scope state is per-isolate and ephemeral on Cloudflare Workers.
+const limiter = createRateLimiter({windowMs: 60_000, maxRequests: 30});
 
 // =============================================================================
 // VALIDATION
@@ -69,14 +80,28 @@ function isValidAnalyticsData(data: unknown): data is {
 }
 
 // =============================================================================
-// LOADER
+// LOADER (CORS PREFLIGHT)
 // =============================================================================
 
-export async function loader() {
-    return new Response("Method not allowed", {
-        status: 405,
-        headers: {"Allow": "POST"}
-    });
+/**
+ * Handles OPTIONS requests for CORS preflight.
+ *
+ * @param request - HTTP request
+ * @returns 204 No Content with CORS headers for OPTIONS, 405 otherwise
+ */
+export async function loader({request}: Route.LoaderArgs) {
+    if (request.method === "OPTIONS") {
+        return new Response(null, {
+            status: 204,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type"
+            }
+        });
+    }
+
+    return new Response("Method not allowed", {status: 405});
 }
 
 // =============================================================================
@@ -92,8 +117,13 @@ export async function loader() {
  *
  * @error-codes
  * - 400: Invalid request body or data structure
+ * - 405: Non-POST method
+ * - 429: Rate limit exceeded
  */
 export async function action({request}: Route.ActionArgs) {
+    const rateLimitResponse = getRateLimitResponse(limiter.check(getClientIP(request)));
+    if (rateLimitResponse) return rateLimitResponse;
+
     try {
         const data = await request.json();
 

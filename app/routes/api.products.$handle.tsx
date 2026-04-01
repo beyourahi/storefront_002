@@ -1,7 +1,13 @@
 import type {Route} from "./+types/api.products.$handle";
 import type {ShopifyProduct} from "~/lib/types/product-card";
+import {createRateLimiter, getClientIP, getRateLimitResponse} from "~/lib/rate-limit";
 
-export const loader = async ({params, context}: Route.LoaderArgs) => {
+const limiter = createRateLimiter({windowMs: 60_000, maxRequests: 30});
+
+export const loader = async ({request, params, context}: Route.LoaderArgs) => {
+    const rateLimitResponse = getRateLimitResponse(limiter.check(getClientIP(request)));
+    if (rateLimitResponse) return rateLimitResponse;
+
     const {handle} = params;
 
     if (!handle) {

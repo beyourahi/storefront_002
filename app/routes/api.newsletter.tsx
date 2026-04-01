@@ -46,6 +46,9 @@
 
 import {data} from "react-router";
 import type {Route} from "./+types/api.newsletter";
+import {createRateLimiter, getClientIP, getRateLimitResponse} from "~/lib/rate-limit";
+
+const limiter = createRateLimiter({windowMs: 60_000, maxRequests: 5});
 
 // =============================================================================
 // GRAPHQL MUTATIONS
@@ -122,6 +125,9 @@ export async function loader() {
 }
 
 export async function action({request, context}: Route.ActionArgs) {
+    const rateLimitResponse = getRateLimitResponse(limiter.check(getClientIP(request)));
+    if (rateLimitResponse) return rateLimitResponse;
+
     const formData = await request.formData();
     const email = formData.get("email");
 

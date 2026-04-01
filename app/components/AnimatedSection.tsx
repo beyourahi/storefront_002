@@ -110,7 +110,7 @@ export const AnimatedSection = ({
 }: AnimatedSectionProps) => {
     const totalDelay = staggerIndex !== undefined ? delay + Math.min(staggerIndex, 11) * staggerIncrement : delay;
 
-    const {ref, inView} = useInView({
+    const {ref, inView, mounted} = useInView({
         threshold,
         delay: totalDelay,
         triggerOnce: true,
@@ -120,12 +120,15 @@ export const AnimatedSection = ({
     const staggerStyle =
         staggerIndex !== undefined ? {animationDelay: `${Math.min(staggerIndex, 11) * staggerIncrement}ms`} : undefined;
 
+    // Only apply hidden/animation classes after client mount — SSR output is fully visible
     return (
         <div
             ref={ref as React.RefObject<HTMLDivElement>}
             className={cn(
                 "will-change-[transform,opacity]",
-                inView ? animationClasses[animation] : "opacity-0",
+                mounted && !inView && "opacity-0",
+                mounted && inView && animationClasses[animation],
+                "motion-reduce:!opacity-100",
                 className
             )}
             style={{...style, ...staggerStyle}}

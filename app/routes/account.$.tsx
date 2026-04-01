@@ -16,8 +16,15 @@
  * - account.tsx - Account layout
  */
 
-import {redirect} from "react-router";
+import {redirect, type MetaFunction} from "react-router";
 import type {Route} from "./+types/account.$";
+
+export const meta: MetaFunction = () => {
+    return [
+        {title: "Redirecting..."},
+        {name: "robots", content: "noindex"}
+    ];
+};
 
 // =============================================================================
 // LOADER

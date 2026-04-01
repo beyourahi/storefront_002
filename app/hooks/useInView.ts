@@ -58,6 +58,8 @@ type UseInViewReturn = {
     inView: boolean;
     /** Manually trigger the in-view state */
     triggerInView: () => void;
+    /** Whether the component has mounted on the client */
+    mounted: boolean;
 };
 
 /**
@@ -72,7 +74,10 @@ export const useInView = (options: UseInViewOptions = {}): UseInViewReturn => {
     const {threshold = 0.1, rootMargin = "0px", triggerOnce = true, delay = 0, disabled = false} = options;
 
     const ref = useRef<HTMLElement | null>(null);
-    const [inView, setInView] = useState(disabled);
+    // Start visible (SSR-safe) — content is visible by default,
+    // animations are a progressive enhancement applied after mount
+    const [inView, setInView] = useState(true);
+    const [mounted, setMounted] = useState(false);
 
     const triggerInView = () => {
         setInView(true);
@@ -84,16 +89,19 @@ export const useInView = (options: UseInViewOptions = {}): UseInViewReturn => {
             return;
         }
 
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (prefersReducedMotion) {
+            setInView(true);
+            setMounted(true);
+            return;
+        }
+
         const element = ref.current;
         if (!element) return;
 
-        // Check for reduced motion preference
-        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-        if (prefersReducedMotion) {
-            setInView(true);
-            return;
-        }
+        // After mount, hide element so IntersectionObserver can animate it in
+        setInView(false);
+        setMounted(true);
 
         const observer = new IntersectionObserver(
             entries => {
@@ -126,7 +134,7 @@ export const useInView = (options: UseInViewOptions = {}): UseInViewReturn => {
         };
     }, [threshold, rootMargin, triggerOnce, delay, disabled]);
 
-    return {ref, inView, triggerInView};
+    return {ref, inView, triggerInView, mounted};
 };
 
 /**

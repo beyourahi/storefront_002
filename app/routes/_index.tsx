@@ -121,7 +121,8 @@ import {
 } from "~/graphql/customer-account/CustomerOrderHistoryQuery";
 import type {CuratedProductFragment, ExploreCollectionFragment} from "storefrontapi.generated";
 import {
-    getSeoDefaults
+    getSeoDefaults,
+    generateOrganizationSchema
 } from "~/lib/seo";
 import {useTestimonials, useInstagramMedia, useFaqItems, usePromotionalBanners} from "~/lib/site-content-context";
 
@@ -134,24 +135,23 @@ export const meta: Route.MetaFunction = ({matches}) => {
     const rootData = rootMatch?.data as
         | {
               siteContent?: {
-                  siteSettings?: Parameters<typeof getSeoDefaults>[0];
+                  siteSettings?: Parameters<typeof getSeoDefaults>[0] & {socialLinks?: Array<{url: string}>};
                   themeConfig?: Parameters<typeof getSeoDefaults>[1];
               };
           }
         | undefined;
     const seoDefaults = getSeoDefaults(rootData?.siteContent?.siteSettings, rootData?.siteContent?.themeConfig);
+    const socialLinks = rootData?.siteContent?.siteSettings?.socialLinks;
+    const organizationSchema = generateOrganizationSchema(rootData?.siteContent?.siteSettings, socialLinks);
 
-    // Note: JSON-LD (Organization/WebSite schemas) intentionally omitted from homepage meta
-    // to prevent React hydration mismatch caused by timing differences in how React Router
-    // provides matches data during server rendering vs client hydration.
-    // JSON-LD structured data is still provided on product, collection, and article pages.
     return (
         getSeoMeta({
             title: seoDefaults.brandName,
             titleTemplate: null, // No template for homepage - just the site name
             description: seoDefaults.description,
             url: seoDefaults.siteUrl,
-            media: seoDefaults.media
+            media: seoDefaults.media,
+            jsonLd: organizationSchema as any
         }) ?? []
     );
 };

@@ -112,6 +112,8 @@ export function GoogleTagManager() {
         });
 
         // Cart updated (add/remove/quantity change)
+        // Uses per-item delta comparison to fire accurate add_to_cart / remove_from_cart
+        // events even when items are both added and removed in the same cart update.
         subscribe("cart_updated", data => {
             const prevCart = data.prevCart as Record<string, unknown> | undefined;
             const cart = data.cart as Record<string, unknown> | undefined;
@@ -122,36 +124,61 @@ export function GoogleTagManager() {
             const currLines = cart?.lines as Record<string, unknown> | undefined;
             const currNodes = (currLines?.nodes as Record<string, unknown>[]) || [];
 
-            // Determine if items were added or removed by comparing quantities
-            const prevTotal = prevNodes.reduce((sum, l) => sum + (Number(l.quantity) || 0), 0);
-            const currTotal = currNodes.reduce((sum, l) => sum + (Number(l.quantity) || 0), 0);
-
-            const eventName = currTotal > prevTotal ? "add_to_cart" : "remove_from_cart";
-
             const cost = cart?.cost as Record<string, unknown> | undefined;
             const totalAmount = cost?.totalAmount as Record<string, unknown> | undefined;
+            const currency = totalAmount?.currencyCode;
 
-            window.dataLayer?.push({
-                event: eventName,
-                ecommerce: {
-                    currency: totalAmount?.currencyCode,
-                    value: parseFloat(String(totalAmount?.amount || "0")),
-                    items: currNodes.map(line => {
-                        const merchandise = line.merchandise as Record<string, unknown> | undefined;
-                        const product = merchandise?.product as Record<string, unknown> | undefined;
-                        const lineCost = line.cost as Record<string, unknown> | undefined;
-                        const lineTotal = lineCost?.totalAmount as Record<string, unknown> | undefined;
+            // Build quantity maps keyed by line ID for per-item comparison
+            const prevMap = new Map(prevNodes.map(l => [l.id as string, Number(l.quantity) || 0]));
+            const currMap = new Map(currNodes.map(l => [l.id as string, Number(l.quantity) || 0]));
 
-                        return {
-                            item_id: product?.id,
-                            item_name: product?.title,
-                            item_variant: merchandise?.title,
-                            price: parseFloat(String(lineTotal?.amount || "0")),
-                            quantity: line.quantity
-                        };
-                    })
-                }
-            });
+            const formatLineItem = (line: Record<string, unknown>, quantity: number) => {
+                const merchandise = line.merchandise as Record<string, unknown> | undefined;
+                const product = merchandise?.product as Record<string, unknown> | undefined;
+                const lineCost = line.cost as Record<string, unknown> | undefined;
+                const lineTotal = lineCost?.totalAmount as Record<string, unknown> | undefined;
+                return {
+                    item_id: product?.id,
+                    item_name: product?.title,
+                    item_variant: merchandise?.title,
+                    price: parseFloat(String(lineTotal?.amount || "0")),
+                    quantity
+                };
+            };
+
+            // Detect added items: new lines or increased quantity (report delta)
+            const addedItems = currNodes
+                .map(line => {
+                    const prevQty = prevMap.get(line.id as string) || 0;
+                    const currQty = Number(line.quantity) || 0;
+                    const delta = currQty - prevQty;
+                    return delta > 0 ? formatLineItem(line, delta) : null;
+                })
+                .filter(Boolean);
+
+            // Detect removed items: deleted lines or decreased quantity (report delta)
+            const removedItems = prevNodes
+                .map(line => {
+                    const currQty = currMap.get(line.id as string) || 0;
+                    const prevQty = Number(line.quantity) || 0;
+                    const delta = prevQty - currQty;
+                    return delta > 0 ? formatLineItem(line, delta) : null;
+                })
+                .filter(Boolean);
+
+            if (addedItems.length > 0) {
+                window.dataLayer?.push({
+                    event: "add_to_cart",
+                    ecommerce: {currency, items: addedItems}
+                });
+            }
+
+            if (removedItems.length > 0) {
+                window.dataLayer?.push({
+                    event: "remove_from_cart",
+                    ecommerce: {currency, items: removedItems}
+                });
+            }
         });
 
         // Search tracking - fires when search results are viewed

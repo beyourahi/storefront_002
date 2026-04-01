@@ -46,8 +46,15 @@
  * @see https://shopify.dev/docs/api/storefront/latest/mutations/cartDiscountCodesUpdate
  */
 
-import {redirect} from "react-router";
+import {redirect, type MetaFunction} from "react-router";
 import type {Route} from "./+types/discount.$code";
+
+export const meta: MetaFunction = () => {
+    return [
+        {title: "Redirecting..."},
+        {name: "robots", content: "noindex"}
+    ];
+};
 
 // =============================================================================
 // LOADER

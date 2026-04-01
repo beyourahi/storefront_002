@@ -44,8 +44,15 @@
  * @see https://shopify.dev/docs/custom-storefronts/building-with-the-storefront-api/cart
  */
 
-import {redirect} from "react-router";
+import {redirect, type MetaFunction} from "react-router";
 import type {Route} from "./+types/cart.$lines";
+
+export const meta: MetaFunction = () => {
+    return [
+        {title: "Redirecting..."},
+        {name: "robots", content: "noindex"}
+    ];
+};
 
 // =============================================================================
 // LOADER

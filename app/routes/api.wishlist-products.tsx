@@ -38,6 +38,9 @@
 
 import type {Route} from "./+types/api.wishlist-products";
 import type {ProductItemFragment} from "storefrontapi.generated";
+import {createRateLimiter, getClientIP, getRateLimitResponse} from "~/lib/rate-limit";
+
+const limiter = createRateLimiter({windowMs: 60_000, maxRequests: 20});
 
 // =============================================================================
 // ACTION
@@ -58,6 +61,9 @@ import type {ProductItemFragment} from "storefrontapi.generated";
  * ```
  */
 export async function action({request, context}: Route.ActionArgs) {
+    const rateLimitResponse = getRateLimitResponse(limiter.check(getClientIP(request)));
+    if (rateLimitResponse) return rateLimitResponse;
+
     const {dataAdapter} = context;
 
     try {

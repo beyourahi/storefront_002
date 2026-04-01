@@ -1,6 +1,12 @@
 import type {Route} from "./+types/api.product.recommendations";
+import {createRateLimiter, getClientIP, getRateLimitResponse} from "~/lib/rate-limit";
+
+const limiter = createRateLimiter({windowMs: 60_000, maxRequests: 30});
 
 export const loader = async ({request, context}: Route.LoaderArgs) => {
+    const rateLimitResponse = getRateLimitResponse(limiter.check(getClientIP(request)));
+    if (rateLimitResponse) return rateLimitResponse;
+
     const url = new URL(request.url);
     const productId = url.searchParams.get("productId");
 

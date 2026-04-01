@@ -43,10 +43,18 @@
  * - Aside.tsx - Cart drawer container
  */
 
-import {data, type HeadersFunction} from "react-router";
+import {data, type HeadersFunction, type MetaFunction} from "react-router";
 import type {Route} from "./+types/cart";
+
 import type {CartQueryDataReturn} from "@shopify/hydrogen";
 import {CartForm} from "@shopify/hydrogen";
+
+export const meta: MetaFunction = () => {
+    return [
+        {title: "Cart"},
+        {name: "robots", content: "noindex"}
+    ];
+};
 
 // =============================================================================
 // HEADERS

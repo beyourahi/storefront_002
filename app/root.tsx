@@ -69,6 +69,7 @@ import {Toaster} from "~/components/ui/sonner";
 import {FOOTER_QUERY, HEADER_QUERY, MENU_COLLECTIONS_QUERY} from "~/lib/fragments";
 import {extractPopularSearchTerms} from "~/lib/popularSearches";
 import {parseShippingConfig, type ShippingConfig} from "~/lib/shipping";
+import {STORE_LANGUAGE_CODE} from "~/lib/store-locale";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
 import {STORE_CREDIT_BALANCE_QUERY} from "~/graphql/customer-account/StoreCreditQueries";
 import tailwindCss from "./styles/tailwind.css?url";
@@ -183,7 +184,7 @@ export async function loader(args: Route.LoaderArgs) {
         gtmContainerId: env.PUBLIC_GTM_CONTAINER_ID || "",
         shop: getShopAnalytics({
             storefront,
-            publicStorefrontId: env.PUBLIC_STOREFRONT_ID
+            publicStorefrontId: env.PUBLIC_STOREFRONT_ID || "0"
         }),
         consent: {
             checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
@@ -442,7 +443,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
     const generatedTheme = data?.generatedTheme;
 
     return (
-        <html lang="en">
+        <html lang={STORE_LANGUAGE_CODE.toLowerCase()}>
             <head>
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width,initial-scale=1" />

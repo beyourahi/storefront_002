@@ -59,7 +59,7 @@ Backend behavior, data flow, and Hydrogen conventions **must remain consistent**
 | **Features**  | Lenis            | 1.3.16     | GPU-accelerated smooth scroll       |
 |               | Workbox          | 7.0.0      | Service worker, offline support     |
 |               | Embla Carousel   | -          | Autoplay, auto-scroll               |
-|               | next-themes      | -          | Dark mode                           |
+
 |               | colorjs.io       | -          | Color manipulation                  |
 | **Dev**       | ESLint           | 9          | TypeScript, React, a11y             |
 |               | Bun              | Latest     | Package manager + scripts           |
@@ -75,7 +75,7 @@ Backend behavior, data flow, and Hydrogen conventions **must remain consistent**
 storefront_002/
 ├── app/
 │   ├── routes/              # 49 routes
-│   ├── components/          # 117 components
+│   ├── components/          # 120 components
 │   │   ├── ui/              # 27 shadcn
 │   │   ├── blog/            # 7 blog
 │   │   ├── pwa/             # 4 PWA
@@ -83,10 +83,12 @@ storefront_002/
 │   │   ├── gallery/         # Gallery grid
 │   │   ├── icons/           # Custom icons
 │   │   └── ProductLightbox/ # Lightbox system
-│   ├── lib/                 # 59 utilities
+│   ├── lib/                 # 60 utilities
 │   │   ├── metaobject-*.ts  # CMS
 │   │   ├── pwa-*.ts         # PWA
-│   │   ├── color/           # WCAG
+│   │   ├── color/           # WCAG color contrast
+│   │   ├── product/         # Product data, variants, pricing
+│   │   ├── types/           # Shared type definitions
 │   │   └── fragments.ts     # GraphQL fragments
 │   ├── hooks/               # 11 hooks
 │   ├── graphql/customer-account/  # 15 queries

@@ -48,7 +48,7 @@
  * - app/components/* - All components can use hooks to access site content
  */
 
-import {createContext, useContext, type ReactNode} from "react";
+import {createContext, useContext, useMemo, type ReactNode} from "react";
 import type {
     SiteContent,
     SiteSettings,
@@ -262,7 +262,10 @@ export function useThemeColors(): ThemeCoreColors {
 export function useGeneratedTheme(): GeneratedTheme | null {
     const themeConfig = useThemeConfig();
 
-    return generateTheme(themeConfig.colors, themeConfig.fonts, themeConfig.borderRadius);
+    return useMemo(
+        () => generateTheme(themeConfig.colors, themeConfig.fonts, themeConfig.borderRadius),
+        [themeConfig.colors, themeConfig.fonts, themeConfig.borderRadius]
+    );
 }
 
 // =============================================================================
