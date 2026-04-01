@@ -156,7 +156,8 @@ export function NewsletterForm({variant = "footer", className}: NewsletterFormPr
                                 "h-12 min-w-[140px] rounded-xl font-medium motion-interactive motion-press sleek",
                                 isFooter
                                     ? "bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-                                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                                    : "bg-primary text-primary-foreground hover:bg-primary/90",
+                                !email && "opacity-50 cursor-not-allowed"
                             )}
                         >
                             {isSubmitting ? (
