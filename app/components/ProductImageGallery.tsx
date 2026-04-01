@@ -260,6 +260,12 @@ export function ProductImageGallery({images, selectedVariantImage, media}: Produ
     }
 
     // Reusable image item component
+    //
+    // L-09: Lightbox-based gallery is an intentional design choice — each image in the
+    // PDP gallery shows a full-size product photo (not a generic button label) and acts
+    // as a lightbox trigger. The lightbox itself has a dedicated thumbnail strip for
+    // quick navigation (see LightboxThumbnails.tsx). This pattern follows the luxury
+    // e-commerce convention of large hero images → fullscreen detail view.
     const renderImageItem = (image: (typeof images)[0], index: number, forCarousel = false) => {
         const imageKey = image.id ?? `image-${index}`;
         const isLoaded = loadedImages.has(imageKey);
