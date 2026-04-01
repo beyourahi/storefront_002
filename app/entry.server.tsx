@@ -100,6 +100,12 @@ export default async function handleRequest(
             "https://*.google-analytics.com",
             "https://*.analytics.google.com",
             "https://*.googletagmanager.com"
+            // Note: monorail-edge.shopifysvc.com (Shopify analytics) is already
+            // included by Hydrogen's createContentSecurityPolicy defaults.
+            // POST requests to /v1/produce may still abort with net::ERR_ABORTED
+            // during page navigations (browser cancels in-flight requests on unload)
+            // or when ad blockers are active. This is expected and does not affect
+            // storefront functionality — Shopify analytics is best-effort telemetry.
         ],
         // Prevent clickjacking by blocking all iframe embedding
         frameAncestors: ["'none'"]

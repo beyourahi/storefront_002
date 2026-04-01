@@ -504,6 +504,9 @@ export default function App() {
     return (
         <SiteContentProvider siteContent={data.siteContent}>
             <WishlistProvider>
+                {/* Shopify analytics (monorail-edge.shopifysvc.com) may abort in dev or
+                    when ad blockers are active. This is expected behavior and does not
+                    affect storefront functionality. See entry.server.tsx connectSrc. */}
                 <Analytics.Provider cart={data.cart} shop={data.shop} consent={data.consent}>
                     <ServiceWorkerUpdateBanner />
                     <NetworkStatusIndicator />
