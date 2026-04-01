@@ -167,7 +167,33 @@ const FALLBACK_SITE_SETTINGS = {
     promotionalBannerTwoMedia: undefined,
     socialLinks: [],
     testimonials: [],
-    faqItems: [],
+    faqItems: [
+        {
+            id: "faq-default-1",
+            question: "What shipping options do you offer?",
+            answer: "We offer standard and express shipping. Standard delivery takes 5-7 business days, while express delivery arrives in 2-3 business days."
+        },
+        {
+            id: "faq-default-2",
+            question: "What is your return policy?",
+            answer: "We accept returns within 30 days of purchase. Items must be unused and in original packaging. Contact us to initiate a return."
+        },
+        {
+            id: "faq-default-3",
+            question: "How can I track my order?",
+            answer: "Once your order ships, you'll receive a confirmation email with a tracking number. You can also check your order status in your account."
+        },
+        {
+            id: "faq-default-4",
+            question: "Do you ship internationally?",
+            answer: "Yes, we ship to most countries worldwide. Shipping costs and delivery times vary by destination."
+        },
+        {
+            id: "faq-default-5",
+            question: "How do I contact customer support?",
+            answer: "You can reach us via email, phone, or our contact page. Our support team is available during business hours."
+        }
+    ],
     instagramMedia: [],
     faviconUrl: null,
     icon192Url: null,
@@ -963,7 +989,7 @@ export function parseSiteSettings(rawData: unknown): SiteSettings {
         // Collections - parsers return [] when empty, components handle visibility
         socialLinks: parseSocialLinks(data.socialLinksData),
         testimonials: parsedTestimonials,
-        faqItems: parsedFaqItems,
+        faqItems: parsedFaqItems.length > 0 ? parsedFaqItems : DEFAULT_SITE_SETTINGS.faqItems,
         instagramMedia: parsedInstagramMedia,
 
         // Favicon - extracted from file reference
