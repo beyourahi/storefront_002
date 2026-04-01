@@ -145,6 +145,46 @@ function MissionStatement() {
 }
 
 // =============================================================================
+// SOCIAL LINK FILTERING
+// =============================================================================
+
+/**
+ * Generic platform homepage URLs that indicate an unconfigured social link.
+ * When a store owner hasn't set their actual profile URL, Shopify or the
+ * metaobject defaults leave the bare platform root. These should not be
+ * displayed to customers.
+ *
+ * Comparison is done after stripping trailing slashes and lowercasing.
+ */
+const GENERIC_SOCIAL_URLS = new Set([
+    "https://www.instagram.com",
+    "https://instagram.com",
+    "https://www.facebook.com",
+    "https://facebook.com",
+    "https://www.threads.net",
+    "https://threads.net",
+    "https://www.twitter.com",
+    "https://twitter.com",
+    "https://www.x.com",
+    "https://x.com",
+    "https://www.tiktok.com",
+    "https://tiktok.com",
+    "https://www.youtube.com",
+    "https://youtube.com",
+    "https://www.pinterest.com",
+    "https://pinterest.com"
+]);
+
+/**
+ * Returns true when the social link points to an actual brand profile,
+ * not just a bare platform homepage.
+ */
+function isConfiguredSocialLink(url: string): boolean {
+    const normalized = url.trim().replace(/\/+$/, "").toLowerCase();
+    return !GENERIC_SOCIAL_URLS.has(normalized);
+}
+
+// =============================================================================
 // FOOTER NAVIGATION
 // =============================================================================
 
@@ -200,9 +240,10 @@ function FooterLinks() {
     // Build Support column with conditional FAQ link
     const supportLinks: FooterLink[] = [...(hasFaq ? [{title: "FAQ", url: "/faq"}] : []), ...SUPPORT_LINKS];
 
-    // Build Connect column with conditional Blog link
+    // Build Connect column — filter out unconfigured social links (bare platform homepages)
     const connectLinks: FooterLink[] = [
         ...socialLinks
+            .filter(link => isConfiguredSocialLink(link.url))
             .sort((a, b) => a.displayOrder - b.displayOrder)
             .map(link => ({
                 title: link.platform,
@@ -212,11 +253,13 @@ function FooterLinks() {
         ...(hasBlog ? [{title: "Blog", url: "/blogs"}] : [])
     ];
 
+    // Only show columns that have at least one link; hides Connect entirely
+    // when all social links are unconfigured and there's no blog
     const allColumns: FooterColumn[] = [
         {heading: "Shop", links: SHOP_LINKS},
         {heading: "Support", links: supportLinks},
         {heading: "Account", links: ACCOUNT_LINKS},
-        {heading: "Connect", links: connectLinks}
+        ...(connectLinks.length > 0 ? [{heading: "Connect", links: connectLinks}] : [])
     ];
 
     return (
