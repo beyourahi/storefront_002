@@ -5,6 +5,11 @@ type ShopifyMoney = {
     currencyCode: string;
 };
 
+/**
+ * Currency symbol lookup used ONLY as a fallback when Intl.NumberFormat fails.
+ * The primary formatting path uses Intl.NumberFormat with currencyDisplay: "narrowSymbol"
+ * to produce locale-correct symbols (e.g., "৳69" for BDT, "$69" for USD).
+ */
 const CURRENCY_SYMBOLS: Record<string, string> = {
     USD: "$",
     EUR: "€",
@@ -36,7 +41,22 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
     COP: "$",
     SAR: "﷼",
     MYR: "RM",
-    RON: "lei"
+    RON: "lei",
+    BDT: "৳",
+    TWD: "NT$",
+    NZD: "NZ$",
+    TRY: "₺",
+    RUB: "₽",
+    UAH: "₴",
+    VND: "₫",
+    NGN: "₦",
+    PKR: "₨",
+    LKR: "₨",
+    NPR: "₨",
+    BHD: "BD",
+    KWD: "د.ك",
+    QAR: "ر.ق",
+    OMR: "ر.ع."
 };
 
 const DEFAULT_CURRENCY = "USD";
@@ -64,9 +84,13 @@ export class CurrencyFormatter {
         }
 
         try {
+            // Use narrowSymbol to display currency symbols (e.g., "৳69") instead of
+            // ISO codes (e.g., "BDT 69") — ensures consistent symbol-based formatting
+            // across all locales and currencies.
             return new Intl.NumberFormat(DEFAULT_LOCALE, {
                 style: "currency",
                 currency: currencyCode,
+                currencyDisplay: "narrowSymbol",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2
             }).format(amount);

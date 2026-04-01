@@ -40,7 +40,7 @@
  */
 
 import type {ProductFragment} from "storefrontapi.generated";
-import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
+import {formatShopifyMoney} from "~/lib/currency-formatter";
 import {parseProductTitle} from "~/lib/product";
 
 // Types
@@ -71,13 +71,9 @@ export interface SocialSharePlatform {
     customHandler?: (shareData: ShareData, onSuccess?: () => void, onError?: () => void) => Promise<void>;
 }
 
-// Format price from Shopify Money type
+// Format price using the shared CurrencyFormatter for consistent symbol display
 function formatPrice(price: {amount: string; currencyCode: string}): string {
-    const amount = parseFloat(price.amount);
-    return new Intl.NumberFormat(STORE_FORMAT_LOCALE, {
-        style: "currency",
-        currency: price.currencyCode
-    }).format(amount);
+    return formatShopifyMoney(price);
 }
 
 // Create share data from product

@@ -44,6 +44,7 @@ import type {CustomerFragment} from "customer-accountapi.generated";
 import type {CuratedProductFragment} from "storefrontapi.generated";
 import {CUSTOMER_DASHBOARD_QUERY} from "~/graphql/customer-account/CustomerDashboardQuery";
 import {getRecentlyViewedIds, useRecentlyViewed} from "~/lib/recently-viewed";
+import {getZeroPrice} from "~/lib/currency-formatter";
 import {formatShippingThreshold} from "~/lib/shipping";
 import {Button} from "~/components/ui/button";
 import {Card, CardContent} from "~/components/ui/card";
@@ -294,7 +295,7 @@ export default function AccountDashboard() {
                     When disabled, storeCreditAccounts returns empty array from Customer Account API */}
             {isStoreCreditEnabled && (
                 <AnimatedSection animation="slide-up" threshold={0.1} delay={50}>
-                    <StoreCreditWidget balance={storeCreditBalance} accounts={storeCreditAccounts} />
+                    <StoreCreditWidget balance={storeCreditBalance} accounts={storeCreditAccounts} currencyCode={shippingConfig?.currencyCode ?? "USD"} />
                 </AnimatedSection>
             )}
 
@@ -472,9 +473,10 @@ function WelcomeBanner({customer}: {customer: CustomerFragment}) {
 interface StoreCreditWidgetProps {
     balance: {amount: string; currencyCode: string} | null;
     accounts: StoreCreditAccount[];
+    currencyCode: string;
 }
 
-function StoreCreditWidget({balance, accounts}: StoreCreditWidgetProps) {
+function StoreCreditWidget({balance, accounts, currencyCode}: StoreCreditWidgetProps) {
     const [isOpen, setIsOpen] = useState(false);
     const hasBalance = balance && parseFloat(balance.amount) > 0;
 
@@ -496,7 +498,7 @@ function StoreCreditWidget({balance, accounts}: StoreCreditWidgetProps) {
                                     Store Credit Balance
                                 </p>
                                 <p className="text-xl md:text-2xl font-serif font-semibold text-foreground tracking-tight">
-                                    {hasBalance ? <Money data={balance} /> : "৳0.00"}
+                                    {hasBalance ? <Money data={balance} /> : getZeroPrice(currencyCode)}
                                 </p>
                                 {hasBalance && (
                                     <p className="text-sm text-success font-medium">Available to use at checkout</p>
@@ -1177,7 +1179,7 @@ function SpecialOffersBanner({
     shippingConfig?: {freeShippingThreshold: number | null; currencyCode: string};
 }) {
     const threshold = shippingConfig?.freeShippingThreshold ?? 0;
-    const currencyCode = shippingConfig?.currencyCode ?? "BDT";
+    const currencyCode = shippingConfig?.currencyCode ?? "USD";
     const formattedThreshold = formatShippingThreshold(threshold, currencyCode);
 
     return (

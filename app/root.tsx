@@ -236,10 +236,10 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
     ]);
 
     // Parse shipping config from shop metafields
-    // Currency derived from shop payment settings with BDT fallback
+    // Currency derived from shop payment settings with USD fallback
     const shippingConfig = parseShippingConfig(
         shopData?.shop?.freeShippingThreshold?.value,
-        shopData?.shop?.paymentSettings?.currencyCode ?? "BDT"
+        shopData?.shop?.paymentSettings?.currencyCode ?? "USD"
     );
 
     // Process collections to compute product counts (only available products)

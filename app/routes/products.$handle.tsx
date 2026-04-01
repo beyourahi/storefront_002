@@ -83,7 +83,7 @@ import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
 import {hasSpecialTag} from "~/lib/product-tags";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
-import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
+import {formatShopifyMoney} from "~/lib/currency-formatter";
 import {parseProductTitle} from "~/lib/product";
 
 // =============================================================================
@@ -274,14 +274,10 @@ export default function Product() {
             const timeoutId = setTimeout(() => {
                 const firstImage = product.images?.nodes?.[0];
 
-                // Format price for display
+                // Format price using the shared CurrencyFormatter for consistent symbol display
                 const formatPrice = (price: {amount: string; currencyCode: string} | null | undefined) => {
                     if (!price) return "";
-                    const amount = parseFloat(price.amount);
-                    return new Intl.NumberFormat(STORE_FORMAT_LOCALE, {
-                        style: "currency",
-                        currency: price.currencyCode
-                    }).format(amount);
+                    return formatShopifyMoney(price);
                 };
 
                 addProduct({

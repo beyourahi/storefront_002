@@ -71,7 +71,7 @@
  * - ~/lib/shipping.ts - Free shipping calculations
  * - ~/routes/cart.tsx - Cart action handlers
  * - CartForm (Hydrogen) - Form submissions
- * - Money.tsx - Price formatting with BDT symbol
+ * - Money.tsx - Price formatting with currency symbol
  * - useNetworkStatus - Online/offline detection hook
  * - CartMain.tsx - Renders CartSummary with props
  */
@@ -86,6 +86,7 @@ import {Wallet, Check, Truck, Loader2, Sparkles, PartyPopper, WifiOff} from "luc
 import {Textarea} from "~/components/ui/textarea";
 import {cn} from "~/lib/utils";
 import {qualifiesForFreeShipping, remainingForFreeShipping} from "~/lib/shipping";
+import {formatPrice} from "~/lib/currency-formatter";
 import {useNetworkStatus} from "~/hooks/useNetworkStatus";
 
 const FALLBACK_CART_CONTENT = {
@@ -343,7 +344,7 @@ function FreeShippingProgress({cart, shippingConfig, isPage = true}: FreeShippin
                                 isPage ? "text-muted-foreground" : "text-primary-foreground/70"
                             )}
                         >
-                            {cartContent.freeShippingAwayTemplate.replace("{amount}", `৳${remaining.toLocaleString()}`)}
+                            {cartContent.freeShippingAwayTemplate.replace("{amount}", formatPrice(remaining, shippingConfig.currencyCode))}
                         </span>
                     )}
                 </div>
