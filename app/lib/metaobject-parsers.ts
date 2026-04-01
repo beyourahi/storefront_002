@@ -728,16 +728,47 @@ function parseFaqItemsJson(jsonField: MetaobjectField | undefined): FAQItem[] {
         const parsed = JSON.parse(jsonField.value) as unknown;
         if (!Array.isArray(parsed)) return [];
 
-        return (parsed as Record<string, unknown>[])
+        const items = (parsed as Record<string, unknown>[])
             .map((item, index) => ({
                 id: (item.id as string) || `faq-${index}`,
                 question: (item.question as string) || "",
                 answer: (item.answer as string) || ""
             }))
             .filter((f: FAQItem) => f.question && f.answer);
+
+        // Detect generic Shopify placeholder FAQs that aren't useful for an
+        // e-commerce storefront. When ALL questions are generic placeholders,
+        // return [] so the caller falls back to e-commerce defaults.
+        if (items.length > 0 && items.every(item => isGenericFaqQuestion(item.question))) {
+            return [];
+        }
+
+        return items;
     } catch {
         return [];
     }
+}
+
+/**
+ * Known generic/placeholder FAQ questions that Shopify metaobject templates
+ * ship with. These are not e-commerce-relevant and should trigger a fallback
+ * to the curated defaults in DEFAULT_SITE_SETTINGS.
+ */
+const GENERIC_FAQ_QUESTIONS = new Set([
+    "what is this?",
+    "who is this for?",
+    "how does it work?",
+    "do i need any special knowledge to use this?",
+    "can i get started quickly?",
+    "is everything easy to understand?",
+    "is this designed to be user-friendly?",
+    "can i explore it at my own pace?",
+    "what makes this stand out?",
+    "where can i find more information?"
+]);
+
+function isGenericFaqQuestion(question: string): boolean {
+    return GENERIC_FAQ_QUESTIONS.has(question.trim().toLowerCase());
 }
 
 /**

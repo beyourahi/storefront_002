@@ -48,7 +48,7 @@ Backend behavior, data flow, and Hydrogen conventions **must remain consistent**
 | ------------- | ---------------- | ---------- | ----------------------------------- |
 | **Framework** | React            | 18.3.1     |                                     |
 |               | React Router     | 7.12       | Hydrogen preset, file-based routing |
-|               | Shopify Hydrogen | 2026.1.0   | Storefront + Customer Account APIs  |
+|               | Shopify Hydrogen | 2026.1.3   | Storefront + Customer Account APIs  |
 |               | Storefront API   | 2026-01    | GraphQL API version                 |
 |               | TypeScript       | 5.9        | Strict mode, ES2022 target          |
 |               | Vite             | 6          | Build tooling                       |
@@ -75,7 +75,7 @@ Backend behavior, data flow, and Hydrogen conventions **must remain consistent**
 storefront_002/
 ├── app/
 │   ├── routes/              # 49 routes
-│   ├── components/          # 120 components
+│   ├── components/          # 121 components
 │   │   ├── ui/              # 27 shadcn
 │   │   ├── blog/            # 7 blog
 │   │   ├── pwa/             # 4 PWA
@@ -83,7 +83,7 @@ storefront_002/
 │   │   ├── gallery/         # Gallery grid
 │   │   ├── icons/           # Custom icons
 │   │   └── ProductLightbox/ # Lightbox system
-│   ├── lib/                 # 60 utilities
+│   ├── lib/                 # 61 utilities
 │   │   ├── metaobject-*.ts  # CMS
 │   │   ├── pwa-*.ts         # PWA
 │   │   ├── color/           # WCAG color contrast
@@ -329,7 +329,7 @@ Read all comments before editing. Update when changing code. Add for complex log
 
 **Hooks** (11 in `hooks/`): useInView, useNetworkStatus, usePointerCapabilities, usePwaAnalytics, usePwaInstall, useReadingProgress, useRecentSearches, useScreenSize, useScrollLock, useSearchKeyboard, useServiceWorkerUpdate. Additional scroll hooks in `lib/`: useScrolled, useScrollProgress
 
-**Animations**: 22 `@keyframes` in `tailwind.css` - product (fade-in, image-hover), wishlist (heart-beat, heart-glow, burst-ring), hero (shimmer), GPU-accelerated, respects `prefers-reduced-motion`
+**Animations**: 23 `@keyframes` in `tailwind.css` - product (fade-in, image-hover), wishlist (heart-beat, heart-glow, burst-ring), hero (shimmer), GPU-accelerated, respects `prefers-reduced-motion`
 
 **Search**: Regular (full data), predictive (autocomplete), popular terms, recent (LocalStorage), keyboard (Cmd/Ctrl+K), full-screen overlay
 

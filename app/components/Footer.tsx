@@ -163,6 +163,8 @@ const GENERIC_SOCIAL_URLS = new Set([
     "https://facebook.com",
     "https://www.threads.net",
     "https://threads.net",
+    "https://www.threads.com",
+    "https://threads.com",
     "https://www.twitter.com",
     "https://twitter.com",
     "https://www.x.com",
