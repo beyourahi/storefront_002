@@ -254,8 +254,13 @@ export default function Blogs({loaderData}: Route.ComponentProps) {
 
             {/* Empty State */}
             {!featuredArticle && allArticles.length === 0 && (
-                <div className="text-center py-12 sm:py-16">
-                    <p className="text-sm sm:text-base text-muted-foreground">No articles published yet.</p>
+                <div className="text-center py-12 sm:py-16 space-y-4">
+                    <p className="text-base sm:text-lg text-muted-foreground">
+                        Our journal is coming soon.
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                        In the meantime, explore our <Link to="/collections/all-products" className="text-primary underline underline-offset-2">latest products</Link>.
+                    </p>
                 </div>
             )}
         </div>
