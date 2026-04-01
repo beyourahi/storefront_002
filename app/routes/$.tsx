@@ -53,12 +53,12 @@ export const meta: MetaFunction = () => {
  *
  * @throws Response - Always throws with 404 status
  *
- * @note The pathname is included in the error message for debugging,
- *       though this message may not be shown to end users.
+ * @note Uses a generic "Not Found" message to avoid exposing URL paths
+ *       in the error response.
  */
 export async function loader({request, context}: Route.LoaderArgs) {
     await redirectLegacyProductUrl(request, context.dataAdapter);
-    throw new Response(`${new URL(request.url).pathname} not found`, {
+    throw new Response("Not Found", {
         status: 404
     });
 }
