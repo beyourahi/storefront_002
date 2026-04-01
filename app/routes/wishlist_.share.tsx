@@ -42,7 +42,7 @@
 import {Link, useLoaderData} from "react-router";
 import {getSeoMeta} from "@shopify/hydrogen";
 import {Heart, ShoppingBag, Plus} from "lucide-react";
-import type {Route} from "./+types/wishlist.share";
+import type {Route} from "./+types/wishlist_.share";
 import type {ProductItemFragment} from "storefrontapi.generated";
 import {decodeWishlistIds, reconstructGids} from "~/lib/wishlist-utils";
 import {useWishlist} from "~/lib/wishlist-context";
