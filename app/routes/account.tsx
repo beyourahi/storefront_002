@@ -4,7 +4,7 @@
  * @description
  * Parent layout route for all account-related pages. Provides:
  * - Soft authentication check (no redirects - pages are publicly accessible)
- * - Shared account navigation menu (always visible regardless of auth status)
+ * - Shared account navigation menu (visible only when authenticated)
  * - Customer data context for child routes (null when unauthenticated)
  * - Authentication status flag for child routes to conditionally render content
  * - Returns availability check (only when authenticated)
@@ -16,7 +16,7 @@
  * Layout Pattern:
  * - This route uses <Outlet> to render child routes
  * - Child routes receive {customer, returnsEnabled, isAuthenticated} via outlet context
- * - Shared navigation is rendered once here, always visible
+ * - Shared navigation is rendered once here, only when authenticated
  * - Customer data is null for unauthenticated users
  *
  * Authentication:
@@ -163,8 +163,10 @@ export default function AccountLayout() {
            - pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px)
            - PageLayout clears the fixed header, this adds visual breathing room */
         <div className="px-container pt-(--page-breathing-room) mb-4 pb-6 sm:pb-8 md:pb-12 lg:pb-16 xl:pb-20 min-h-[calc(100dvh-var(--total-header-height))]">
-            <AccountMenu returnsEnabled={returnsEnabled} />
-            <main className="mt-8 md:mt-10 lg:mt-12 xl:mt-14">
+            {/* Sidebar navigation is hidden for unauthenticated users to avoid
+                showing links to pages they cannot access (L-08) */}
+            {isAuthenticated && <AccountMenu returnsEnabled={returnsEnabled} />}
+            <main className={isAuthenticated ? "mt-8 md:mt-10 lg:mt-12 xl:mt-14" : undefined}>
                 <Outlet context={{customer, returnsEnabled, isAuthenticated}} />
             </main>
         </div>
