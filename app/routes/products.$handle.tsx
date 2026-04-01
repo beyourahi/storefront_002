@@ -222,7 +222,7 @@ function loadDeferredData({context}: Route.LoaderArgs, productId: string) {
     const recommendations = dataAdapter
         .query(RECOMMENDATIONS_QUERY, {
             variables: {productId},
-            cache: dataAdapter.CacheNone()
+            cache: dataAdapter.CacheShort()
         })
         .then((data: any) => data.productRecommendations ?? null)
         .catch(() => null);

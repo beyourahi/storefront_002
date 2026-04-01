@@ -420,33 +420,17 @@ export const MENU_COLLECTIONS_QUERY = `#graphql
       }
       nodes {
         id
-        handle
         title
         productType
         availableForSale
-        featuredImage {
-          id
-          url
-          altText
-          width
-          height
-        }
-        priceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-        }
         variants(first: 10) {
           nodes {
             availableForSale
             price {
               amount
-              currencyCode
             }
             compareAtPrice {
               amount
-              currencyCode
             }
           }
         }

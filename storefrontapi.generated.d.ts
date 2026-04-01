@@ -510,26 +510,14 @@ export type MenuCollectionsQuery = {
     nodes: Array<
       Pick<
         StorefrontAPI.Product,
-        "id" | "handle" | "title" | "productType" | "availableForSale"
+        "id" | "title" | "productType" | "availableForSale"
       > & {
-        featuredImage?: StorefrontAPI.Maybe<
-          Pick<
-            StorefrontAPI.Image,
-            "id" | "url" | "altText" | "width" | "height"
-          >
-        >;
-        priceRange: {
-          minVariantPrice: Pick<
-            StorefrontAPI.MoneyV2,
-            "amount" | "currencyCode"
-          >;
-        };
         variants: {
           nodes: Array<
             Pick<StorefrontAPI.ProductVariant, "availableForSale"> & {
-              price: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+              price: Pick<StorefrontAPI.MoneyV2, "amount">;
               compareAtPrice?: StorefrontAPI.Maybe<
-                Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">
+                Pick<StorefrontAPI.MoneyV2, "amount">
               >;
             }
           >;
@@ -4670,7 +4658,7 @@ interface GeneratedQueryTypes {
     return: FooterQuery;
     variables: FooterQueryVariables;
   };
-  "#graphql\n  query MenuCollections(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        products(first: 250, filters: [{available: true}]) {\n          nodes {\n            id\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      pageInfo {\n        hasNextPage\n      }\n      nodes {\n        id\n        handle\n        title\n        productType\n        availableForSale\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
+  "#graphql\n  query MenuCollections(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        products(first: 250, filters: [{available: true}]) {\n          nodes {\n            id\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      pageInfo {\n        hasNextPage\n      }\n      nodes {\n        id\n        title\n        productType\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n            }\n            compareAtPrice {\n              amount\n            }\n          }\n        }\n      }\n    }\n  }\n": {
     return: MenuCollectionsQuery;
     variables: MenuCollectionsQueryVariables;
   };

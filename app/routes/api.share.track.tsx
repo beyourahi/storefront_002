@@ -21,11 +21,6 @@
  * - In-memory store (resets on worker restart)
  * - Returns 429 with Retry-After header when exceeded
  *
- * @cors
- * Supports CORS for cross-origin requests:
- * - Allows all origins (configurable in production)
- * - Supports POST and OPTIONS methods
- *
  * @data-collected
  * - platform: Which social platform (twitter, facebook, copy, etc.)
  * - productId: Product being shared
@@ -80,28 +75,18 @@ function isValidAnalyticsData(data: unknown): data is {
 }
 
 // =============================================================================
-// LOADER (CORS PREFLIGHT)
+// LOADER
 // =============================================================================
 
 /**
- * Handles OPTIONS requests for CORS preflight.
- *
- * @param request - HTTP request
- * @returns 204 No Content with CORS headers for OPTIONS, 405 otherwise
+ * Rejects non-POST requests. This endpoint is same-origin only
+ * (called from social-share.tsx via fetch) — no CORS needed.
  */
-export async function loader({request}: Route.LoaderArgs) {
-    if (request.method === "OPTIONS") {
-        return new Response(null, {
-            status: 204,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type"
-            }
-        });
-    }
-
-    return new Response("Method not allowed", {status: 405});
+export async function loader() {
+    return new Response("Method not allowed", {
+        status: 405,
+        headers: {"Allow": "POST"}
+    });
 }
 
 // =============================================================================

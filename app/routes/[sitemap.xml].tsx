@@ -60,4 +60,3 @@ export async function loader({request, context: {storefront}}: Route.LoaderArgs)
     return response;
 }
 
-export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

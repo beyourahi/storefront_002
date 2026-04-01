@@ -875,7 +875,9 @@ body {
     --shadow-xl: var(--shadow-xl);
 }
 
-/* Base layer - replaces reset.css */
+/* Base layer — replaces demo-store's reset.css.
+   Tailwind v4 preflight handles cross-browser normalization.
+   Form element styling is component-scoped via shadcn/ui. */
 @layer base {
     * {
         @apply border-border;

@@ -108,5 +108,3 @@ export async function loader({context}: Route.LoaderArgs) {
         });
     }
 }
-
-export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

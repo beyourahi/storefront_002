@@ -38,7 +38,8 @@ export default defineConfig({
                 "react-router",
                 "use-sync-external-store/shim",
                 "@radix-ui/react-use-is-hydrated"
-            ]
+            ],
+            exclude: ["@shopify/hydrogen"]
         }
     },
     // -------------------------------------------------------------------------
