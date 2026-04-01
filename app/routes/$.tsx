@@ -31,7 +31,16 @@
  * @see https://reactrouter.com/how-to/catchall-routes
  */
 
+import type {MetaFunction} from "react-router";
 import type {Route} from "./+types/$";
+import {redirectLegacyProductUrl} from "~/lib/legacy-redirect";
+
+export const meta: MetaFunction = () => {
+    return [
+        {title: "Page Not Found"},
+        {name: "robots", content: "noindex"}
+    ];
+};
 
 // =============================================================================
 // LOADER
@@ -47,7 +56,8 @@ import type {Route} from "./+types/$";
  * @note The pathname is included in the error message for debugging,
  *       though this message may not be shown to end users.
  */
-export async function loader({request}: Route.LoaderArgs) {
+export async function loader({request, context}: Route.LoaderArgs) {
+    await redirectLegacyProductUrl(request, context.dataAdapter);
     throw new Response(`${new URL(request.url).pathname} not found`, {
         status: 404
     });
