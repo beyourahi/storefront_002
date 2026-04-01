@@ -42,7 +42,6 @@ import {useState} from "react";
 import {Image} from "@shopify/hydrogen";
 import {Carousel, CarouselContent, CarouselItem, type CarouselApi} from "~/components/ui/carousel";
 import {ArrowLeft, ArrowRight} from "lucide-react";
-import {Button} from "~/components/ui/button";
 import {cn} from "~/lib/utils";
 
 type ProductImage = {
@@ -134,31 +133,49 @@ export function ProductImageCarousel({images, productTitle, loading = "lazy", cl
                 </CarouselContent>
             </Carousel>
 
-            {/* Navigation arrows - custom buttons with stopPropagation */}
-            <Button
-                size="icon"
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 size-8 rounded-full hidden md:flex opacity-0 group-hover:opacity-100 motion-overlay bg-primary border-0 hover:bg-primary/90"
+            {/* Navigation arrows - div[role=button] avoids illegal button-in-button nesting when
+                this carousel renders inside an interactive parent (e.g., FullScreenSearch results).
+                tabIndex and onKeyDown preserve full keyboard accessibility. */}
+            <div
+                role="button"
+                tabIndex={0}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 size-8 rounded-full hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 motion-overlay bg-primary border-0 hover:bg-primary/90 cursor-pointer"
                 onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
                     api?.scrollPrev();
                 }}
+                onKeyDown={e => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        api?.scrollPrev();
+                    }
+                }}
                 aria-label="Previous image"
             >
                 <ArrowLeft className="size-4 text-primary-foreground" />
-            </Button>
-            <Button
-                size="icon"
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 size-8 rounded-full hidden md:flex opacity-0 group-hover:opacity-100 motion-overlay bg-primary border-0 hover:bg-primary/90"
+            </div>
+            <div
+                role="button"
+                tabIndex={0}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 size-8 rounded-full hidden md:flex items-center justify-center opacity-0 group-hover:opacity-100 motion-overlay bg-primary border-0 hover:bg-primary/90 cursor-pointer"
                 onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
                     api?.scrollNext();
                 }}
+                onKeyDown={e => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        api?.scrollNext();
+                    }
+                }}
                 aria-label="Next image"
             >
                 <ArrowRight className="size-4 text-primary-foreground" />
-            </Button>
+            </div>
         </div>
     );
 }
