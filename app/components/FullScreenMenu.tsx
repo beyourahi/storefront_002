@@ -465,7 +465,7 @@ interface MenuLinkProps {
  * @param url - Navigation URL
  * @param count - Optional product count (-1 to hide, 250+ formatted)
  * @param onNavigate - Callback to close menu
- * @param variant - "collection" (3xl text) or "secondary" (xl text)
+ * @param variant - "collection" (fluid-h2 display text) or "secondary" (fluid-h4 text)
  * @param staggerIndex - Index for animation delay (50ms * index, max 400ms)
  */
 function MenuLink({title, url, count, onNavigate, variant = "collection", staggerIndex = 0}: MenuLinkProps) {
@@ -486,7 +486,7 @@ function MenuLink({title, url, count, onNavigate, variant = "collection", stagge
                     ? "group hover:text-primary/70"
                     : "motion-press active:scale-[var(--motion-press-scale)] active:text-primary/80",
                 // 44px minimum touch target (Apple HIG guideline)
-                "min-h-11 py-2",
+                "min-h-11 py-2 md:py-3",
                 // Stagger animation on menu open
                 "animate-slide-up-fade opacity-0"
             )}
@@ -495,10 +495,10 @@ function MenuLink({title, url, count, onNavigate, variant = "collection", stagge
             <span
                 className={cn(
                     "relative font-medium",
-                    // Collection links: larger text for visual hierarchy
-                    variant === "collection" && "text-xl",
-                    // Secondary links: smaller text (policies, account, etc.)
-                    variant === "secondary" && "text-sm"
+                    // Collection links: display-level fluid type for visual dominance in fullscreen overlay
+                    variant === "collection" && "text-fluid-h2 tracking-tight",
+                    // Secondary links: readable but subordinate fluid type
+                    variant === "secondary" && "text-fluid-h4"
                 )}
             >
                 {title}
@@ -510,7 +510,7 @@ function MenuLink({title, url, count, onNavigate, variant = "collection", stagge
                     )}
                 />
             </span>
-            {displayCount && <sup className="text-sm md:text-sm">{displayCount}</sup>}
+            {displayCount && <sup className="text-sm md:text-base">{displayCount}</sup>}
         </Link>
     );
 }
