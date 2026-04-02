@@ -47,12 +47,10 @@ import {
 } from "~/graphql/customer-account/SubscriptionMutations";
 
 // shadcn components
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "~/components/ui/card";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "~/components/ui/card";
 import {Badge} from "~/components/ui/badge";
 import {Button} from "~/components/ui/button";
-import {Separator} from "~/components/ui/separator";
 import {Alert, AlertDescription, AlertTitle} from "~/components/ui/alert";
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "~/components/ui/table";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -64,6 +62,19 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "~/components/ui/alert-dialog";
+
+// Icons
+import {
+    RefreshCwIcon,
+    CalendarIcon,
+    CreditCardIcon,
+    PackageSearchIcon,
+    SlidersHorizontalIcon,
+    CheckCircleIcon,
+    ArrowLeftIcon,
+    AlertCircleIcon,
+    ShoppingBagIcon
+} from "lucide-react";
 
 export const meta: Route.MetaFunction = ({data}) => {
     return [{title: data?.subscription ? "Subscription Details" : "Subscription Not Found"}];
@@ -348,313 +359,375 @@ export default function SubscriptionDetail() {
     const canCancel = subscription.status !== "CANCELLED" && subscription.status !== "EXPIRED";
 
     return (
-        <div className="space-y-6">
-            <AnimatedSection animation="fade" threshold={0.08}>
-                <header className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-semibold tracking-tight">Subscription Details</h2>
-                        <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                        {frequency} • Created {new Date(subscription.createdAt).toLocaleDateString()}
-                    </p>
-                </header>
-            </AnimatedSection>
+        <div className="space-y-10 md:space-y-14 lg:space-y-16">
+            <div className="max-w-5xl mx-auto space-y-10 md:space-y-14 lg:space-y-16">
+                {/* Page Header - Matches dashboard/orders/profile/returns section headers */}
+                <AnimatedSection animation="hero" threshold={0.1}>
+                    <section className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
+                                    <RefreshCwIcon className="size-5 md:size-6 text-muted-foreground" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2.5 flex-wrap">
+                                        <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-medium text-foreground tracking-tight my-0">
+                                            Subscription Details
+                                        </h1>
+                                        <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
+                                    </div>
+                                    <p className="text-muted-foreground text-sm md:text-base mt-1">
+                                        {frequency} &middot; Created {new Date(subscription.createdAt).toLocaleDateString()}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </AnimatedSection>
 
-            <Separator />
+                {/* Action feedback alerts */}
+                {actionData?.success && (
+                    <Alert className="rounded-2xl">
+                        <CheckCircleIcon className="size-4" />
+                        <AlertTitle>Success</AlertTitle>
+                        <AlertDescription>{actionData.message}</AlertDescription>
+                    </Alert>
+                )}
 
-            {/* Action feedback */}
-            {actionData?.success && (
-                <Alert>
-                    <AlertTitle>Success</AlertTitle>
-                    <AlertDescription>{actionData.message}</AlertDescription>
-                </Alert>
-            )}
+                {actionData?.error && (
+                    <Alert variant="destructive" className="rounded-2xl">
+                        <AlertCircleIcon className="size-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>{actionData.error}</AlertDescription>
+                    </Alert>
+                )}
 
-            {actionData?.error && (
-                <Alert variant="destructive">
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{actionData.error}</AlertDescription>
-                </Alert>
-            )}
+                {/* Payment error alert */}
+                {subscription.lastBillingAttemptErrorType && (
+                    <Alert variant="destructive" className="rounded-2xl">
+                        <AlertCircleIcon className="size-4" />
+                        <AlertTitle>Payment Issue</AlertTitle>
+                        <AlertDescription>
+                            Your last payment attempt failed. Please update your payment method to continue receiving
+                            shipments.
+                        </AlertDescription>
+                    </Alert>
+                )}
 
-            {/* Payment error alert */}
-            {subscription.lastBillingAttemptErrorType && (
-                <Alert variant="destructive">
-                    <AlertTitle>Payment Issue</AlertTitle>
-                    <AlertDescription>
-                        Your last payment attempt failed. Please update your payment method to continue receiving
-                        shipments.
-                    </AlertDescription>
-                </Alert>
-            )}
-
-            <AnimatedSection animation="slide-up" threshold={0.1}>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base">Subscription Items</CardTitle>
-                        <CardDescription>Products included in this subscription</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-[50%]">Product</TableHead>
-                                    <TableHead>Price</TableHead>
-                                    <TableHead>Quantity</TableHead>
-                                    <TableHead className="text-right">Total</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {subscription.lines.nodes.map(line => (
-                                    <TableRow key={line.id}>
-                                        <TableCell>
-                                            <div className="flex items-center gap-4">
-                                                {line.image && (
-                                                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border">
-                                                        <Image
-                                                            data={line.image}
-                                                            width={48}
-                                                            height={48}
-                                                            className="h-full w-full object-cover"
-                                                        />
-                                                    </div>
-                                                )}
-                                                <div>
-                                                    <p className="font-medium">{line.title}</p>
-                                                    {line.variantTitle && (
-                                                        <p className="text-sm text-muted-foreground">
-                                                            {line.variantTitle}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Money data={line.currentPrice} />
-                                        </TableCell>
-                                        <TableCell>{line.quantity}</TableCell>
-                                        <TableCell className="text-right">
-                                            <Money data={line.lineDiscountedPrice} />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            </AnimatedSection>
-
-            <AnimatedSection animation="slide-up" threshold={0.1}>
-                <div className="grid gap-4 md:grid-cols-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base">Next Billing</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <p className="text-2xl font-semibold">
-                                {subscription.nextBillingDate
-                                    ? new Date(subscription.nextBillingDate).toLocaleDateString()
-                                    : "N/A"}
-                            </p>
-                            <p className="text-sm text-muted-foreground">{frequency}</p>
-                            {subscription.deliveryPrice && parseFloat(subscription.deliveryPrice.amount) > 0 && (
-                                <p className="text-sm text-muted-foreground">
-                                    + <Money data={subscription.deliveryPrice} /> delivery
-                                </p>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base">Payment Status</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <Badge variant={subscription.lastPaymentStatus === "SUCCEEDED" ? "default" : "secondary"}>
-                                {subscription.lastPaymentStatus ?? "N/A"}
-                            </Badge>
-                        </CardContent>
-                    </Card>
-                </div>
-            </AnimatedSection>
-
-            {/* Upcoming Billing Cycles */}
-            {subscription.upcomingBillingCycles.nodes.length > 0 && (
+                {/* Subscription Items - Card-based layout instead of table */}
                 <AnimatedSection animation="slide-up" threshold={0.1}>
-                    <Card>
+                    <Card className="rounded-2xl">
                         <CardHeader>
-                            <CardTitle className="text-base">Upcoming Billing Cycles</CardTitle>
-                            <CardDescription>Skip or restore upcoming deliveries</CardDescription>
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
+                                    <ShoppingBagIcon className="size-5 md:size-6 text-muted-foreground" />
+                                </div>
+                                <div>
+                                    <CardTitle className="text-base font-serif font-medium tracking-tight">Subscription Items</CardTitle>
+                                    <CardDescription>Products included in this subscription</CardDescription>
+                                </div>
+                            </div>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3">
-                                {subscription.upcomingBillingCycles.nodes.map(cycle => (
+                                {subscription.lines.nodes.map(line => (
                                     <div
-                                        key={cycle.cycleIndex}
-                                        className="flex items-center justify-between gap-3 border-b pb-3 last:border-0 last:pb-0"
+                                        key={line.id}
+                                        className="flex items-center gap-4 rounded-xl bg-muted/30 p-3"
                                     >
-                                        <div>
-                                            <p className="font-medium">
-                                                {new Date(cycle.billingAttemptExpectedDate).toLocaleDateString()}
+                                        {/* Product Image */}
+                                        {line.image ? (
+                                            <div className="size-16 sm:size-20 shrink-0 rounded-xl overflow-hidden ring-1 ring-border/50 shadow-sm">
+                                                <Image
+                                                    data={line.image}
+                                                    width={80}
+                                                    height={80}
+                                                    className="size-full object-cover"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="size-16 sm:size-20 shrink-0 rounded-xl bg-muted flex items-center justify-center ring-1 ring-border/50 shadow-sm">
+                                                <ShoppingBagIcon className="size-6 text-muted-foreground" />
+                                            </div>
+                                        )}
+
+                                        {/* Product Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-serif font-medium text-foreground truncate">{line.title}</p>
+                                            {line.variantTitle && (
+                                                <p className="text-sm text-muted-foreground truncate">{line.variantTitle}</p>
+                                            )}
+                                            <p className="text-sm text-muted-foreground mt-1">Qty: {line.quantity}</p>
+                                        </div>
+
+                                        {/* Pricing */}
+                                        <div className="text-right shrink-0">
+                                            <p className="font-serif font-medium text-foreground">
+                                                <Money data={line.lineDiscountedPrice} />
                                             </p>
                                             <p className="text-sm text-muted-foreground">
-                                                Cycle #{cycle.cycleIndex + 1}
-                                                {cycle.skipped && " (Skipped)"}
+                                                <Money data={line.currentPrice} /> each
                                             </p>
                                         </div>
-                                        <Form method="POST">
-                                            <input type="hidden" name="cycleIndex" value={cycle.cycleIndex} />
-                                            {cycle.skipped ? (
-                                                <Button
-                                                    type="submit"
-                                                    name="intent"
-                                                    value={SUBSCRIPTION_ACTIONS.UNSKIP_CYCLE}
-                                                    variant="outline"
-                                                    size="sm"
-                                                    disabled={isSubmitting}
-                                                >
-                                                    Restore
-                                                </Button>
-                                            ) : (
-                                                <Button
-                                                    type="submit"
-                                                    name="intent"
-                                                    value={SUBSCRIPTION_ACTIONS.SKIP_CYCLE}
-                                                    variant="outline"
-                                                    size="sm"
-                                                    disabled={isSubmitting}
-                                                >
-                                                    Skip
-                                                </Button>
-                                            )}
-                                        </Form>
                                     </div>
                                 ))}
                             </div>
                         </CardContent>
                     </Card>
                 </AnimatedSection>
-            )}
 
-            {/* Recent Orders */}
-            {subscription.orders.nodes.length > 0 && (
-                <AnimatedSection animation="fade" threshold={0.1}>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base">Recent Orders</CardTitle>
-                            <CardDescription>Orders generated from this subscription</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Order</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Total</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
+                {/* Billing and Payment Status - Two-column grid */}
+                <AnimatedSection animation="slide-up" threshold={0.1}>
+                    <div className="grid gap-4 md:gap-5 md:grid-cols-2">
+                        {/* Next Billing Card */}
+                        <Card className="rounded-2xl">
+                            <CardHeader>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
+                                        <CalendarIcon className="size-5 md:size-6 text-muted-foreground" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-base font-serif font-medium tracking-tight">Next Billing</CardTitle>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-2">
+                                <p className="text-xl md:text-2xl font-serif font-medium text-foreground">
+                                    {subscription.nextBillingDate
+                                        ? new Date(subscription.nextBillingDate).toLocaleDateString()
+                                        : "N/A"}
+                                </p>
+                                <p className="text-sm text-muted-foreground">{frequency}</p>
+                                {subscription.deliveryPrice && parseFloat(subscription.deliveryPrice.amount) > 0 && (
+                                    <p className="text-sm text-muted-foreground">
+                                        + <Money data={subscription.deliveryPrice} /> delivery
+                                    </p>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Payment Status Card */}
+                        <Card className="rounded-2xl">
+                            <CardHeader>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
+                                        <CreditCardIcon className="size-5 md:size-6 text-muted-foreground" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-base font-serif font-medium tracking-tight">Payment Status</CardTitle>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <Badge variant={subscription.lastPaymentStatus === "SUCCEEDED" ? "default" : "secondary"}>
+                                    {subscription.lastPaymentStatus ?? "N/A"}
+                                </Badge>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </AnimatedSection>
+
+                {/* Upcoming Billing Cycles */}
+                {subscription.upcomingBillingCycles.nodes.length > 0 && (
+                    <AnimatedSection animation="slide-up" threshold={0.1}>
+                        <Card className="rounded-2xl">
+                            <CardHeader>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
+                                        <CalendarIcon className="size-5 md:size-6 text-muted-foreground" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-base font-serif font-medium tracking-tight">Upcoming Billing Cycles</CardTitle>
+                                        <CardDescription>Skip or restore upcoming deliveries</CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-2">
+                                    {subscription.upcomingBillingCycles.nodes.map(cycle => (
+                                        <div
+                                            key={cycle.cycleIndex}
+                                            className="flex items-center justify-between gap-3 rounded-xl bg-muted/30 p-3"
+                                        >
+                                            <div>
+                                                <p className="font-serif font-medium text-foreground">
+                                                    {new Date(cycle.billingAttemptExpectedDate).toLocaleDateString()}
+                                                </p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Cycle #{cycle.cycleIndex + 1}
+                                                    {cycle.skipped && " (Skipped)"}
+                                                </p>
+                                            </div>
+                                            <Form method="POST">
+                                                <input type="hidden" name="cycleIndex" value={cycle.cycleIndex} />
+                                                {cycle.skipped ? (
+                                                    <Button
+                                                        type="submit"
+                                                        name="intent"
+                                                        value={SUBSCRIPTION_ACTIONS.UNSKIP_CYCLE}
+                                                        variant="outline"
+                                                        size="sm"
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        Restore
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        type="submit"
+                                                        name="intent"
+                                                        value={SUBSCRIPTION_ACTIONS.SKIP_CYCLE}
+                                                        variant="outline"
+                                                        size="sm"
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        Skip
+                                                    </Button>
+                                                )}
+                                            </Form>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </AnimatedSection>
+                )}
+
+                {/* Recent Orders */}
+                {subscription.orders.nodes.length > 0 && (
+                    <AnimatedSection animation="fade" threshold={0.1}>
+                        <Card className="rounded-2xl">
+                            <CardHeader>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
+                                        <PackageSearchIcon className="size-5 md:size-6 text-muted-foreground" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-base font-serif font-medium tracking-tight">Recent Orders</CardTitle>
+                                        <CardDescription>Orders generated from this subscription</CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-2">
                                     {subscription.orders.nodes.map(order => (
-                                        <TableRow key={order.id}>
-                                            <TableCell>
-                                                <Link to="/account/orders" className="font-medium hover:underline">
+                                        <div
+                                            key={order.id}
+                                            className="flex items-center justify-between gap-3 rounded-xl bg-muted/30 p-3"
+                                        >
+                                            <div className="min-w-0">
+                                                <Link to="/account/orders" className="font-serif font-medium text-foreground hover:text-primary sleek">
                                                     {order.name}
                                                 </Link>
-                                            </TableCell>
-                                            <TableCell>{new Date(order.processedAt).toLocaleDateString()}</TableCell>
-                                            <TableCell>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {new Date(order.processedAt).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-3 shrink-0">
                                                 <Badge variant="outline">{order.fulfillmentStatus}</Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Money data={order.totalPrice} />
-                                            </TableCell>
-                                        </TableRow>
+                                                <span className="font-serif font-medium text-foreground">
+                                                    <Money data={order.totalPrice} />
+                                                </span>
+                                            </div>
+                                        </div>
                                     ))}
-                                </TableBody>
-                            </Table>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </AnimatedSection>
+                )}
+
+                {/* Manage Subscription */}
+                <AnimatedSection animation="slide-up" threshold={0.1}>
+                    <Card className="rounded-2xl">
+                        <CardHeader>
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
+                                    <SlidersHorizontalIcon className="size-5 md:size-6 text-muted-foreground" />
+                                </div>
+                                <div>
+                                    <CardTitle className="text-base font-serif font-medium tracking-tight">Manage Subscription</CardTitle>
+                                    <CardDescription>Pause, resume, or cancel your subscription</CardDescription>
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex flex-wrap gap-3">
+                                {canPause && (
+                                    <Form method="POST">
+                                        <Button
+                                            type="submit"
+                                            name="intent"
+                                            value={SUBSCRIPTION_ACTIONS.PAUSE}
+                                            variant="secondary"
+                                            disabled={isSubmitting}
+                                        >
+                                            Pause Subscription
+                                        </Button>
+                                    </Form>
+                                )}
+
+                                {canActivate && (
+                                    <Form method="POST">
+                                        <Button
+                                            type="submit"
+                                            name="intent"
+                                            value={SUBSCRIPTION_ACTIONS.ACTIVATE}
+                                            variant="default"
+                                            disabled={isSubmitting}
+                                        >
+                                            Resume Subscription
+                                        </Button>
+                                    </Form>
+                                )}
+
+                                {canCancel && (
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="destructive" disabled={isSubmitting}>
+                                                Cancel Subscription
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. Once cancelled, you will no longer receive
+                                                    shipments and will need to create a new subscription if you change your
+                                                    mind.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+                                                <Form method="POST">
+                                                    <AlertDialogAction
+                                                        type="submit"
+                                                        name="intent"
+                                                        value={SUBSCRIPTION_ACTIONS.CANCEL}
+                                                        disabled={isSubmitting}
+                                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                    >
+                                                        Yes, Cancel Subscription
+                                                    </AlertDialogAction>
+                                                </Form>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                )}
+                            </div>
+
+                            {/* Back link with arrow icon */}
+                            <div className="pt-2">
+                                <Button variant="link" className="h-auto p-0 group" asChild>
+                                    <Link to="/account/subscriptions" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground sleek">
+                                        <ArrowLeftIcon className="size-4 sleek group-hover:-translate-x-0.5" />
+                                        Back to Subscriptions
+                                    </Link>
+                                </Button>
+                            </div>
                         </CardContent>
                     </Card>
                 </AnimatedSection>
-            )}
-
-            <AnimatedSection animation="slide-up" threshold={0.1}>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base">Manage Subscription</CardTitle>
-                        <CardDescription>Pause, resume, or cancel your subscription</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-wrap gap-3">
-                        {canPause && (
-                            <Form method="POST">
-                                <Button
-                                    type="submit"
-                                    name="intent"
-                                    value={SUBSCRIPTION_ACTIONS.PAUSE}
-                                    variant="secondary"
-                                    disabled={isSubmitting}
-                                >
-                                    Pause Subscription
-                                </Button>
-                            </Form>
-                        )}
-
-                        {canActivate && (
-                            <Form method="POST">
-                                <Button
-                                    type="submit"
-                                    name="intent"
-                                    value={SUBSCRIPTION_ACTIONS.ACTIVATE}
-                                    variant="default"
-                                    disabled={isSubmitting}
-                                >
-                                    Resume Subscription
-                                </Button>
-                            </Form>
-                        )}
-
-                        {canCancel && (
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="destructive" disabled={isSubmitting}>
-                                        Cancel Subscription
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This action cannot be undone. Once cancelled, you will no longer receive
-                                            shipments and will need to create a new subscription if you change your
-                                            mind.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
-                                        <Form method="POST">
-                                            <AlertDialogAction
-                                                type="submit"
-                                                name="intent"
-                                                value={SUBSCRIPTION_ACTIONS.CANCEL}
-                                                disabled={isSubmitting}
-                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                            >
-                                                Yes, Cancel Subscription
-                                            </AlertDialogAction>
-                                        </Form>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        )}
-                    </CardContent>
-                    <CardFooter>
-                        <Button variant="link" className="h-auto p-0" asChild>
-                            <Link to="/account/subscriptions">← Back to Subscriptions</Link>
-                        </Button>
-                    </CardFooter>
-                </Card>
-            </AnimatedSection>
+            </div>
         </div>
     );
 }

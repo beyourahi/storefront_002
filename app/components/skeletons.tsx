@@ -58,7 +58,7 @@ export function ProductCardSkeleton({
             className={cn(animate && "animate-product-fade-in", className)}
             style={animate ? {animationDelay: `${staggerDelay}ms`} : undefined}
         >
-            <Skeleton className="aspect-4/5 w-full rounded-lg mb-3 sm:mb-4" />
+            <Skeleton className="aspect-4/5 w-full rounded-2xl mb-3 sm:mb-4" />
             <div className="space-y-2">
                 <Skeleton className="h-4 w-3/4" />
                 <Skeleton className="h-4 w-1/2" />

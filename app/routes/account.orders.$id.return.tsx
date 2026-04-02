@@ -46,9 +46,9 @@ import {Textarea} from "~/components/ui/textarea";
 import {Alert, AlertDescription, AlertTitle} from "~/components/ui/alert";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "~/components/ui/select";
 import {Checkbox} from "~/components/ui/checkbox";
-import {Separator} from "~/components/ui/separator";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "~/components/ui/accordion";
-import {Clock, CheckCircle, XCircle, Info} from "lucide-react";
+import {Clock, CheckCircle, XCircle, Info, RotateCcwIcon, ArrowRightIcon, PackageSearchIcon} from "lucide-react";
+import {AnimatedSection} from "~/components/AnimatedSection";
 
 export const meta: Route.MetaFunction = ({data}) => {
     return [{title: `Return Request - Order ${data?.order?.name}`}];
@@ -225,59 +225,92 @@ export default function OrderReturnRoute() {
     // Success state
     if (actionData?.success) {
         return (
-            <div className="space-y-6">
-                <Alert>
-                    <AlertTitle>Return Request Submitted</AlertTitle>
-                    <AlertDescription>
-                        Your return request {actionData.returnName} has been submitted successfully. We will review your
-                        request and get back to you shortly.
-                    </AlertDescription>
-                </Alert>
-                <Button asChild>
-                    <Link to="/account/orders">Back to Orders</Link>
-                </Button>
+            <div className="space-y-10 md:space-y-14 lg:space-y-16 max-w-5xl mx-auto">
+                <AnimatedSection animation="hero" threshold={0.1}>
+                    <Card className="rounded-2xl py-0 bg-linear-to-br from-emerald-500/5 via-card to-emerald-500/10 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+                        <CardContent className="flex flex-col items-center justify-center py-16 md:py-24 text-center px-6">
+                            <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-emerald-500/10 mb-6 shadow-inner">
+                                <CheckCircle className="size-10 md:size-12 text-emerald-600" />
+                            </div>
+                            <h2 className="text-xl md:text-2xl font-serif font-medium text-foreground mb-2">
+                                Return Request Submitted
+                            </h2>
+                            <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-md leading-relaxed">
+                                Your return request {actionData.returnName} has been submitted successfully.
+                                We will review your request and get back to you shortly.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <Button asChild size="lg" className="motion-interactive">
+                                    <Link to="/account/returns" className="gap-2">
+                                        <RotateCcwIcon className="size-4" />
+                                        View Returns
+                                    </Link>
+                                </Button>
+                                <Button asChild size="lg" variant="outline" className="motion-interactive">
+                                    <Link to="/account/orders">Back to Orders</Link>
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </AnimatedSection>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-10 md:space-y-14 lg:space-y-16 max-w-5xl mx-auto">
             {/* Page Header */}
-            <header className="space-y-2">
-                <h2 className="text-2xl font-semibold tracking-tight">Request Return</h2>
-                <p className="text-sm text-muted-foreground">
-                    Order {order.name} - Select items you would like to return
-                </p>
-            </header>
-
-            <Separator />
+            <AnimatedSection animation="hero" threshold={0.1}>
+                <section className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center size-10 md:size-12 rounded-2xl bg-muted/50 shrink-0">
+                                <RotateCcwIcon className="size-5 md:size-6 text-muted-foreground" />
+                            </div>
+                            <div>
+                                <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-medium text-foreground tracking-tight my-0">
+                                    Request Return
+                                </h1>
+                                <p className="text-muted-foreground text-sm md:text-base mt-1">
+                                    Order {order.name} - Select items you would like to return
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </AnimatedSection>
 
             {/* Return Policy Section */}
-            <ReturnPolicySection />
+            <AnimatedSection animation="slide-up" threshold={0.1}>
+                <ReturnPolicySection />
+            </AnimatedSection>
 
-            {actionData?.error && (
-                <Alert variant="destructive">
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{actionData.error}</AlertDescription>
-                </Alert>
-            )}
+            {/* Error alert + Form */}
+            <AnimatedSection animation="section" threshold={0.1}>
+                {actionData?.error && (
+                    <Alert variant="destructive" className="rounded-2xl mb-6">
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>{actionData.error}</AlertDescription>
+                    </Alert>
+                )}
 
-            <Form method="POST">
-                <div className="space-y-4">
-                    {returnableItems.map(item => (
-                        <ReturnableItemCard key={item.lineItem.id} item={item} />
-                    ))}
-                </div>
+                <Form method="POST">
+                    <div className="space-y-4">
+                        {returnableItems.map(item => (
+                            <ReturnableItemCard key={item.lineItem.id} item={item} />
+                        ))}
+                    </div>
 
-                <div className="mt-6 flex gap-3">
-                    <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? "Submitting..." : "Submit Return Request"}
-                    </Button>
-                    <Button variant="outline" asChild>
-                        <Link to="/account/orders">Cancel</Link>
-                    </Button>
-                </div>
-            </Form>
+                    <div className="mt-6 flex gap-3">
+                        <Button type="submit" size="lg" disabled={isSubmitting} className="h-11 motion-interactive">
+                            {isSubmitting ? "Submitting..." : "Submit Return Request"}
+                        </Button>
+                        <Button variant="outline" asChild className="h-11 motion-interactive">
+                            <Link to="/account/orders">Cancel</Link>
+                        </Button>
+                    </div>
+                </Form>
+            </AnimatedSection>
         </div>
     );
 }
@@ -301,14 +334,14 @@ function ReturnableItemCard({item}: {item: ReturnableItem}) {
     const {lineItem, quantity: maxQuantity} = item;
 
     return (
-        <Card>
+        <Card className="rounded-2xl">
             <CardHeader>
                 <div className="flex items-start gap-4">
                     <div className="flex items-center gap-2">
                         <Checkbox id={`selected_${lineItem.id}`} name={`selected_${lineItem.id}`} value="true" />
                     </div>
                     {lineItem.image && (
-                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border">
+                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl ring-1 ring-border/50 shadow-sm">
                             <Image
                                 data={lineItem.image}
                                 width={64}
@@ -319,7 +352,7 @@ function ReturnableItemCard({item}: {item: ReturnableItem}) {
                     )}
                     <div className="flex-1">
                         <CardTitle className="text-base">
-                            <label htmlFor={`selected_${lineItem.id}`} className="cursor-pointer">
+                            <label htmlFor={`selected_${lineItem.id}`} className="cursor-pointer font-serif font-medium">
                                 {lineItem.title}
                             </label>
                         </CardTitle>
@@ -378,7 +411,7 @@ function ReturnableItemCard({item}: {item: ReturnableItem}) {
  */
 function ReturnPolicySection() {
     return (
-        <Card className="border-muted bg-muted/30">
+        <Card className="border-muted bg-muted/30 rounded-2xl">
             <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
                     <Info className="size-5 text-primary" />

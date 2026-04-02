@@ -43,6 +43,7 @@ import {PaginatedResourceSection} from "~/components/PaginatedResourceSection";
 import {OrderProductItem} from "~/components/OrderProductItem";
 import {Badge} from "~/components/ui/badge";
 import {Button} from "~/components/ui/button";
+import {Card, CardContent} from "~/components/ui/card";
 import {Input} from "~/components/ui/input";
 import {AnimatedSection} from "~/components/AnimatedSection";
 import {AuthRequiredFallback} from "~/components/AuthRequiredFallback";
@@ -725,32 +726,34 @@ function EmptyOrders() {
     const accountContent = FALLBACK_ACCOUNT_CONTENT;
 
     return (
-        <div className="flex flex-col items-center justify-center py-16 md:py-24 text-center px-6">
-            {/* Icon container */}
-            <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 mb-6 shadow-inner">
-                <ShoppingBagIcon className="size-10 md:size-12 text-muted-foreground" />
-            </div>
+        <Card className="rounded-2xl py-0 bg-linear-to-br from-muted/40 via-card to-muted/20 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <CardContent className="flex flex-col items-center justify-center py-16 md:py-24 text-center px-6">
+                {/* Icon container */}
+                <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 mb-6 shadow-inner">
+                    <ShoppingBagIcon className="size-10 md:size-12 text-muted-foreground" />
+                </div>
 
-            {/* Title */}
-            <h3 className="text-xl md:text-2xl font-serif font-medium text-foreground mb-2">
-                {accountContent.emptyNoOrdersHeading}
-            </h3>
+                {/* Title */}
+                <h3 className="text-xl md:text-2xl font-serif font-medium text-foreground mb-2">
+                    {accountContent.emptyNoOrdersHeading}
+                </h3>
 
-            {/* Description */}
-            <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-sm leading-relaxed">
-                {accountContent.emptyNoOrdersMessage}
-            </p>
+                {/* Description */}
+                <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-sm leading-relaxed">
+                    {accountContent.emptyNoOrdersMessage}
+                </p>
 
-            {/* CTA buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
-                <Button asChild size="lg">
-                    <Link to="/collections">{accountContent.actionShopNow}</Link>
-                </Button>
-                <Button asChild size="lg" variant="outline">
-                    <Link to="/account">{accountContent.navDashboard}</Link>
-                </Button>
-            </div>
-        </div>
+                {/* CTA buttons */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <Button asChild size="lg">
+                        <Link to="/collections">{accountContent.actionShopNow}</Link>
+                    </Button>
+                    <Button asChild size="lg" variant="outline">
+                        <Link to="/account">{accountContent.navDashboard}</Link>
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -760,22 +763,24 @@ function EmptyOrders() {
  */
 function EmptySearchResults({searchQuery}: {searchQuery: string}) {
     return (
-        <div className="flex flex-col items-center justify-center py-16 md:py-24 text-center px-6">
-            {/* Icon container */}
-            <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 mb-6 shadow-inner">
-                <SearchIcon className="size-10 md:size-12 text-muted-foreground" />
-            </div>
+        <Card className="rounded-2xl py-0 bg-linear-to-br from-muted/40 via-card to-muted/20 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <CardContent className="flex flex-col items-center justify-center py-16 md:py-24 text-center px-6">
+                {/* Icon container */}
+                <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 mb-6 shadow-inner">
+                    <SearchIcon className="size-10 md:size-12 text-muted-foreground" />
+                </div>
 
-            {/* Title */}
-            <h3 className="text-xl md:text-2xl font-serif font-medium text-foreground mb-2">No orders found</h3>
+                {/* Title */}
+                <h3 className="text-xl md:text-2xl font-serif font-medium text-foreground mb-2">No orders found</h3>
 
-            {/* Description with search query */}
-            <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-sm leading-relaxed">
-                No orders match{" "}
-                <span className="font-mono font-semibold text-foreground">&ldquo;{searchQuery}&rdquo;</span>. Try a
-                different order number or clear your search.
-            </p>
-        </div>
+                {/* Description with search query */}
+                <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-sm leading-relaxed">
+                    No orders match{" "}
+                    <span className="font-mono font-semibold text-foreground">&ldquo;{searchQuery}&rdquo;</span>. Try a
+                    different order number or clear your search.
+                </p>
+            </CardContent>
+        </Card>
     );
 }
 

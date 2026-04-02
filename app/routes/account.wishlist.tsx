@@ -272,7 +272,7 @@ export default function AccountWishlist() {
 
     if (!isHydrated || isLoading) {
         return (
-            <div className="space-y-8 md:space-y-10 lg:space-y-12">
+            <div className="space-y-10 md:space-y-14 lg:space-y-16">
                 <WishlistHeader count={null} ids={ids} products={[]} onClearClick={() => setDialogOpen(true)} />
                 <WishlistViewOptionsSelector
                     gridColumns={gridColumns}
@@ -289,7 +289,7 @@ export default function AccountWishlist() {
 
     if (count === 0) {
         return (
-            <div className="space-y-8 md:space-y-10 lg:space-y-12">
+            <div className="space-y-10 md:space-y-14 lg:space-y-16">
                 <AnimatedSection animation="hero" threshold={0.1}>
                     <WishlistHeader count={0} ids={[]} products={[]} onClearClick={() => setDialogOpen(true)} />
                 </AnimatedSection>
@@ -302,7 +302,7 @@ export default function AccountWishlist() {
 
     return (
         <>
-            <div className="space-y-8 md:space-y-10 lg:space-y-12">
+            <div className="space-y-10 md:space-y-14 lg:space-y-16">
                 <AnimatedSection animation="hero" threshold={0.1}>
                     <WishlistHeader
                         count={count}
