@@ -849,7 +849,7 @@ function WishlistEmpty() {
         <Card className="rounded-2xl py-0 bg-linear-to-br from-muted/40 via-card to-muted/20 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
             <CardContent className="flex flex-col items-center justify-center py-16 md:py-20 text-center px-6">
                 <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 mb-6 shadow-inner">
-                    <Heart className="size-10 md:size-12 text-muted-foreground/70" strokeWidth={1.5} />
+                    <Heart className="size-10 md:size-12 text-muted-foreground" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-xl md:text-2xl font-serif font-medium text-foreground mb-2">
                     Your wishlist is empty
@@ -873,7 +873,7 @@ function WishlistUnavailable({onClearClick}: {onClearClick: () => void}) {
         <Card className="rounded-2xl py-0 bg-linear-to-br from-muted/40 via-card to-muted/20 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
             <CardContent className="flex flex-col items-center justify-center py-16 md:py-20 text-center px-6">
                 <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 mb-6 shadow-inner">
-                    <Heart className="size-10 md:size-12 text-muted-foreground/70" strokeWidth={1.5} />
+                    <Heart className="size-10 md:size-12 text-muted-foreground" strokeWidth={1.5} />
                 </div>
                 <h3 className="text-xl md:text-2xl font-serif font-medium text-foreground mb-2">
                     Some products are unavailable

@@ -234,7 +234,7 @@ function ReturnsEmpty() {
             <CardContent className="flex flex-col items-center justify-center py-16 md:py-24 text-center px-6">
                 {/* Icon container - matches dashboard empty state styling */}
                 <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 mb-6 shadow-inner">
-                    <PackageX className="size-10 md:size-12 text-muted-foreground/70" />
+                    <PackageX className="size-10 md:size-12 text-muted-foreground" />
                 </div>
 
                 {/* Title - serif font matching other headings */}

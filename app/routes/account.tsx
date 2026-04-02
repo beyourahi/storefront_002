@@ -235,12 +235,12 @@ function AccountNavLink({to, end, children}: {to: string; end?: boolean; childre
                         "relative inline-block pb-1 text-sm sm:text-base font-medium motion-link whitespace-nowrap",
                         // No horizontal padding - spacing handled by parent gap
                         isPending
-                            ? "text-primary/50"
+                            ? "text-muted-foreground"
                             : isActive
                               ? "text-primary"
                               : canHover
-                                ? "text-primary/70 group-hover:text-primary"
-                                : "text-primary/85"
+                                ? "text-muted-foreground group-hover:text-primary"
+                                : "text-foreground"
                     )}
                 >
                     {children}
@@ -252,7 +252,7 @@ function AccountNavLink({to, end, children}: {to: string; end?: boolean; childre
                                 ? "scale-x-100"
                                 : canHover
                                   ? "scale-x-0 group-hover:scale-x-100"
-                                  : "scale-x-100 opacity-45"
+                                  : "scale-x-100 opacity-50"
                         )}
                     />
                 </span>

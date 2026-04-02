@@ -598,12 +598,12 @@ function OrderListItem({
                     <div className="hidden sm:flex items-center gap-4 text-sm">
                         {/* Date with Calendar Icon */}
                         <time dateTime={order.processedAt} className="flex items-center gap-1.5">
-                            <CalendarIcon className="size-3.5 text-muted-foreground/70" />
+                            <CalendarIcon className="size-3.5 text-muted-foreground" />
                             <span className="text-muted-foreground">{formattedDate}</span>
                         </time>
                         {/* Time with Clock Icon */}
                         <div className="flex items-center gap-1.5">
-                            <ClockIcon className="size-3.5 text-muted-foreground/70" />
+                            <ClockIcon className="size-3.5 text-muted-foreground" />
                             <span className="text-muted-foreground">{formattedTime}</span>
                         </div>
                     </div>
@@ -622,12 +622,12 @@ function OrderListItem({
             <div className="sm:hidden flex items-center gap-4 text-sm -mt-1">
                 {/* Date with Calendar Icon */}
                 <time dateTime={order.processedAt} className="flex items-center gap-1.5">
-                    <CalendarIcon className="size-3.5 text-muted-foreground/70" />
+                    <CalendarIcon className="size-3.5 text-muted-foreground" />
                     <span className="text-muted-foreground">{formattedDate}</span>
                 </time>
                 {/* Time with Clock Icon */}
                 <div className="flex items-center gap-1.5">
-                    <ClockIcon className="size-3.5 text-muted-foreground/70" />
+                    <ClockIcon className="size-3.5 text-muted-foreground" />
                     <span className="text-muted-foreground">{formattedTime}</span>
                 </div>
             </div>
@@ -728,7 +728,7 @@ function EmptyOrders() {
         <div className="flex flex-col items-center justify-center py-16 md:py-24 text-center px-6">
             {/* Icon container */}
             <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 mb-6 shadow-inner">
-                <ShoppingBagIcon className="size-10 md:size-12 text-muted-foreground/70" />
+                <ShoppingBagIcon className="size-10 md:size-12 text-muted-foreground" />
             </div>
 
             {/* Title */}
@@ -763,7 +763,7 @@ function EmptySearchResults({searchQuery}: {searchQuery: string}) {
         <div className="flex flex-col items-center justify-center py-16 md:py-24 text-center px-6">
             {/* Icon container */}
             <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 mb-6 shadow-inner">
-                <SearchIcon className="size-10 md:size-12 text-muted-foreground/70" />
+                <SearchIcon className="size-10 md:size-12 text-muted-foreground" />
             </div>
 
             {/* Title */}

@@ -81,14 +81,14 @@ const OrderDetailPage = () => {
                                 height={item.image.height ?? 80}
                             />
                         )}
-                        <div className="flex flex-1 flex-col justify-center gap-1">
+                        <div className="flex flex-1 flex-col justify-center gap-1 min-w-0">
                             {(() => {
                                 const {primary, secondary} = parseProductTitle(item.title);
                                 return (
                                     <>
-                                        <p className="font-medium">{primary}</p>
+                                        <p className="font-medium break-words">{primary}</p>
                                         {secondary && (
-                                            <p className="opacity-50 text-sm font-normal">{secondary}</p>
+                                            <p className="text-muted-foreground text-sm font-normal">{secondary}</p>
                                         )}
                                     </>
                                 );

@@ -680,14 +680,14 @@ export default function AccountProfile() {
                                         <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-medium text-primary-foreground mb-0 leading-tight tracking-tight">
                                             {customer.displayName || "Your Profile"}
                                         </h1>
-                                        <p className="text-primary-foreground/70 text-sm md:text-base truncate">
+                                        <p className="text-primary-foreground/90 text-sm md:text-base truncate">
                                             Manage your account details and preferences
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Right Side - Auto-save status */}
-                                <div className="hidden md:flex items-center gap-2 text-sm text-primary-foreground/70 shrink-0">
+                                <div className="hidden md:flex items-center gap-2 text-sm text-primary-foreground/90 shrink-0">
                                     {isProfileSaving && (
                                         <>
                                             <Loader2Icon className="size-4 animate-spin" />
@@ -873,7 +873,7 @@ export default function AccountProfile() {
                                             <EmptyHeader>
                                                 <EmptyMedia>
                                                     <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 shadow-inner">
-                                                        <MapPinIcon className="size-10 md:size-12 text-muted-foreground/70" />
+                                                        <MapPinIcon className="size-10 md:size-12 text-muted-foreground" />
                                                     </div>
                                                 </EmptyMedia>
                                                 <EmptyTitle className="text-xl md:text-2xl font-serif">
@@ -944,7 +944,7 @@ export default function AccountProfile() {
                                                         variant={isEmailSubscribed ? "default" : "secondary"}
                                                         className={
                                                             isEmailSubscribed
-                                                                ? "bg-success/15 text-success hover:bg-success/15"
+                                                                ? "bg-success/15 text-[oklch(0.40_0.12_142)] hover:bg-success/15"
                                                                 : ""
                                                         }
                                                     >
@@ -1381,7 +1381,7 @@ function AddressCard({
                     <div className="flex items-start gap-3 md:gap-4 min-w-0 flex-1">
                         {/* Address Icon */}
                         <div className="flex items-center justify-center size-12 md:size-14 rounded-2xl bg-muted/40 shrink-0 ring-2 ring-card shadow-sm sleek group-hover:-translate-y-0.5 group-hover:shadow-md">
-                            <HomeIcon className="size-6 md:size-7 text-muted-foreground/70" />
+                            <HomeIcon className="size-6 md:size-7 text-muted-foreground" />
                         </div>
                         {/* Name and Company */}
                         <div className="min-w-0 flex-1">

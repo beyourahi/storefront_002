@@ -429,7 +429,7 @@ function WelcomeBanner({customer}: {customer: CustomerFragment}) {
                             <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-medium text-primary-foreground mb-0 leading-tight tracking-tight">
                                 {greeting}
                             </h1>
-                            <p className="text-primary-foreground/70 text-sm md:text-base truncate">
+                            <p className="text-primary-foreground/90 text-sm md:text-base truncate">
                                 {customer.emailAddress?.emailAddress}
                             </p>
                         </div>
@@ -439,10 +439,9 @@ function WelcomeBanner({customer}: {customer: CustomerFragment}) {
                     <Form method="POST" action="/account/logout" className="hidden md:block shrink-0">
                         <Button
                             type="submit"
-                            variant="outline"
+                            variant="destructive"
                             size="sm"
                             disabled={isLoggingOut}
-                            className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground hover:border-primary-foreground/50"
                         >
                             {accountContent.logoutButton}
                         </Button>
@@ -453,10 +452,10 @@ function WelcomeBanner({customer}: {customer: CustomerFragment}) {
                 <Form method="POST" action="/account/logout" className="relative mt-6 md:hidden">
                     <Button
                         type="submit"
-                        variant="outline"
+                        variant="destructive"
                         size="sm"
                         disabled={isLoggingOut}
-                        className="w-full border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground hover:border-primary-foreground/50"
+                        className="w-full"
                     >
                         {accountContent.logoutButton}
                     </Button>
@@ -756,7 +755,7 @@ function EmptyOrders() {
         <Card className="rounded-2xl py-0 bg-linear-to-br from-muted/40 via-card to-muted/20 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
             <CardContent className="flex flex-col items-center justify-center py-16 md:py-20 text-center px-6">
                 <div className="flex items-center justify-center size-20 md:size-24 rounded-2xl bg-muted/50 mb-6 shadow-inner">
-                    <ShoppingBagIcon className="size-10 md:size-12 text-muted-foreground/70" />
+                    <ShoppingBagIcon className="size-10 md:size-12 text-muted-foreground" />
                 </div>
                 <h3 className="text-xl md:text-2xl font-serif font-medium text-foreground mb-2">
                     {accountContent.emptyNoOrdersHeading}

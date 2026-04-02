@@ -492,7 +492,7 @@ export default function SubscriptionDetail() {
                                 {subscription.upcomingBillingCycles.nodes.map(cycle => (
                                     <div
                                         key={cycle.cycleIndex}
-                                        className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0"
+                                        className="flex items-center justify-between gap-3 border-b pb-3 last:border-0 last:pb-0"
                                     >
                                         <div>
                                             <p className="font-medium">
