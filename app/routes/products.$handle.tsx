@@ -73,13 +73,11 @@ import {RelatedProducts} from "~/components/RelatedProducts";
 import {
     getBrandNameFromMatches,
     generateProductSchema,
-    generateBreadcrumbListSchema,
     truncateDescription,
     stripHtml,
     buildCanonicalUrl,
     getSiteUrlFromMatches
 } from "~/lib/seo";
-import {Breadcrumbs} from "~/components/Breadcrumbs";
 import {Badge} from "~/components/ui/badge";
 import {OfflineAwareErrorPage} from "~/components/OfflineAwareErrorPage";
 import {trackErrorBoundary} from "~/hooks/usePwaAnalytics";
@@ -104,16 +102,6 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     const description = truncateDescription(product.seo?.description || stripHtml(product.description));
     const image = variant?.image || product.images?.nodes?.[0];
 
-    // Build BreadcrumbList JSON-LD for rich breadcrumb snippets in search results
-    const firstCollection = product.collections?.nodes?.[0];
-    const breadcrumbItems = [
-        {name: "Home", url: "/"},
-        ...(firstCollection
-            ? [{name: firstCollection.title, url: `/collections/${firstCollection.handle}`}]
-            : [{name: "All Products", url: "/collections"}]),
-        {name: product.title}
-    ];
-
     const seoMeta =
         getSeoMeta({
             title,
@@ -131,11 +119,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
             jsonLd: generateProductSchema(product, variant) as any
         }) ?? [];
 
-    // Append BreadcrumbList schema as a separate JSON-LD block
-    return [
-        ...seoMeta,
-        {"script:ld+json": generateBreadcrumbListSchema(breadcrumbItems, siteUrl)}
-    ];
+    return seoMeta;
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -316,25 +300,14 @@ export default function Product() {
 
     const {title, descriptionHtml} = product;
 
-    // Build breadcrumb trail: Home > Collection (or "All Products") > Product Title
-    const firstCollection = product.collections?.nodes?.[0];
-    const breadcrumbItems = [
-        {label: "Home", href: "/"},
-        ...(firstCollection
-            ? [{label: firstCollection.title, href: `/collections/${firstCollection.handle}`}]
-            : [{label: "All Products", href: "/collections"}]),
-        {label: product.title}
-    ];
-
     return (
         <>
             {/* Mobile Layout (hidden on desktop) */}
             <div className="md:hidden">
-                {/* 1. Breadcrumb Navigation + Product Images
+                {/* 1. Product Images
                          - pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px)
                          - Additional small padding for gallery */}
                 <div className="px-3 sm:px-4 pt-(--page-breathing-room)">
-                    <Breadcrumbs items={breadcrumbItems} className="pb-2" />
                     <ProductImageGallery
                         images={product.images.nodes}
                         selectedVariantImage={selectedVariant?.image}
@@ -375,9 +348,6 @@ export default function Product() {
                      Product pages use standard breathing room (not dense) because the sidebar
                      is for navigation, not high-density content like collection grids. */}
             <div className="hidden md:block pt-(--page-breathing-room) mx-4 lg:mx-6 xl:mx-8 2xl:mx-12 3xl:mx-auto 3xl:max-w-400 3xl:px-12 mb-4">
-                {/* Breadcrumb Navigation (Desktop) — sits above the 3-column layout */}
-                <Breadcrumbs items={breadcrumbItems} className="pb-3 lg:pb-4" />
-
                 {/* Main 3-Column Layout (Desktop)
                          Gap scales progressively for visual rhythm at larger screens */}
                 <div className="flex gap-8 lg:gap-12 xl:gap-14 2xl:gap-16">

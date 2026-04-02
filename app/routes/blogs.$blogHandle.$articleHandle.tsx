@@ -5,14 +5,13 @@
  * Displays a single blog article with full content, author info,
  * social sharing, and related articles. Magazine-style layout with
  * centered header, immersive hero image, reading progress bar,
- * breadcrumb navigation, and scroll-triggered entrance animations.
+ * and scroll-triggered entrance animations.
  *
  * @route GET /blogs/:blogHandle/:articleHandle
  *
  * @features
  * - Immersive hero image with gradient fade into background
  * - Reading progress bar (fixed 2px at viewport top)
- * - Breadcrumb navigation (Journal > Blog > Article)
  * - Centered, magazine-style article header
  * - Prose-optimized content via .article-content CSS class
  * - Reading time calculation
@@ -25,14 +24,13 @@
  *
  * @layout
  * 1. Reading progress bar (fixed position)
- * 2. Breadcrumb navigation
- * 3. Immersive hero image (gradient fade)
- * 4. Centered article header (tags, title, meta, flourish)
- * 5. Article content (.article-content class)
- * 6. Share buttons (whitespace separation)
- * 7. Author bio (card variant)
- * 8. Back to blog link (pill button)
- * 9. Related articles carousel
+ * 2. Immersive hero image (gradient fade)
+ * 3. Centered article header (tags, title, meta, flourish)
+ * 4. Article content (.article-content class)
+ * 5. Share buttons (whitespace separation)
+ * 6. Author bio (card variant)
+ * 7. Back to blog link (pill button)
+ * 8. Related articles carousel
  *
  * @typography
  * Uses dedicated .article-content CSS class (in tailwind.css):
@@ -60,7 +58,7 @@
 import {Link} from "react-router";
 import type {Route} from "./+types/blogs.$blogHandle.$articleHandle";
 import {Image, getSeoMeta} from "@shopify/hydrogen";
-import {ChevronRight, ArrowLeft} from "lucide-react";
+import {ArrowLeft} from "lucide-react";
 import {redirectIfHandleIsLocalized} from "~/lib/redirect";
 import {calculateReadingTime, formatArticleDate, filterRelatedArticles} from "~/lib/blog-utils";
 import {AnimatedSection} from "~/components/AnimatedSection";
@@ -213,49 +211,13 @@ export default function Article({loaderData}: Route.ComponentProps) {
                 />
             </div>
 
-            {/* Breadcrumb Navigation
-                Provides wayfinding: Journal > Blog Title > Article Title
-                pt-(--page-breathing-room): Breathing room from fixed header (24px to 64px) */}
-            <div className="px-4 md:px-6 lg:px-8">
-                <nav aria-label="Breadcrumb" className="mx-auto max-w-5xl pt-(--page-breathing-room) pb-4 md:pb-6">
-                    <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
-                        <li>
-                            <Link
-                                to="/blogs"
-                                className="motion-link hover:text-foreground min-h-11 inline-flex items-center"
-                            >
-                                Journal
-                            </Link>
-                        </li>
-                        <li aria-hidden="true">
-                            <ChevronRight className="size-3.5 text-muted-foreground/50" />
-                        </li>
-                        <li>
-                            <Link
-                                to={`/blogs/${blogHandle}`}
-                                className="motion-link hover:text-foreground min-h-11 inline-flex items-center"
-                            >
-                                {blogTitle || "Blog"}
-                            </Link>
-                        </li>
-                        <li aria-hidden="true">
-                            <ChevronRight className="size-3.5 text-muted-foreground/50" />
-                        </li>
-                        <li>
-                            <span className="text-foreground font-medium line-clamp-1" aria-current="page">
-                                {title}
-                            </span>
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-
             {/* Immersive Hero Image
                 Full-bleed on mobile, rounded + constrained on desktop.
+                pt-(--page-breathing-room): Breathing room from fixed header (24px to 64px)
                 Bottom gradient fades into page background for seamless transition. */}
             {image && (
                 <AnimatedSection animation="fade" threshold={0.1}>
-                    <div className="relative w-full overflow-hidden md:rounded-2xl md:mx-auto md:max-w-5xl">
+                    <div className="relative w-full overflow-hidden pt-(--page-breathing-room) md:rounded-2xl md:mx-auto md:max-w-5xl">
                         <div className="aspect-16/10 sm:aspect-video md:aspect-2/1">
                             <Image
                                 data={image}
