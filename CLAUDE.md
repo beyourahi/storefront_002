@@ -59,7 +59,6 @@ Backend behavior, data flow, and Hydrogen conventions **must remain consistent**
 | **Features**  | Lenis            | 1.3.16     | GPU-accelerated smooth scroll       |
 |               | Workbox          | 7.0.0      | Service worker, offline support     |
 |               | Embla Carousel   | -          | Autoplay, auto-scroll               |
-
 |               | colorjs.io       | -          | Color manipulation                  |
 | **Dev**       | ESLint           | 9          | TypeScript, React, a11y             |
 |               | Bun              | Latest     | Package manager + scripts           |
