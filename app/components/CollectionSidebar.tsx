@@ -184,7 +184,7 @@ function CollectionLink({
                 to={href}
                 prefetch="viewport"
                 className={cn(
-                    "group flex items-center gap-1 py-1 text-sm motion-link hover:text-primary",
+                    "group flex items-center gap-1 py-1 text-fluid-h4 motion-link hover:text-primary",
                     // SALE link gets emerald green styling to match discount badges
                     isSale
                         ? isActive
@@ -205,7 +205,7 @@ function CollectionLink({
                         )}
                     />
                 </span>
-                <sup className="text-sm ml-0.5">{displayCount}</sup>
+                <sup className="text-xs ml-0.5">{displayCount}</sup>
             </Link>
         </li>
     );
