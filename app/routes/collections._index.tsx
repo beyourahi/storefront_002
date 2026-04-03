@@ -279,32 +279,24 @@ function CollectionCard({collection, index}: {collection: CollectionFragment; in
             style={{animationDelay: `${staggerDelay}ms`}}
         >
             <div className="relative aspect-3/4 overflow-hidden rounded-2xl">
-                {/* Background Image — scale on hover (GPU-composited transform) */}
+                {/* Background Image — uses same sleek + product-image classes as ProductImageCarousel:
+                    sleek = transform-gpu + transition-all + duration-200ms
+                    product-image = will-change:transform + translateZ(0) for GPU compositing
+                    scale-[1.03] matches product card (subtle, not jarring) */}
                 {collection?.image ? (
                     <Image
                         alt={collection.image.altText || collection.title}
                         data={collection.image}
                         loading={index < 12 ? "eager" : "lazy"}
                         sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
-                        className={cn(
-                            "absolute inset-0 h-full w-full object-cover motion-image",
-                            canHover && "group-hover:scale-105"
-                        )}
+                        className="absolute inset-0 h-full w-full object-cover sleek product-image group-hover:scale-[1.03]"
                     />
                 ) : (
                     <div className="absolute inset-0 bg-muted" />
                 )}
 
-                {/* Static gradient overlay — stays constant, never animated.
-                    CSS cannot transition background-image properties. */}
+                {/* Static gradient overlay — CSS cannot transition background-image */}
                 <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-dark/30 to-transparent" />
-
-                {/* Hover darkening overlay — animates element opacity, not background-color.
-                    motion-overlay transitions opacity; bg-dark/15 is the fixed color that fades in. */}
-                <div className={cn(
-                    "absolute inset-0 bg-dark/15 motion-overlay pointer-events-none",
-                    canHover ? "opacity-0 group-hover:opacity-100" : "opacity-0"
-                )} />
 
                 {/* Text content */}
                 <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
