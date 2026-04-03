@@ -64,6 +64,8 @@ import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
 import {Skeleton} from "~/components/ui/skeleton";
 import {countDiscountedProducts} from "~/lib/discounts";
 import type {LightweightProduct} from "~/lib/discounts";
+import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
+import {cn} from "~/lib/utils";
 
 export const meta: Route.MetaFunction = ({matches}) => {
     const siteUrl = getSiteUrlFromMatches(matches);
@@ -249,9 +251,17 @@ function CollectionsGrid({
 /**
  * CollectionCard - Unified responsive card with hover effects
  * Shows title, product count overlay on all devices, with enhanced hover effect on desktop
+ *
+ * Hover strategy mirrors ProductItem:
+ * - canHover guard ensures effects only fire on pointer/mouse devices
+ * - Image scale via motion-image (transforms only — GPU-composited)
+ * - Darkening via a separate opacity-transitioning overlay (motion-overlay handles opacity)
+ * - "Explore" text fades in from opacity-0 (motion-overlay, opacity transition)
+ * - Base gradient stays static — CSS cannot transition background-image
  */
 function CollectionCard({collection, index}: {collection: CollectionFragment; index: number}) {
     const staggerDelay = index * 60;
+    const {canHover} = usePointerCapabilities();
 
     // Calculate product count from fetched products (only count available products)
     const productCount = collection.products?.nodes?.filter(p => p.availableForSale).length || 0;
@@ -269,24 +279,35 @@ function CollectionCard({collection, index}: {collection: CollectionFragment; in
             style={{animationDelay: `${staggerDelay}ms`}}
         >
             <div className="relative aspect-3/4 overflow-hidden rounded-2xl">
-                {/* Background Image */}
+                {/* Background Image — scale on hover (GPU-composited transform) */}
                 {collection?.image ? (
                     <Image
                         alt={collection.image.altText || collection.title}
                         data={collection.image}
                         loading={index < 12 ? "eager" : "lazy"}
                         sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
-                        className="absolute inset-0 h-full w-full object-cover motion-image group-hover:scale-105"
+                        className={cn(
+                            "absolute inset-0 h-full w-full object-cover motion-image",
+                            canHover && "group-hover:scale-105"
+                        )}
                     />
                 ) : (
                     <div className="absolute inset-0 bg-muted" />
                 )}
 
-                {/* Always-visible gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-dark/30 to-transparent motion-overlay group-hover:from-dark/80 group-hover:via-dark/40" />
+                {/* Static gradient overlay — stays constant, never animated.
+                    CSS cannot transition background-image properties. */}
+                <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-dark/30 to-transparent" />
 
-                {/* Text content - always visible with enhanced padding on hover */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 motion-interactive group-hover:pb-5 group-hover:sm:pb-6">
+                {/* Hover darkening overlay — animates element opacity, not background-color.
+                    motion-overlay transitions opacity; bg-dark/15 is the fixed color that fades in. */}
+                <div className={cn(
+                    "absolute inset-0 bg-dark/15 motion-overlay pointer-events-none",
+                    canHover ? "opacity-0 group-hover:opacity-100" : "opacity-0"
+                )} />
+
+                {/* Text content */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
                     {/* Title with product count as superscript (matching full-screen menu style) */}
                     <div className="flex items-baseline gap-1">
                         <h3 className="font-serif text-base font-medium text-light sm:text-lg md:text-xl">
@@ -296,7 +317,11 @@ function CollectionCard({collection, index}: {collection: CollectionFragment; in
                             {hasMore ? "250+" : productCount}
                         </sup>
                     </div>
-                    <p className="mt-1 text-xs text-light/80 sm:text-sm motion-overlay group-hover:opacity-100">
+                    {/* Explore hint — fades in from invisible on hover (pointer devices only) */}
+                    <p className={cn(
+                        "mt-1 text-xs text-light/80 sm:text-sm motion-overlay",
+                        canHover ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+                    )}>
                         Explore collection →
                     </p>
                 </div>
