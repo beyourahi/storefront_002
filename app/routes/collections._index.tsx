@@ -141,7 +141,7 @@ export default function Collections() {
                 <header className="pt-(--page-breathing-room-dense) pb-6 md:pb-8">
                     {/* Title with collection count superscript (matching menu style) */}
                     <div className="relative inline-block">
-                        <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary tracking-tight my-0">
+                        <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-medium text-primary tracking-tight my-0">
                             Collections
                         </h1>
                         {/* Collection count - positioned at top-right of title with small gap */}
@@ -149,7 +149,7 @@ export default function Collections() {
                             {totalCollectionCount}
                         </sup>
                     </div>
-                    <p className="mt-3 md:mt-4 font-sans text-sm md:text-base lg:text-lg text-primary/70 max-w-prose">
+                    <p className="mt-3 md:mt-4 font-sans text-sm sm:text-base md:text-lg lg:text-xl text-primary/70 max-w-prose">
                         Explore our curated collections of handcrafted products, thoughtfully designed with care for
                         you.
                     </p>
