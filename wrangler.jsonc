@@ -1,27 +1,12 @@
 {
-    // Worker name on Cloudflare (portfolio/showcase deployment)
     "name": "storefront-002",
-
-    // Pre-built by `shopify hydrogen build` — wrangler uploads as-is
     "main": "./dist/server/index.js",
-
-    // Critical: Vite already bundled everything; do NOT re-bundle
     "no_bundle": true,
-
     "compatibility_date": "2025-03-10",
     "compatibility_flags": ["nodejs_compat"],
-
-    // Static assets served by Cloudflare's edge (JS/CSS/images)
     "assets": {
         "directory": "./dist/client"
     },
-
-    // Public (non-secret) env vars for the fallback demo store
-    // Sensitive vars (SESSION_SECRET, PRIVATE_STOREFRONT_API_TOKEN)
-    // must be set via: wrangler secret put <NAME>
-    // TODO: Set PUBLIC_STOREFRONT_ID from Shopify admin → Settings → Apps →
-    // Hydrogen channel → API access. Without it, analytics silently fail
-    // (root.tsx falls back to "0", which is not a valid storefront ID).
     "vars": {
         "SESSION_SECRET": "04e746faa7db3ef4fc35fbcec16d80e02a528e88",
         "PUBLIC_STOREFRONT_API_TOKEN": "586d8fd7c598fea7e1b97a8eff48ed49",
@@ -32,7 +17,6 @@
         "PUBLIC_CUSTOMER_ACCOUNT_API_URL": "https://shopify.com/66049638586",
         "SHOP_ID": "66049638586"
     },
-
     "upload_source_maps": true,
     "observability": {
         "enabled": true

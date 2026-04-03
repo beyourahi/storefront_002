@@ -496,7 +496,8 @@ function MenuLink({title, url, count, onNavigate, variant = "collection", stagge
                 className={cn(
                     "relative font-medium",
                     // Collection links: display-level fluid type for visual dominance in fullscreen overlay
-                    variant === "collection" && "text-fluid-h2 tracking-tight",
+                    // lg: one scale down (fluid-h3) to reduce visual weight on large screens
+                    variant === "collection" && "text-fluid-h2 tracking-tight lg:text-fluid-h3",
                     // Secondary links: readable but subordinate fluid type
                     variant === "secondary" && "text-fluid-h4"
                 )}

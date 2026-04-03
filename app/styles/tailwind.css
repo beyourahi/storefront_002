@@ -1132,6 +1132,14 @@ body {
         line-height: 1.25;
     }
 
+    /* lg:text-fluid-h3 — responsive override for collection titles in fullscreen menu */
+    @media (min-width: 1024px) {
+        .lg\:text-fluid-h3 {
+            font-size: clamp(1.25rem, 1rem + 1vw, 1.875rem);
+            line-height: 1.25;
+        }
+    }
+
     /* Fluid H4 - Card titles: 16px → 20px */
     .text-fluid-h4 {
         font-size: clamp(1rem, 0.875rem + 0.5vw, 1.25rem);
