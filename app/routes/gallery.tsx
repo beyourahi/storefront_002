@@ -127,7 +127,7 @@ export default function Gallery() {
             </AnimatedSection>
 
             {images.length > 0 ? (
-                <AnimatedSection animation="slide-up" threshold={0.1}>
+                <AnimatedSection animation="slide-up" threshold={0}>
                     <GalleryGrid initialImages={images} pageInfo={pageInfo} />
                 </AnimatedSection>
             ) : (
