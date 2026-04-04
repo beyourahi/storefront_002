@@ -111,6 +111,7 @@ import {FAQSection} from "~/components/FAQSection";
 import {AnimatedSection} from "~/components/AnimatedSection";
 import {FeaturedProductSpotlight} from "~/components/FeaturedProductSpotlight";
 import {HomepageWishlistSection} from "~/components/HomepageWishlistSection";
+import {NewsletterSection} from "~/components/NewsletterSection";
 import {Container} from "~/components/Container";
 import {buildCollectionTabs} from "~/lib/collections";
 import {getRecentlyViewedIds} from "~/lib/recently-viewed";
@@ -551,7 +552,15 @@ export default function Homepage() {
                     </AnimatedSection>
                 )}
 
-                {/* 13. PromotionalBannerTwo - Final push (UNCHANGED POSITION)
+                {/* 13. NewsletterSection - Email capture at peak trust
+                      WHY: After FAQ objection handling, users are in highest trust state
+                      IMPACT: Email list growth, repeat purchase channel
+                      AUDIENCE: ~20% of visitors (engaged, post-FAQ) */}
+                <AnimatedSection animation="slide-up" threshold={0.1} className="mt-12 md:mt-16 lg:mt-20">
+                    <NewsletterSection />
+                </AnimatedSection>
+
+                {/* 14. PromotionalBannerTwo - Final push (UNCHANGED POSITION)
                       WHY: Last chance to hook deep scrollers (15%)
                       IMPACT: "One more thing" before exit
                       AUDIENCE: ~15% of visitors (deep scrollers)
