@@ -10,7 +10,7 @@
  * @features
  * - Hero section with large typography
  * - Contact cards (email, phone, hours)
- * - Contact form (mailto: approach — opens user's email client)
+ * - Contact form (server-side via /api/contact — validation, rate limiting, honeypot)
  * - Location/address section
  * - Social media links
  * - CMS-driven content with a fixed Bangladesh country label
@@ -41,8 +41,10 @@
 
 import type {Route} from "./+types/contact";
 import {getSeoMeta} from "@shopify/hydrogen";
-import {Fragment, useCallback, useState, type FormEvent} from "react";
-import {Send} from "lucide-react";
+import {Fragment, useCallback, useEffect, useRef, useState} from "react";
+import {useFetcher} from "react-router";
+import {AlertCircle, ArrowLeft, CheckCircle, Loader2, Send} from "lucide-react";
+import {cn} from "~/lib/utils";
 import {AnimatedSection} from "~/components/AnimatedSection";
 import {Button} from "~/components/ui/button";
 import {Input} from "~/components/ui/input";
@@ -150,7 +152,7 @@ export default function Contact() {
 
                             {/* Contact Form */}
                             <div>
-                                <ContactForm email={contactInfo.email} />
+                                <ContactForm />
                             </div>
                         </div>
                     </div>
@@ -306,119 +308,257 @@ function SocialLink({title, handle, url}: SocialLinkProps) {
 // CONTACT FORM
 // =============================================================================
 
-interface ContactFormProps {
-    /** Recipient email address from site_settings metaobject */
-    email: string;
-}
+type FieldError = {field: string; message: string};
+type ContactFormResult = {success?: boolean; message?: string; errors?: FieldError[]};
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Contact form that constructs a mailto: link on submit.
+ * Server-side contact form with client + server validation, rate limiting,
+ * and honeypot spam protection.
  *
- * Uses a mailto: approach so the template works universally without backend
- * configuration. Clients can replace this with Formspree, a custom API, etc.
+ * Submits to /api/contact via useFetcher (no full-page navigation).
+ * Uses uncontrolled inputs with FormData serialization — the idiomatic
+ * React Router pattern for progressive enhancement.
  *
  * @accessibility
  * - All inputs have associated <Label> elements (WCAG 1.3.1)
  * - Required fields use aria-required (WCAG 3.3.2)
+ * - Error messages use role="alert" for screen reader announcement (WCAG 4.1.3)
+ * - aria-invalid marks fields with errors (WCAG 3.3.1)
  * - Touch targets meet 44px minimum via shadcn Input/Textarea defaults (WCAG 2.5.5)
  * - Focus-visible rings on all controls (WCAG 2.4.7)
+ * - Honeypot field is aria-hidden so screen readers skip it
  */
-function ContactForm({email}: ContactFormProps) {
-    const [name, setName] = useState("");
-    const [senderEmail, setSenderEmail] = useState("");
-    const [subject, setSubject] = useState("");
-    const [message, setMessage] = useState("");
+function ContactForm() {
+    const fetcher = useFetcher<ContactFormResult>();
+    const formRef = useRef<HTMLFormElement>(null);
+    const [clientErrors, setClientErrors] = useState<FieldError[]>([]);
+    const [showSuccess, setShowSuccess] = useState(false);
+
+    const isSubmitting = fetcher.state !== "idle";
+
+    // Show success state when server returns success
+    useEffect(() => {
+        if (fetcher.data?.success) {
+            setShowSuccess(true);
+            setClientErrors([]);
+        }
+    }, [fetcher.data]);
+
+    /** Client-side validation before submit — fast feedback, no round-trip */
+    const validateClient = useCallback((): boolean => {
+        if (!formRef.current) return false;
+        const fd = new FormData(formRef.current);
+        const errors: FieldError[] = [];
+
+        const name = (fd.get("name") as string | null)?.trim() ?? "";
+        const email = (fd.get("email") as string | null)?.trim() ?? "";
+        const message = (fd.get("message") as string | null)?.trim() ?? "";
+
+        if (!name) errors.push({field: "name", message: "Name is required"});
+        if (!email) errors.push({field: "email", message: "Email is required"});
+        else if (!EMAIL_REGEX.test(email)) errors.push({field: "email", message: "Please enter a valid email address"});
+        if (!message) errors.push({field: "message", message: "Message is required"});
+
+        setClientErrors(errors);
+        return errors.length === 0;
+    }, []);
 
     const handleSubmit = useCallback(
-        (e: FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-
-            const body = [
-                `Name: ${name}`,
-                `Email: ${senderEmail}`,
-                "",
-                message
-            ].join("\n");
-
-            const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.location.href = mailtoUrl;
+        (e: React.FormEvent<HTMLFormElement>) => {
+            if (!validateClient()) {
+                e.preventDefault();
+            }
+            // If valid, useFetcher handles the submit naturally
         },
-        [name, senderEmail, subject, message, email]
+        [validateClient]
     );
 
+    const handleReset = useCallback(() => {
+        setShowSuccess(false);
+        setClientErrors([]);
+        formRef.current?.reset();
+    }, []);
+
+    // Merge errors: client-side take priority, fall back to server errors
+    const errors = clientErrors.length > 0 ? clientErrors : (fetcher.data?.errors ?? []);
+    const formError = errors.find(e => e.field === "form");
+
+    const getFieldError = (field: string) => errors.find(e => e.field === field)?.message;
+
+    // ── Success State ──────────────────────────────────────────────────
+    if (showSuccess) {
+        return (
+            <div className="flex flex-col items-center justify-center text-center py-8 sm:py-12 space-y-4 sm:space-y-6">
+                <div className="rounded-full bg-primary/10 p-4">
+                    <CheckCircle className="size-8 sm:size-10 text-primary" aria-hidden="true" />
+                </div>
+                <div className="space-y-2">
+                    <h3 className="font-serif text-xl sm:text-2xl font-medium text-primary">Message Sent</h3>
+                    <p className="text-muted-foreground text-sm sm:text-base max-w-sm">
+                        {fetcher.data?.message ?? "Thank you for your message! We'll get back to you soon."}
+                    </p>
+                </div>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="lg"
+                    className="gap-2"
+                    onClick={handleReset}
+                >
+                    <ArrowLeft className="size-4" aria-hidden="true" />
+                    Send Another Message
+                </Button>
+            </div>
+        );
+    }
+
+    // ── Form State ─────────────────────────────────────────────────────
     return (
-        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+        <fetcher.Form
+            ref={formRef}
+            method="post"
+            action="/api/contact"
+            noValidate
+            onSubmit={handleSubmit}
+            className="relative space-y-5 sm:space-y-6"
+        >
+            {/* Honeypot — invisible to humans, catches bots that auto-fill all fields */}
+            <div className="absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
+                <label htmlFor="contact-website">Website</label>
+                <input type="text" id="contact-website" name="website" tabIndex={-1} autoComplete="off" />
+            </div>
+
+            {/* Form-level error alert (server errors, network failures) */}
+            {formError && (
+                <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-3 sm:p-4" role="alert">
+                    <AlertCircle className="size-5 shrink-0 text-destructive mt-0.5" aria-hidden="true" />
+                    <p className="text-sm text-destructive">{formError.message}</p>
+                </div>
+            )}
+
             {/* Name + Email — side by side on desktop, stacked on mobile */}
             <div className="grid gap-5 sm:gap-6 sm:grid-cols-2">
-                <div className="space-y-2">
-                    <Label htmlFor="contact-name">Name</Label>
-                    <Input
-                        id="contact-name"
-                        name="name"
-                        type="text"
-                        placeholder="Your name"
-                        required
-                        aria-required="true"
-                        value={name}
-                        onChange={e => setName(e.target.value)}
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="contact-email">Email</Label>
-                    <Input
-                        id="contact-email"
-                        name="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        required
-                        aria-required="true"
-                        value={senderEmail}
-                        onChange={e => setSenderEmail(e.target.value)}
-                    />
-                </div>
-            </div>
-
-            {/* Subject — full width */}
-            <div className="space-y-2">
-                <Label htmlFor="contact-subject">Subject</Label>
-                <Input
-                    id="contact-subject"
-                    name="subject"
+                <FormField
+                    id="contact-name"
+                    name="name"
+                    label="Name"
                     type="text"
-                    placeholder="What is this about?"
+                    placeholder="Your name"
                     required
-                    aria-required="true"
-                    value={subject}
-                    onChange={e => setSubject(e.target.value)}
+                    error={getFieldError("name")}
+                    disabled={isSubmitting}
+                />
+                <FormField
+                    id="contact-email"
+                    name="email"
+                    label="Email"
+                    type="email"
+                    placeholder="you@example.com"
+                    required
+                    error={getFieldError("email")}
+                    disabled={isSubmitting}
                 />
             </div>
+
+            {/* Subject — full width, optional */}
+            <FormField
+                id="contact-subject"
+                name="subject"
+                label="Subject"
+                type="text"
+                placeholder="What is this about?"
+                error={getFieldError("subject")}
+                disabled={isSubmitting}
+            />
 
             {/* Message — textarea with adequate height */}
-            <div className="space-y-2">
-                <Label htmlFor="contact-message">Message</Label>
-                <Textarea
-                    id="contact-message"
-                    name="message"
-                    placeholder="Tell us more..."
-                    required
-                    aria-required="true"
-                    className="min-h-[160px] sm:min-h-[140px]"
-                    value={message}
-                    onChange={e => setMessage(e.target.value)}
-                />
-            </div>
+            <FormField
+                id="contact-message"
+                name="message"
+                label="Message"
+                type="textarea"
+                placeholder="Tell us more..."
+                required
+                error={getFieldError("message")}
+                disabled={isSubmitting}
+            />
 
-            {/* Submit button + mailto note */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                <Button type="submit" size="lg" className="gap-2">
-                    <Send className="size-4" aria-hidden="true" />
-                    Send Message
+            {/* Submit button */}
+            <div>
+                <Button type="submit" size="lg" className="gap-2" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                    ) : (
+                        <Send className="size-4" aria-hidden="true" />
+                    )}
+                    {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
-                <p className="text-sm text-muted-foreground">
-                    This will open your email client
-                </p>
             </div>
-        </form>
+        </fetcher.Form>
+    );
+}
+
+// =============================================================================
+// FORM FIELD HELPER
+// =============================================================================
+
+interface FormFieldProps {
+    id: string;
+    name: string;
+    label: string;
+    type: "text" | "email" | "textarea";
+    placeholder: string;
+    required?: boolean;
+    error?: string;
+    disabled?: boolean;
+}
+
+/** Renders a label + input/textarea + error message with consistent a11y attributes */
+function FormField({id, name, label, type, placeholder, required, error, disabled}: FormFieldProps) {
+    const errorId = `${id}-error`;
+    const hasError = !!error;
+
+    return (
+        <div className="space-y-2">
+            <Label htmlFor={id}>
+                {label}
+                {!required && <span className="text-muted-foreground ml-1 text-xs font-normal">(optional)</span>}
+            </Label>
+            {type === "textarea" ? (
+                <Textarea
+                    id={id}
+                    name={name}
+                    placeholder={placeholder}
+                    required={required}
+                    aria-required={required ? "true" : undefined}
+                    aria-invalid={hasError ? "true" : undefined}
+                    aria-describedby={hasError ? errorId : undefined}
+                    disabled={disabled}
+                    className={cn("min-h-[160px] sm:min-h-[140px]", hasError && "border-destructive")}
+                />
+            ) : (
+                <Input
+                    id={id}
+                    name={name}
+                    type={type}
+                    placeholder={placeholder}
+                    required={required}
+                    aria-required={required ? "true" : undefined}
+                    aria-invalid={hasError ? "true" : undefined}
+                    aria-describedby={hasError ? errorId : undefined}
+                    disabled={disabled}
+                    className={cn(hasError && "border-destructive")}
+                />
+            )}
+            {hasError && (
+                <p id={errorId} className="flex items-center gap-1.5 text-sm text-destructive" role="alert">
+                    <AlertCircle className="size-3.5 shrink-0" aria-hidden="true" />
+                    {error}
+                </p>
+            )}
+        </div>
     );
 }
 
