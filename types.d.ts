@@ -1226,10 +1226,6 @@ export interface SearchContent {
     filterByColor: string;
     /** Filter section label: Size */
     filterBySize: string;
-    /** Filter section label: Availability */
-    filterAvailability: string;
-    /** Filter checkbox: In Stock Only */
-    filterInStock: string;
 
     // ─────────────────────────────────────────────────────────────────────────
     // RESULTS DISPLAY

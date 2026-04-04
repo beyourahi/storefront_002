@@ -111,8 +111,6 @@ const FALLBACK_SEARCH_CONTENT = {
     filterByPrice: "Price",
     filterByColor: "Color",
     filterBySize: "Size",
-    filterAvailability: "Availability",
-    filterInStock: "In Stock",
     resultsCountTemplate: "Showing {count} of {total} products",
     loadMoreButton: "Load More",
     loadingText: "Loading...",

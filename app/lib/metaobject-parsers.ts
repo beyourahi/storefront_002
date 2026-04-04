@@ -324,8 +324,6 @@ const FALLBACK_SEARCH_CONTENT: SearchContent = {
     filterByPrice: "Price",
     filterByColor: "Color",
     filterBySize: "Size",
-    filterAvailability: "Availability",
-    filterInStock: "In Stock",
     resultsCountTemplate: "Showing {count} of {total} products",
     loadMoreButton: "Load More",
     loadingText: "Loading...",
@@ -1277,8 +1275,6 @@ export function parseSearchContent(data: unknown): SearchContent {
         filterByPrice: d.filterByPrice?.value || FALLBACK_SEARCH_CONTENT.filterByPrice,
         filterByColor: d.filterByColor?.value || FALLBACK_SEARCH_CONTENT.filterByColor,
         filterBySize: d.filterBySize?.value || FALLBACK_SEARCH_CONTENT.filterBySize,
-        filterAvailability: d.filterAvailability?.value || FALLBACK_SEARCH_CONTENT.filterAvailability,
-        filterInStock: d.filterInStock?.value || FALLBACK_SEARCH_CONTENT.filterInStock,
 
         // Results Display
         resultsCountTemplate: d.resultsCountTemplate?.value || FALLBACK_SEARCH_CONTENT.resultsCountTemplate,
