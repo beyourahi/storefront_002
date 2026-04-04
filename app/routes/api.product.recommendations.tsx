@@ -23,7 +23,10 @@ export const loader = async ({request, context}: Route.LoaderArgs) => {
             cache: context.dataAdapter.CacheShort()
         });
 
-        return new Response(JSON.stringify({products: (productRecommendations ?? []).filter((p: any) => p.availableForSale)}), {
+        // Client-side filter: productRecommendations API doesn't support availability
+        // filters — this is the only supported way to exclude OOS products
+        const available = (productRecommendations ?? []).filter((p: any) => p.availableForSale);
+        return new Response(JSON.stringify({products: available}), {
             status: 200,
             headers: {"Content-Type": "application/json"}
         });

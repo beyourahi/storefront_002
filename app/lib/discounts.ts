@@ -310,11 +310,6 @@ export function filterAndSortDiscountedProducts(products: RawDiscountProduct[]):
     const discountedProducts: DiscountedProduct[] = [];
 
     for (const product of products) {
-        // Skip products that aren't available for sale
-        if (!product.availableForSale) {
-            continue;
-        }
-
         const transformed = transformProductForDiscount(product);
         if (transformed) {
             discountedProducts.push(transformed);
@@ -386,11 +381,6 @@ export function countDiscountedProducts(products: LightweightProduct[]): number 
     let count = 0;
 
     for (const product of products) {
-        // Skip products that aren't available for sale
-        if (!product.availableForSale) {
-            continue;
-        }
-
         // Check if any variant has a discount
         const hasDiscount = product.variants.nodes.some(variant => {
             if (!variant.availableForSale || !variant.compareAtPrice) {

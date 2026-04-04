@@ -341,8 +341,7 @@ function loadDeferredData({context}: Route.LoaderArgs) {
         })
         .then((response: any) => {
             if (!response?.products?.nodes) return null;
-            // Filter only available products and return
-            return response.products.nodes.filter((p: CartSuggestionProductFragment) => p.availableForSale);
+            return response.products.nodes;
         })
         .catch((error: Error) => {
             console.error("Failed to load cart suggestions:", error);
@@ -660,7 +659,7 @@ const CART_SUGGESTIONS_QUERY = `#graphql
     $country: CountryCode
     $language: LanguageCode
   ) @inContext(country: $country, language: $language) {
-    products(first: 16, sortKey: BEST_SELLING) {
+    products(first: 16, sortKey: BEST_SELLING, query: "available_for_sale:true") {
       nodes {
         ...CartSuggestionProduct
       }

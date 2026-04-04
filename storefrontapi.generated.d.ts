@@ -2772,9 +2772,7 @@ export type SidebarCollectionsHandleQuery = {
   collections: {
     nodes: Array<
       Pick<StorefrontAPI.Collection, "id" | "handle" | "title"> & {
-        products: {
-          nodes: Array<Pick<StorefrontAPI.Product, "id" | "availableForSale">>;
-        };
+        products: { nodes: Array<Pick<StorefrontAPI.Product, "id">> };
       }
     >;
   };
@@ -2815,9 +2813,7 @@ export type CollectionFragment = Pick<
   StorefrontAPI.Collection,
   "id" | "title" | "handle"
 > & {
-  products: {
-    nodes: Array<Pick<StorefrontAPI.Product, "id" | "availableForSale">>;
-  };
+  products: { nodes: Array<Pick<StorefrontAPI.Product, "id">> };
   image?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
   >;
@@ -2840,9 +2836,7 @@ export type StoreCollectionsQuery = {
   collections: {
     nodes: Array<
       Pick<StorefrontAPI.Collection, "id" | "title" | "handle"> & {
-        products: {
-          nodes: Array<Pick<StorefrontAPI.Product, "id" | "availableForSale">>;
-        };
+        products: { nodes: Array<Pick<StorefrontAPI.Product, "id">> };
         image?: StorefrontAPI.Maybe<
           Pick<
             StorefrontAPI.Image,
@@ -3017,9 +3011,7 @@ export type SidebarCollectionsAllQuery = {
   collections: {
     nodes: Array<
       Pick<StorefrontAPI.Collection, "id" | "handle" | "title"> & {
-        products: {
-          nodes: Array<Pick<StorefrontAPI.Product, "id" | "availableForSale">>;
-        };
+        products: { nodes: Array<Pick<StorefrontAPI.Product, "id">> };
       }
     >;
   };
@@ -3873,9 +3865,7 @@ export type SidebarCollectionsProductQuery = {
   collections: {
     nodes: Array<
       Pick<StorefrontAPI.Collection, "id" | "handle" | "title"> & {
-        products: {
-          nodes: Array<Pick<StorefrontAPI.Product, "id" | "availableForSale">>;
-        };
+        products: { nodes: Array<Pick<StorefrontAPI.Product, "id">> };
       }
     >;
   };
@@ -4104,9 +4094,7 @@ export type SidebarCollectionsForDiscountsQuery = {
   collections: {
     nodes: Array<
       Pick<StorefrontAPI.Collection, "id" | "handle" | "title"> & {
-        products: {
-          nodes: Array<Pick<StorefrontAPI.Product, "id" | "availableForSale">>;
-        };
+        products: { nodes: Array<Pick<StorefrontAPI.Product, "id">> };
       }
     >;
   };
@@ -4678,7 +4666,7 @@ interface GeneratedQueryTypes {
     return: PwaManifestQuery;
     variables: PwaManifestQueryVariables;
   };
-  "#graphql\n  fragment CartSuggestionProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    variants(first: 1) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CartSuggestions(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 16, sortKey: BEST_SELLING) {\n      nodes {\n        ...CartSuggestionProduct\n      }\n    }\n  }\n": {
+  '#graphql\n  fragment CartSuggestionProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    variants(first: 1) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CartSuggestions(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 16, sortKey: BEST_SELLING, query: "available_for_sale:true") {\n      nodes {\n        ...CartSuggestionProduct\n      }\n    }\n  }\n': {
     return: CartSuggestionsQuery;
     variables: CartSuggestionsQueryVariables;
   };
@@ -4694,7 +4682,7 @@ interface GeneratedQueryTypes {
     return: StoreRobotsQuery;
     variables: StoreRobotsQueryVariables;
   };
-  "#graphql\n  fragment CuratedProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    tags\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CuratedCollections($country: CountryCode, $language: LanguageCode)\n    @inContext(country: $country, language: $language) {\n    collections(first: 20) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 6) {\n          nodes {\n            ...CuratedProduct\n          }\n        }\n      }\n    }\n  }\n": {
+  "#graphql\n  fragment CuratedProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    tags\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CuratedCollections($country: CountryCode, $language: LanguageCode)\n    @inContext(country: $country, language: $language) {\n    collections(first: 20) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 6, filters: [{available: true}]) {\n          nodes {\n            ...CuratedProduct\n          }\n        }\n      }\n    }\n  }\n": {
     return: CuratedCollectionsQuery;
     variables: CuratedCollectionsQueryVariables;
   };
@@ -4702,7 +4690,7 @@ interface GeneratedQueryTypes {
     return: HomeRecentlyViewedProductsQuery;
     variables: HomeRecentlyViewedProductsQueryVariables;
   };
-  "#graphql\n  query AllProducts(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 250) {\n      nodes {\n        id\n        title\n        handle\n        availableForSale\n        tags\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n          maxVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        compareAtPriceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        images(first: 10) {\n          nodes {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        variants(first: 100) {\n          nodes {\n            id\n            title\n            availableForSale\n            selectedOptions {\n              name\n              value\n            }\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
+  '#graphql\n  query AllProducts(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 250, query: "available_for_sale:true") {\n      nodes {\n        id\n        title\n        handle\n        availableForSale\n        tags\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n          maxVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        compareAtPriceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        images(first: 10) {\n          nodes {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        variants(first: 100) {\n          nodes {\n            id\n            title\n            availableForSale\n            selectedOptions {\n              name\n              value\n            }\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: AllProductsQuery;
     variables: AllProductsQueryVariables;
   };
@@ -4774,7 +4762,7 @@ interface GeneratedQueryTypes {
     return: CollectionQuery;
     variables: CollectionQueryVariables;
   };
-  "#graphql\n  query SidebarCollectionsHandle(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 250) {\n          nodes {\n            id\n            availableForSale\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      nodes {\n        id\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
+  '#graphql\n  query SidebarCollectionsHandle(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 250, filters: [{available: true}]) {\n          nodes {\n            id\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250, query: "available_for_sale:true") {\n      nodes {\n        id\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: SidebarCollectionsHandleQuery;
     variables: SidebarCollectionsHandleQueryVariables;
   };
@@ -4782,19 +4770,19 @@ interface GeneratedQueryTypes {
     return: CollectionCountQuery;
     variables: CollectionCountQueryVariables;
   };
-  "#graphql\n  fragment Collection on Collection {\n    id\n    title\n    handle\n    products(first: 250) {\n      nodes {\n        id\n        availableForSale\n      }\n    }\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n  }\n  query StoreCollections(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    collections(\n      first: $first\n      last: $last\n      before: $startCursor\n      after: $endCursor\n    ) {\n      nodes {\n        ...Collection\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n": {
+  "#graphql\n  fragment Collection on Collection {\n    id\n    title\n    handle\n    products(first: 250, filters: [{available: true}]) {\n      nodes {\n        id\n      }\n    }\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n  }\n  query StoreCollections(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    collections(\n      first: $first\n      last: $last\n      before: $startCursor\n      after: $endCursor\n    ) {\n      nodes {\n        ...Collection\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n": {
     return: StoreCollectionsQuery;
     variables: StoreCollectionsQueryVariables;
   };
-  "#graphql\n  query SaleProducts(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n  ) @inContext(country: $country, language: $language) {\n    products(first: $first) {\n      nodes {\n        id\n        availableForSale\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        variants(first: 250) {\n          nodes {\n            availableForSale\n            price {\n              amount\n            }\n            compareAtPrice {\n              amount\n            }\n          }\n        }\n      }\n    }\n  }\n": {
+  '#graphql\n  query SaleProducts(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n  ) @inContext(country: $country, language: $language) {\n    products(first: $first, query: "available_for_sale:true") {\n      nodes {\n        id\n        availableForSale\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        variants(first: 250) {\n          nodes {\n            availableForSale\n            price {\n              amount\n            }\n            compareAtPrice {\n              amount\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: SaleProductsQuery;
     variables: SaleProductsQueryVariables;
   };
-  "#graphql\n  query Catalog(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n    $sortKey: ProductSortKeys\n    $reverse: Boolean\n  ) @inContext(country: $country, language: $language) {\n    products(\n      first: $first\n      last: $last\n      before: $startCursor\n      after: $endCursor\n      sortKey: $sortKey\n      reverse: $reverse\n    ) {\n      nodes {\n        ...CollectionItem\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment MoneyCollectionItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment CollectionItem on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n      maxVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          ...MoneyCollectionItem\n        }\n        compareAtPrice {\n          ...MoneyCollectionItem\n        }\n      }\n    }\n  }\n\n": {
+  '#graphql\n  query Catalog(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n    $sortKey: ProductSortKeys\n    $reverse: Boolean\n  ) @inContext(country: $country, language: $language) {\n    products(\n      first: $first\n      last: $last\n      before: $startCursor\n      after: $endCursor\n      sortKey: $sortKey\n      reverse: $reverse\n      query: "available_for_sale:true"\n    ) {\n      nodes {\n        ...CollectionItem\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment MoneyCollectionItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment CollectionItem on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n      maxVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          ...MoneyCollectionItem\n        }\n        compareAtPrice {\n          ...MoneyCollectionItem\n        }\n      }\n    }\n  }\n\n': {
     return: CatalogQuery;
     variables: CatalogQueryVariables;
   };
-  "#graphql\n  query SidebarCollectionsAll(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 250) {\n          nodes {\n            id\n            availableForSale\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      nodes {\n        id\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
+  '#graphql\n  query SidebarCollectionsAll(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 250, filters: [{available: true}]) {\n          nodes {\n            id\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250, query: "available_for_sale:true") {\n      nodes {\n        id\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: SidebarCollectionsAllQuery;
     variables: SidebarCollectionsAllQueryVariables;
   };
@@ -4814,7 +4802,7 @@ interface GeneratedQueryTypes {
     return: ProductQuery;
     variables: ProductQueryVariables;
   };
-  "#graphql\n  query SidebarCollectionsProduct(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 250) {\n          nodes {\n            id\n            availableForSale\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      nodes {\n        id\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
+  '#graphql\n  query SidebarCollectionsProduct(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 250, filters: [{available: true}]) {\n          nodes {\n            id\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250, query: "available_for_sale:true") {\n      nodes {\n        id\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: SidebarCollectionsProductQuery;
     variables: SidebarCollectionsProductQueryVariables;
   };
@@ -4826,7 +4814,7 @@ interface GeneratedQueryTypes {
     return: DiscountsPageQuery;
     variables: DiscountsPageQueryVariables;
   };
-  "#graphql\n  query SidebarCollectionsForDiscounts(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 250) {\n          nodes {\n            id\n            availableForSale\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250) {\n      nodes {\n        id\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n          }\n        }\n      }\n    }\n  }\n": {
+  '#graphql\n  query SidebarCollectionsForDiscounts(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 250, filters: [{available: true}]) {\n          nodes {\n            id\n          }\n        }\n      }\n    }\n    allProducts: products(first: 250, query: "available_for_sale:true") {\n      nodes {\n        id\n        availableForSale\n        variants(first: 10) {\n          nodes {\n            availableForSale\n          }\n        }\n      }\n    }\n  }\n': {
     return: SidebarCollectionsForDiscountsQuery;
     variables: SidebarCollectionsForDiscountsQueryVariables;
   };

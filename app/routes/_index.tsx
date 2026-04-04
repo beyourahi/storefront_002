@@ -194,15 +194,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
         .then(response => {
             if (!response?.collections?.nodes) return null;
 
-            // Filter out unavailable products from each collection
-            const collectionsWithAvailableProducts = response.collections.nodes.map((collection: any) => ({
-                ...collection,
-                products: {
-                    nodes: collection.products.nodes.filter((p: any) => p.availableForSale)
-                }
-            }));
-
-            const tabs = buildCollectionTabs(collectionsWithAvailableProducts);
+            const tabs = buildCollectionTabs(response.collections.nodes);
 
             if (tabs.length === 0) return null;
 
@@ -230,7 +222,7 @@ export async function loader({context, request}: Route.LoaderArgs) {
                 // Filter out null values and sort by original order
                 const productMap = new Map<string, CuratedProductFragment>();
                 for (const node of response.nodes) {
-                    // Only include products that are available for sale
+                    // Client-side filter: nodes(ids:) query doesn't support availability filters
                     if (node && node.__typename === "Product" && node.availableForSale) {
                         productMap.set(node.id, node as CuratedProductFragment);
                     }
@@ -246,12 +238,12 @@ export async function loader({context, request}: Route.LoaderArgs) {
         }
     }
 
-    // Fetch all products for client-side filtering (only available products)
+    // Fetch all available products for client-side use (API-level filter applied)
     let allProductsData: CuratedProductFragment[] = [];
     try {
         const response = await context.dataAdapter.query(ALL_PRODUCTS_QUERY);
         if (response?.products?.nodes) {
-            allProductsData = response.products.nodes.filter((p: any) => p.availableForSale);
+            allProductsData = response.products.nodes;
         }
     } catch {
         // Silent fail - client will use store data
@@ -657,7 +649,7 @@ const CURATED_COLLECTIONS_QUERY = `#graphql
         id
         handle
         title
-        products(first: 6) {
+        products(first: 6, filters: [{available: true}]) {
           nodes {
             ...CuratedProduct
           }
@@ -744,7 +736,7 @@ const ALL_PRODUCTS_QUERY = `#graphql
     $country: CountryCode
     $language: LanguageCode
   ) @inContext(country: $country, language: $language) {
-    products(first: 250) {
+    products(first: 250, query: "available_for_sale:true") {
       nodes {
         id
         title

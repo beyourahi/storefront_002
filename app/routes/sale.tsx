@@ -110,20 +110,18 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
     const totalCount = allDiscounted.length;
 
     // Process collections to get individual product counts for sidebar
-    // Filter out collections with no available products
+    // Filter out collections with no available products (API already filters unavailable)
     const {collections, allProducts} = sidebarData!;
     const collectionsWithCounts: CollectionWithCount[] = collections.nodes
         .map((collection: any) => ({
             handle: collection.handle,
             title: collection.title,
-            productsCount: collection.products.nodes.filter((p: any) => p.availableForSale).length
+            productsCount: collection.products.nodes.length
         }))
         .filter((collection: any) => collection.productsCount > 0);
 
-    // Count all available products
-    const totalProductCount = allProducts.nodes.filter(
-        (p: any) => p.availableForSale && p.variants.nodes.some((v: any) => v.availableForSale)
-    ).length;
+    // Count all available products (API-level filter ensures only available products are returned)
+    const totalProductCount = allProducts.nodes.length;
 
     // Calculate max discount from ALL discounted products (not just paginated)
     const maxDiscount = totalCount > 0 ? Math.max(...allDiscounted.map(p => p.maxDiscountPercentage)) : 0;
@@ -348,15 +346,14 @@ const SIDEBAR_COLLECTIONS_QUERY = `#graphql
         id
         handle
         title
-        products(first: 250) {
+        products(first: 250, filters: [{available: true}]) {
           nodes {
             id
-            availableForSale
           }
         }
       }
     }
-    allProducts: products(first: 250) {
+    allProducts: products(first: 250, query: "available_for_sale:true") {
       nodes {
         id
         availableForSale

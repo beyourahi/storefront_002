@@ -1853,7 +1853,8 @@ async function predictiveSearch({
         throw new Error("No predictive search data returned from Shopify API");
     }
 
-    // Filter out unavailable products and empty collections from predictive search results
+    // Client-side filter: predictiveSearch API doesn't support unavailableProducts param
+    // (only the full search query supports it — predictive search has no equivalent argument)
     const filteredItems = {
         ...items,
         products: items.products.filter((p: any) => p.availableForSale),

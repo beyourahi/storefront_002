@@ -120,21 +120,19 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
     ]);
 
     // Process collections to get individual product counts
-    // Filter out collections with no available products
+    // Filter out collections with no available products (API already filters unavailable)
     const {collections, allProducts} = sidebarData!;
     const collectionsWithCounts = collections.nodes
         .map((collection: any) => ({
             handle: collection.handle,
             title: collection.title,
-            productsCount: collection.products.nodes.filter((p: any) => p.availableForSale).length
+            productsCount: collection.products.nodes.length
         }))
         .filter((collection: any) => collection.productsCount > 0);
 
     // Count all available products directly (includes products not in any collection)
-    // Per docs: product must be availableForSale AND have at least one variant availableForSale
-    const totalProductCount = allProducts.nodes.filter(
-        (p: any) => p.availableForSale && p.variants.nodes.some((v: any) => v.availableForSale)
-    ).length;
+    // API-level filter (query: "available_for_sale:true") ensures only available products are returned
+    const totalProductCount = allProducts.nodes.length;
 
     // Count discounted products for sidebar
     const discountCount = countDiscountedProducts(allProducts.nodes as LightweightProduct[]);
@@ -160,15 +158,6 @@ export default function Collection() {
     // Dynamic class based on layout mode and grid columns
     const resourcesClassName = getGridClassName(gridColumns, layoutMode);
 
-    // Filter to only available products
-    const availableProducts = products.nodes.filter((p: CollectionItemFragment) => p.availableForSale);
-
-    // Create filtered connection for InfiniteScrollSection
-    const filteredConnection = {
-        nodes: availableProducts,
-        pageInfo: products.pageInfo
-    };
-
     return (
         <CollectionPageLayout
             title="All Products"
@@ -186,7 +175,7 @@ export default function Collection() {
         >
             <InfiniteScrollSection<CollectionItemFragment>
                 key={`${sortOption}-${layoutMode}-${gridColumns}`}
-                connection={filteredConnection}
+                connection={products}
                 resourcesClassName={resourcesClassName}
             >
                 {({node: product, index}) => (
@@ -303,6 +292,7 @@ const CATALOG_QUERY = `#graphql
       after: $endCursor
       sortKey: $sortKey
       reverse: $reverse
+      query: "available_for_sale:true"
     ) {
       nodes {
         ...CollectionItem
@@ -336,15 +326,14 @@ const SIDEBAR_COLLECTIONS_QUERY = `#graphql
         id
         handle
         title
-        products(first: 250) {
+        products(first: 250, filters: [{available: true}]) {
           nodes {
             id
-            availableForSale
           }
         }
       }
     }
-    allProducts: products(first: 250) {
+    allProducts: products(first: 250, query: "available_for_sale:true") {
       nodes {
         id
         availableForSale

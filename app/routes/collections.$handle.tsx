@@ -166,21 +166,19 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     redirectIfHandleIsLocalized(request, {handle, data: collection});
 
     // Process collections to get individual product counts
-    // Filter out collections with no available products
+    // Filter out collections with no available products (API already filters unavailable)
     const {collections, allProducts} = sidebarData!;
     const collectionsWithCounts = collections.nodes
         .map((col: any) => ({
             handle: col.handle,
             title: col.title,
-            productsCount: col.products.nodes.filter((p: any) => p.availableForSale).length
+            productsCount: col.products.nodes.length
         }))
         .filter((col: any) => col.productsCount > 0);
 
     // Count all available products directly (includes products not in any collection)
-    // Per docs: product must be availableForSale AND have at least one variant availableForSale
-    const totalProductCount = allProducts.nodes.filter(
-        (p: any) => p.availableForSale && p.variants.nodes.some((v: any) => v.availableForSale)
-    ).length;
+    // API-level filter (query: "available_for_sale:true") ensures only available products are returned
+    const totalProductCount = allProducts.nodes.length;
 
     // Count discounted products for sidebar
     const discountCount = countDiscountedProducts(allProducts.nodes as LightweightProduct[]);
@@ -462,15 +460,14 @@ const SIDEBAR_COLLECTIONS_QUERY = `#graphql
         id
         handle
         title
-        products(first: 250) {
+        products(first: 250, filters: [{available: true}]) {
           nodes {
             id
-            availableForSale
           }
         }
       }
     }
-    allProducts: products(first: 250) {
+    allProducts: products(first: 250, query: "available_for_sale:true") {
       nodes {
         id
         availableForSale

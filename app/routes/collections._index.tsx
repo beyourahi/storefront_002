@@ -105,11 +105,10 @@ export default function Collections() {
 
     // Count discounted products using the same logic as the sale page
     const saleProductCount = countDiscountedProducts(discountedProducts.nodes as LightweightProduct[]);
-    const firstDiscountedProduct = discountedProducts.nodes.find((p: any) => p.availableForSale && p.featuredImage);
+    const firstDiscountedProduct = discountedProducts.nodes.find((p: any) => p.featuredImage);
 
     // Filter to only products that have discounts (using same logic as countDiscountedProducts)
     const discountedProductsList = (discountedProducts.nodes as LightweightProduct[]).filter((p: any) => {
-        if (!p.availableForSale) return false;
         // Check if any variant has a discount
         return p.variants.nodes.some((variant: any) => {
             if (!variant.availableForSale || !variant.compareAtPrice) return false;
@@ -263,8 +262,8 @@ function CollectionCard({collection, index}: {collection: CollectionFragment; in
     const staggerDelay = index * 60;
     const {canHover} = usePointerCapabilities();
 
-    // Calculate product count from fetched products (only count available products)
-    const productCount = collection.products?.nodes?.filter(p => p.availableForSale).length || 0;
+    // Calculate product count from fetched products (API already filters unavailable)
+    const productCount = collection.products?.nodes?.length || 0;
     // Check if there might be more products than fetched (250 is API max)
     const hasMore = productCount >= 250;
 
@@ -343,10 +342,9 @@ const COLLECTIONS_QUERY = `#graphql
     id
     title
     handle
-    products(first: 250) {
+    products(first: 250, filters: [{available: true}]) {
       nodes {
         id
-        availableForSale
       }
     }
     image {
@@ -401,7 +399,7 @@ const SALE_PRODUCTS_QUERY = `#graphql
     $language: LanguageCode
     $first: Int
   ) @inContext(country: $country, language: $language) {
-    products(first: $first) {
+    products(first: $first, query: "available_for_sale:true") {
       nodes {
         id
         availableForSale
