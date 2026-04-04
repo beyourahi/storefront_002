@@ -41,7 +41,6 @@ import {
     DialogHeader,
     DialogTitle
 } from "~/components/ui/dialog";
-import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
 import {parseProductTitle} from "~/lib/product";
 
 // ============================================================================
@@ -198,7 +197,6 @@ export function RecentlyViewedSection({products, allProducts = [], loading = fal
                             loop: true,
                             dragFree: true
                         }}
-                        plugins={[WheelGesturesPlugin()]}
                         className="w-full"
                     >
                         {/* pt-4 accommodates pin badge overflow (-top-2 to -top-2.5) */}

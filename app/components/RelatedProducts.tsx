@@ -28,7 +28,6 @@ import {Await} from "react-router";
 import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel";
 import {ProductItem} from "~/components/ProductItem";
 import {RelatedProductsSkeleton} from "~/components/skeletons";
-import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
 import type {RecommendedProductFragment} from "storefrontapi.generated";
 import {useSectionHeadings} from "~/lib/site-content-context";
 import {sortWithPinnedFirst} from "~/lib/product-tags";
@@ -80,7 +79,6 @@ export function RelatedProducts({products}: RelatedProductsProps) {
                             <div className="relative">
                                 <Carousel
                                     opts={{align: "start", loop: true, dragFree: true}}
-                                    plugins={[WheelGesturesPlugin()]}
                                     className="w-full"
                                 >
                                     {/* pt-4 accommodates pin badge overflow (-top-2 to -top-2.5) */}

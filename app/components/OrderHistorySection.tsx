@@ -27,7 +27,6 @@ import type {OrderHistoryProduct} from "~/graphql/customer-account/CustomerOrder
 import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel";
 import {Skeleton} from "~/components/ui/skeleton";
 import {Card, CardContent} from "~/components/ui/card";
-import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
 import {OrderProductItem} from "~/components/OrderProductItem";
 
 // ============================================================================
@@ -96,7 +95,6 @@ export function OrderHistorySection({products, loading = false}: OrderHistorySec
                         loop: true,
                         dragFree: true
                     }}
-                    plugins={[WheelGesturesPlugin()]}
                     className="w-full"
                 >
                     <CarouselContent className="-ml-2 md:-ml-3">

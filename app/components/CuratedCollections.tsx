@@ -11,7 +11,6 @@
  * - **Carousel Per Tab**: Embla Carousel with drag-free scrolling, infinite loop
  * - **Responsive Sizing**: 80% → 45% → 32% → 27% → 22% basis across breakpoints
  * - **Loading Skeleton**: Matching placeholder during data fetch
- * - **Wheel Gestures**: Trackpad/mouse wheel support
  *
  * @props
  * - collections: Promise<CuratedCollectionsData> - Deferred curated collections data
@@ -30,7 +29,6 @@ import {ProductItem} from "~/components/ProductItem";
 import {Skeleton} from "~/components/ui/skeleton";
 import {Card, CardContent} from "~/components/ui/card";
 import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel";
-import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
 
 export type {CuratedCollectionsData, CuratedTab};
 
@@ -94,7 +92,6 @@ export function CuratedCollections({collections}: CuratedCollectionsProps) {
                                                     loop: true,
                                                     dragFree: true
                                                 }}
-                                                plugins={[WheelGesturesPlugin()]}
                                                 className="w-full"
                                             >
                                                 {/* pt-4 accommodates pin badge overflow (-top-2 to -top-2.5) */}

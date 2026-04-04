@@ -31,7 +31,6 @@
 
 import {Star, Quote} from "lucide-react";
 import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel";
-import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
 import AutoScroll from "embla-carousel-auto-scroll";
 import type {Testimonial} from "types";
 
@@ -133,10 +132,7 @@ export function TestimonialsSection({testimonials}: TestimonialsSectionProps) {
                     loop: true,
                     dragFree: true
                 }}
-                plugins={[
-                    WheelGesturesPlugin(),
-                    AutoScroll({speed: 2, stopOnInteraction: false, stopOnMouseEnter: true})
-                ]}
+                plugins={[AutoScroll({speed: 2, stopOnInteraction: false, stopOnMouseEnter: true})]}
                 className="w-full"
             >
                 <CarouselContent className="-ml-3 sm:-ml-4 md:-ml-6">

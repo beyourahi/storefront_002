@@ -9,7 +9,7 @@
  *
  * @features
  * - Deferred data loading with Suspense boundaries
- * - Horizontal scrollable carousel with drag and wheel support
+ * - Horizontal scrollable carousel with drag support
  * - Responsive breakpoints: 80% mobile → 22% 2xl desktop
  * - Skeleton loading states during data fetch
  * - Limited to 8 articles maximum for performance
@@ -33,7 +33,7 @@
  * - ~/components/blog/ArticleCard - Card rendering in carousel
  * - ~/components/ui/carousel - Embla Carousel wrapper
  * - ~/routes/blogs.$blogHandle.$articleHandle - Article detail page loader
- * - embla-carousel-wheel-gestures - Wheel scrolling plugin
+
  */
 
 import {Suspense} from "react";
@@ -42,7 +42,6 @@ import {Carousel, CarouselContent, CarouselItem} from "~/components/ui/carousel"
 import {ArticleCard, type ArticleCardData} from "~/components/blog/ArticleCard";
 import {Skeleton} from "~/components/ui/skeleton";
 import {Card, CardContent} from "~/components/ui/card";
-import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
 
 // ============================================================================
 // Type Definitions
@@ -82,7 +81,7 @@ interface RelatedArticlesProps {
  * - align: "start" - Cards align to start of container
  * - loop: true - Infinite scrolling
  * - dragFree: true - Natural drag physics
- * - WheelGesturesPlugin - Horizontal wheel scrolling on desktop
+
  *
  * Responsive breakpoints:
  * - Mobile (default): 80% width per card
@@ -125,7 +124,7 @@ export function RelatedArticles({articles, title = "Related Articles", className
                             <div className="relative -mx-2 sm:mx-0">
                                 <Carousel
                                     opts={{align: "start", loop: true, dragFree: true}}
-                                    plugins={[WheelGesturesPlugin()]}
+
                                     className="w-full"
                                 >
                                     {/* Negative margin for full-bleed mobile scrolling */}

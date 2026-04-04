@@ -59,7 +59,6 @@ import {Money} from "~/components/Money";
 import {AnimatedSection} from "~/components/AnimatedSection";
 import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {cn} from "~/lib/utils";
-import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
 import {
     PackageSearchIcon,
@@ -1102,7 +1101,7 @@ function RecentlyViewedSection({
 
             <Carousel
                 opts={{align: "start", loop: true, dragFree: true}}
-                plugins={[WheelGesturesPlugin()]}
+
                 className="w-full"
             >
                 {/* pt-4 accommodates pin badge overflow (-top-2 to -top-2.5) */}
@@ -1149,7 +1148,7 @@ function RecommendedSection({products}: {products: CuratedProductFragment[]}) {
 
             <Carousel
                 opts={{align: "start", loop: true, dragFree: true}}
-                plugins={[WheelGesturesPlugin()]}
+
                 className="w-full"
             >
                 {/* pt-4 accommodates pin badge overflow (-top-2 to -top-2.5) */}

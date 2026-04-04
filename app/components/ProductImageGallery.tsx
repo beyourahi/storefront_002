@@ -64,7 +64,6 @@ import type {ProductImageGalleryProps, ProductMediaItem} from "types";
 import {cn} from "~/lib/utils";
 import {Skeleton} from "~/components/ui/skeleton";
 import {Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext} from "~/components/ui/carousel";
-import {WheelGesturesPlugin} from "embla-carousel-wheel-gestures";
 import {ProductLightbox} from "~/components/ProductLightbox";
 
 // =============================================================================
@@ -320,7 +319,6 @@ export function ProductImageGallery({images, selectedVariantImage, media}: Produ
                         loop: true,
                         dragFree: true
                     }}
-                    plugins={[WheelGesturesPlugin()]}
                     className="w-full"
                 >
                     {/* Reduced left margin for 320px viewport */}
