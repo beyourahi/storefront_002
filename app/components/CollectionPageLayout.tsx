@@ -167,7 +167,7 @@ interface CollectionPageLayoutProps {
     showSortOptions?: boolean;
 }
 
-export type SortOption = "title-asc" | "title-desc" | "price-asc" | "price-desc" | "newest";
+export type SortOption = "title-asc" | "title-desc" | "price-asc" | "price-desc" | "newest" | "best-selling";
 export type LayoutMode = "grid" | "list";
 
 export function CollectionPageLayout({
@@ -295,6 +295,7 @@ type PillOption =
 const PILL_OPTIONS: PillOption[] = [
     // Sort options
     {id: "newest", label: "Newest", type: "sort", value: "newest"},
+    {id: "best-selling", label: "Best Selling", type: "sort", value: "best-selling"},
     {id: "az", label: "A-Z", type: "sort", value: "title-asc"},
     {id: "za", label: "Z-A", type: "sort", value: "title-desc"},
     {id: "price-low", label: "Price ↑", type: "sort", value: "price-asc"},
@@ -519,7 +520,7 @@ export function useLayoutMode(storageKey: string = "collection-layout-mode"): [L
 }
 
 // Valid sort options for URL validation
-const VALID_SORT_OPTIONS: SortOption[] = ["title-asc", "title-desc", "price-asc", "price-desc", "newest"];
+const VALID_SORT_OPTIONS: SortOption[] = ["title-asc", "title-desc", "price-asc", "price-desc", "newest", "best-selling"];
 
 // Hook to manage sort option with URL params for server-side sorting
 export function useSortOption(defaultSort: SortOption = "newest"): [SortOption, (sort: SortOption) => void] {
@@ -559,6 +560,8 @@ export function mapSortToCollectionSortKey(sort: string): {sortKey: string; reve
             return {sortKey: "PRICE", reverse: false};
         case "price-desc":
             return {sortKey: "PRICE", reverse: true};
+        case "best-selling":
+            return {sortKey: "BEST_SELLING", reverse: false};
         case "newest":
         default:
             return {sortKey: "CREATED", reverse: true};
@@ -576,6 +579,8 @@ export function mapSortToProductSortKey(sort: string): {sortKey: string; reverse
             return {sortKey: "PRICE", reverse: false};
         case "price-desc":
             return {sortKey: "PRICE", reverse: true};
+        case "best-selling":
+            return {sortKey: "BEST_SELLING", reverse: false};
         case "newest":
         default:
             return {sortKey: "CREATED_AT", reverse: true};

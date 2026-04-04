@@ -238,8 +238,8 @@ export default function Collection() {
             case "title-desc":
                 comparator = (a, b) => b.title.localeCompare(a.title);
                 break;
-            // For "newest", rely on Shopify's pre-sorting (no comparator needed)
-            // Shopify's CREATED sortKey provides the correct order
+            // For "newest" and "best-selling", rely on Shopify's pre-sorting (no comparator needed)
+            // Shopify's CREATED / BEST_SELLING sortKeys provide the correct order
         }
 
         return sortWithPinnedFirst(products, comparator);
