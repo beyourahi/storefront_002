@@ -137,6 +137,7 @@ export function PageLayout({
     hasStoreCredit,
     publicStoreDomain,
     menuCollections,
+    totalCollections,
     totalProductCount,
     discountCount,
     popularSearchTerms,
@@ -170,6 +171,7 @@ export function PageLayout({
                     <FullScreenSearch collections={menuCollections} popularSearchTerms={popularSearchTerms} />
                     <FullScreenMenu
                         collections={menuCollections}
+                        totalCollections={totalCollections}
                         totalProductCount={totalProductCount}
                         discountCount={discountCount}
                         hasBlog={hasBlog}

@@ -79,6 +79,7 @@ import type {MenuCollection} from "types";
 
 interface FullScreenMenuProps {
     collections: MenuCollection[];
+    totalCollections: number;
     totalProductCount: number;
     discountCount: number;
     hasBlog: boolean;
@@ -144,11 +145,12 @@ const POLICY_LINKS = [
  * - Smooth fade transitions
  *
  * @param collections - Collections to display in menu
+ * @param totalCollections - Raw Shopify collection count for "All Collections" link
  * @param totalProductCount - Count for "All Products" link
  * @param discountCount - Count for "SALE" link (hidden if 0)
  * @param hasBlog - Whether to show "Blogs" link
  */
-export function FullScreenMenu({collections, totalProductCount, discountCount, hasBlog}: FullScreenMenuProps) {
+export function FullScreenMenu({collections, totalCollections, totalProductCount, discountCount, hasBlog}: FullScreenMenuProps) {
     const {type, close, open} = useAside();
     const {canHover} = usePointerCapabilities();
     const {brandName} = useSiteSettings();
@@ -181,10 +183,10 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
 
     // Organize collections into columns — memoized so the expensive sort/filter only re-runs
     // when collections or counts actually change, not on every menu re-render
-    const totalCollectionCount = collections.length + (discountCount > 0 ? 1 : 0);
+    // totalCollections comes from the raw pre-filter Shopify response (accurate real collection count)
     const {featuredCollections, categoryCollections} = useMemo(
-        () => organizeCollections(collections, totalProductCount, totalCollectionCount, discountCount),
-        [collections, totalProductCount, totalCollectionCount, discountCount]
+        () => organizeCollections(collections, totalProductCount, totalCollections, discountCount),
+        [collections, totalProductCount, totalCollections, discountCount]
     );
 
     return (

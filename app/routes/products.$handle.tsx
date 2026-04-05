@@ -724,7 +724,7 @@ const SIDEBAR_COLLECTIONS_QUERY = `#graphql
         id
         handle
         title
-        products(first: 250, filters: [{available: true}]) {
+        products(first: 250) {
           nodes {
             id
           }

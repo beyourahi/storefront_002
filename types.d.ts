@@ -83,6 +83,7 @@ export interface PageLayoutProps {
     hasStoreCredit: Promise<boolean>;
     publicStoreDomain: string;
     menuCollections: MenuCollection[];
+    totalCollections: number;
     totalProductCount: number;
     discountCount: number;
     popularSearchTerms: string[];

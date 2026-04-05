@@ -242,9 +242,11 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
         shopData?.shop?.paymentSettings?.currencyCode ?? "USD"
     );
 
-    // Process collections to compute product counts (only available products)
-    // Per-collection products are pre-filtered by available:true in the query, so .length = available count
-    // Filter out collections with no available products
+    // Capture raw total before filtering — used for "All Collections" count in FullScreenMenu
+    const totalCollections = menuCollectionsData.collections.nodes.length;
+
+    // Process collections to compute product counts (all products, regardless of availability)
+    // Filter out collections with no products at all (truly empty collections)
     const menuCollections = menuCollectionsData.collections.nodes
         .map((collection: any) => ({
             id: collection.id,
@@ -294,6 +296,7 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
     return {
         header,
         menuCollections,
+        totalCollections,
         totalProductCount,
         isApproximateTotal,
         discountCount,

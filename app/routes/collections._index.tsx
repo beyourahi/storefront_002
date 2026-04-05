@@ -331,7 +331,7 @@ function CollectionCard({collection, index}: {collection: CollectionFragment; in
  * Includes minimal fields needed for cards:
  * - title, handle for links
  * - image for visual display
- * - products(first: 250) to count available products (API max limit)
+ * - products(first: 250) to count total products (API max limit)
  *
  * Note: Shopify Storefront API doesn't provide a direct count field,
  * so we fetch products to count them. Using first: 250 (max) to get
@@ -342,7 +342,7 @@ const COLLECTIONS_QUERY = `#graphql
     id
     title
     handle
-    products(first: 250, filters: [{available: true}]) {
+    products(first: 250) {
       nodes {
         id
       }
