@@ -62,7 +62,7 @@ export function InstagramSection({media}: InstagramSectionProps) {
     // Find Instagram link from social links
     const instagramLink = socialLinks.find(link => link.platform.toLowerCase() === "instagram");
     const instagramUrl = instagramLink?.url || "https://instagram.com";
-    const instagramHandle = instagramLink?.handle || "@beyourahi_";
+    const instagramHandle = instagramLink?.handle || "";
 
     // Detect generic platform URLs that don't point to a real brand profile.
     // When no brand profile is configured, hide the follow CTA to avoid
@@ -149,14 +149,14 @@ function InstagramMediaCard({
                             width={400}
                             height={400}
                             loading="lazy"
-                            className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-105"
+                            className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-[1.03]"
                         />
                     ) : (
                         <video
                             src={media.url}
                             muted
                             playsInline
-                            className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-105"
+                            className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-[1.03]"
                         />
                     )}
                     {/* Play icon indicator for videos */}
@@ -171,7 +171,7 @@ function InstagramMediaCard({
                     width={400}
                     height={400}
                     loading="lazy"
-                    className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-105"
+                    className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-[1.03]"
                 />
             )}
 
