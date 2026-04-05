@@ -294,9 +294,12 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                      Text: truncated collection.description > hardcoded text
                      CTA: hardcoded "Discover Yours"
                      Link: /collections/{handle} > /collections/all-products */}
+                {/* text-foreground on bg-overlay-light-hover: ~15:1 (WCAG AAA) ✓
+                     bg-overlay-light-hover → brand-accent-subtle is always L≈0.92 (light surface)
+                     → dark text required for all brands universally */}
                 <Link
                     to={cardLink}
-                    className="hidden md:flex absolute top-[65%] right-8 z-60 w-90 lg:w-105 h-auto rounded-2xl overflow-hidden bg-overlay-light-hover backdrop-blur-md border border-light/30 no-underline hover:no-underline group sleek hover:bg-light/30 animate-float-gentle will-change-transform motion-reduce:animate-none cursor-pointer"
+                    className="hidden md:flex absolute top-[65%] right-8 z-60 w-90 lg:w-105 h-auto rounded-2xl overflow-hidden bg-overlay-light-hover backdrop-blur-md border border-foreground/15 no-underline hover:no-underline group sleek hover:bg-light/30 animate-float-gentle will-change-transform motion-reduce:animate-none cursor-pointer"
                 >
                     {/* Image container with fixed aspect ratio - prevents flex stretching */}
                     <div className="w-36 lg:w-44 shrink-0 aspect-video overflow-hidden">
@@ -307,16 +310,16 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                                     ? `${randomCollection.title} collection`
                                     : cardImage?.altText || "Collection preview"
                             }
-                            className="w-full h-full object-cover border border-r-0 border-light/30 rounded-l-2xl"
+                            className="w-full h-full object-cover border border-r-0 border-foreground/15 rounded-l-2xl"
                         />
                     </div>
                     {/* Text container: flex-1 takes remaining space, min-w-0 prevents flex blowout */}
                     <div className="flex-1 min-w-0 flex flex-col justify-center px-4 py-3 lg:px-6 lg:py-4">
                         {/* Line clamp ensures text never overflows regardless of description length */}
-                        <p className="font-serif text-sm lg:text-base text-light leading-snug mb-2 line-clamp-3">
+                        <p className="font-serif text-sm lg:text-base text-foreground leading-snug mb-2 line-clamp-3">
                             {cardText}
                         </p>
-                        <span className="font-sans text-sm lg:text-base font-semibold text-light group-hover:text-primary motion-interactive shrink-0">
+                        <span className="font-sans text-sm lg:text-base font-semibold text-foreground group-hover:text-primary motion-interactive shrink-0">
                             {cardCtaText}
                         </span>
                     </div>
