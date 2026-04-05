@@ -235,7 +235,7 @@ export function FullScreenMenu({collections, totalProductCount, discountCount, h
                             to="/"
                             prefetch="viewport"
                             onClick={close}
-                            className="motion-link absolute left-1/2 -translate-x-1/2 font-serif text-2xl uppercase tracking-wider text-primary cursor-pointer"
+                            className="motion-link absolute left-1/2 -translate-x-1/2 font-serif text-xl sm:text-2xl uppercase tracking-wider text-primary whitespace-nowrap cursor-pointer"
                         >
                             {brandName}
                         </Link>
