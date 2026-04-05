@@ -77,21 +77,27 @@ export function InstagramSection({media}: InstagramSectionProps) {
     return (
         <section className="-mx-2 md:-mx-4 bg-background py-10 sm:py-12 md:py-16" aria-label="Instagram gallery">
             {/* Header */}
-            <div className="mb-6 flex flex-col items-center justify-center gap-3 px-4 sm:mb-8 sm:flex-row sm:gap-4">
+            <div className="mb-6 flex items-center justify-center gap-2 px-4 sm:mb-8">
                 <h2 className="m-0 font-serif text-xl font-normal text-foreground sm:text-2xl md:text-3xl">
                     {instagramTitle}
+                    {/* Embed the handle inline in the heading so the brand name is part of the title,
+                        linking directly to the Instagram profile. Only shown when a real profile URL
+                        is configured (not a generic instagram.com homepage). */}
+                    {!isGenericInstagramUrl && instagramHandle && (
+                        <>
+                            {" "}
+                            <a
+                                href={instagramUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-serif text-primary underline decoration-1 underline-offset-4 motion-interactive hover:opacity-70 hover:no-underline"
+                                aria-label={`Follow ${instagramHandle} on Instagram`}
+                            >
+                                {instagramHandle}
+                            </a>
+                        </>
+                    )}
                 </h2>
-                {/* Hide follow CTA when the URL is a generic platform homepage (no brand profile configured) */}
-                {!isGenericInstagramUrl && (
-                    <a
-                        href={instagramUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full border-2 border-primary px-3 sm:px-4 py-1.5 sm:py-2 font-sans text-base sm:text-lg md:text-xl font-medium text-primary motion-interactive hover:bg-primary hover:text-primary-foreground hover:no-underline"
-                    >
-                        {instagramHandle}
-                    </a>
-                )}
             </div>
 
             {/* Carousel - edge-to-edge with no gaps, auto-scrolling */}
