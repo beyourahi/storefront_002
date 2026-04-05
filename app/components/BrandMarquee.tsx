@@ -38,6 +38,7 @@ import {useBrandMarquee} from "~/lib/site-content-context";
  */
 export function BrandMarquee() {
     const {words} = useBrandMarquee();
+    if (!words || words.length === 0) return null;
     return (
         <section className="-mx-2 md:-mx-4 py-8 md:py-12 overflow-hidden" aria-label="Brand values">
             <div className="relative flex cursor-default select-none">

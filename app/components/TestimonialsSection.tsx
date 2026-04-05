@@ -1,12 +1,17 @@
 /**
- * @fileoverview TestimonialsSection - Multi-input customer testimonials carousel
+ * @fileoverview TestimonialsSection - Adaptive testimonials layout
  *
  * @description
- * Testimonials carousel with auto-scroll, touch/swipe, trackpad, mouse wheel,
- * and keyboard navigation. Built on Embla Carousel with AutoScroll and WheelGestures
- * plugins, matching the pattern used across 11+ carousels in this project.
+ * Renders testimonials in one of two layouts depending on count:
+ * - **1–3 items**: Centered CSS Grid — avoids left-aligned sparse carousels
+ * - **4+ items**: Embla Carousel with auto-scroll, touch/swipe, trackpad, mouse
+ *   wheel, and keyboard navigation (same as before)
  *
- * @features
+ * The threshold of 4 is derived from breakpoint math: at xl (30% basis) and
+ * 2xl (25% basis) you need 4+ items to fill the viewport; fewer items leave
+ * visible empty space to the right that looks unintentional.
+ *
+ * @features (carousel, 4+ items)
  * - **Auto-scroll**: Continuous horizontal scroll via AutoScroll plugin
  * - **Touch/Swipe**: Native drag gestures on mobile/tablet
  * - **Trackpad**: Two-finger horizontal scroll via WheelGestures plugin
@@ -63,8 +68,9 @@ function StarRating({rating}: {rating: number}) {
 
 /**
  * Individual testimonial card
- * Card fills its CarouselItem parent — sizing controlled by basis classes on the item.
- * Responsive basis: 87% → 50% → 42% → 37% → 30% → 25% across breakpoints.
+ * In carousel mode: card fills its CarouselItem parent — sizing controlled by basis classes on the item.
+ * In grid mode: card fills its grid cell — sizing controlled by the grid wrapper's max-width.
+ * Responsive basis (carousel): 87% → 50% → 42% → 37% → 30% → 25% across breakpoints.
  */
 function TestimonialCard({testimonial}: {testimonial: Testimonial}) {
     // WCAG Contrast Validation:
@@ -94,14 +100,30 @@ function TestimonialCard({testimonial}: {testimonial: Testimonial}) {
     );
 }
 
+// Max-width constraints for the static grid layout, keyed by testimonial count.
+// Prevents cards from stretching too wide when there are only 1–3 items.
+// 1 item → narrow single-card width; 2 items → two comfortable columns; 3 items → full three-column row.
+const STATIC_GRID_MAX_WIDTH: Record<number, string> = {
+    1: "max-w-sm",
+    2: "max-w-2xl",
+    3: "max-w-5xl"
+};
+
+// Carousel is only activated when there are enough items to fill the viewport.
+// Below this threshold, a centered static grid is used instead.
+// Derived from breakpoint math: at xl (30% basis) 4 items = 120% — first count that overflows.
+const CAROUSEL_THRESHOLD = 4;
+
 /**
- * Multi-input testimonials carousel
+ * Adaptive testimonials layout
  *
- * Carousel configuration:
+ * - **1–3 items**: Centered CSS Grid — visually balanced, no left-skew, no artificial looping
+ * - **4+ items**: Embla Carousel with auto-scroll, drag-free momentum, and infinite loop
+ *
+ * Carousel configuration (4+ items only):
  * - **Auto-scroll**: Speed 2, stops on hover, resumes after interaction
  * - **Drag-free**: Smooth manual scrolling with momentum
- * - **Loop**: Infinite scrolling (replaces CSS duplicate-track approach)
- * - **Wheel gestures**: Trackpad/mouse wheel support
+ * - **Loop**: Infinite scrolling
  * - **Responsive basis**: Peek effect with variable card widths
  *
  * Keyboard navigation (ArrowLeft/ArrowRight) is built into the Carousel component.
@@ -111,13 +133,18 @@ export function TestimonialsSection({testimonials}: TestimonialsSectionProps) {
         return null;
     }
 
-    // Single testimonial: render static centered card without carousel
-    if (testimonials.length === 1) {
+    // 1–3 testimonials: centered static grid avoids a sparse, left-aligned carousel
+    if (testimonials.length < CAROUSEL_THRESHOLD) {
+        const maxWidth = STATIC_GRID_MAX_WIDTH[testimonials.length] ?? "max-w-5xl";
+        const ariaLabel = testimonials.length === 1 ? "Customer testimonial" : "Customer testimonials";
+
         return (
-            <section className="py-10 sm:py-12 md:py-16 -mx-2 md:-mx-4" aria-label="Customer testimonial">
-                <div className="flex justify-center px-3 sm:px-4 md:px-6">
-                    <div className="w-70 sm:w-80 lg:w-95">
-                        <TestimonialCard testimonial={testimonials[0]} />
+            <section className="py-10 sm:py-12 md:py-16 -mx-2 md:-mx-4" aria-label={ariaLabel}>
+                <div className={`${maxWidth} mx-auto px-3 sm:px-4 md:px-6`}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+                        {testimonials.map(testimonial => (
+                            <TestimonialCard key={testimonial.id} testimonial={testimonial} />
+                        ))}
                     </div>
                 </div>
             </section>

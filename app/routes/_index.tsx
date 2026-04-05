@@ -126,6 +126,7 @@ import {
     generateOrganizationSchema
 } from "~/lib/seo";
 import {useTestimonials, useInstagramMedia, useFaqItems, usePromotionalBanners} from "~/lib/site-content-context";
+import {useWishlist} from "~/lib/wishlist-context";
 
 // =============================================================================
 // META FUNCTION
@@ -406,6 +407,7 @@ export default function Homepage() {
     const instagramMedia = useInstagramMedia();
     const faqItems = useFaqItems();
     const {bannerOneMedia, bannerTwoMedia} = usePromotionalBanners();
+    const {count: wishlistCount} = useWishlist();
 
     return (
         <>
@@ -424,9 +426,11 @@ export default function Homepage() {
                      WHY: Show products NOW. Core conversion driver. Answers "What do you sell?"
                      IMPACT: Reduces bounce rate, increases engagement, instant credibility
                      AUDIENCE: 100% of visitors */}
-                <AnimatedSection animation="section" threshold={0.1} className="mt-8 sm:mt-12">
-                    <CuratedCollections collections={data.curatedCollections} />
-                </AnimatedSection>
+                {data.curatedCollections && (
+                    <AnimatedSection animation="section" threshold={0.1} className="mt-8 sm:mt-12">
+                        <CuratedCollections collections={data.curatedCollections} />
+                    </AnimatedSection>
+                )}
 
                 {featuredProduct ? (
                     <AnimatedSection animation="slide-up" threshold={0.12} className="mt-12 md:mt-16 lg:mt-20">
@@ -468,20 +472,24 @@ export default function Homepage() {
                      WHY: "What else do you have?" at perfect moment in journey
                      IMPACT: +10-15% collection page visits, better category discovery
                      AUDIENCE: 100% of visitors */}
-                <AnimatedSection animation="section" threshold={0.1} className="mt-12 md:mt-16 lg:mt-20">
-                    <ExploreCollectionsSection collections={data.exploreCollections} />
-                </AnimatedSection>
+                {data.exploreCollections && data.exploreCollections.length > 0 && (
+                    <AnimatedSection animation="section" threshold={0.1} className="mt-12 md:mt-16 lg:mt-20">
+                        <ExploreCollectionsSection collections={data.exploreCollections} />
+                    </AnimatedSection>
+                )}
 
                 {/* 7. RecentlyViewedSection - Personalized re-engagement (MOVED DOWN FROM #5)
                      WHY: Returning visitors (30%) see personalized content at natural depth
                      IMPACT: Better experience for new visitors (70%), meaningful for returning users
                      AUDIENCE: ~30% of visitors (has browsing history) */}
-                <AnimatedSection animation="slide-up" threshold={0.1} className="mt-12 md:mt-16 lg:mt-20">
-                    <RecentlyViewedSection
-                        products={data.recentlyViewed?.products ?? []}
-                        allProducts={data.allProducts}
-                    />
-                </AnimatedSection>
+                {(data.recentlyViewed?.products ?? []).length > 0 && (
+                    <AnimatedSection animation="slide-up" threshold={0.1} className="mt-12 md:mt-16 lg:mt-20">
+                        <RecentlyViewedSection
+                            products={data.recentlyViewed?.products ?? []}
+                            allProducts={data.allProducts}
+                        />
+                    </AnimatedSection>
+                )}
 
                 {/* ═══════════════════════════════════════════════════════════════════
                     TIER 4: PERSONALIZED ENGAGEMENT - VIP treatment for engaged users
@@ -491,9 +499,11 @@ export default function Homepage() {
                      WHY: Users with wishlists (10-15%) see personalized nudge
                      IMPACT: Cart recovery, doesn't clutter experience for users without wishlists
                      AUDIENCE: ~10-15% of visitors (has wishlist) */}
-                <AnimatedSection animation="slide-up" threshold={0.1} className="mt-12 md:mt-16 lg:mt-20">
-                    <HomepageWishlistSection />
-                </AnimatedSection>
+                {wishlistCount > 0 && (
+                    <AnimatedSection animation="slide-up" threshold={0.1} className="mt-12 md:mt-16 lg:mt-20">
+                        <HomepageWishlistSection />
+                    </AnimatedSection>
+                )}
 
                 {/* 9. OrderHistorySection - VIP easy reorder (MOVED UP FROM #10)
                      WHY: Logged-in customers (10%) get prominent reorder access
