@@ -195,9 +195,9 @@ export function Header({header, cart}: HeaderProps) {
                         to="/"
                         prefetch="viewport"
                         className={cn(
-                            // Responsive logo sizing: text-lg at 320px to prevent overflow,
-                            // scales up to text-xl at sm, text-2xl at md+
-                            "pointer-events-auto font-serif text-base sm:text-lg md:text-xl uppercase tracking-wider motion-link hover:opacity-80 cursor-pointer whitespace-nowrap",
+                            // Responsive logo sizing: text-sm on mobile to prevent overflow,
+                            // scales up to text-lg at sm, text-xl at md+
+                            "pointer-events-auto font-serif text-sm sm:text-lg md:text-xl uppercase tracking-wider motion-link hover:opacity-80 cursor-pointer whitespace-nowrap",
                             // Dark background pages: always white
                             // Other pages: primary at scroll 0, white after scrolling
                             useLightText || isScrolled ? "text-light" : "text-primary"
