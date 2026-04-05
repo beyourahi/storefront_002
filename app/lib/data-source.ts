@@ -1,3 +1,5 @@
+import {CacheCustom} from "@shopify/hydrogen";
+
 export type DataAdapterSource = "shopify";
 
 export interface DataAdapter {
@@ -51,7 +53,8 @@ function createShopifyAdapter(storefront: StorefrontLike): DataAdapter {
         source: "shopify",
         query: (query, options) => storefront.query(query, options),
         CacheNone: () => storefront.CacheNone(),
-        CacheLong: () => storefront.CacheLong(),
+        // Reduced from default 23hr stale window to 5hr — total max cache age: 6hr
+        CacheLong: () => CacheCustom({maxAge: 3600, staleWhileRevalidate: 3600 * 5}),
         CacheShort: () => storefront.CacheShort()
     };
 }
