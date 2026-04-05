@@ -257,12 +257,9 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
         }))
         .filter((collection: any) => collection.productsCount > 0);
 
-    // Count all available products for "All" link
-    // allProducts is unfiltered, so we still need client-side availability check
-    const totalProductCount = menuCollectionsData.allProducts.nodes.filter(
-        (p: any) => p.availableForSale && p.variants.nodes.some((v: any) => v.availableForSale)
-    ).length;
-    const isApproximateTotal = menuCollectionsData.allProducts.pageInfo?.hasNextPage ?? false;
+    // Count all products for "All Products" link — no availability filter,
+    // consistent with how collection product counts are calculated (raw node count)
+    const totalProductCount = menuCollectionsData.allProducts.nodes.length;
 
     // Count discounted products for "SALE" link
     const discountCount = countDiscountedProducts(menuCollectionsData.allProducts.nodes as LightweightProduct[]);
@@ -298,7 +295,6 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
         menuCollections,
         totalCollections,
         totalProductCount,
-        isApproximateTotal,
         discountCount,
         popularSearchTerms,
         shippingConfig,
