@@ -165,7 +165,7 @@ const FALLBACK_SITE_SETTINGS = {
     announcementBanner: [],
     promotionalBannerOneMedia: undefined,
     promotionalBannerTwoMedia: undefined,
-    socialLinks: [],
+    socialLinks: FALLBACK_SOCIAL_LINKS,
     testimonials: [],
     faqItems: [
         {
@@ -954,6 +954,7 @@ export function parseSiteSettings(rawData: unknown): SiteSettings {
     const data = rawData as MetaobjectData;
 
     // Parse collections once and fall back to defaults if empty
+    const parsedSocialLinks = parseSocialLinks(data.socialLinksData);
     const parsedTestimonials = parseTestimonialsJson(data.testimonialsData);
     const parsedFaqItems = parseFaqItemsJson(data.faqItemsData);
     const parsedInstagramMedia = parseInstagramMedia(data.instagramMediaData);
@@ -1016,7 +1017,7 @@ export function parseSiteSettings(rawData: unknown): SiteSettings {
         promotionalBannerTwoMedia: parseHeroMedia(data.promotionalBannerTwoMedia),
 
         // Collections - parsers return [] when empty, components handle visibility
-        socialLinks: parseSocialLinks(data.socialLinksData),
+        socialLinks: parsedSocialLinks.length > 0 ? parsedSocialLinks : FALLBACK_SOCIAL_LINKS,
         testimonials: parsedTestimonials,
         faqItems: parsedFaqItems.length > 0 ? parsedFaqItems : DEFAULT_SITE_SETTINGS.faqItems,
         instagramMedia: parsedInstagramMedia,
