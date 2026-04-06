@@ -93,29 +93,7 @@ const FALLBACK_BRAND_WORDS: string[] = [
     "Premium"
 ];
 
-const FALLBACK_SOCIAL_LINKS: SocialLink[] = [
-    {
-        id: "social-instagram",
-        platform: "Instagram",
-        handle: "@yourstore",
-        url: "https://instagram.com/yourstore",
-        displayOrder: 1
-    },
-    {
-        id: "social-tiktok",
-        platform: "TikTok",
-        handle: "@yourstore",
-        url: "https://tiktok.com/@yourstore",
-        displayOrder: 2
-    },
-    {
-        id: "social-facebook",
-        platform: "Facebook",
-        handle: "/yourstore",
-        url: "https://facebook.com/yourstore",
-        displayOrder: 3
-    }
-];
+const FALLBACK_SOCIAL_LINKS: SocialLink[] = [];
 
 const FALLBACK_THEME_FONTS = {
     sans: "Inter",

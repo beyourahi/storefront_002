@@ -117,7 +117,16 @@ export function getSeoDefaults(
     const themeColor = toHex(themeConfig?.colors.primary ?? "") ?? "#000000";
     const media = getDefaultOgImage(siteSettings);
 
-    return {brandName, description, siteUrl, themeColor, media};
+    return {
+        brandName,
+        description,
+        siteUrl,
+        themeColor,
+        media,
+        ogType: "website" as const,
+        ogSiteName: brandName,
+        twitterCard: "summary_large_image" as const
+    };
 }
 
 /**
@@ -127,16 +136,21 @@ export function getSeoDefaults(
  */
 export function buildCanonicalUrl(path: string, siteUrl: string = SEO_CONFIG.siteUrl): string {
     const cleanPath = path.startsWith("/") ? path : `/${path}`;
-    if (!siteUrl) return cleanPath;
+    if (!siteUrl) {
+        // siteUrl not configured — returning path-only canonical
+        // Set website_url in site_settings metaobject to generate absolute URLs
+        if (typeof console !== "undefined") console.warn("[SEO] buildCanonicalUrl: siteUrl is empty, returning path-only URL. Configure website_url in site_settings.");
+        return cleanPath;
+    }
     return `${siteUrl}${cleanPath}`;
 }
 
 /**
  * Truncate description to SEO-friendly length
  * @param text - Text to truncate
- * @param maxLength - Maximum length (default 155 for meta descriptions)
+ * @param maxLength - Maximum length (default 152 for meta descriptions — leaves headroom for "..." and display variance)
  */
-export function truncateDescription(text: string | null | undefined, maxLength = 155): string {
+export function truncateDescription(text: string | null | undefined, maxLength = 152): string {
     if (!text) return "";
     if (text.length <= maxLength) return text;
     // Truncate at word boundary
@@ -218,6 +232,7 @@ export function generateWebsiteSchema(
 
 /**
  * Generate Product schema for product pages
+ * @param siteUrl - Optional absolute site URL for generating absolute offer URLs (e.g. https://example.com)
  */
 export function generateProductSchema(
     product: {
@@ -232,7 +247,8 @@ export function generateProductSchema(
         price?: {amount: string; currencyCode: string};
         compareAtPrice?: {amount: string; currencyCode: string} | null;
         availableForSale?: boolean;
-    } | null
+    } | null,
+    siteUrl?: string
 ): JsonLdSchema {
     const images = product.images?.nodes?.map(img => img.url) || [];
 
@@ -252,7 +268,7 @@ export function generateProductSchema(
         offers: variant?.price
             ? {
                   "@type": "Offer",
-                  url: buildCanonicalUrl(`/products/${product.handle}`),
+                  url: buildCanonicalUrl(`/products/${product.handle}`, siteUrl),
                   priceCurrency: variant.price.currencyCode,
                   price: formatSchemaPrice(variant.price.amount),
                   availability: variant.availableForSale
@@ -266,6 +282,7 @@ export function generateProductSchema(
 
 /**
  * Generate ItemList schema for collection pages
+ * @param siteUrl - Optional absolute site URL for generating absolute item URLs (e.g. https://example.com)
  */
 export function generateCollectionSchema(
     collection: {
@@ -276,7 +293,8 @@ export function generateCollectionSchema(
     products?: Array<{
         title: string;
         handle: string;
-    }> | null
+    }> | null,
+    siteUrl?: string
 ): JsonLdSchema {
     return {
         "@context": "https://schema.org",
@@ -287,7 +305,7 @@ export function generateCollectionSchema(
         itemListElement: products?.slice(0, 20).map((product, index) => ({
             "@type": "ListItem" as const,
             position: index + 1,
-            url: buildCanonicalUrl(`/products/${product.handle}`),
+            url: buildCanonicalUrl(`/products/${product.handle}`, siteUrl),
             name: product.title
         }))
     };
@@ -332,7 +350,7 @@ export function generateBlogPostingSchema(
         publisher: {
             "@type": "Organization",
             name: siteName,
-            url: SEO_CONFIG.siteUrl
+            ...(SEO_CONFIG.siteUrl ? {url: SEO_CONFIG.siteUrl} : {})
         },
         mainEntityOfPage: {
             "@type": "WebPage",
@@ -399,4 +417,26 @@ export function getDefaultOgImage(
     }
 
     return undefined;
+}
+
+/**
+ * Build meta array for static marketing pages (FAQ, Contact, Gallery, etc.)
+ * Returns title with brand suffix + robots:index,follow
+ */
+export function buildStaticPageMeta(label: string, brand: string): Array<Record<string, string>> {
+    return [
+        {title: `${label} | ${brand}`},
+        {name: "robots", content: "index, follow"}
+    ];
+}
+
+/**
+ * Build meta array for private account pages (should not be indexed)
+ * Returns title + robots:noindex,nofollow
+ */
+export function getAccountMeta(label: string): Array<Record<string, string>> {
+    return [
+        {title: label},
+        {name: "robots", content: "noindex, nofollow"}
+    ];
 }
