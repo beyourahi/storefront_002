@@ -1045,15 +1045,15 @@ body {
     /* shadcn/ui leading-none overrides — prevents text clipping on multi-line content */
     [data-slot="card-title"],
     .card-title {
-        line-height: var(--leading-snug, 1.375);
+        line-height: 1.375; /* leading-snug */
     }
 
     [data-slot="label"] {
-        line-height: var(--leading-normal, 1.5);
+        line-height: 1.5; /* leading-normal */
     }
 
     [data-slot="dialog-title"] {
-        line-height: var(--leading-snug, 1.375);
+        line-height: 1.375; /* leading-snug */
     }
 }
 
@@ -1491,7 +1491,6 @@ select:not(:disabled):not(:focus):hover {
     font-size: 1.0625rem;
     line-height: 1.8;
     overflow-wrap: break-word;
-    word-wrap: break-word;
 }
 
 /* ==========================================
