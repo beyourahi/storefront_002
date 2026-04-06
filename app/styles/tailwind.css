@@ -1485,7 +1485,9 @@ select:not(:disabled):not(:focus):hover {
    Shared typographic foundation for long-form content
    ========================================== */
 
-.prose-content {
+.prose-content,
+.policy-content,
+.article-content {
     font-size: 1.0625rem;
     line-height: 1.8;
     overflow-wrap: break-word;
@@ -1498,11 +1500,6 @@ select:not(:disabled):not(:focus):hover {
    ========================================== */
 
 .policy-content {
-    /* Base typography — shared with .prose-content */
-    font-size: 1.0625rem;
-    line-height: 1.8;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
     @apply text-foreground leading-relaxed;
     /* Prevent long words/URLs from causing horizontal overflow at 320px */
     word-break: break-word;
@@ -1937,11 +1934,6 @@ select:not(:disabled):not(:focus):hover {
    ========================================== */
 
 .article-content {
-    /* Base typography — shared with .prose-content */
-    font-size: 1.0625rem;
-    line-height: 1.8;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
     color: oklch(0.15 0 0 / 0.8); /* foreground/80 */
 }
 
