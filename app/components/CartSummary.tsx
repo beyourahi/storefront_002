@@ -160,7 +160,7 @@ export function CartSummary({cart, layout, isLoggedIn, hasStoreCredit, shippingC
         return (
             <div className="shrink-0 px-3 sm:px-5 py-2.5 sm:py-3 space-y-2 border-t border-primary-foreground/10">
                 {/* Free Shipping Progress - compact version */}
-                {shippingConfig && <FreeShippingProgress cart={cart} shippingConfig={shippingConfig} isPage={isPage} />}
+                {shippingConfig?.freeShippingThreshold && <FreeShippingProgress cart={cart} shippingConfig={shippingConfig} isPage={isPage} />}
 
                 {/* Order Note Section - compact */}
                 <CartOrderNote note={cart?.note} isPage={false} />
@@ -187,7 +187,7 @@ export function CartSummary({cart, layout, isLoggedIn, hasStoreCredit, shippingC
     return (
         <div className="space-y-2.5 sm:space-y-3 rounded-xl border bg-card p-3 sm:p-4 shadow-sm">
             {/* Free Shipping Progress */}
-            {shippingConfig && <FreeShippingProgress cart={cart} shippingConfig={shippingConfig} isPage={isPage} />}
+            {shippingConfig?.freeShippingThreshold && <FreeShippingProgress cart={cart} shippingConfig={shippingConfig} isPage={isPage} />}
 
             {/* Order Note Section */}
             <CartOrderNote note={cart?.note} isPage={true} />
