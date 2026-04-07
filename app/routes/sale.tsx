@@ -49,9 +49,10 @@ import {CollectionPageLayout, useGridColumns, useLayoutMode, getGridClassName} f
 import {AnimatedSection} from "~/components/AnimatedSection";
 import type {CollectionWithCount} from "~/components/CollectionSidebar";
 import {filterAndSortDiscountedProducts, type DiscountedProduct, type RawDiscountProduct} from "~/lib/discounts";
-import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
+import {buildCanonicalUrl, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 
 export const meta: Route.MetaFunction = ({data, matches}) => {
+    const brandName = getBrandNameFromMatches(matches);
     const siteUrl = getSiteUrlFromMatches(matches);
     const maxDiscount = data?.maxDiscount ?? 0;
     const totalCount = data?.totalCount ?? 0;
@@ -65,6 +66,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     return (
         getSeoMeta({
             title,
+            titleTemplate: `%s | ${brandName}`,
             description,
             url: buildCanonicalUrl("/sale", siteUrl)
         }) ?? []

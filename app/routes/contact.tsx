@@ -60,6 +60,7 @@ export const meta: Route.MetaFunction = ({matches}) => {
     return (
         getSeoMeta({
             title: "Contact Us",
+            titleTemplate: `%s | ${brandName}`,
             description: `Get in touch with ${brandName}. Find our contact information, business hours, location, and social media links.`,
             url: buildCanonicalUrl("/contact", siteUrl)
         }) ?? []
@@ -83,8 +84,8 @@ export default function Contact() {
                             <div className="grid gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-16 items-end">
                             {/* Large Title */}
                                 <div>
-                                    <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary leading-none">
-                                        Get in
+                                    <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary leading-tight">
+                                        Get in{" "}
                                         <br />
                                         Touch
                                     </h1>

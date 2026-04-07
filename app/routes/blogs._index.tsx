@@ -83,6 +83,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     return (
         getSeoMeta({
             title: pageTitle,
+            titleTemplate: `%s | ${brandName}`,
             description: pageDescription,
             url: buildCanonicalUrl("/blogs", siteUrl),
             media: featuredArticle?.image?.url
@@ -187,7 +188,7 @@ export default function Blogs({loaderData}: Route.ComponentProps) {
                      pt-(--page-breathing-room): Breathing room from fixed header (24px → 64px) */}
             <AnimatedSection animation="hero" threshold={0.1}>
                 <header className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-end pt-(--page-breathing-room) pb-6 sm:pb-8 md:pb-12">
-                    <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary leading-none">
+                    <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary leading-tight">
                         {blogPageHeading}
                     </h1>
                     <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-primary leading-relaxed max-w-xl">

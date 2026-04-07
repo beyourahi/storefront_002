@@ -83,6 +83,7 @@ import {
     type StoreCreditTransaction
 } from "~/graphql/customer-account/StoreCreditQueries";
 import {useSectionHeadings} from "~/lib/site-content-context";
+import {getAccountMeta} from "~/lib/seo";
 
 const FALLBACK_ACCOUNT_CONTENT = {
     greetingMorning: "Good morning, {name}",
@@ -121,7 +122,7 @@ const FALLBACK_ACCOUNT_CONTENT = {
 } as const;
 
 export const meta: Route.MetaFunction = () => {
-    return [{title: "Account Dashboard"}];
+    return getAccountMeta("Account Dashboard");
 };
 
 export async function loader({context, request}: Route.LoaderArgs) {

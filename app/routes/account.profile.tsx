@@ -47,6 +47,7 @@ import {
     useOutletContext
 } from "react-router";
 import type {Route} from "./+types/account.profile";
+import {getAccountMeta} from "~/lib/seo";
 import {Input} from "~/components/ui/input";
 import {Label} from "~/components/ui/label";
 import {Button} from "~/components/ui/button";
@@ -128,7 +129,7 @@ export type ActionResponse = {
 // =============================================================================
 
 export const meta: Route.MetaFunction = () => {
-    return [{title: "Account Details"}];
+    return getAccountMeta("Profile");
 };
 
 /**

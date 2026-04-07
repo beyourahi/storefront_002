@@ -95,6 +95,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     return (
         getSeoMeta({
             title: policy.title,
+            titleTemplate: `%s | ${brandName}`,
             description,
             url: buildCanonicalUrl(`/policies/${policy.handle}`, siteUrl)
         }) ?? []
@@ -143,7 +144,7 @@ export default function Policy() {
                             <div className="grid gap-8 sm:gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
                                 {/* Sticky Policy Heading */}
                                 <div className="lg:sticky lg:top-24 lg:self-start">
-                                    <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary-foreground leading-none">
+                                    <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary-foreground leading-tight">
                                         {policy.title.split(" ").slice(0, -1).join(" ")}
                                         <br />
                                         {policy.title.split(" ").slice(-1)[0]}

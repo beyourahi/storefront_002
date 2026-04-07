@@ -87,7 +87,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     const title = article.seo?.title || article.title;
     const description = article.seo?.description || truncateDescription(article.excerpt);
 
-    return (
+    const baseMeta =
         getSeoMeta({
             title,
             description,
@@ -102,8 +102,15 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
                   }
                 : undefined,
             jsonLd: generateBlogPostingSchema(article, blogHandle || "news") as any
-        }) ?? []
-    );
+        }) ?? [];
+
+    // Article-specific Open Graph tags for richer social sharing
+    const articleMeta = [
+        ...(article?.publishedAt ? [{property: "og:published_time", content: article.publishedAt}] : []),
+        ...(article?.author?.name ? [{property: "og:article:author", content: article.author.name}] : [])
+    ];
+
+    return [...baseMeta, ...articleMeta];
 };
 
 export async function loader(args: Route.LoaderArgs) {

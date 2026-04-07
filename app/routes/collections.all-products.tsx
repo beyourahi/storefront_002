@@ -60,15 +60,17 @@ import {
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
 import type {CollectionItemFragment} from "storefrontapi.generated";
 import type {ProductSortKeys} from "@shopify/hydrogen/storefront-api-types";
-import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
+import {buildCanonicalUrl, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 
 export const meta: Route.MetaFunction = ({data, matches}) => {
+    const brandName = getBrandNameFromMatches(matches);
     const siteUrl = getSiteUrlFromMatches(matches);
     const productCount = data && "totalProductCount" in data ? (data.totalProductCount ?? 0) : 0;
 
     return (
         getSeoMeta({
             title: "All Products",
+            titleTemplate: `%s | ${brandName}`,
             description:
                 productCount > 0
                     ? `Browse our complete collection of ${productCount} handcrafted products.`

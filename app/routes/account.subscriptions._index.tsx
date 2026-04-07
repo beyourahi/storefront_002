@@ -23,6 +23,7 @@
 
 import {data as remixData, Link, useLoaderData} from "react-router";
 import type {Route} from "./+types/account.subscriptions._index";
+import {getAccountMeta} from "~/lib/seo";
 import {Image} from "@shopify/hydrogen";
 import {Money} from "~/components/Money";
 import {AnimatedSection} from "~/components/AnimatedSection";
@@ -42,7 +43,7 @@ import {Button} from "~/components/ui/button";
 import {RefreshCwIcon, ArrowRightIcon, ShoppingBagIcon} from "lucide-react";
 
 export const meta: Route.MetaFunction = () => {
-    return [{title: "Subscriptions"}];
+    return getAccountMeta("Subscriptions");
 };
 
 export async function loader({context}: Route.LoaderArgs) {

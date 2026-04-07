@@ -66,6 +66,7 @@ export const meta: Route.MetaFunction = ({matches}) => {
     return (
         getSeoMeta({
             title: "Frequently Asked Questions",
+            titleTemplate: `%s | ${brandName}`,
             description: `Find answers to frequently asked questions about orders, shipping, returns, products, and more at ${brandName}.`,
             url: buildCanonicalUrl("/faq", siteUrl),
             jsonLd: faqSchema as any
@@ -89,8 +90,8 @@ export default function FAQ() {
                         <div className="grid gap-8 sm:gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16">
                             {/* Sticky FAQ Heading */}
                             <div className="lg:sticky lg:top-32 lg:self-start">
-                                <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary-foreground leading-none">
-                                    Frequently Asked
+                                <h1 className="font-serif text-xl md:text-3xl lg:text-4xl font-medium text-primary-foreground leading-tight">
+                                    Frequently Asked{" "}
                                     <br />
                                     Questions
                                 </h1>

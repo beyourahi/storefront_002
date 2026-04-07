@@ -123,7 +123,8 @@ import {
 import type {CuratedProductFragment, ExploreCollectionFragment} from "storefrontapi.generated";
 import {
     getSeoDefaults,
-    generateOrganizationSchema
+    generateOrganizationSchema,
+    generateWebsiteSchema
 } from "~/lib/seo";
 import {useTestimonials, useInstagramMedia, useFaqItems, usePromotionalBanners} from "~/lib/site-content-context";
 import {useWishlist} from "~/lib/wishlist-context";
@@ -145,6 +146,7 @@ export const meta: Route.MetaFunction = ({matches}) => {
     const seoDefaults = getSeoDefaults(rootData?.siteContent?.siteSettings, rootData?.siteContent?.themeConfig);
     const socialLinks = rootData?.siteContent?.siteSettings?.socialLinks;
     const organizationSchema = generateOrganizationSchema(rootData?.siteContent?.siteSettings, socialLinks);
+    const websiteSchema = generateWebsiteSchema(rootData?.siteContent?.siteSettings);
 
     return (
         getSeoMeta({
@@ -153,7 +155,7 @@ export const meta: Route.MetaFunction = ({matches}) => {
             description: seoDefaults.description,
             url: seoDefaults.siteUrl,
             media: seoDefaults.media,
-            jsonLd: organizationSchema as any
+            jsonLd: [organizationSchema, websiteSchema] as any
         }) ?? []
     );
 };

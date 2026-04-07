@@ -52,6 +52,7 @@ import {cn} from "~/lib/utils";
 import {getOrderStatusVariant, formatOrderStatus} from "~/lib/order-status";
 import {useMemo} from "react";
 import {STORE_FORMAT_LOCALE} from "~/lib/store-locale";
+import {getAccountMeta} from "~/lib/seo";
 
 const FALLBACK_ACCOUNT_CONTENT = {
     emptyNoOrdersHeading: "No orders yet",
@@ -170,7 +171,7 @@ function convertLineItemToOrderHistoryProduct(
 // =============================================================================
 
 export const meta: Route.MetaFunction = () => {
-    return [{title: "Orders"}];
+    return getAccountMeta("Orders");
 };
 
 // =============================================================================

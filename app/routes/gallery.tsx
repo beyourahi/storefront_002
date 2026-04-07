@@ -51,10 +51,11 @@ import {AnimatedSection} from "~/components/AnimatedSection";
 import {GalleryGrid} from "~/components/gallery/GalleryGrid";
 import {transformToGalleryImages} from "~/lib/gallery";
 import type {GalleryImageData, GalleryPageInfo} from "~/lib/gallery";
-import {buildCanonicalUrl, getSiteUrlFromMatches} from "~/lib/seo";
+import {buildCanonicalUrl, getBrandNameFromMatches, getSiteUrlFromMatches} from "~/lib/seo";
 import {useSiteSettings} from "~/lib/site-content-context";
 
 export const meta: Route.MetaFunction = ({matches}) => {
+    const brandName = getBrandNameFromMatches(matches);
     const siteUrl = getSiteUrlFromMatches(matches);
     // Get gallery page settings from root loader siteSettings
     const rootMatch = matches.find(m => m?.id === "root");
@@ -69,6 +70,7 @@ export const meta: Route.MetaFunction = ({matches}) => {
     return (
         getSeoMeta({
             title: pageTitle,
+            titleTemplate: `%s | ${brandName}`,
             description: pageDescription,
             url: buildCanonicalUrl("/gallery", siteUrl)
         }) ?? []

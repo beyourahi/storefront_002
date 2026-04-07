@@ -111,16 +111,7 @@ export const meta: Route.MetaFunction = ({data}) => {
             media: seoDefaults.media
         }) ?? [];
 
-    return [
-        ...seoMeta,
-        // PWA meta tags
-        {name: "theme-color", content: seoDefaults.themeColor},
-        {name: "apple-mobile-web-app-capable", content: "yes"},
-        {name: "apple-mobile-web-app-status-bar-style", content: "default"},
-        {name: "apple-mobile-web-app-title", content: seoDefaults.brandName},
-        {name: "mobile-web-app-capable", content: "yes"},
-        {name: "format-detection", content: "telephone=no"}
-    ];
+    return [...seoMeta];
 };
 
 /**
@@ -441,15 +432,31 @@ export function Layout({children}: {children?: React.ReactNode}) {
     const data = useRouteLoaderData<RootLoader>("root");
     const generatedTheme = data?.generatedTheme;
 
+    // Compute SEO defaults in Layout so PWA meta tags are rendered as static JSX in <head>.
+    // React Router 7 replaces ALL parent meta() tags when a child route exports meta() —
+    // placing PWA tags here as static JSX ensures they survive child route meta overrides.
+    const layoutSeoDefaults = getSeoDefaults(
+        data?.siteContent?.siteSettings,
+        data?.siteContent?.themeConfig
+    );
+
     return (
         <html lang={STORE_LANGUAGE_CODE.toLowerCase()}>
             <head>
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width,initial-scale=1" />
+                {/* PWA meta tags — static JSX, not in meta() so child routes cannot replace them */}
+                <meta name="theme-color" content={layoutSeoDefaults.themeColor} />
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+                <meta name="apple-mobile-web-app-title" content={layoutSeoDefaults.brandName} />
+                <meta name="mobile-web-app-capable" content="yes" />
+                <meta name="format-detection" content="telephone=no" />
                 {/* PWA install capture - MUST be first script, loaded synchronously (no async/defer)
                     to catch beforeinstallprompt event before React hydration on mobile browsers */}
                 <script src="/pwa-install-capture.js" nonce={nonce} suppressHydrationWarning />
-                {/* Dynamic Google Fonts - loaded BEFORE Tailwind for font-family availability */}
+                {/* Dynamic Google Fonts — preload first, then stylesheet, loaded BEFORE Tailwind for font-family availability */}
+                {generatedTheme?.googleFontsUrl && <link rel="preload" as="style" href={generatedTheme.googleFontsUrl} />}
                 {generatedTheme?.googleFontsUrl && <link rel="stylesheet" href={generatedTheme.googleFontsUrl} />}
                 <link rel="stylesheet" href={tailwindCss}></link>
                 {/* Dynamic CSS variables - injected AFTER Tailwind to override defaults */}

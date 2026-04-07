@@ -127,6 +127,11 @@ ${generalDisallowRules({sitemapUrl, shopId})}
 
 User-agent: MJ12bot
 Crawl-Delay: 10
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkout
+Disallow: /carts
 
 User-agent: Pinterest
 Crawl-delay: 1
@@ -154,6 +159,7 @@ Disallow: /checkout
 ${shopId ? `Disallow: /${shopId}/checkouts` : ""}
 ${shopId ? `Disallow: /${shopId}/orders` : ""}
 Disallow: /carts
+Allow: /account/wishlist
 Disallow: /account
 Disallow: /collections/*sort_by*
 Disallow: /*/collections/*sort_by*

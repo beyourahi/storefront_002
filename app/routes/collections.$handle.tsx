@@ -87,6 +87,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     return (
         getSeoMeta({
             title,
+            titleTemplate: `%s | ${brandName}`,
             description,
             url: buildCanonicalUrl(`/collections/${collection.handle}`, siteUrl),
             media: collection.image?.url
