@@ -87,6 +87,9 @@ type WishlistSortOption = "date-newest" | "date-oldest" | "price-asc" | "price-d
 // META & LOADER
 // =============================================================================
 
+// Intentionally indexable: /account/wishlist is a publicly accessible route (no auth required)
+// with full SEO investment. robots.txt has an explicit Allow:/account/wishlist above
+// Disallow:/account so crawlers can reach shareable wishlist URLs. Do NOT add noindex here.
 export const meta: Route.MetaFunction = ({matches}) => {
     const siteUrl = getSiteUrlFromMatches(matches);
     return (
