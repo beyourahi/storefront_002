@@ -242,7 +242,7 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                     {/* Text Content */}
                     <div className="flex flex-col mb-6 md:mb-8">
                         {/* Tagline */}
-                        <p className="font-sans text-[0.6875rem] sm:text-sm md:text-sm uppercase tracking-[0.2em] sm:tracking-[0.25em] text-light/90">
+                        <p className="font-sans text-xs sm:text-sm md:text-sm uppercase tracking-[0.2em] sm:tracking-[0.25em] text-light/90">
                             {heroTagline}
                         </p>
 
@@ -251,7 +251,7 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                              Allow text wrapping on mobile (no whitespace-nowrap)
                              whitespace-nowrap applied at sm+ where there's enough space
                              Extended breakpoints for large desktop (2xl) and ultrawide (3xl) */}
-                        <h1 className="font-serif text-light font-medium leading-[1.1] sm:leading-none my-3 sm:my-4 md:my-6 sm:whitespace-nowrap" style={{fontSize: "clamp(1.5rem, 3.5vw, 4.5rem)"}}>
+                        <h1 className="font-serif text-light font-medium leading-[1.1] sm:leading-tight my-3 sm:my-4 md:my-6 sm:whitespace-nowrap" style={{fontSize: "clamp(1.5rem, 3.5vw, 4.5rem)"}}>
                             {heroHeading}
                         </h1>
 

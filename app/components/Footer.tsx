@@ -124,7 +124,7 @@ function FooterLogo() {
         <NavLink to="/" prefetch="viewport" className="block motion-link hover:opacity-80 hover:no-underline cursor-pointer">
             {/* Responsive text sizing: text-4xl at 320px to prevent overflow,
                  scales progressively to text-[10rem] on ultrawide (3xl) screens */}
-            <span className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl 3xl:text-[10rem] font-normal tracking-wide uppercase">
+            <span className="font-serif text-fluid-display font-normal tracking-wide uppercase">
                 {brandName}
             </span>
         </NavLink>

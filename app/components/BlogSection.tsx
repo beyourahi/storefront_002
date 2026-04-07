@@ -425,7 +425,7 @@ function MobileArticleCard({article, index}: {article: HomepageArticle; index: n
                 {/* Content - clean, minimal */}
                 <div className="flex flex-col pt-3 sm:pt-4">
                     {article.blog.title && (
-                        <span className="text-[9px] sm:text-sm font-medium uppercase tracking-wider text-primary mb-1.5 sm:mb-2">
+                        <span className="text-xs sm:text-sm font-medium uppercase tracking-wider text-primary mb-1.5 sm:mb-2">
                             {article.blog.title}
                         </span>
                     )}

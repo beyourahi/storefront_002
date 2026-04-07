@@ -90,6 +90,9 @@ export function ProductTitle({
     // Get responsive font sizes
     const fontSizes = getFontSizes(gridColumns, variant, compactMode);
 
+    // PDP variant renders as h1 (primary heading on product detail page); all other variants use h2
+    const HeadingTag = variant === "pdp" ? "h1" : "h2";
+
     // Mobile hero uses serif font and different text colors (white on coral background)
     // Dark context mode also uses inverted colors (for dark backgrounds like cart sheet)
     const isMobileHero = variant === "mobile-hero";
@@ -104,18 +107,18 @@ export function ProductTitle({
     return (
         <div className={cn(className)}>
             {/* Primary title part */}
-            <h2
+            <HeadingTag
                 className={cn(
                     fontFamily,
                     "font-medium mb-0",
                     primaryColor,
                     fontSizes.primary,
                     primaryMargin,
-                    "leading-none"
+                    "leading-tight"
                 )}
             >
                 {primary}
-            </h2>
+            </HeadingTag>
 
             {/* Secondary title part (conditional) */}
             {secondary && (
@@ -184,7 +187,7 @@ function getFontSizes(
     // Secondary maintains ~1.6–2.0x ratio with primary for cohesive title treatment.
     if (variant === "pdp") {
         return {
-            primary: "text-3xl md:text-4xl xl:text-[2.75rem] 2xl:text-5xl",
+            primary: "text-3xl md:text-4xl xl:text-fluid-h1 2xl:text-5xl",
             secondary: "text-lg md:text-xl xl:text-2xl"
         };
     }

@@ -64,7 +64,7 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                 )}
 
                 {discountPercentage ? (
-                    <div className="absolute left-4 top-4 rounded-[var(--radius-pill-raw)] bg-background/92 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.28em] text-foreground backdrop-blur">
+                    <div className="absolute left-4 top-4 rounded-[var(--radius-pill-raw)] bg-background/92 px-4 py-2 text-xs font-medium uppercase tracking-[0.28em] text-foreground backdrop-blur">
                         Save {discountPercentage}%
                     </div>
                 ) : null}
@@ -73,12 +73,12 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
             <div className="flex flex-col justify-between gap-8 rounded-[var(--radius-2xl-raw)] bg-background/70 p-6 md:p-8">
                 <div className="space-y-5">
                     <div className="space-y-3">
-                        <p className="text-muted-foreground text-xs uppercase tracking-[0.4em]">Featured product</p>
-                        <h2 className="font-serif text-3xl leading-none uppercase sm:text-4xl lg:text-5xl">
+                        <p className="text-muted-foreground text-xs uppercase tracking-[0.32em]">Featured product</p>
+                        <h2 className="font-serif text-3xl leading-tight uppercase sm:text-4xl lg:text-5xl">
                             {primary}
                         </h2>
                         {secondary && (
-                            <p className="font-serif text-xl leading-none uppercase text-muted-foreground sm:text-2xl lg:text-3xl">
+                            <p className="font-serif text-xl leading-tight uppercase text-muted-foreground sm:text-2xl lg:text-3xl">
                                 {secondary}
                             </p>
                         )}

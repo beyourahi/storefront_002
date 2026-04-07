@@ -331,7 +331,7 @@ function SinglePriceSale({
 
             {/* Discount badge - "Save X%" with destructive variant */}
             {showBadge && discountPercentage > 0 && (
-                <Badge variant="destructive" className="w-fit text-[12px] sm:text-sm">
+                <Badge variant="destructive" className="w-fit text-xs sm:text-sm">
                     Save {discountPercentage}%
                 </Badge>
             )}
@@ -437,7 +437,7 @@ function PriceRangeSale({
 
             {/* "Up to X% off" badge */}
             {showBadge && maxDiscountPercentage > 0 && (
-                <Badge variant="destructive" className="w-fit text-[12px] sm:text-sm">
+                <Badge variant="destructive" className="w-fit text-xs sm:text-sm">
                     Up to {maxDiscountPercentage}% off
                 </Badge>
             )}
@@ -488,7 +488,7 @@ function PartialSale({
 
             {/* "On Sale" badge - generic, no specific % */}
             {showBadge && (
-                <Badge variant="secondary" className="w-fit text-[12px] sm:text-sm">
+                <Badge variant="secondary" className="w-fit text-xs sm:text-sm">
                     On Sale
                 </Badge>
             )}
