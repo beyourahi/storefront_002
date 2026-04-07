@@ -452,6 +452,11 @@ export function Layout({children}: {children?: React.ReactNode}) {
                 <meta name="apple-mobile-web-app-title" content={layoutSeoDefaults.brandName} />
                 <meta name="mobile-web-app-capable" content="yes" />
                 <meta name="format-detection" content="telephone=no" />
+                {/* OG + Twitter tags — static JSX so they survive child route meta() overrides (S-C3).
+                    og:type defaults to "website"; product/article routes emit their own type additionally. */}
+                <meta property="og:site_name" content={layoutSeoDefaults.ogSiteName} />
+                <meta property="og:type" content="website" />
+                <meta name="twitter:card" content="summary_large_image" />
                 {/* PWA install capture - MUST be first script, loaded synchronously (no async/defer)
                     to catch beforeinstallprompt event before React hydration on mobile browsers */}
                 <script src="/pwa-install-capture.js" nonce={nonce} suppressHydrationWarning />

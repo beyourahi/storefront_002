@@ -420,17 +420,6 @@ export function getDefaultOgImage(
 }
 
 /**
- * Build meta array for static marketing pages (FAQ, Contact, Gallery, etc.)
- * Returns title with brand suffix + robots:index,follow
- */
-export function buildStaticPageMeta(label: string, brand: string): Array<Record<string, string>> {
-    return [
-        {title: `${label} | ${brand}`},
-        {name: "robots", content: "index, follow"}
-    ];
-}
-
-/**
  * Build meta array for private account pages (should not be indexed)
  * Returns title + robots:noindex,nofollow
  */

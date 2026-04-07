@@ -116,7 +116,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
                       type: "image" as const
                   }
                 : undefined,
-            jsonLd: generateProductSchema(product, variant) as any
+            jsonLd: generateProductSchema(product, variant, siteUrl) as any
         }) ?? [];
 
     return seoMeta;

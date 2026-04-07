@@ -99,7 +99,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
                       type: "image" as const
                   }
                 : undefined,
-            jsonLd: generateCollectionSchema(collection, products) as any
+            jsonLd: generateCollectionSchema(collection, products, siteUrl) as any
         }) ?? []
     );
 };
