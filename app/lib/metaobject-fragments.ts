@@ -111,6 +111,7 @@ export const SITE_SETTINGS_FRAGMENT = `#graphql
               currencyCode
             }
           }
+          tags
           selectedOrFirstAvailableVariant(
             selectedOptions: []
             ignoreUnknownOptions: true
@@ -131,6 +132,25 @@ export const SITE_SETTINGS_FRAGMENT = `#graphql
               altText
               width
               height
+            }
+          }
+          variants(first: 100) {
+            nodes {
+              id
+              title
+              availableForSale
+              selectedOptions {
+                name
+                value
+              }
+              price {
+                amount
+                currencyCode
+              }
+              compareAtPrice {
+                amount
+                currencyCode
+              }
             }
           }
         }

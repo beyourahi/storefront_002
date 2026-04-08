@@ -499,7 +499,8 @@ function parseBrandWords(brandWordsField: MetaobjectField | undefined): string[]
 /**
  * Parse announcement banner texts from list of single line text
  * Shopify "List of single line text" field returns JSON array: ["text1", "text2", ...]
- * Returns empty array if field is empty or invalid — component hides when no texts exist
+ * Falls back to wrapping a plain string for stores using single_line_text_field instead.
+ * Returns empty array if field is empty — component hides when no texts exist
  */
 function parseAnnouncementTexts(announcementField: MetaobjectField | undefined): string[] {
     if (!announcementField?.value) {
@@ -517,7 +518,10 @@ function parseAnnouncementTexts(announcementField: MetaobjectField | undefined):
         }
         return [];
     } catch {
-        return [];
+        // Field is single_line_text_field (plain string) rather than list.single_line_text_field
+        // (JSON array). Wrap it so the banner renders regardless of which field type the store uses.
+        const text = announcementField.value.trim();
+        return text ? [text] : [];
     }
 }
 
@@ -568,6 +572,42 @@ function parseFeaturedProductSection(featuredProductField: MetaobjectField | und
           : null;
 
     const compareAtPrice = selectedVariant.compareAtPrice as Record<string, unknown> | undefined;
+
+    const rawPriceRange = reference.priceRange as Record<string, unknown> | undefined;
+    const rawMinPrice = rawPriceRange?.minVariantPrice as Record<string, unknown> | undefined;
+    const rawMaxPrice = rawPriceRange?.maxVariantPrice as Record<string, unknown> | undefined;
+    const priceRange = {
+        minVariantPrice: {
+            amount: (rawMinPrice?.amount as string | undefined) ?? (variantPrice.amount as string),
+            currencyCode: (rawMinPrice?.currencyCode as string | undefined) ?? (variantPrice.currencyCode as string)
+        },
+        maxVariantPrice: {
+            amount: (rawMaxPrice?.amount as string | undefined) ?? (variantPrice.amount as string),
+            currencyCode: (rawMaxPrice?.currencyCode as string | undefined) ?? (variantPrice.currencyCode as string)
+        }
+    };
+
+    const rawVariants = reference.variants as {nodes: Record<string, unknown>[]} | undefined;
+    const variantNodes = (rawVariants?.nodes ?? []).map(v => {
+        const vPrice = v.price as Record<string, unknown> | undefined;
+        const vCompareAt = v.compareAtPrice as Record<string, unknown> | undefined;
+        const vOptions = v.selectedOptions as Array<{name: string; value: string}> | undefined;
+        return {
+            id: v.id as string,
+            availableForSale: v.availableForSale as boolean,
+            title: v.title as string | undefined,
+            selectedOptions: vOptions,
+            price: {
+                amount: (vPrice?.amount as string) ?? "0",
+                currencyCode: (vPrice?.currencyCode as string) ?? (variantPrice.currencyCode as string)
+            },
+            compareAtPrice:
+                vCompareAt?.amount && vCompareAt.currencyCode
+                    ? {amount: vCompareAt.amount as string, currencyCode: vCompareAt.currencyCode as string}
+                    : null
+        };
+    });
+
     return {
         id: reference.id as string,
         handle: reference.handle as string,
@@ -575,7 +615,9 @@ function parseFeaturedProductSection(featuredProductField: MetaobjectField | und
         vendor: (reference.vendor as string | null) ?? "",
         description: (reference.description as string | null) ?? "",
         availableForSale: true,
+        tags: (reference.tags as string[] | null) ?? [],
         featuredImage,
+        priceRange,
         price: {
             amount: variantPrice.amount as string,
             currencyCode: variantPrice.currencyCode as string
@@ -586,7 +628,8 @@ function parseFeaturedProductSection(featuredProductField: MetaobjectField | und
                       amount: compareAtPrice.amount as string,
                       currencyCode: compareAtPrice.currencyCode as string
                   }
-                : null
+                : null,
+        variants: {nodes: variantNodes}
     };
 }
 

@@ -572,12 +572,17 @@ export interface FeaturedProductSection {
     vendor: string;
     description: string;
     availableForSale: boolean;
+    tags: string[];
     featuredImage: {
         url: string;
         altText?: string | null;
         width?: number | null;
         height?: number | null;
     } | null;
+    priceRange: {
+        minVariantPrice: { amount: string; currencyCode: string };
+        maxVariantPrice: { amount: string; currencyCode: string };
+    };
     price: {
         amount: string;
         currencyCode: string;
@@ -586,6 +591,16 @@ export interface FeaturedProductSection {
         amount: string;
         currencyCode: string;
     } | null;
+    variants: {
+        nodes: Array<{
+            id: string;
+            availableForSale: boolean;
+            title?: string;
+            selectedOptions?: Array<{ name: string; value: string }>;
+            price: { amount: string; currencyCode: string };
+            compareAtPrice?: { amount: string; currencyCode: string } | null;
+        }>;
+    };
 }
 
 /**
