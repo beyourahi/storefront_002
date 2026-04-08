@@ -73,7 +73,7 @@ Backend behavior, data flow, and Hydrogen conventions **must remain consistent**
 ```
 storefront_002/
 ├── app/
-│   ├── routes/              # 49 routes
+│   ├── routes/              # 50 routes
 │   ├── components/          # 121 components
 │   │   ├── ui/              # 27 shadcn
 │   │   ├── blog/            # 7 blog
