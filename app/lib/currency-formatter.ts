@@ -87,12 +87,16 @@ export class CurrencyFormatter {
             // Use narrowSymbol to display currency symbols (e.g., "৳69") instead of
             // ISO codes (e.g., "BDT 69") — ensures consistent symbol-based formatting
             // across all locales and currencies.
+            // Pin both min/max to the same value so fractional prices always show
+            // exactly 2 decimal places ("$12.50" not "$12.5") while integers stay
+            // clean ("$12" not "$12.00").
+            const isInteger = amount % 1 === 0;
             return new Intl.NumberFormat(DEFAULT_LOCALE, {
                 style: "currency",
                 currency: currencyCode,
                 currencyDisplay: "narrowSymbol",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
+                minimumFractionDigits: isInteger ? 0 : 2,
+                maximumFractionDigits: isInteger ? 0 : 2
             }).format(amount);
         } catch {
             return this.getFallbackFormat(amount, currencyCode);
@@ -181,7 +185,8 @@ export class CurrencyFormatter {
 
     private getFallbackFormat(amount: number, currencyCode: string): string {
         const symbol = CURRENCY_SYMBOLS[currencyCode] || currencyCode;
-        const formattedAmount = amount.toFixed(2);
+        const isInteger = amount % 1 === 0;
+        const formattedAmount = isInteger ? amount.toFixed(0) : amount.toFixed(2);
         return `${symbol}${formattedAmount}`;
     }
 }
