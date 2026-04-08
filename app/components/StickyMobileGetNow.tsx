@@ -51,7 +51,7 @@
  * - bg-primary text-primary-foreground
  * - Horizontal flex with space-between (text left, icon right)
  * - ChevronUp icon (size-6) on right
- * - No focus/active states (outline-none everywhere)
+ * - Focus: outline suppressed, white ring-offset on keyboard focus (:focus-visible)
  *
  * Transitions:
  * - translate-y-full when hidden (below screen)
@@ -205,8 +205,8 @@ export function StickyMobileGetNow({
                     "bg-primary text-primary-foreground",
                     // Typography
                     "text-lg font-medium",
-                    // Remove all focus/active states
-                    "outline-none focus:outline-none focus-visible:outline-none"
+                    // Suppress outline-based focus (handled by box-shadow ring below)
+                    "outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
                 )}
                 aria-label="Scroll to product purchase section"
             >
