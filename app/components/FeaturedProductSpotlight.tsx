@@ -75,11 +75,11 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                 <div className="space-y-5">
                     <div className="space-y-3">
                         <p className="text-muted-foreground text-xs uppercase tracking-[0.32em]">Featured product</p>
-                        <h2 className="font-serif text-3xl leading-tight uppercase sm:text-4xl lg:text-5xl">
+                        <h2 className="font-serif text-2xl leading-tight uppercase sm:text-3xl lg:text-4xl">
                             {primary}
                         </h2>
                         {secondary && (
-                            <p className="font-serif text-xl leading-tight uppercase text-muted-foreground sm:text-2xl lg:text-3xl">
+                            <p className="font-serif text-lg leading-tight uppercase text-muted-foreground sm:text-xl lg:text-2xl">
                                 {secondary}
                             </p>
                         )}
