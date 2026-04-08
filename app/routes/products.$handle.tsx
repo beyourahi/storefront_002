@@ -382,29 +382,33 @@ export default function Product() {
                     {/* Image Gallery + Product Info */}
                     <div className="flex-1 min-w-0">
                         <div className="grid md:grid-cols-2 gap-8 md:gap-12 xl:gap-14 2xl:gap-16">
-                            {/* Product Image Gallery - sticky for large screens only
-                                     Images remain fixed while product info scrolls, similar to collection sidebar.
-                                     Uses same breathing room calculation as sidebar for visual alignment.
-                                     When scrolled, adds +0.75rem offset to match header's pt-3 floating effect. */}
-                            <div
-                                className={cn(
-                                    "self-start md:sticky md:transition-[top] md:duration-300 md:ease-out",
-                                    isScrolled
-                                        ? "md:top-[calc(var(--total-header-height)+0.75rem+var(--page-breathing-room))]"
-                                        : "md:top-[calc(var(--total-header-height)+var(--page-breathing-room))]"
-                                )}
-                            >
+                            {/* Product Image Gallery - scrolls naturally so the user can browse all images.
+                                     self-start prevents the grid item from stretching to row height.
+                                     The gallery's stacked height (N × 4:5 images) defines the grid row height,
+                                     which in turn determines when the sticky details panel releases. */}
+                            <div className="self-start">
                                 <ProductImageGallery
                                     images={product.images.nodes}
                                     selectedVariantImage={selectedVariant?.image}
                                     media={product.media?.nodes}
                                 />
                             </div>
-                            {/* Product Info - scrolls naturally while images remain sticky
-                                     This creates the desired "sticky images, scrolling info" UX for large screens.
-                                     The product info (title, variants, description) flows with page scroll,
-                                     allowing users to read long descriptions without losing sight of the product image. */}
-                            <div className="space-y-6 animate-slide-left-fade" style={{animationDelay: "100ms"}}>
+                            {/* Product Info - sticky on md+ screens while the image gallery is in view.
+                                     Uses the same breathing-room calculation as the collection sidebar for
+                                     visual alignment. When scrolled, +0.75rem matches the header's floating offset.
+                                     self-start shrinks the element to its content height — required for sticky to
+                                     have room to travel. CSS sticky releases naturally when the parent grid's
+                                     bottom edge (= gallery bottom) clears the viewport sticky position, so the
+                                     panel scrolls away after all product images have been passed. */}
+                            <div
+                                className={cn(
+                                    "space-y-6 animate-slide-left-fade self-start md:sticky md:transition-[top] md:duration-300 md:ease-out",
+                                    isScrolled
+                                        ? "md:top-[calc(var(--total-header-height)+0.75rem+var(--page-breathing-room))]"
+                                        : "md:top-[calc(var(--total-header-height)+var(--page-breathing-room))]"
+                                )}
+                                style={{animationDelay: "100ms"}}
+                            >
                                 {/* Product Title and Discount Badge
                                          Title scales progressively: 30px → 36px → 44px → 48px */}
                                 <div className="space-y-3 mb-12 lg:mb-16 xl:mb-20 2xl:mb-24">
