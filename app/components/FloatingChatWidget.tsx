@@ -3,14 +3,12 @@
  *
  * @description
  * Renders a fixed-position column of chat buttons driven entirely by
- * `site_settings` metaobject fields.  When both fields are empty the
+ * `site_settings` metaobject fields. When both fields are empty the
  * component returns null and leaves no DOM trace.
  *
  * Messenger:
- *   - Injects the Facebook SDK once on mount (nonce-aware for Oxygen CSP).
- *   - Suppresses Meta's default bubble via `FB.CustomerChat.hide()` on the
- *     `customerchat.load` event so we own the button entirely.
- *   - Our button calls `window.FB?.CustomerChat.show()` on click.
+ *   - Redirects to https://m.me/<page_id> in a new tab (native Messenger app
+ *     on mobile, Messenger web on desktop). No SDK, no third-party script load.
  *
  * WhatsApp:
  *   - Simple anchor to `https://wa.me/<digits>?text=...`; opens native app
@@ -30,8 +28,6 @@
  *   z-50 (50) sits between NativeAppBanner (z-40) and OpenInAppButton (z-[9999]).
  */
 
-import {useEffect} from "react";
-import {useNonce} from "@shopify/hydrogen";
 import {useSiteSettings} from "~/lib/site-content-context";
 
 // =============================================================================
@@ -70,21 +66,8 @@ function MessengerIcon({className}: {className?: string}) {
 // COMPONENT
 // =============================================================================
 
-declare global {
-    interface Window {
-        FB?: {
-            CustomerChat: {
-                hide: () => void;
-                show: () => void;
-            };
-        };
-        fbAsyncInit?: () => void;
-    }
-}
-
 export function FloatingChatWidget() {
     const {messengerPageId, whatsappNumber} = useSiteSettings();
-    const nonce = useNonce();
 
     // Normalise phone: strip everything except digits and leading +
     const cleanPhone = whatsappNumber.replace(/[^\d+]/g, "");
@@ -95,109 +78,50 @@ export function FloatingChatWidget() {
     // Nothing to render → bail out entirely
     if (!hasMessenger && !hasWhatsApp) return null;
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-        if (!hasMessenger) return;
-
-        // Guard against double-injection (HMR / StrictMode)
-        if (document.getElementById("fb-jssdk")) return;
-
-        window.fbAsyncInit = function () {
-            if (!window.FB?.CustomerChat) return;
-            // Suppress Meta's default bubble after the plugin mounts
-            window.addEventListener(
-                "message",
-                function handler(e) {
-                    if (
-                        e.data &&
-                        typeof e.data === "string" &&
-                        e.data.includes("customerchat")
-                    ) {
-                        window.FB?.CustomerChat.hide();
-                        window.removeEventListener("message", handler);
-                    }
-                },
-                {once: false}
-            );
-        };
-
-        const script = document.createElement("script");
-        script.id = "fb-jssdk";
-        script.src = "https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js";
-        script.crossOrigin = "anonymous";
-        if (nonce) script.setAttribute("nonce", nonce);
-        script.async = true;
-        script.defer = true;
-        document.body.appendChild(script);
-
-        return () => {
-            // Clean up on unmount (dev HMR) — the guard above prevents re-init issues
-            const el = document.getElementById("fb-jssdk");
-            el?.parentNode?.removeChild(el);
-        };
-    }, [hasMessenger, messengerPageId, nonce]);
-
     return (
-        <>
-            {/* Hidden FB Customer Chat mount point — Meta SDK targets this div */}
-            {hasMessenger && (
-                <div id="fb-root" aria-hidden="true">
-                    {/* eslint-disable react/no-unknown-property */}
-                    <div
-                        className="fb-customerchat"
-                        // @ts-expect-error — non-standard FB SDK attributes read by Meta's script
-                        attribution="biz_inbox"
-                        page_id={messengerPageId}
-                        minimized="true"
-                    />
-                    {/* eslint-enable react/no-unknown-property */}
-                </div>
+        <div
+            className="fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] md:bottom-20 right-4 z-50 flex flex-col items-end gap-3"
+            aria-label="Chat support options"
+        >
+            {/* WhatsApp — renders above Messenger */}
+            {hasWhatsApp && (
+                <a
+                    href={`https://wa.me/${cleanPhone}?text=Hi%2C%20I%20need%20help`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Chat with us on WhatsApp"
+                    className={[
+                        "group flex h-[52px] w-[52px] items-center justify-center",
+                        "rounded-full shadow-lg transition-all duration-200",
+                        /* #25D366 on white ≈ 2:1 — WhatsApp brand standard */
+                        "bg-[#25D366] text-white",
+                        "hover:scale-110 hover:shadow-xl",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
+                    ].join(" ")}
+                >
+                    <WhatsAppIcon className="h-6 w-6" />
+                </a>
             )}
 
-            {/* Floating button column */}
-            <div
-                className="fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] md:bottom-20 right-4 z-50 flex flex-col items-end gap-3"
-                aria-label="Chat support options"
-            >
-                {/* WhatsApp — renders above Messenger */}
-                {hasWhatsApp && (
-                    <a
-                        href={`https://wa.me/${cleanPhone}?text=Hi%2C%20I%20need%20help`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Chat with us on WhatsApp"
-                        className={[
-                            "group flex h-[52px] w-[52px] items-center justify-center",
-                            "rounded-full shadow-lg transition-all duration-200",
-                            /* #25D366 on white ≈ 2:1 — WhatsApp brand standard */
-                            "bg-[#25D366] text-white",
-                            "hover:scale-110 hover:shadow-xl",
-                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
-                        ].join(" ")}
-                    >
-                        <WhatsAppIcon className="h-6 w-6" />
-                    </a>
-                )}
-
-                {/* Messenger */}
-                {hasMessenger && (
-                    <button
-                        type="button"
-                        aria-label="Chat with us on Messenger"
-                        onClick={() => window.FB?.CustomerChat.show()}
-                        className={[
-                            "group flex h-[52px] w-[52px] items-center justify-center",
-                            "rounded-full shadow-lg transition-all duration-200",
-                            /* #0084FF on white ≈ 3.65:1 — WCAG AA ✓ (UI component) */
-                            "bg-[#0084FF] text-white",
-                            "hover:scale-110 hover:shadow-xl",
-                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
-                        ].join(" ")}
-                    >
-                        <MessengerIcon className="h-6 w-6" />
-                    </button>
-                )}
-            </div>
-        </>
+            {/* Messenger — redirects to m.me/<page_id> in a new tab */}
+            {hasMessenger && (
+                <a
+                    href={`https://m.me/${messengerPageId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Chat with us on Messenger"
+                    className={[
+                        "group flex h-[52px] w-[52px] items-center justify-center",
+                        "rounded-full shadow-lg transition-all duration-200",
+                        /* #0084FF on white ≈ 3.65:1 — WCAG AA ✓ (UI component) */
+                        "bg-[#0084FF] text-white",
+                        "hover:scale-110 hover:shadow-xl",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
+                    ].join(" ")}
+                >
+                    <MessengerIcon className="h-6 w-6" />
+                </a>
+            )}
+        </div>
     );
 }
