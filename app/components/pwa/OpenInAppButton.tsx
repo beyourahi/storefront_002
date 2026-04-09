@@ -17,7 +17,7 @@ import {Button} from "~/components/ui/button";
 import {cn} from "~/lib/utils";
 import {usePwaInstall} from "~/hooks/usePwaInstall";
 import {IosInstallInstructions} from "./IosInstallInstructions";
-import {Download, Smartphone} from "lucide-react";
+import {Download} from "lucide-react";
 
 // =============================================================================
 // TYPES
@@ -47,7 +47,7 @@ interface OpenInAppButtonProps {
  * ```
  */
 export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
-    const {canInstall, isIOS, isStandalone, isAppDetectedAsInstalled, triggerInstall, appName, appIcon} = usePwaInstall();
+    const {canInstall, isIOS, triggerInstall, appName, appIcon} = usePwaInstall();
     const [showIosInstructions, setShowIosInstructions] = useState(false);
 
     // =============================================================================
@@ -82,37 +82,6 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
     // =============================================================================
     // RENDER
     // =============================================================================
-
-    /**
-     * Standalone mode rendering.
-     * - desktop-fixed: Hide completely (no floating indicator needed)
-     * - menu-item: Show "You're in the app" text indicator
-     */
-    if (isStandalone) {
-        // For desktop-fixed variant, hide completely in standalone (no need for floating indicator)
-        if (variant === "desktop-fixed") return null;
-
-        // For menu-item variant, show text indicator
-        return (
-            <div
-                className={cn("flex items-center gap-3 text-primary/60", "animate-slide-up-fade opacity-0")}
-                style={{animationDelay: "400ms", animationFillMode: "both"}}
-            >
-                <Smartphone className="size-5" />
-                <span className="text-lg font-medium">You&apos;re in the app</span>
-            </div>
-        );
-    }
-
-    /**
-     * Installability guard: only render when the PWA is actually installable.
-     * The button is meaningful when at least one of these is true:
-     * - canInstall: beforeinstallprompt fired (native install prompt available)
-     * - isIOS: iOS Safari detected (manual "Add to Home Screen" instructions available)
-     * - isAppDetectedAsInstalled: app was previously installed (deep-link back to PWA)
-     * Without any of these, the button has no actionable behavior and should not render.
-     */
-    if (!canInstall && !isIOS && !isAppDetectedAsInstalled) return null;
 
     const isFixed = variant === "desktop-fixed";
     const isMenuItem = variant === "menu-item";
