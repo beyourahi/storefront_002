@@ -17,13 +17,15 @@
  *     on mobile and WhatsApp Web on desktop.
  *
  * WCAG 2.1 AA:
- *   - WhatsApp  : oklch(0.35 0.15 150)  on white → ≥ 3:1 (UI component)
- *   - Messenger : oklch(0.38 0.18 260)  on white → ≥ 3:1 (UI component)
+ *   - WhatsApp  : #25D366 on white → ~2:1 (brand standard; below 3:1 AA for UI, accepted trade-off)
+ *   - Messenger : #0084FF on white → ~3.65:1 (WCAG AA ✓ for UI component)
  *   - Both touch targets: min 44 × 44 px
  *   - aria-label on every interactive element
  *
  * @positioning
- *   fixed bottom-6 right-4 z-50 — stacked column, WhatsApp above Messenger.
+ *   fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] right-4 z-50
+ *   Mirrors OpenInAppButton's safe-area-aware bottom offset, adds 3.5rem clearance for
+ *   its height so the chat column sits visually above it on all screen sizes.
  *   z-50 (50) sits between NativeAppBanner (z-40) and OpenInAppButton (z-[9999]).
  */
 
@@ -153,7 +155,7 @@ export function FloatingChatWidget() {
 
             {/* Floating button column */}
             <div
-                className="fixed bottom-6 right-4 z-50 flex flex-col items-end gap-3"
+                className="fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] right-4 z-50 flex flex-col items-end gap-3"
                 aria-label="Chat support options"
             >
                 {/* WhatsApp — renders above Messenger */}
@@ -166,8 +168,8 @@ export function FloatingChatWidget() {
                         className={[
                             "group flex h-[52px] w-[52px] items-center justify-center",
                             "rounded-full shadow-lg transition-all duration-200",
-                            /* oklch(0.35 0.15 150) on white ≈ 5.1:1 — WCAG AA ✓ */
-                            "bg-[oklch(0.35_0.15_150)] text-white",
+                            /* #25D366 on white ≈ 2:1 — WhatsApp brand standard */
+                            "bg-[#25D366] text-white",
                             "hover:scale-110 hover:shadow-xl",
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
                         ].join(" ")}
@@ -185,8 +187,8 @@ export function FloatingChatWidget() {
                         className={[
                             "group flex h-[52px] w-[52px] items-center justify-center",
                             "rounded-full shadow-lg transition-all duration-200",
-                            /* oklch(0.38 0.18 260) on white ≈ 4.8:1 — WCAG AA ✓ */
-                            "bg-[oklch(0.38_0.18_260)] text-white",
+                            /* #0084FF on white ≈ 3.65:1 — WCAG AA ✓ (UI component) */
+                            "bg-[#0084FF] text-white",
                             "hover:scale-110 hover:shadow-xl",
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
                         ].join(" ")}
