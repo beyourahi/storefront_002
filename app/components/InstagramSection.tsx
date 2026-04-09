@@ -61,13 +61,9 @@ export function InstagramSection({media}: InstagramSectionProps) {
 
     // Find Instagram link from social links
     const instagramLink = socialLinks.find(link => link.platform.toLowerCase() === "instagram");
-    const instagramUrl = instagramLink?.url || "https://instagram.com";
+    const instagramUrl = instagramLink?.url;
     const instagramHandle = instagramLink?.handle || "";
-
-    // Detect generic platform URLs that don't point to a real brand profile.
-    // When no brand profile is configured, hide the follow CTA to avoid
-    // linking users to the Instagram homepage or a placeholder URL.
-    const isGenericInstagramUrl = /^https?:\/\/(www\.)?instagram\.com\/?$/i.test(instagramUrl);
+    const hasRealProfile = !!instagramUrl && !/^https?:\/\/(www\.)?instagram\.com\/?$/i.test(instagramUrl);
 
     // Return null if no media
     if (!media || media.length === 0) {
@@ -77,27 +73,21 @@ export function InstagramSection({media}: InstagramSectionProps) {
     return (
         <section className="-mx-2 md:-mx-4 bg-background py-10 sm:py-12 md:py-16" aria-label="Instagram gallery">
             {/* Header */}
-            <div className="mb-6 flex items-center justify-center gap-2 px-4 sm:mb-8">
+            <div className="mb-6 flex items-center justify-between px-4 sm:mb-8">
                 <h2 className="m-0 font-serif text-xl font-normal text-foreground sm:text-2xl md:text-3xl">
                     {instagramTitle}
-                    {/* Embed the handle inline in the heading so the brand name is part of the title,
-                        linking directly to the Instagram profile. Only shown when a real profile URL
-                        is configured (not a generic instagram.com homepage). */}
-                    {!isGenericInstagramUrl && instagramHandle && (
-                        <>
-                            {" "}
-                            <a
-                                href={instagramUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="font-serif text-primary underline decoration-1 underline-offset-4 motion-interactive hover:opacity-70 hover:no-underline"
-                                aria-label={`Follow ${instagramHandle} on Instagram`}
-                            >
-                                {instagramHandle}
-                            </a>
-                        </>
-                    )}
                 </h2>
+                {hasRealProfile && instagramHandle && (
+                    <a
+                        href={instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 text-sm text-muted-foreground motion-interactive hover:text-foreground"
+                        aria-label={`Follow ${instagramHandle} on Instagram`}
+                    >
+                        {instagramHandle}
+                    </a>
+                )}
             </div>
 
             {/* Carousel - edge-to-edge with no gaps, auto-scrolling */}
@@ -116,7 +106,7 @@ export function InstagramSection({media}: InstagramSectionProps) {
                             key={item.id}
                             className="pl-0 basis-[80%] sm:basis-[45%] lg:basis-[32%] xl:basis-[27%] 2xl:basis-[22%]"
                         >
-                            <InstagramMediaCard media={item} index={index} instagramUrl={instagramUrl} isGeneric={isGenericInstagramUrl} />
+                            <InstagramMediaCard media={item} index={index} instagramUrl={instagramUrl} hasRealProfile={hasRealProfile} />
                         </CarouselItem>
                     ))}
                 </CarouselContent>
@@ -133,12 +123,12 @@ function InstagramMediaCard({
     media,
     index,
     instagramUrl,
-    isGeneric
+    hasRealProfile
 }: {
     media: InstagramMedia;
     index: number;
-    instagramUrl: string;
-    isGeneric: boolean;
+    instagramUrl: string | undefined;
+    hasRealProfile: boolean;
 }) {
     const isVideo = media.mediaType === "video";
 
@@ -155,14 +145,14 @@ function InstagramMediaCard({
                             width={400}
                             height={400}
                             loading="lazy"
-                            className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-[1.03]"
+                            className="absolute inset-0 size-full rounded-none object-cover sleek product-image group-hover:scale-[1.03]"
                         />
                     ) : (
                         <video
                             src={media.url}
                             muted
                             playsInline
-                            className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-[1.03]"
+                            className="absolute inset-0 size-full rounded-none object-cover sleek product-image group-hover:scale-[1.03]"
                         />
                     )}
                     {/* Play icon indicator for videos */}
@@ -177,12 +167,12 @@ function InstagramMediaCard({
                     width={400}
                     height={400}
                     loading="lazy"
-                    className="absolute inset-0 size-full rounded-none object-cover motion-image group-hover:scale-[1.03]"
+                    className="absolute inset-0 size-full rounded-none object-cover sleek product-image group-hover:scale-[1.03]"
                 />
             )}
 
             {/* Hover Overlay — only show Instagram CTA when linked to a real profile */}
-            {!isGeneric && (
+            {hasRealProfile && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/0 motion-overlay group-hover:bg-black/40 group-active:bg-black/40">
                     <div className="flex flex-col items-center gap-2 opacity-0 motion-overlay group-hover:opacity-100 group-active:opacity-100">
                         <Instagram className="size-6 text-white sm:size-8" />
@@ -193,9 +183,7 @@ function InstagramMediaCard({
         </>
     );
 
-    // When the URL is a generic platform homepage, render as a non-clickable div
-    // so the gallery serves as a pure visual element without dead links
-    if (isGeneric) {
+    if (!hasRealProfile) {
         return (
             <div className="group relative block aspect-square overflow-hidden">
                 {mediaContent}
