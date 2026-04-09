@@ -642,6 +642,8 @@ export interface SiteSettings {
     // ─────────────────────────────────────────────────────────────────────────
     contactEmail: string;
     contactPhone: string;
+    messengerPageId: string;
+    whatsappNumber: string;
     businessHours: string;
     address: {
         street: string;

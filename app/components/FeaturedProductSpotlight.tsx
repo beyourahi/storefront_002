@@ -38,7 +38,7 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
     const {primary, secondary} = parseProductTitle(product.title);
 
     return (
-        <section className="grid gap-6 rounded-[var(--radius-3xl-raw)] border border-border/60 bg-card/60 p-4 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.45)] backdrop-blur md:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] md:p-6 lg:gap-8 lg:p-8">
+        <section className="grid gap-6 rounded-[var(--radius-3xl-raw)] border border-border/60 bg-card/60 p-3 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.45)] backdrop-blur md:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] md:p-5 lg:gap-8 lg:p-6">
             <Link
                 to={`/products/${product.handle}`}
                 prefetch="intent"
@@ -51,10 +51,10 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                             altText: displayImage.altText || product.title
                         }}
                         sizes="(min-width: 1280px) 42vw, (min-width: 768px) 50vw, 100vw"
-                        className="aspect-[4/5] h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        className="aspect-[4/5] md:aspect-[4/3.5] h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                 ) : (
-                    <div className="flex aspect-[4/5] items-center justify-center bg-gradient-to-br from-muted to-muted/30 px-10 text-center">
+                    <div className="flex aspect-[4/5] md:aspect-[4/3.5] items-center justify-center bg-gradient-to-br from-muted to-muted/30 px-10 text-center">
                         <div>
                             <p className="font-serif text-3xl uppercase md:text-4xl">Featured edit</p>
                             <p className="text-muted-foreground mt-3 text-xs uppercase tracking-[0.32em]">
@@ -71,7 +71,7 @@ export function FeaturedProductSpotlight({product}: {product: FeaturedProductSec
                 ) : null}
             </Link>
 
-            <div className="flex flex-col justify-between gap-8 rounded-[var(--radius-2xl-raw)] bg-background/70 p-6 md:p-8">
+            <div className="flex flex-col justify-between gap-6 rounded-[var(--radius-2xl-raw)] bg-background/70 p-5 md:p-6">
                 <div className="space-y-5">
                     <div className="space-y-3">
                         <p className="text-muted-foreground text-xs uppercase tracking-[0.32em]">Featured product</p>

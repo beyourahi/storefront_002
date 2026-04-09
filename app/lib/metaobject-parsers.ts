@@ -131,6 +131,8 @@ const FALLBACK_SITE_SETTINGS = {
     siteUrl: "",
     contactEmail: "",
     contactPhone: "",
+    messengerPageId: "",
+    whatsappNumber: "",
     businessHours: "",
     address: {street: "", city: "", state: "", zip: ""},
     ...FALLBACK_SECTION_HEADINGS,
@@ -1011,6 +1013,8 @@ export function parseSiteSettings(rawData: unknown): SiteSettings {
         // Contact Information
         contactEmail: data.contactEmail?.value || DEFAULT_SITE_SETTINGS.contactEmail,
         contactPhone: data.contactPhone?.value || DEFAULT_SITE_SETTINGS.contactPhone,
+        messengerPageId: data.messengerId?.value || DEFAULT_SITE_SETTINGS.messengerPageId,
+        whatsappNumber: data.whatsappNumber?.value || DEFAULT_SITE_SETTINGS.whatsappNumber,
         businessHours: data.businessHours?.value || DEFAULT_SITE_SETTINGS.businessHours,
         address: {
             street: data.streetAddress?.value || DEFAULT_SITE_SETTINGS.address.street,

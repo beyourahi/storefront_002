@@ -91,6 +91,7 @@ import {ServiceWorkerRegistration} from "~/components/ServiceWorkerRegistration"
 import {NetworkStatusIndicator} from "~/components/NetworkStatusIndicator";
 import {ServiceWorkerUpdateBanner} from "~/components/pwa/ServiceWorkerUpdateBanner";
 import {OpenInAppButton} from "~/components/pwa/OpenInAppButton";
+import {FloatingChatWidget} from "~/components/FloatingChatWidget";
 import {withTimeoutAndFallback, TIMEOUT_DEFAULTS} from "~/lib/promise-utils";
 
 export type RootLoader = typeof loader;
@@ -527,6 +528,7 @@ export default function App() {
                     <GoogleTagManager />
                     <ServiceWorkerRegistration />
                     <OpenInAppButton variant="desktop-fixed" />
+                    <FloatingChatWidget />
                 </Analytics.Provider>
             </WishlistProvider>
         </SiteContentProvider>

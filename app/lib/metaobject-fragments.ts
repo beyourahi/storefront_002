@@ -301,6 +301,12 @@ export const SITE_SETTINGS_FRAGMENT = `#graphql
     # COLLECTIONS
     # ─────────────────────────────────────────────────────────────────────────
 
+    # Messenger Page ID for Facebook Customer Chat plugin
+    messengerId: field(key: "messenger_page_id") { value }
+
+    # WhatsApp phone number (digits only, or international format)
+    whatsappNumber: field(key: "whatsapp_number") { value }
+
     # List of links field - Shopify returns [{text, url}, ...] where text is the platform name
     socialLinksData: field(key: "social_links_data") { value }
 
