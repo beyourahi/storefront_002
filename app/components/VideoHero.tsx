@@ -249,16 +249,21 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                         </p>
 
                         {/* Main Heading
-                             Responsive text sizing: text-3xl at 320px prevents overflow
+                             Responsive text sizing: clamp ensures smooth fluid scaling across all viewports
+                             - min 2rem (32px): readable on 320px mobile without overflow
+                             - 4.5vw: fluid scale through tablet/laptop breakpoints
+                             - max 5.5rem (88px): visually impactful on large desktop/ultrawide without being excessive
                              Allow text wrapping on mobile (no whitespace-nowrap)
                              whitespace-nowrap applied at sm+ where there's enough space
                              Extended breakpoints for large desktop (2xl) and ultrawide (3xl) */}
-                        <h1 className="font-serif text-light font-medium leading-[1.1] sm:leading-tight my-3 sm:my-4 md:my-6 sm:whitespace-nowrap" style={{fontSize: "clamp(1.5rem, 3.5vw, 4.5rem)"}}>
+                        <h1 className="font-serif text-light font-medium leading-[1.1] sm:leading-tight my-3 sm:my-4 md:my-6 sm:whitespace-nowrap" style={{fontSize: "clamp(2rem, 4.5vw, 5.5rem)"}}>
                             {heroHeading}
                         </h1>
 
-                        {/* Description - scales up for larger screens */}
-                        <p className="font-sans text-xs md:text-sm text-light/85 leading-relaxed">
+                        {/* Description - scales up for larger screens
+                             text-sm (14px) mobile → text-base (16px) tablet → text-lg (18px) desktop
+                             Follows 16px baseline standard for readable body text at a glance */}
+                        <p className="font-sans text-sm md:text-base lg:text-lg text-light/85 leading-relaxed">
                             {heroDescription}
                         </p>
                     </div>
