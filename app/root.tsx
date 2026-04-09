@@ -91,7 +91,6 @@ import {ServiceWorkerRegistration} from "~/components/ServiceWorkerRegistration"
 import {NetworkStatusIndicator} from "~/components/NetworkStatusIndicator";
 import {ServiceWorkerUpdateBanner} from "~/components/pwa/ServiceWorkerUpdateBanner";
 import {OpenInAppButton} from "~/components/pwa/OpenInAppButton";
-import {NativeAppBanner} from "~/components/NativeAppBanner";
 import {withTimeoutAndFallback, TIMEOUT_DEFAULTS} from "~/lib/promise-utils";
 
 export type RootLoader = typeof loader;
@@ -527,10 +526,7 @@ export default function App() {
                     </PageLayout>
                     <GoogleTagManager />
                     <ServiceWorkerRegistration />
-                    {/* PWA install/open — desktop only (hidden md:flex), targets browser-to-PWA */}
                     <OpenInAppButton variant="desktop-fixed" />
-                    {/* Native app banner — mobile only (md:hidden), targets iOS/Android App Store */}
-                    <NativeAppBanner />
                 </Analytics.Provider>
             </WishlistProvider>
         </SiteContentProvider>
