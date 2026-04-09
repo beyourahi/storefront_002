@@ -23,9 +23,10 @@
  *   - aria-label on every interactive element
  *
  * @positioning
- *   fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] right-4 z-50
- *   Mirrors OpenInAppButton's safe-area-aware bottom offset, adds 3.5rem clearance for
- *   its height so the chat column sits visually above it on all screen sizes.
+ *   fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] md:bottom-20 right-4 z-50
+ *   Keeps equal gap-3 (0.75rem) spacing between the Messenger button and OpenInAppButton:
+ *   - Mobile : OpenInApp base = max(1rem, safe-area-inset), so chat = base + h-11(2.75rem) + gap-3(0.75rem) = base + 3.5rem
+ *   - Desktop: OpenInApp base = md:bottom-6 (1.5rem), so chat = 1.5rem + 2.75rem + 0.75rem = 5rem = bottom-20
  *   z-50 (50) sits between NativeAppBanner (z-40) and OpenInAppButton (z-[9999]).
  */
 
@@ -155,7 +156,7 @@ export function FloatingChatWidget() {
 
             {/* Floating button column */}
             <div
-                className="fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] right-4 z-50 flex flex-col items-end gap-3"
+                className="fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] md:bottom-20 right-4 z-50 flex flex-col items-end gap-3"
                 aria-label="Chat support options"
             >
                 {/* WhatsApp — renders above Messenger */}
