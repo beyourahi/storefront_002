@@ -24,8 +24,9 @@
 
 import {useEffect, useRef} from "react";
 import {Link} from "react-router";
-import {CircleArrowOutUpRight} from "lucide-react";
+import {CircleArrowOutUpRight, Search} from "lucide-react";
 import {useBrandAnimation, AnimatedBrandText} from "~/components/BrandAnimation";
+import {useAside} from "~/components/Aside";
 import {ParallaxLayer} from "~/components/motion/ParallaxLayer";
 import {useSiteSettings} from "~/lib/site-content-context";
 import {useScreenSize, BREAKPOINTS} from "~/hooks/useScreenSize";
@@ -177,6 +178,7 @@ function HeroBackgroundMedia({
  */
 export function VideoHero({randomCollection}: {randomCollection?: HeroCollection | null}) {
     const {heroRef, setIsHomePage} = useBrandAnimation();
+    const {open: openSearch} = useAside();
     const {heroHeading, heroDescription, heroMediaMobile, heroMediaLargeScreen, brandWords} = useSiteSettings();
     const fallbackVideoSrc = (FALLBACK_HERO_MEDIA_CONFIG as {videoSrc?: string}).videoSrc;
 
@@ -261,31 +263,39 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                         </p>
                     </div>
 
-                    {/* Shop Now Button - Prominent CTA with inverted color states
-                        State Flow (inverted CTA pattern - dark button inverts to light on interaction):
+                    {/* CTA Row: Shop Now + Search trigger
+                        Search button is icon-only (ghost/outline), visually subordinate to Shop Now.
+                        Both share the same pill radius and vertical rhythm for deliberate pairing.
+
+                        Shop Now (inverted CTA pattern):
                         - Default: bg-primary (dark), text-primary-foreground (white), border-primary
                         - Hover: bg-light (white), text-primary (dark), border-light
-                        - Active: bg-light/90 (slightly darker white), text-primary, border-light
+                        Contrast: #fff on bg-primary = 14.68:1 (WCAG AAA) ✓ | #1f1f1f on #fff = 14.68:1 ✓
 
-                        Color Choice Rationale:
-                        - Swapped default and hover states for a subtle → dramatic reveal effect
-                        - Default blends with dark overlay for refined aesthetic, hover creates striking contrast
-                        - Icon inherits text color via currentColor
+                        Search (ghost on dark hero overlay):
+                        - Default: bg-transparent, border-light/40, text-light
+                        - Hover: bg-light/15, border-light/65
+                        Contrast: text-light (#fff) over dark overlay background > 7:1 (WCAG AAA) ✓
 
-                        Contrast Validation:
-                        - Default: text-primary-foreground (#fff) on bg-primary = 14.68:1 (WCAG AAA) ✓
-                        - Hover: text-primary (#1f1f1f) on bg-light (#fff) = 14.68:1 (WCAG AAA) ✓
-                        - Active: text-primary (#1f1f1f) on bg-light/90 = 13.2:1 (WCAG AAA) ✓
+                        Touch targets: py-3 + icon h-5 ≈ 44px minimum (WCAG 2.5.5) ✓ */}
+                    <div className="flex items-center gap-3 sm:gap-4">
+                        <Link
+                            to="/collections/all-products"
+                            className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 md:gap-3 rounded-[var(--radius-pill-raw)] bg-primary border-2 border-primary px-4 sm:px-5 md:px-6 py-3 md:py-3.5 font-sans text-sm md:text-base font-medium text-primary-foreground no-underline hover:no-underline sleek hover:bg-light hover:text-primary hover:border-light active:bg-light/90 active:border-light active:scale-[0.98] cursor-pointer"
+                        >
+                            Shop Now
+                            <CircleArrowOutUpRight className="w-5 h-5 md:w-6 md:h-6 sleek group-hover:rotate-45" />
+                        </Link>
 
-                        Touch target: min 44px height (py-3 = 12px × 2 + line-height ≈ 48px)
-                        Mobile: wider padding and full-width option for better tap area */}
-                    <Link
-                        to="/collections/all-products"
-                        className="group inline-flex items-center justify-center gap-2 sm:gap-2.5 md:gap-3 rounded-[var(--radius-pill-raw)] bg-primary border-2 border-primary px-4 sm:px-5 md:px-6 py-3 md:py-3.5 font-sans text-sm md:text-base font-medium text-primary-foreground no-underline hover:no-underline sleek hover:bg-light hover:text-primary hover:border-light active:bg-light/90 active:border-light active:scale-[0.98] cursor-pointer"
-                    >
-                        Shop Now
-                        <CircleArrowOutUpRight className="w-5 h-5 md:w-6 md:h-6 sleek group-hover:rotate-45" />
-                    </Link>
+                        <button
+                            type="button"
+                            onClick={() => openSearch("search")}
+                            aria-label="Search"
+                            className="inline-flex items-center justify-center rounded-[var(--radius-pill-raw)] bg-transparent border-2 border-light/40 text-light px-3 md:px-3.5 py-3 md:py-3.5 sleek hover:bg-light/15 hover:border-light/65 active:scale-[0.98] cursor-pointer"
+                        >
+                            <Search className="w-5 h-5 md:w-6 md:h-6" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Collection Promo Card - Bottom right, hidden on mobile
