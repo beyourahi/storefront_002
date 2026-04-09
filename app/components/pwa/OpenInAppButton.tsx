@@ -124,11 +124,16 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
                 variant={isFixed ? "default" : "outline"}
                 className={cn(
                     "gap-3",
-                    // Desktop fixed variant: bottom-right corner, hidden on mobile
+                    // Fixed variant: visible on all screen sizes with safe-area bottom padding on mobile.
+                    // z-40 on mobile sits below StickyMobileGetNow (z-50) on product pages — purchase
+                    // CTA intentionally takes visual priority over the install prompt. z-[9999] on
+                    // desktop matches the original behavior.
                     isFixed && [
-                        "fixed bottom-4 right-4 md:bottom-6 md:right-6",
-                        "z-[9999]",
-                        "hidden md:flex" // Only show on md+ screens
+                        "fixed right-4 md:right-6",
+                        "bottom-[max(1rem,env(safe-area-inset-bottom))] md:bottom-6",
+                        "z-40 md:z-[9999]",
+                        "flex",
+                        "animate-slide-up-fade opacity-0"
                     ],
                     // Menu item variant: full width on mobile, auto on desktop
                     isMenuItem && [
@@ -137,7 +142,13 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
                         "animate-slide-up-fade opacity-0"
                     ]
                 )}
-                style={isMenuItem ? {animationDelay: "400ms", animationFillMode: "both"} : undefined}
+                style={
+                    isMenuItem
+                        ? {animationDelay: "400ms", animationFillMode: "both"}
+                        : isFixed
+                          ? {animationDelay: "800ms", animationFillMode: "both"}
+                          : undefined
+                }
             >
                 <Download className="size-5" />
                 <span>Open in App</span>
