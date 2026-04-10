@@ -73,6 +73,8 @@ const CATEGORY_STYLES: Record<ChangelogCategory, CategoryStyle> = {
 // CONSTANTS
 // =============================================================================
 
+const CHANGELOG_AUTHOR = {name: "Rahi Khan", url: "https://beyourahi.com"} as const;
+
 /** Summaries longer than this show a "Read more" toggle */
 const EXPAND_THRESHOLD = 200;
 
@@ -142,9 +144,22 @@ export function ChangelogEntryCard({entry, index}: ChangelogEntryProps) {
                 )}
 
                 {/* Headline */}
-                <h3 className="text-sm sm:text-base font-semibold text-[var(--text-primary)] leading-snug mb-1.5">
+                <h3 className="text-sm sm:text-base font-semibold text-[var(--text-primary)] leading-snug mb-1">
                     {entry.headline}
                 </h3>
+
+                {/* Author */}
+                <p className="mb-1.5 text-xs text-[var(--text-subtle)]">
+                    by{" "}
+                    <a
+                        href={CHANGELOG_AUTHOR.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] motion-interactive"
+                    >
+                        {CHANGELOG_AUTHOR.name}
+                    </a>
+                </p>
 
                 {/* Summary with optional expand/collapse */}
                 <Collapsible open={isOpen} onOpenChange={setIsOpen}>

@@ -10,7 +10,7 @@
  * - Category filter chips (All, New Feature, Improvement, Fix, Performance, Design)
  * - Vertical timeline with left rule on md+ viewports
  * - Staggered entry animations via ChangelogEntryCard
- * - Load-more pagination via query param (?cursor=N) — accumulative, no page replacement
+ * - Client-side "Load more" pagination (10 entries at a time, no URL changes)
  * - Empty state when search/filter returns no results
  * - Skeleton loading state (ChangelogPageSkeleton)
  *
@@ -26,10 +26,10 @@
  * - Search: role="search" landmark
  * - Filter chips: role="radiogroup" with aria-pressed per chip
  * - Entry list: <ol> with ordered list semantics
- * - Load-more: <Link> with prefetch="viewport"
+ * - Load-more: <button> with descriptive label
  */
 
-import {Link} from "react-router";
+import {useState, useEffect} from "react";
 import {Search} from "lucide-react";
 import {Input} from "~/components/ui/input";
 import {Button} from "~/components/ui/button";
@@ -40,7 +40,7 @@ import {useChangelogFilter} from "~/hooks/useChangelogFilter";
 import type {ChangelogCategory, ChangelogLoaderData} from "~/lib/types/changelog";
 
 // =============================================================================
-// CATEGORY FILTER CONSTANTS
+// CONSTANTS
 // =============================================================================
 
 const ALL_CATEGORIES: ChangelogCategory[] = [
@@ -51,13 +51,26 @@ const ALL_CATEGORIES: ChangelogCategory[] = [
     "Design"
 ];
 
+const INITIAL_VISIBLE = 10;
+const LOAD_MORE_INCREMENT = 10;
+
 // =============================================================================
 // CHANGELOG PAGE
 // =============================================================================
 
-export function ChangelogPage({entries, hasMore, nextCursor}: ChangelogLoaderData) {
+export function ChangelogPage({entries}: ChangelogLoaderData) {
     const {filteredEntries, setSearch, setCategory, activeCategory, searchQuery, isEmpty} =
         useChangelogFilter(entries);
+
+    const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+
+    // Reset visible count whenever the user changes the search or category filter
+    useEffect(() => {
+        setVisibleCount(INITIAL_VISIBLE);
+    }, [activeCategory, searchQuery]);
+
+    const visibleEntries = filteredEntries.slice(0, visibleCount);
+    const hasMore = visibleCount < filteredEntries.length;
 
     return (
         <div className="min-h-dvh bg-[var(--surface-canvas)] pt-[var(--total-header-height)]">
@@ -153,23 +166,24 @@ export function ChangelogPage({entries, hasMore, nextCursor}: ChangelogLoaderDat
                         </Empty>
                     ) : (
                         <ol className="divide-y divide-[var(--border-subtle)]/50">
-                            {filteredEntries.map((entry, index) => (
-                                <ChangelogEntryCard key={entry.id} entry={entry} index={index} />
+                            {visibleEntries.map((entry, index) => (
+                                <ChangelogEntryCard
+                                    key={`${entry.date}-${entry.headline}`}
+                                    entry={entry}
+                                    index={index}
+                                />
                             ))}
                         </ol>
                     )}
 
                     {/* Load more */}
-                    {hasMore && nextCursor !== null && !activeCategory && !searchQuery && (
+                    {hasMore && !isEmpty && (
                         <div className="mt-8 flex justify-center">
-                            <Button variant="outline" asChild>
-                                <Link
-                                    to={`/changelog?cursor=${nextCursor}`}
-                                    preventScrollReset
-                                    prefetch="viewport"
-                                >
-                                    Load more updates
-                                </Link>
+                            <Button
+                                variant="outline"
+                                onClick={() => setVisibleCount(c => c + LOAD_MORE_INCREMENT)}
+                            >
+                                Load more updates
                             </Button>
                         </div>
                     )}

@@ -393,3 +393,18 @@ take screenshot → tmp_screenshots/homepage-after-fix.png
 - Interactive states (hover, focus, open/closed) render properly
 - No visible layout breaks or overflow issues
 - Responsive breakpoints behave as expected
+
+## Changelog Entries (MANDATORY)
+
+Every meaningful commit — one that adds a feature, improves the shopping experience, or fixes something users would notice — **MUST** include a corresponding entry in `app/lib/changelog-data.ts`.
+
+**Rules:**
+- Add the entry in the **same commit** that ships the change (never as a follow-up)
+- Place the new entry at the **top** of `CHANGELOG_ENTRIES` (newest first)
+- Write in plain English for shoppers — no SHAs, file paths, variable names, branch names, or technical jargon
+- Use the correct category: `"New Feature"` | `"Improvement"` | `"Fix"` | `"Performance"` | `"Design"`
+- Keep `headline` under 80 characters, focused on the user benefit
+
+**Skip entries for:** `chore`, `ci`, `build`, `docs`, `lint`, dependency bumps, internal refactors with no visible user effect, and commits under ~20 lines changed.
+
+**Do NOT rely on automation or AI to generate entries retroactively.** The entry must be written at commit time by the person who understands the change. Context is lost after the fact.
