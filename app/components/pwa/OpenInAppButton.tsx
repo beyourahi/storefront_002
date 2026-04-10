@@ -8,6 +8,7 @@
  *
  * @related
  * - ~/components/pwa/IosInstallInstructions - iOS manual installation guide
+ * - ~/components/pwa/AlreadyInstalledInstructions - Sheet shown when PWA is already installed
  * - ~/hooks/usePwaInstall - PWA install state and capabilities hook
  * - ~/components/Header - Renders menu-item variant in navigation
  */
@@ -17,6 +18,7 @@ import {Button} from "~/components/ui/button";
 import {cn} from "~/lib/utils";
 import {usePwaInstall} from "~/hooks/usePwaInstall";
 import {IosInstallInstructions} from "./IosInstallInstructions";
+import {AlreadyInstalledInstructions} from "./AlreadyInstalledInstructions";
 import {Download} from "lucide-react";
 
 // =============================================================================
@@ -47,8 +49,10 @@ interface OpenInAppButtonProps {
  * ```
  */
 export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
-    const {canInstall, isIOS, isStandalone, triggerInstall, appName, appIcon} = usePwaInstall();
+    const {canInstall, isIOS, isStandalone, isAppDetectedAsInstalled, triggerInstall, appName, appIcon} =
+        usePwaInstall();
     const [showIosInstructions, setShowIosInstructions] = useState(false);
+    const [showAlreadyInstalled, setShowAlreadyInstalled] = useState(false);
 
     // =============================================================================
     // HANDLERS
@@ -59,7 +63,7 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
      * Platform and state adaptive behavior:
      * - iOS: Show manual instructions sheet
      * - Can install: Trigger native browser prompt
-     * - Already installed: Reload to switch to PWA
+     * - Already installed (in browser): Show "already installed" reminder sheet
      */
     const handleClick = async () => {
         // iOS Safari - show manual instructions
@@ -74,9 +78,11 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
             return;
         }
 
-        // Installed but in browser - try to open by reloading
-        // On Chrome, this can trigger opening the installed PWA
-        window.location.href = window.location.origin;
+        // App is installed but user is browsing in the browser - remind them to open from home screen
+        if (isAppDetectedAsInstalled) {
+            setShowAlreadyInstalled(true);
+            return;
+        }
     };
 
     // =============================================================================
@@ -86,9 +92,9 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
     // Hidden when already running as installed PWA
     if (isStandalone) return null;
 
-    // Hidden on browsers that can't install and aren't iOS (e.g. Firefox, Safari desktop)
-    // Also hides after prompt dismiss — hook sets canInstall=false, isIOS stays false on desktop
-    if (!canInstall && !isIOS) return null;
+    // Hidden on browsers that can't install, aren't iOS, and haven't previously installed.
+    // Covers Firefox/Safari desktop, and post-dismiss state on non-iOS devices.
+    if (!canInstall && !isIOS && !isAppDetectedAsInstalled) return null;
 
     const isFixed = variant === "desktop-fixed";
     const isMenuItem = variant === "menu-item";
@@ -134,6 +140,14 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
             <IosInstallInstructions
                 open={showIosInstructions}
                 onDismiss={() => setShowIosInstructions(false)}
+                appName={appName}
+                appIcon={appIcon}
+            />
+
+            {/* Already Installed Reminder Sheet */}
+            <AlreadyInstalledInstructions
+                open={showAlreadyInstalled}
+                onDismiss={() => setShowAlreadyInstalled(false)}
                 appName={appName}
                 appIcon={appIcon}
             />
