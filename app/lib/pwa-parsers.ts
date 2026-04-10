@@ -153,12 +153,8 @@ function buildIconsArray(siteSettings: SiteSettings): ManifestIcon[] | null {
 
     const icon512 = siteSettings.icon512Url ?? siteSettings.brandLogo?.url ?? null;
     if (icon512) {
-        icons.push({
-            src: icon512,
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable"
-        });
+        icons.push({src: icon512, sizes: "512x512", type: "image/png", purpose: "any"});
+        icons.push({src: icon512, sizes: "512x512", type: "image/png", purpose: "maskable"});
     }
 
     // Last resort: reference /favicon.ico so the manifest always has at least one icon.

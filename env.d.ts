@@ -10,6 +10,11 @@ import "@total-typescript/ts-reset";
 declare global {
     interface Env {
         PUBLIC_GTM_CONTAINER_ID?: string;
+        // Changelog pipeline — server-side only, never returned to client
+        GITHUB_TOKEN: string;
+        GITHUB_REPO_OWNER: string;
+        GITHUB_REPO_NAME: string;
+        ANTHROPIC_API_KEY: string;
     }
 
     interface Window {

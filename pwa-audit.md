@@ -316,3 +316,73 @@ if (outcome === "accepted") {
 ---
 
 *Audit conducted: 2026-04-10 — Read-only static analysis. No code was modified during this audit.*
+
+---
+
+## Resolution Log
+
+*All 8 issues resolved: 2026-04-10. TypeScript typecheck passes (exit 0). Zero new lint errors.*
+
+---
+
+### I-01 — RESOLVED
+
+**Status**: ✅ Fixed
+**File**: `app/components/pwa/OpenInAppButton.tsx`
+**Change**: Destructured `isStandalone` from `usePwaInstall()` and added `if (isStandalone) return null;` as the first early-return guard.
+
+---
+
+### I-02 — RESOLVED
+
+**Status**: ✅ Fixed
+**File**: `app/components/pwa/OpenInAppButton.tsx`
+**Change**: Added `if (!canInstall && !isIOS) return null;` guard immediately after the `isStandalone` guard — hides the button on Firefox, Safari desktop, and any browser that cannot install.
+
+---
+
+### I-03 — RESOLVED
+
+**Status**: ✅ Fixed (no additional state needed)
+**File**: `app/components/pwa/OpenInAppButton.tsx`
+**Change**: Covered by the I-02 guard: after prompt dismissal the hook sets `canInstall=false`; with `isIOS=false` on desktop, `!canInstall && !isIOS` fires and the button hides — no separate `wasPromptDismissed` state required.
+
+---
+
+### I-04 — RESOLVED
+
+**Status**: ✅ Fixed
+**File**: `app/hooks/usePwaInstall.ts`
+**Change**: `detectIOSDevice()` now returns `true` when `navigator.userAgent` matches `Macintosh` and `navigator.maxTouchPoints > 1` (iPadOS 13+ desktop mode). `getPlatform()` received the same additional check to keep analytics platform tagging consistent.
+
+---
+
+### I-05 — RESOLVED
+
+**Status**: ✅ Fixed
+**File**: `app/routes/manifest[.]webmanifest.tsx`
+**Change**: The catch-block `fallbackManifest` object now includes all previously missing fields: `scope`, `orientation`, `categories`, `icons`, `id`, `related_applications`, and `prefer_related_applications`. `manifestUrl` was already in scope.
+
+---
+
+### I-06 — RESOLVED
+
+**Status**: ✅ Fixed
+**File**: `app/lib/pwa-parsers.ts`
+**Change**: `buildIconsArray()` now emits two entries for the 512×512 icon — one with `purpose: "any"` and one with `purpose: "maskable"` — so install prompt dialogs receive a full-resolution preview icon.
+
+---
+
+### I-07 — RESOLVED
+
+**Status**: ✅ Fixed
+**File**: `app/components/pwa/OpenInAppButton.tsx`
+**Change**: `<span>Open in App</span>` replaced with `<span>{canInstall ? "Install App" : "Open in App"}</span>`. When a native install prompt is available the label reads "Install App"; on iOS (manual instructions flow) it reads "Open in App".
+
+---
+
+### I-08 — RESOLVED
+
+**Status**: ✅ Fixed
+**File**: `app/hooks/usePwaInstall.ts`
+**Change**: Added `import {trackInstallPrompt, trackInstallAccepted, trackInstallDismissed} from "~/hooks/usePwaAnalytics"`. In `triggerInstall()`: `trackInstallPrompt()` is called before showing the native prompt; `trackInstallAccepted()` / `trackInstallDismissed()` replace the ad-hoc `trackEvent("pwa_installed", ...)` and `trackEvent("pwa_install_prompt_dismissed", ...)` calls.

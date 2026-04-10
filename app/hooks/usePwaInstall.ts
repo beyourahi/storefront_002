@@ -68,6 +68,7 @@
 
 import {useState, useEffect, useRef} from "react";
 import {isAppMarkedAsInstalled, setAppInstalled} from "~/lib/pwa-storage";
+import {trackInstallPrompt, trackInstallAccepted, trackInstallDismissed} from "~/hooks/usePwaAnalytics";
 
 // =============================================================================
 // TYPES
@@ -135,11 +136,13 @@ function trackEvent(event: string, data?: Record<string, unknown>) {
  */
 function detectIOSDevice(): boolean {
     if (typeof window === "undefined") return false;
-
     const ua = navigator.userAgent;
     // iOS device detection (iPhone, iPad, iPod)
     // MSStream check excludes IE11 on Windows Phone
-    return /iPad|iPhone|iPod/.test(ua) && !("MSStream" in window);
+    if (/iPad|iPhone|iPod/.test(ua) && !("MSStream" in window)) return true;
+    // iPadOS 13+ desktop mode: UA spoofed to "Macintosh" but has multitouch
+    if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return true;
+    return false;
 }
 
 function detectStandaloneMode(): boolean {
@@ -160,6 +163,8 @@ function getPlatform(): "ios" | "android" | "desktop" {
     const ua = navigator.userAgent;
 
     if (/iPad|iPhone|iPod/.test(ua)) return "ios";
+    // iPadOS 13+ desktop mode: UA spoofed to "Macintosh" but has multitouch
+    if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return "ios";
     if (/Android/.test(ua)) return "android";
     return "desktop";
 }
@@ -300,18 +305,18 @@ export function usePwaInstall(): UsePwaInstallReturn {
         setIsInstalling(true);
 
         try {
+            trackInstallPrompt();
+
             // Show the native install prompt
             await deferredPromptRef.current.prompt();
 
             // Wait for user's choice
             const {outcome} = await deferredPromptRef.current.userChoice;
 
-            const platform = getPlatform();
-
             if (outcome === "accepted") {
-                trackEvent("pwa_installed", {platform});
+                trackInstallAccepted();
             } else {
-                trackEvent("pwa_install_prompt_dismissed", {platform});
+                trackInstallDismissed();
             }
         } catch (err) {
             console.error("[PWA] Install prompt error:", err);

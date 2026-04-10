@@ -47,7 +47,7 @@ interface OpenInAppButtonProps {
  * ```
  */
 export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
-    const {canInstall, isIOS, triggerInstall, appName, appIcon} = usePwaInstall();
+    const {canInstall, isIOS, isStandalone, triggerInstall, appName, appIcon} = usePwaInstall();
     const [showIosInstructions, setShowIosInstructions] = useState(false);
 
     // =============================================================================
@@ -82,6 +82,13 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
     // =============================================================================
     // RENDER
     // =============================================================================
+
+    // Hidden when already running as installed PWA
+    if (isStandalone) return null;
+
+    // Hidden on browsers that can't install and aren't iOS (e.g. Firefox, Safari desktop)
+    // Also hides after prompt dismiss — hook sets canInstall=false, isIOS stays false on desktop
+    if (!canInstall && !isIOS) return null;
 
     const isFixed = variant === "desktop-fixed";
     const isMenuItem = variant === "menu-item";
@@ -120,7 +127,7 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
                 }
             >
                 <Download className="size-5" />
-                <span>Open in App</span>
+                <span>{canInstall ? "Install App" : "Open in App"}</span>
             </Button>
 
             {/* iOS Install Instructions Sheet */}

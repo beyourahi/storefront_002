@@ -252,7 +252,8 @@ function FooterLinks() {
                 url: link.url,
                 external: true
             })),
-        ...(hasBlog ? [{title: "Blog", url: "/blogs"}] : [])
+        ...(hasBlog ? [{title: "Blog", url: "/blogs"}] : []),
+        {title: "Changelog", url: "/changelog"}
     ];
 
     // Only show columns that have at least one link; hides Connect entirely

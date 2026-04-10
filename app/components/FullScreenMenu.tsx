@@ -103,6 +103,7 @@ const ACCOUNT_LINKS = [
     {title: "Order History", url: "/account/orders"},
     {title: "Wishlist", url: "/account/wishlist"},
     {title: "Gallery", url: "/gallery"},
+    {title: "Changelog", url: "/changelog"},
     {title: "FAQ", url: "/faq"},
     {title: "Contact", url: "/contact"}
 ];

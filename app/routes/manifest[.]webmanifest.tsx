@@ -141,9 +141,16 @@ export async function loader({context, request}: Route.LoaderArgs) {
             name: "Store",
             short_name: "Store",
             start_url: "/",
+            scope: "/",
             display: "standalone",
+            orientation: "any",
             background_color: "#ffffff",
-            theme_color: "#000000"
+            theme_color: "#000000",
+            categories: ["shopping"],
+            icons: [],
+            id: "/",
+            related_applications: [{platform: "webapp", url: manifestUrl}],
+            prefer_related_applications: false
         };
 
         return new Response(JSON.stringify(fallbackManifest, null, 2), {

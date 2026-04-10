@@ -74,6 +74,15 @@ const FALLBACK_HEADER_MENU = {
             type: "HTTP",
             url: "/blogs",
             items: []
+        },
+        {
+            id: "menu-changelog",
+            resourceId: null,
+            tags: [],
+            title: "Changelog",
+            type: "HTTP",
+            url: "/changelog",
+            items: []
         }
     ]
 } as const;
