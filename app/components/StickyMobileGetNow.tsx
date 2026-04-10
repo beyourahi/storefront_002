@@ -42,9 +42,9 @@
  *
  * @styling
  * Position:
- * - fixed bottom-0 left-0 right-0 z-50
+ * - fixed bottom-0 left-0 right-0 z-[103]
  * - Full width with bottom safe area padding
- * - Above all content (z-50)
+ * - Above all content: z-[103] > OpenInAppButton mobile (z-[102]) so purchase CTA takes priority
  *
  * Button:
  * - Full width with min-h-14 (56px touch target)
@@ -186,7 +186,7 @@ export function StickyMobileGetNow({
                 // Mobile only
                 "md:hidden",
                 // Fixed at bottom
-                "fixed bottom-0 left-0 right-0 z-50",
+                "fixed bottom-0 left-0 right-0 z-[103]",
                 // Safe area for notch phones
                 "pb-[env(safe-area-inset-bottom)]",
                 // Transition for show/hide

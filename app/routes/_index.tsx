@@ -428,11 +428,9 @@ export default function Homepage() {
                      WHY: Show products NOW. Core conversion driver. Answers "What do you sell?"
                      IMPACT: Reduces bounce rate, increases engagement, instant credibility
                      AUDIENCE: 100% of visitors */}
-                {data.curatedCollections && (
-                    <AnimatedSection animation="section" threshold={0.1} className="mt-8 sm:mt-12">
-                        <CuratedCollections collections={data.curatedCollections} />
-                    </AnimatedSection>
-                )}
+                <AnimatedSection animation="section" threshold={0.1} className="mt-8 sm:mt-12">
+                    <CuratedCollections collections={data.curatedCollections} />
+                </AnimatedSection>
 
                 {featuredProduct ? (
                     <AnimatedSection animation="slide-up" threshold={0.12} className="mt-12 md:mt-16 lg:mt-20">

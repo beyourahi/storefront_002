@@ -107,13 +107,13 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
                 className={cn(
                     "gap-3",
                     // Fixed variant: visible on all screen sizes with safe-area bottom padding on mobile.
-                    // z-40 on mobile sits below StickyMobileGetNow (z-50) on product pages — purchase
-                    // CTA intentionally takes visual priority over the install prompt. z-[9999] on
-                    // desktop matches the original behavior.
+                    // z-[102] on mobile: above hero brand name watermark (zIndex: 100, BrandAnimation.tsx).
+                    // StickyMobileGetNow is raised to z-[103] to maintain purchase-CTA priority over
+                    // this install prompt on product pages. z-[9999] on desktop unchanged.
                     isFixed && [
                         "fixed right-4 md:right-6",
                         "bottom-[max(1rem,env(safe-area-inset-bottom))] md:bottom-6",
-                        "z-40 md:z-[9999]",
+                        "z-[102] md:z-[9999]",
                         "flex",
                         "animate-slide-up-fade opacity-0"
                     ],
