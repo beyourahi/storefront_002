@@ -109,7 +109,7 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
                     // this install prompt on product pages. z-[9999] on desktop unchanged.
                     isFixed && [
                         "fixed right-4 md:right-6",
-                        "bottom-[max(1rem,env(safe-area-inset-bottom))] md:bottom-6",
+                        "bottom-[calc(max(1rem,env(safe-area-inset-bottom))+5.5rem)] md:bottom-6",
                         "z-[102] md:z-[9999]",
                         "flex",
                         "animate-slide-up-fade opacity-0"

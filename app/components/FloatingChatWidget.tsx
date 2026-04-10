@@ -21,10 +21,12 @@
  *   - aria-label on every interactive element
  *
  * @positioning
- *   fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] md:bottom-20 right-4 z-[102]
- *   Keeps equal gap-3 (0.75rem) spacing between the Messenger button and OpenInAppButton:
- *   - Mobile : OpenInApp base = max(1rem, safe-area-inset), so chat = base + h-11(2.75rem) + gap-3(0.75rem) = base + 3.5rem
- *   - Desktop: OpenInApp base = md:bottom-6 (1.5rem), so chat = 1.5rem + 2.75rem + 0.75rem = 5rem = bottom-20
+ *   fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+9rem)] md:bottom-44 right-4 z-[102]
+ *   Sits visibly above the footer copyright/designer row at every breakpoint:
+ *   - Mobile : copyright row = 89px (flex-col, py-4). OpenInApp new base = max(1rem,safeArea)+5.5rem.
+ *              chat = base + h-11(2.75rem) + gap-3(0.75rem) = max(1rem,safeArea)+9rem ≈ 160px. Clears 89px. ✓
+ *   - Desktop: footer has md:pb-20 (80px); copyright section top = 153px from viewport bottom.
+ *              md:bottom-44 = 176px > 153px, 23px clearance above copyright. ✓
  *   z-[102]: above the hero brand name watermark (zIndex: 100, BrandAnimation.tsx). Physically at
  *   the bottom-right corner, so having z-index above header (z-100) or announcement (z-101) causes
  *   no visual conflict — those elements occupy the top of the screen, not the bottom.
@@ -82,7 +84,7 @@ export function FloatingChatWidget() {
 
     return (
         <div
-            className="fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] md:bottom-20 right-4 z-[102] flex flex-col items-end gap-3"
+            className="fixed bottom-[calc(max(1rem,env(safe-area-inset-bottom))+9rem)] md:bottom-44 right-4 z-[102] flex flex-col items-end gap-3"
             aria-label="Chat support options"
         >
             {/* WhatsApp — renders above Messenger */}

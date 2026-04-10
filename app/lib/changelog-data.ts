@@ -30,6 +30,20 @@ import type {ChangelogEntry} from "~/lib/types/changelog";
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-10",
+        headline: "Chat and install buttons no longer overlap the footer",
+        summary:
+            "The floating chat and install buttons were sitting on top of the copyright text at the bottom of the page. They now sit clearly above the footer on every screen size.",
+        category: "Fix"
+    },
+    {
+        date: "2026-04-10",
+        headline: "Changelog added to the footer navigation",
+        summary:
+            "The Changelog is now linked directly from the footer under the Connect section, so you can always find the latest updates without having to search for the page.",
+        category: "Improvement"
+    },
+    {
+        date: "2026-04-10",
         headline: "Install App button now always visible on every page",
         summary:
             "The floating Install App button is now consistently visible across all browsers and screen sizes, making it easy to add the store to your home screen whenever you're ready.",
