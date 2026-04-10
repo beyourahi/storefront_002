@@ -5,6 +5,7 @@
  * Universal button for PWA installation and opening across all platforms. Intelligently
  * adapts behavior based on device platform, browser capabilities, and installation state.
  * Supports two display variants: desktop-fixed (bottom-right corner) and menu-item (navigation).
+ * Always visible (except when running as installed PWA in standalone mode).
  *
  * @related
  * - ~/components/pwa/IosInstallInstructions - iOS manual installation guide
@@ -89,12 +90,8 @@ export function OpenInAppButton({variant = "menu-item"}: OpenInAppButtonProps) {
     // RENDER
     // =============================================================================
 
-    // Hidden when already running as installed PWA
+    // Hidden when already running as installed PWA — no install prompt needed inside the app.
     if (isStandalone) return null;
-
-    // Hidden on browsers that can't install, aren't iOS, and haven't previously installed.
-    // Covers Firefox/Safari desktop, and post-dismiss state on non-iOS devices.
-    if (!canInstall && !isIOS && !isAppDetectedAsInstalled) return null;
 
     const isFixed = variant === "desktop-fixed";
     const isMenuItem = variant === "menu-item";
