@@ -73,23 +73,25 @@ Backend behavior, data flow, and Hydrogen conventions **must remain consistent**
 ```
 storefront_002/
 ├── app/
-│   ├── routes/              # 50 routes
-│   ├── components/          # 121 components
+│   ├── routes/              # 51 routes
+│   ├── components/          # 125 components
 │   │   ├── ui/              # 27 shadcn
 │   │   ├── blog/            # 7 blog
-│   │   ├── pwa/             # 4 PWA
+│   │   ├── changelog/       # 2 changelog
+│   │   ├── pwa/             # 5 PWA
 │   │   ├── motion/          # Parallax
 │   │   ├── gallery/         # Gallery grid
 │   │   ├── icons/           # Custom icons
 │   │   └── ProductLightbox/ # Lightbox system
-│   ├── lib/                 # 61 utilities
+│   ├── lib/                 # 64 utilities
 │   │   ├── metaobject-*.ts  # CMS
 │   │   ├── pwa-*.ts         # PWA
+│   │   ├── changelog-data.ts # Static changelog entries
 │   │   ├── color/           # WCAG color contrast
 │   │   ├── product/         # Product data, variants, pricing
 │   │   ├── types/           # Shared type definitions
 │   │   └── fragments.ts     # GraphQL fragments
-│   ├── hooks/               # 11 hooks
+│   ├── hooks/               # 12 hooks
 │   ├── graphql/customer-account/  # 15 queries
 │   └── styles/tailwind.css  # v4 + animations
 ├── public/sw.js             # Workbox
@@ -292,9 +294,11 @@ Read all comments before editing. Update when changing code. Add for complex log
 4. Product images: CacheFirst, 7 days
 5. Pages: NetworkFirst + `/offline` fallback
 
-**PWA Components**: `components/pwa/` (ServiceWorkerUpdateBanner, PwaAppIcon, IosInstallInstructions, OpenInAppButton) + root `components/` (ServiceWorkerRegistration, NetworkStatusIndicator)
+**PWA Components**: `components/pwa/` (AlreadyInstalledInstructions, IosInstallInstructions, OpenInAppButton, PwaAppIcon, ServiceWorkerUpdateBanner) + root `components/` (ServiceWorkerRegistration, NetworkStatusIndicator)
 
 **PWA Hooks**: usePwaInstall, useServiceWorkerUpdate, useNetworkStatus, usePwaAnalytics
+
+**Already-Installed Sheet**: When the PWA is detected as already installed, `AlreadyInstalledInstructions.tsx` renders a bottom sheet prompting the user to open the installed app instead of the browser.
 
 ## UI Guidelines (MANDATORY)
 
@@ -326,7 +330,7 @@ Read all comments before editing. Update when changing code. Add for complex log
 
 **Color System**: `lib/color/` - OKLCH parsing, sRGB conversion, dual contrast (WCAG 2.1 + APCA), swatch borders, 500+ color names, `ensureContrastCompliance()`
 
-**Hooks** (11 in `hooks/`): useInView, useNetworkStatus, usePointerCapabilities, usePwaAnalytics, usePwaInstall, useReadingProgress, useRecentSearches, useScreenSize, useScrollLock, useSearchKeyboard, useServiceWorkerUpdate. Additional scroll hooks in `lib/`: useScrolled, useScrollProgress
+**Hooks** (12 in `hooks/`): useChangelogFilter, useInView, useNetworkStatus, usePointerCapabilities, usePwaAnalytics, usePwaInstall, useReadingProgress, useRecentSearches, useScreenSize, useScrollLock, useSearchKeyboard, useServiceWorkerUpdate. Additional scroll hooks in `lib/`: useScrolled, useScrollProgress
 
 **Animations**: 23 `@keyframes` in `tailwind.css` - product (fade-in, image-hover), wishlist (heart-beat, heart-glow, burst-ring), hero (shimmer), GPU-accelerated, respects `prefers-reduced-motion`
 
@@ -335,6 +339,8 @@ Read all comments before editing. Update when changing code. Add for complex log
 **Blog**: 7 components in `components/blog/` - ArticleCard, ArticleHero, AuthorBio, ReadingTime, RelatedArticles, ShareButtons, TagBadge. SEO-optimized (JSON-LD), tag filtering. Routes: `/blogs`, `/blogs/:blogHandle`, `/blogs/:blogHandle/:articleHandle`
 
 **Gallery**: Responsive grid + lightbox, route: `/gallery`, components: GalleryGrid, GalleryImageCard, metaobject-driven
+
+**Changelog**: Static changelog page for shoppers, route: `/changelog`, components: ChangelogEntry, ChangelogPage, hook: `useChangelogFilter`. Entries live in `lib/changelog-data.ts` (static file — add entries manually at commit time, see Changelog Entries section).
 
 ---
 
