@@ -656,7 +656,7 @@ export function ProductItem({
                         {/* Uses secondary token (same as Premium badge) for neutral, non-alarming tone */}
                         {isOutOfStock && (
                             <span
-                                className="inline-flex items-center justify-center rounded-full bg-destructive px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-destructive-foreground shadow-md"
+                                className="inline-flex items-center justify-center rounded-full bg-secondary px-2.5 py-1 text-xs font-medium uppercase tracking-wide text-secondary-foreground shadow-md"
                                 role="status"
                                 aria-label="Out of stock"
                             >
