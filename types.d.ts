@@ -618,6 +618,13 @@ export interface SiteSettings {
         width?: number | null;
         height?: number | null;
     } | null;
+    /** Dedicated Open Graph / social share image (1200×630). Takes priority over brandLogo for og:image. */
+    ogImage?: {
+        url: string;
+        altText?: string | null;
+        width?: number | null;
+        height?: number | null;
+    } | null;
     brandWords: string[];
     missionStatement: string;
     featuredProductSection: FeaturedProductSection | null;
