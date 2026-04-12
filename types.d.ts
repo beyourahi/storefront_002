@@ -352,6 +352,8 @@ export interface ProductImageGalleryProps {
      * Accepts raw Shopify media which will be filtered to supported types
      */
     media?: unknown[];
+    /** Whether the product is available for sale. Suppresses hover effects when false. */
+    isAvailableForSale?: boolean;
 }
 
 // =============================================================================
