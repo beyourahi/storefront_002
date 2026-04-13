@@ -5,8 +5,8 @@
  * Public-facing changelog surfacing hand-curated product update entries.
  * Static entry data comes from `app/lib/changelog-data.ts`. The loader also
  * fetches the all-time commit count from the GitHub API (Link header strategy)
- * to display a live total in the hero. Requires GITHUB_TOKEN env var for
- * private repos; gracefully omits the count if the API call fails.
+ * to display a live total in the hero. Token is hardcoded in the loader;
+ * gracefully omits the count if the API call fails.
  *
  * @route GET /changelog
  *
