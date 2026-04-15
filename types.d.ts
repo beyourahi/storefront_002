@@ -711,6 +711,15 @@ export interface SiteSettings {
     icon512Url: string | null;
     /** 180x180px PNG icon for iOS Safari home screen */
     icon180AppleUrl: string | null;
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // SHOP LOCATIONS (Google Maps)
+    // Index-paired arrays — zip embedUrls[i] with shareLinks[i]
+    // ─────────────────────────────────────────────────────────────────────────
+    /** Array of Google Maps embed src URLs, index-paired with googleMapsLinks */
+    googleMapsEmbedUrls: string[];
+    /** Array of Google Maps share links (maps.app.goo.gl/…), index-paired with googleMapsEmbedUrls */
+    googleMapsLinks: string[];
 }
 
 /**
