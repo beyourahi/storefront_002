@@ -365,19 +365,20 @@ export interface ProductImageGalleryProps {
  *
  * @description
  * Uses discriminated union pattern with __typename for type-safe rendering.
- * Supports both MediaImage (static images) and Video (product videos).
+ * Supports all four Shopify media types: MediaImage, Video, ExternalVideo, Model3d.
  *
  * @usage
  * ```typescript
- * if (media.__typename === "MediaImage") {
- *   // Render image using media.image
- * } else if (media.__typename === "Video") {
- *   // Render video using media.sources
+ * switch (media.__typename) {
+ *   case "MediaImage":  // render image using media.image
+ *   case "Video":       // render video using media.sources
+ *   case "ExternalVideo": // render iframe using media.embedUrl
+ *   case "Model3d":     // render previewImage as fallback
  * }
  * ```
  *
  * @see ProductLightbox - Full-screen media viewer
- * @see ProductImageGallery - Product page gallery with lightbox trigger
+ * @see ProductImageGallery - Product page gallery with inline video support
  */
 export type ProductMediaItem =
     | {
@@ -400,6 +401,32 @@ export type ProductMediaItem =
               url: string;
               mimeType: string;
           }>;
+          previewImage?: {
+              url: string;
+              altText?: string | null;
+              width?: number;
+              height?: number;
+          } | null;
+      }
+    | {
+          /** YouTube or Vimeo videos hosted externally. Use embedUrl for the iframe src. */
+          __typename: "ExternalVideo";
+          id: string;
+          alt?: string | null;
+          /** The embed URL for the iframe (preferred over deprecated embeddedUrl). */
+          embedUrl: string;
+          previewImage?: {
+              url: string;
+              altText?: string | null;
+              width?: number;
+              height?: number;
+          } | null;
+      }
+    | {
+          /** Shopify-hosted 3D model. Render previewImage as a fallback (3D viewer out of scope). */
+          __typename: "Model3d";
+          id: string;
+          alt?: string | null;
           previewImage?: {
               url: string;
               altText?: string | null;
