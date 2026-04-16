@@ -133,7 +133,7 @@ export function LightboxThumbnails({media, currentIndex, onSelect}: LightboxThum
     // ==========================================================================
 
     return (
-        <div className="pt-2 px-4 md:px-8" role="tablist" aria-label="Product media thumbnails">
+        <div className="px-4 md:px-8" role="tablist" aria-label="Product media thumbnails">
             {/* Horizontal scrollable container */}
             <div
                 className={cn(
@@ -141,7 +141,10 @@ export function LightboxThumbnails({media, currentIndex, onSelect}: LightboxThum
                     // Hide scrollbar but keep scroll functionality
                     "scrollbar-hide",
                     // Center thumbnails on all screen sizes
-                    "justify-center"
+                    "justify-center",
+                    // Suppress browser-native focus ring on the scrollable container;
+                    // individual thumbnail buttons retain their own focus-visible indicator
+                    "outline-none"
                 )}
             >
                 {media.map((item, index) => {
