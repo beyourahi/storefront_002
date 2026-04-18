@@ -71,6 +71,7 @@ import {Empty, EmptyHeader, EmptyMedia, EmptyTitle} from "~/components/ui/empty"
 import {type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext} from "~/components/ui/carousel";
 import {Skeleton} from "~/components/ui/skeleton";
 import {cn} from "~/lib/utils";
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "~/components/ui/accordion";
 import {ProductItem} from "~/components/ProductItem";
 import type {CartSuggestionProductFragment, CartApiQueryFragment} from "storefrontapi.generated";
 
@@ -460,24 +461,27 @@ function CartSuggestions({products, layout, cartLines}: CartSuggestionsProps) {
                         ))}
                     </CarouselContent>
 
-                    {/* Navigation arrows - hidden on mobile, shown on tablet+ */}
-                    {/* Custom styling to fit within aside drawer constraints
-                         WCAG Compliance:
-                         - Size: 40px (size-10) → 44px (md:size-11) meets minimum touch target (WCAG 2.5.5)
-                         - Contrast: primary-foreground (#fff) on primary/90 = ~13:1 (WCAG AAA) ✓
-                         - Icons: 3:1 minimum for UI components (WCAG 1.4.11) - actual: ~13:1 ✓
-                         - Focus ring: Inherits from carousel component (14.68:1 contrast) ✓
-                    */}
-                    <CarouselPrevious
-                        className="left-0 sm:left-1 bg-primary/90 hover:bg-primary text-primary-foreground border-0 size-10 md:size-11"
-                        aria-label="Previous products"
-                    />
-                    <CarouselNext
-                        className="right-0 sm:right-1 bg-primary/90 hover:bg-primary text-primary-foreground border-0 size-10 md:size-11"
-                        aria-label="Next products"
-                    />
-                </Carousel>
-            </div>
+                                {/* Navigation arrows - hidden on mobile, shown on tablet+ */}
+                                {/* Custom styling to fit within aside drawer constraints
+                                     WCAG Compliance:
+                                     - Size: 40px (size-10) → 44px (md:size-11) meets minimum touch target (WCAG 2.5.5)
+                                     - Contrast: primary-foreground (#fff) on primary/90 = ~13:1 (WCAG AAA) ✓
+                                     - Icons: 3:1 minimum for UI components (WCAG 1.4.11) - actual: ~13:1 ✓
+                                     - Focus ring: Inherits from carousel component (14.68:1 contrast) ✓
+                                */}
+                                <CarouselPrevious
+                                    className="left-0 sm:left-1 bg-primary/90 hover:bg-primary text-primary-foreground border-0 size-10 md:size-11"
+                                    aria-label="Previous products"
+                                />
+                                <CarouselNext
+                                    className="right-0 sm:right-1 bg-primary/90 hover:bg-primary text-primary-foreground border-0 size-10 md:size-11"
+                                    aria-label="Next products"
+                                />
+                            </Carousel>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         </section>
     );
 }
