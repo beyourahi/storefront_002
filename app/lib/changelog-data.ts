@@ -30,10 +30,10 @@ import type {ChangelogEntry} from "~/lib/types/changelog";
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-18",
-        headline: "Gallery and video overlays now always visible on touch screens",
+        headline: "Hover effects disabled on touch — smoother mobile experience",
         summary:
-            "On phones and tablets, the product name overlay on gallery images and the expand button on product videos were only appearing when you hovered — which is impossible on a touch screen. Both are now permanently visible on touch devices so you never miss product details or the option to view media fullscreen.",
-        category: "Fix"
+            "On phones and tablets, hover animations no longer trigger on tap — eliminating ghost hover states and reducing unnecessary style recalculation. Content that was previously only visible on hover (gallery overlays, expand buttons) is now always visible on touch screens.",
+        category: "Performance"
     },
     {
         date: "2026-04-17",
