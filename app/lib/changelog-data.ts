@@ -32,7 +32,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
         date: "2026-04-18",
         headline: "Quick Add dialog now appears correctly over the cart panel",
         summary:
-            "Clicking "Get it now" on a suggested product while the cart is open now shows the variant picker on top of the cart panel, as expected. Previously it rendered behind the cart, making it impossible to interact with.",
+            "Clicking \u201cGet it now\u201d on a suggested product while the cart is open now shows the variant picker on top of the cart panel, as expected. Previously it rendered behind the cart, making it impossible to interact with.",
         category: "Fix"
     },
     {
