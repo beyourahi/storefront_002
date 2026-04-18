@@ -29,6 +29,13 @@ import type {ChangelogEntry} from "~/lib/types/changelog";
 // Newest entries at the top. Add new entries here in the same commit that ships the change.
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
+        date: "2026-04-18",
+        headline: "Gallery and video overlays now always visible on touch screens",
+        summary:
+            "On phones and tablets, the product name overlay on gallery images and the expand button on product videos were only appearing when you hovered — which is impossible on a touch screen. Both are now permanently visible on touch devices so you never miss product details or the option to view media fullscreen.",
+        category: "Fix"
+    },
+    {
         date: "2026-04-17",
         headline: "Option group labels now appear on mobile product pages",
         summary:
