@@ -30,6 +30,12 @@ import type {ChangelogEntry} from "~/lib/types/changelog";
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-19",
+        category: "Design",
+        headline: "Shopping Summary card refreshed to match the store's visual design",
+        summary: "The price breakdown card on product pages has been redesigned with a refined look — tighter spacing, cleaner typography, and styling consistent with the rest of the store. Savings badges now use the same emerald styling as free shipping indicators, and the current-cart row has a subtle pill treatment for better clarity."
+    },
+    {
+        date: "2026-04-19",
         category: "New Feature",
         headline: "Shopping Summary now shows your full price breakdown on product pages",
         summary: "A Shopping Summary card now appears on every product page, showing the item price, any savings if it's on sale, and the updated cart total after adding the item — so you know exactly what you're committing to before you tap Add to Bag."

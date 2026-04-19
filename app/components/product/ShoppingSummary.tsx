@@ -71,91 +71,80 @@ const SummaryContent = ({
     const hasExistingCart = cartItemCount > 0;
     const newCartTotal = cartTotalAmount + totalPrice;
 
+    const {primary} = parseProductTitle(product.title);
+
     return (
-        <>
-            <div className="space-y-2 text-sm">
-                {hasExistingCart && (
-                    <div className="flex items-center justify-between py-1">
-                        <span className="text-muted-foreground">
-                            Current cart ({cartItemCount} {cartItemCount === 1 ? "item" : "items"})
-                        </span>
-                        <span className="font-mono font-medium">{formatPrice(cartTotalAmount, cartCurrencyCode)}</span>
-                    </div>
-                )}
-
-                <div className="flex items-start justify-between py-1">
-                    <div className="flex items-center gap-1">
-                        <div className="flex flex-col">
-                            {(() => {
-                                const {primary, secondary} = parseProductTitle(product.title);
-                                return (
-                                    <>
-                                        <span className="text-foreground">Adding: {primary}</span>
-                                        {secondary && <span className="opacity-50 text-xs">{secondary}</span>}
-                                    </>
-                                );
-                            })()}
-                            <span className="text-muted-foreground text-xs">Quantity: {quantity}</span>
-                        </div>
-                    </div>
-                    <div className="flex flex-col items-end">
-                        {isOnSale && totalComparePrice && (
-                            <span className="text-muted-foreground font-mono text-xs line-through">
-                                {formatPrice(totalComparePrice, currencyCode)}
-                            </span>
-                        )}
-                        <span className="font-mono font-medium">{formatPrice(totalPrice, currencyCode)}</span>
-                    </div>
+        <div className="space-y-1.5 sm:space-y-2">
+            {hasExistingCart && (
+                <div className="flex items-center justify-between rounded-lg bg-muted/40 px-2.5 py-1.5">
+                    <span className="text-muted-foreground text-xs">
+                        In cart &middot; {cartItemCount} {cartItemCount === 1 ? "item" : "items"}
+                    </span>
+                    <span className="font-mono tabular-nums text-xs font-medium text-foreground">
+                        {formatPrice(cartTotalAmount, cartCurrencyCode)}
+                    </span>
                 </div>
+            )}
 
-                {isOnSale && totalSavings > 0 && (
-                    <div className="text-sale-text flex items-center justify-between py-1">
-                        <span className="text-xs">You save</span>
-                        <span className="font-mono text-xs font-medium">
-                            -{formatPrice(totalSavings, currencyCode)} ({savingsPercentage}%)
+            <div className="flex items-start justify-between gap-3 py-0.5">
+                <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-foreground leading-snug">{primary}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Qty {quantity}</p>
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-0.5">
+                    {isOnSale && totalComparePrice && (
+                        <span className="font-mono tabular-nums text-xs text-muted-foreground line-through">
+                            {formatPrice(totalComparePrice, currencyCode)}
                         </span>
-                    </div>
-                )}
+                    )}
+                    <span className="font-mono tabular-nums text-sm font-semibold text-foreground">
+                        {formatPrice(totalPrice, currencyCode)}
+                    </span>
+                </div>
             </div>
 
-            <div className="border-border border-t"></div>
+            {isOnSale && totalSavings > 0 && (
+                <div className="flex items-center justify-between rounded-lg bg-success/10 px-2.5 py-1.5">
+                    <span className="text-sale-text text-xs font-medium">You save</span>
+                    <span className="text-sale-text font-mono tabular-nums text-xs font-semibold">
+                        -{formatPrice(totalSavings, currencyCode)} ({savingsPercentage}%)
+                    </span>
+                </div>
+            )}
 
-            <div className="flex items-center justify-between">
-                <span className="text-foreground font-medium">{hasExistingCart ? "New Total" : "Total"}</span>
-                <span className="text-foreground font-mono text-base font-bold">
+            <div className="border-t border-border" />
+
+            <div className="flex items-center justify-between pt-0.5">
+                <span className="text-sm font-medium text-foreground">
+                    {hasExistingCart ? "New Total" : "Total"}
+                </span>
+                <span className="font-mono tabular-nums text-base font-bold text-foreground">
                     {formatPrice(hasExistingCart ? newCartTotal : totalPrice, currencyCode)}
                 </span>
             </div>
-        </>
+        </div>
     );
 };
 
 const LoadingSkeleton = () => (
-    <div className="bg-accent rounded-lg border p-4 shadow-sm">
-        <div className="space-y-3">
-            <div className="flex items-center gap-2">
-                <Skeleton className="h-4 w-4" />
-                <Skeleton className="h-4 w-24" />
-            </div>
-
-            <div className="space-y-2 text-sm">
-                <div className="flex items-start justify-between py-1">
-                    <div className="flex items-center gap-1">
-                        <div className="flex flex-col gap-1">
-                            <Skeleton className="h-4 w-24" />
-                            <Skeleton className="h-3 w-16" />
-                        </div>
-                    </div>
-                    <Skeleton className="h-4 w-12" />
+    <div className="space-y-2.5 sm:space-y-3 rounded-xl border bg-card p-3 sm:p-4 shadow-sm">
+        <div className="flex items-center gap-1.5">
+            <Skeleton className="size-3 rounded" />
+            <Skeleton className="h-3 w-20" />
+        </div>
+        <div className="space-y-1.5 sm:space-y-2">
+            <div className="flex items-start justify-between gap-3 py-0.5">
+                <div className="flex-1 space-y-1">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-12" />
                 </div>
-            </div>
-
-            <div className="border-border border-t"></div>
-
-            <div className="flex items-center justify-between">
                 <Skeleton className="h-4 w-16" />
-                <Skeleton className="h-5 w-20" />
             </div>
+        </div>
+        <div className="border-t border-border" />
+        <div className="flex items-center justify-between pt-0.5">
+            <Skeleton className="h-4 w-12" />
+            <Skeleton className="h-5 w-20" />
         </div>
     </div>
 );
@@ -174,36 +163,34 @@ export const ShoppingSummary = ({
     }
 
     return (
-        <div className="group bg-card rounded-lg border p-4 shadow-sm max-lg:mb-0">
-            <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                    <ShoppingCart className="text-muted-foreground h-4 w-4" />
-                    <span className="text-foreground group-hover:text-primary text-lg font-bold transition-colors lg:text-base">
-                        Shopping Summary
-                    </span>
-                </div>
-
-                <Suspense
-                    fallback={
-                        <div className="flex flex-col items-center justify-center gap-2 py-4">
-                            <Spinner />
-                            <span className="text-muted-foreground text-sm">Loading cart...</span>
-                        </div>
-                    }
-                >
-                    <Await resolve={rootData?.cart}>
-                        {cart => (
-                            <SummaryContent
-                                product={product}
-                                selectedVariant={selectedVariant}
-                                quantity={quantity}
-                                isVariantTransitioning={isVariantTransitioning}
-                                cart={cart}
-                            />
-                        )}
-                    </Await>
-                </Suspense>
+        <div className="space-y-2.5 sm:space-y-3 rounded-xl border bg-card p-3 sm:p-4 shadow-sm">
+            <div className="flex items-center gap-1.5">
+                <ShoppingCart className="size-3 text-muted-foreground" />
+                <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                    Order Summary
+                </span>
             </div>
+
+            <Suspense
+                fallback={
+                    <div className="flex flex-col items-center justify-center gap-2 py-4">
+                        <Spinner />
+                        <span className="text-muted-foreground text-sm">Loading cart...</span>
+                    </div>
+                }
+            >
+                <Await resolve={rootData?.cart}>
+                    {cart => (
+                        <SummaryContent
+                            product={product}
+                            selectedVariant={selectedVariant}
+                            quantity={quantity}
+                            isVariantTransitioning={isVariantTransitioning}
+                            cart={cart}
+                        />
+                    )}
+                </Await>
+            </Suspense>
         </div>
     );
 };
