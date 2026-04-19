@@ -30,6 +30,12 @@ import type {ChangelogEntry} from "~/lib/types/changelog";
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-19",
+        category: "Design",
+        headline: "Cart suggestion cards are now more compact and balanced",
+        summary: "The product suggestions strip inside the cart now shows more cards at once across all screen sizes — giving you a better overview of what's available without needing to scroll as much."
+    },
+    {
+        date: "2026-04-19",
         category: "New Feature",
         headline: "Product pages now show tag badges for special items",
         summary: "Pre-Order, New, Premium, and Clearance products now display a badge above the product title on the product page so you can quickly identify what makes each item special before adding it to your cart."
