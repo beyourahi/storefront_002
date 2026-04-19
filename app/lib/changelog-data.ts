@@ -30,6 +30,12 @@ import type {ChangelogEntry} from "~/lib/types/changelog";
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-19",
+        category: "New Feature",
+        headline: "Product pages now show tag badges for special items",
+        summary: "Pre-Order, New, Premium, and Clearance products now display a badge above the product title on the product page so you can quickly identify what makes each item special before adding it to your cart."
+    },
+    {
+        date: "2026-04-19",
         category: "Fix",
         headline: "Brand name size is now consistent across the site",
         summary: "The store name in the navigation bar, the scroll animation that brings it up from the hero, and the full-screen menu header all now render at the same size at every screen width. Previously, the scroll animation would settle at a slightly different size than the nav bar, creating a subtle but visible jump."
