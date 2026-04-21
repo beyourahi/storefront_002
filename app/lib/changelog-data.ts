@@ -31,6 +31,18 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-21",
         category: "Improvement",
+        headline: "Featured blog card is now fully tappable on the blog index",
+        summary: "Tapping anywhere on the featured article card at the top of the blog page now opens the article — not just the Read Article button. The card is also taller on phones so the image and headline carry more weight as the entry point to reading."
+    },
+    {
+        date: "2026-04-21",
+        category: "Fix",
+        headline: "Blog index no longer repeats a lone article twice",
+        summary: "When a store has only a single published article, the blog page now shows the featured hero on its own without repeating the same article in a list directly below it."
+    },
+    {
+        date: "2026-04-21",
+        category: "Improvement",
         headline: "Recent searches now show a thumbnail of the product you last tapped",
         summary: "When you search and tap a product result, that search term is saved alongside the product's thumbnail. The next time you open search, your recent search chips show a small image next to each term — making it much faster to recognise and return to things you were looking at."
     },
