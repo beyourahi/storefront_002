@@ -30,6 +30,12 @@ import type {ChangelogEntry} from "~/lib/types/changelog";
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-21",
+        category: "Performance",
+        headline: "Article pages now render instantly instead of fading section-by-section",
+        summary: "Entrance animations on the article body, share row, author bio, back button, and related articles have been removed. All sections are visible the moment the page loads — the reading experience feels faster and nothing scrolls into view as you read."
+    },
+    {
+        date: "2026-04-21",
         category: "Design",
         headline: "Share buttons on articles refreshed with stronger presence",
         summary: "The share row at the bottom of each article has been redesigned — a bolder serif heading with a decorative rule, larger pill buttons with bigger icons, a subtle lift on hover, and tap targets that comfortably exceed accessibility minimums on every screen size."
