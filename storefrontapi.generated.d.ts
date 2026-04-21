@@ -1717,6 +1717,25 @@ export type LatestArticlesQuery = {
     };
 };
 
+export type BlogFeedQueryVariables = StorefrontAPI.Exact<{
+    first?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars["Int"]["input"]>;
+    country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+    language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+}>;
+
+export type BlogFeedQuery = {
+    articles: {
+        nodes: Array<
+            Pick<StorefrontAPI.Article, "handle" | "title" | "excerpt" | "publishedAt" | "tags"> & {
+                image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "url" | "altText">>;
+                blog: Pick<StorefrontAPI.Blog, "handle" | "title">;
+                author?: StorefrontAPI.Maybe<Pick<StorefrontAPI.ArticleAuthor, "name">>;
+            }
+        >;
+    };
+    shop: Pick<StorefrontAPI.Shop, "name" | "description">;
+};
+
 export type MoneyProductItemFragment = Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
 
 export type ProductItemFragment = Pick<
@@ -3217,6 +3236,10 @@ interface GeneratedQueryTypes {
     "#graphql\n  query LatestArticles(\n    $first: Int\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    articles(first: $first, sortKey: PUBLISHED_AT, reverse: true) {\n      nodes {\n        handle\n        title\n        excerpt\n        excerptHtml\n        content\n        contentHtml\n        publishedAt\n        tags\n        image {\n          id\n          altText\n          url\n          width\n          height\n        }\n        blog {\n          handle\n          title\n        }\n        author: authorV2 {\n          name\n        }\n      }\n    }\n  }\n": {
         return: LatestArticlesQuery;
         variables: LatestArticlesQueryVariables;
+    };
+    "#graphql\n  query BlogFeed(\n    $first: Int\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    articles(first: $first, sortKey: PUBLISHED_AT, reverse: true) {\n      nodes {\n        handle\n        title\n        excerpt\n        publishedAt\n        tags\n        image {\n          url\n          altText\n        }\n        blog {\n          handle\n          title\n        }\n        author: authorV2 {\n          name\n        }\n      }\n    }\n    shop {\n      name\n      description\n    }\n  }\n": {
+        return: BlogFeedQuery;
+        variables: BlogFeedQueryVariables;
     };
     "#graphql\n  #graphql\n  fragment MoneyProductItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment ProductItem on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n      maxVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          ...MoneyProductItem\n        }\n        compareAtPrice {\n          ...MoneyProductItem\n        }\n      }\n    }\n  }\n\n  query Collection(\n    $handle: String!\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n    $sortKey: ProductCollectionSortKeys\n    $reverse: Boolean\n    $filters: [ProductFilter!]\n  ) @inContext(country: $country, language: $language) {\n    collection(handle: $handle) {\n      id\n      handle\n      title\n      description\n      seo {\n        title\n        description\n      }\n      image {\n        url\n        altText\n        width\n        height\n      }\n      products(\n        first: $first\n        last: $last\n        before: $startCursor\n        after: $endCursor\n        sortKey: $sortKey\n        reverse: $reverse\n        filters: $filters\n      ) {\n        nodes {\n          ...ProductItem\n        }\n        pageInfo {\n          hasNextPage\n          hasPreviousPage\n          startCursor\n          endCursor\n        }\n      }\n    }\n  }\n": {
         return: CollectionQuery;

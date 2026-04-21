@@ -30,6 +30,12 @@ import type {ChangelogEntry} from "~/lib/types/changelog";
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-21",
+        category: "Improvement",
+        headline: "Recent searches now show a thumbnail of the product you last tapped",
+        summary: "When you search and tap a product result, that search term is saved alongside the product's thumbnail. The next time you open search, your recent search chips show a small image next to each term — making it much faster to recognise and return to things you were looking at."
+    },
+    {
+        date: "2026-04-21",
         category: "New Feature",
         headline: "Blog articles now available as an RSS feed",
         summary: "All published blog posts are now syndicated at /blogs/feed.xml in RSS 2.0 format. Subscribe in any RSS reader to get new articles automatically, or share the feed link with newsletter tools and content aggregators."
