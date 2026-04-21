@@ -31,8 +31,8 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-21",
         category: "Fix",
-        headline: "Carousel in cart is scrollable again on trackpad and mobile",
-        summary: "Two-finger trackpad scrolling and touch swipe on the product suggestions carousel inside the cart drawer are fully restored. Mouse drag-to-scroll remains off."
+        headline: "Trackpad scroll now works on cart suggestions carousel",
+        summary: "Two-finger horizontal trackpad scroll through product suggestions in the cart drawer is fully working. Touch swipe on mobile also restored. Mouse drag-to-scroll remains off."
     },
     {
         date: "2026-04-21",
