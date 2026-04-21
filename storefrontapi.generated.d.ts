@@ -997,6 +997,7 @@ export type CartSuggestionProductFragment = Pick<
             Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
                 selectedOptions: Array<Pick<StorefrontAPI.SelectedOption, "name" | "value">>;
                 price: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+                compareAtPrice?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">>;
             }
         >;
     };
@@ -1024,6 +1025,9 @@ export type CartSuggestionsQuery = {
                         Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
                             selectedOptions: Array<Pick<StorefrontAPI.SelectedOption, "name" | "value">>;
                             price: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+                            compareAtPrice?: StorefrontAPI.Maybe<
+                                Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">
+                            >;
                         }
                     >;
                 };
@@ -3122,7 +3126,7 @@ interface GeneratedQueryTypes {
         return: PwaManifestQuery;
         variables: PwaManifestQueryVariables;
     };
-    '#graphql\n  fragment CartSuggestionProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    variants(first: 1) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CartSuggestions(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 16, sortKey: BEST_SELLING, query: "available_for_sale:true") {\n      nodes {\n        ...CartSuggestionProduct\n      }\n    }\n  }\n': {
+    '#graphql\n  fragment CartSuggestionProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    variants(first: 250) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CartSuggestions(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 16, sortKey: BEST_SELLING, query: "available_for_sale:true") {\n      nodes {\n        ...CartSuggestionProduct\n      }\n    }\n  }\n': {
         return: CartSuggestionsQuery;
         variables: CartSuggestionsQueryVariables;
     };
