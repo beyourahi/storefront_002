@@ -404,9 +404,11 @@ function CartSuggestions({products, layout, cartLines}: CartSuggestionsProps) {
                     opts={{
                         align: "start",
                         loop: true,
-                        dragFree: false,
+                        dragFree: true,
                         skipSnaps: false,
-                        watchDrag: false
+                        // Allow touch scroll (mobile) but block mouse drag.
+                        // WheelGesturesPlugin handles trackpad via wheel events independently.
+                        watchDrag: (_, event) => event.pointerType !== "mouse"
                     }}
                     plugins={[WheelGesturesPlugin({forceWheelAxis: "x"})]}
                     className="w-full"

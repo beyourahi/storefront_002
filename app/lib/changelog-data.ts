@@ -31,6 +31,12 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-21",
         category: "Fix",
+        headline: "Carousel in cart is scrollable again on trackpad and mobile",
+        summary: "Two-finger trackpad scrolling and touch swipe on the product suggestions carousel inside the cart drawer are fully restored. Mouse drag-to-scroll remains off."
+    },
+    {
+        date: "2026-04-21",
+        category: "Fix",
         headline: "\"Get Now\" in cart suggestions now opens the size/colour picker",
         summary: "Tapping \"Get Now\" on a product in the suggested items carousel inside your bag now correctly opens the variant selector so you can choose your size, colour, or style before adding — instead of silently adding the default option."
     },
