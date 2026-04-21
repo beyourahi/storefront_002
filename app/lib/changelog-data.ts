@@ -30,6 +30,12 @@ import type {ChangelogEntry} from "~/lib/types/changelog";
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-21",
+        category: "Design",
+        headline: "Share buttons on articles refreshed with stronger presence",
+        summary: "The share row at the bottom of each article has been redesigned — a bolder serif heading with a decorative rule, larger pill buttons with bigger icons, a subtle lift on hover, and tap targets that comfortably exceed accessibility minimums on every screen size."
+    },
+    {
+        date: "2026-04-21",
         category: "Improvement",
         headline: "Featured blog card is now fully tappable on the blog index",
         summary: "Tapping anywhere on the featured article card at the top of the blog page now opens the article — not just the Read Article button. The card is also taller on phones so the image and headline carry more weight as the entry point to reading."
