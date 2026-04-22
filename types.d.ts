@@ -683,19 +683,10 @@ export interface SiteSettings {
     siteUrl: string;
 
     // ─────────────────────────────────────────────────────────────────────────
-    // CONTACT INFORMATION
+    // MESSAGING WIDGETS (FloatingChatWidget)
     // ─────────────────────────────────────────────────────────────────────────
-    contactEmail: string;
-    contactPhone: string;
     messengerPageId: string;
     whatsappNumber: string;
-    businessHours: string;
-    address: {
-        street: string;
-        city: string;
-        state: string;
-        zip: string;
-    };
 
     // ─────────────────────────────────────────────────────────────────────────
     // SECTION HEADINGS
@@ -756,21 +747,6 @@ export interface SiteSettings {
     googleMapsEmbedUrls: string[];
     /** Array of Google Maps share links (maps.app.goo.gl/…), index-paired with googleMapsEmbedUrls */
     googleMapsLinks: string[];
-}
-
-/**
- * Contact information (derived from SiteSettings for backward compatibility)
- */
-export interface ContactInfo {
-    email: string;
-    phone: string;
-    businessHours: string;
-    address: {
-        street: string;
-        city: string;
-        state: string;
-        zip: string;
-    };
 }
 
 /**
