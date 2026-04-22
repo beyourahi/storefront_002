@@ -992,6 +992,22 @@ export type CartSuggestionProductFragment = Pick<
     };
     compareAtPriceRange: {minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">};
     featuredImage?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>;
+    media: {
+        nodes: Array<
+            | {__typename: "ExternalVideo" | "Model3d"}
+            | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                      image?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+            | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                      sources: Array<Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">>;
+                      previewImage?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+        >;
+    };
     variants: {
         nodes: Array<
             Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
@@ -1020,6 +1036,24 @@ export type CartSuggestionsQuery = {
                 featuredImage?: StorefrontAPI.Maybe<
                     Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
                 >;
+                media: {
+                    nodes: Array<
+                        | {__typename: "ExternalVideo" | "Model3d"}
+                        | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                                  image?: StorefrontAPI.Maybe<
+                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                  >;
+                              })
+                        | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                                  sources: Array<
+                                      Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">
+                                  >;
+                                  previewImage?: StorefrontAPI.Maybe<
+                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                  >;
+                              })
+                    >;
+                };
                 variants: {
                     nodes: Array<
                         Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
@@ -1073,6 +1107,22 @@ export type CuratedProductFragment = Pick<
     compareAtPriceRange: {minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">};
     featuredImage?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>;
     images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+    media: {
+        nodes: Array<
+            | {__typename: "ExternalVideo" | "Model3d"}
+            | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                      image?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+            | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                      sources: Array<Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">>;
+                      previewImage?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+        >;
+    };
     variants: {
         nodes: Array<
             Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
@@ -1108,6 +1158,33 @@ export type CuratedCollectionsQuery = {
                             >;
                             images: {
                                 nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>;
+                            };
+                            media: {
+                                nodes: Array<
+                                    | {__typename: "ExternalVideo" | "Model3d"}
+                                    | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                                              image?: StorefrontAPI.Maybe<
+                                                  Pick<
+                                                      StorefrontAPI.Image,
+                                                      "id" | "url" | "altText" | "width" | "height"
+                                                  >
+                                              >;
+                                          })
+                                    | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                                              sources: Array<
+                                                  Pick<
+                                                      StorefrontAPI.VideoSource,
+                                                      "url" | "mimeType" | "width" | "height"
+                                                  >
+                                              >;
+                                              previewImage?: StorefrontAPI.Maybe<
+                                                  Pick<
+                                                      StorefrontAPI.Image,
+                                                      "id" | "url" | "altText" | "width" | "height"
+                                                  >
+                                              >;
+                                          })
+                                >;
                             };
                             variants: {
                                 nodes: Array<
@@ -1150,6 +1227,24 @@ export type HomeRecentlyViewedProductsQuery = {
                         Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
                     >;
                     images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+                    media: {
+                        nodes: Array<
+                            | {__typename: "ExternalVideo" | "Model3d"}
+                            | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                                      image?: StorefrontAPI.Maybe<
+                                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                      >;
+                                  })
+                            | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                                      sources: Array<
+                                          Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">
+                                      >;
+                                      previewImage?: StorefrontAPI.Maybe<
+                                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                      >;
+                                  })
+                        >;
+                    };
                     variants: {
                         nodes: Array<
                             Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
@@ -1184,6 +1279,24 @@ export type AllProductsQuery = {
                     Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
                 >;
                 images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+                media: {
+                    nodes: Array<
+                        | {__typename: "ExternalVideo" | "Model3d"}
+                        | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                                  image?: StorefrontAPI.Maybe<
+                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                  >;
+                              })
+                        | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                                  sources: Array<
+                                      Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">
+                                  >;
+                                  previewImage?: StorefrontAPI.Maybe<
+                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                  >;
+                              })
+                    >;
+                };
                 variants: {
                     nodes: Array<
                         Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
@@ -1744,6 +1857,22 @@ export type ProductItemFragment = Pick<
 > & {
     featuredImage?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "id" | "altText" | "url" | "width" | "height">>;
     images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+    media: {
+        nodes: Array<
+            | {__typename: "ExternalVideo" | "Model3d"}
+            | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                      image?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+            | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                      sources: Array<Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">>;
+                      previewImage?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+        >;
+    };
     priceRange: {
         minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
         maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
@@ -1786,6 +1915,24 @@ export type CollectionQuery = {
                         >;
                         images: {
                             nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>;
+                        };
+                        media: {
+                            nodes: Array<
+                                | {__typename: "ExternalVideo" | "Model3d"}
+                                | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                                          image?: StorefrontAPI.Maybe<
+                                              Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                          >;
+                                      })
+                                | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                                          sources: Array<
+                                              Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">
+                                          >;
+                                          previewImage?: StorefrontAPI.Maybe<
+                                              Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                          >;
+                                      })
+                            >;
                         };
                         priceRange: {
                             minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
@@ -1917,6 +2064,22 @@ export type CollectionItemFragment = Pick<
 > & {
     featuredImage?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "id" | "altText" | "url" | "width" | "height">>;
     images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+    media: {
+        nodes: Array<
+            | {__typename: "ExternalVideo" | "Model3d"}
+            | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                      image?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+            | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                      sources: Array<Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">>;
+                      previewImage?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+        >;
+    };
     priceRange: {
         minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
         maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
@@ -1952,6 +2115,24 @@ export type CatalogQuery = {
                     Pick<StorefrontAPI.Image, "id" | "altText" | "url" | "width" | "height">
                 >;
                 images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+                media: {
+                    nodes: Array<
+                        | {__typename: "ExternalVideo" | "Model3d"}
+                        | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                                  image?: StorefrontAPI.Maybe<
+                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                  >;
+                              })
+                        | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                                  sources: Array<
+                                      Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">
+                                  >;
+                                  previewImage?: StorefrontAPI.Maybe<
+                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                  >;
+                              })
+                    >;
+                };
                 priceRange: {
                     minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
                     maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
@@ -2645,6 +2826,22 @@ export type RecommendedProductFragment = Pick<
 > & {
     featuredImage?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "id" | "altText" | "url" | "width" | "height">>;
     images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+    media: {
+        nodes: Array<
+            | {__typename: "ExternalVideo" | "Model3d"}
+            | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                      image?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+            | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                      sources: Array<Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">>;
+                      previewImage?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+        >;
+    };
     priceRange: {
         minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
         maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
@@ -2675,6 +2872,24 @@ export type ProductPageRecommendationsQuery = {
                     Pick<StorefrontAPI.Image, "id" | "altText" | "url" | "width" | "height">
                 >;
                 images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+                media: {
+                    nodes: Array<
+                        | {__typename: "ExternalVideo" | "Model3d"}
+                        | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                                  image?: StorefrontAPI.Maybe<
+                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                  >;
+                              })
+                        | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                                  sources: Array<
+                                      Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">
+                                  >;
+                                  previewImage?: StorefrontAPI.Maybe<
+                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                  >;
+                              })
+                    >;
+                };
                 priceRange: {
                     minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
                     maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
@@ -2783,6 +2998,22 @@ export type SearchProductFragment = {__typename: "Product"} & Pick<
 > & {
         featuredImage?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "id" | "altText" | "url" | "width" | "height">>;
         images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+        media: {
+            nodes: Array<
+                | {__typename: "ExternalVideo" | "Model3d"}
+                | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                          image?: StorefrontAPI.Maybe<
+                              Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                          >;
+                      })
+                | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                          sources: Array<Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">>;
+                          previewImage?: StorefrontAPI.Maybe<
+                              Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                          >;
+                      })
+            >;
+        };
         priceRange: {
             minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
             maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
@@ -2866,6 +3097,24 @@ export type RegularSearchQuery = {
                         Pick<StorefrontAPI.Image, "id" | "altText" | "url" | "width" | "height">
                     >;
                     images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+                    media: {
+                        nodes: Array<
+                            | {__typename: "ExternalVideo" | "Model3d"}
+                            | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                                      image?: StorefrontAPI.Maybe<
+                                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                      >;
+                                  })
+                            | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                                      sources: Array<
+                                          Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">
+                                      >;
+                                      previewImage?: StorefrontAPI.Maybe<
+                                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                      >;
+                                  })
+                        >;
+                    };
                     priceRange: {
                         minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
                         maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
@@ -2921,6 +3170,24 @@ export type SearchProductsQuery = {
                         Pick<StorefrontAPI.Image, "id" | "altText" | "url" | "width" | "height">
                     >;
                     images: {nodes: Array<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>};
+                    media: {
+                        nodes: Array<
+                            | {__typename: "ExternalVideo" | "Model3d"}
+                            | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                                      image?: StorefrontAPI.Maybe<
+                                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                      >;
+                                  })
+                            | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                                      sources: Array<
+                                          Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">
+                                      >;
+                                      previewImage?: StorefrontAPI.Maybe<
+                                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                      >;
+                                  })
+                        >;
+                    };
                     priceRange: {
                         minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
                         maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
@@ -3145,7 +3412,7 @@ interface GeneratedQueryTypes {
         return: PwaManifestQuery;
         variables: PwaManifestQueryVariables;
     };
-    '#graphql\n  fragment CartSuggestionProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    variants(first: 250) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CartSuggestions(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 16, sortKey: BEST_SELLING, query: "available_for_sale:true") {\n      nodes {\n        ...CartSuggestionProduct\n      }\n    }\n  }\n': {
+    '#graphql\n  fragment CartSuggestionProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    media(first: 5) {\n      nodes {\n        __typename\n        ... on MediaImage {\n          id\n          alt\n          image {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          id\n          alt\n          sources {\n            url\n            mimeType\n            width\n            height\n          }\n          previewImage {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    variants(first: 250) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CartSuggestions(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 16, sortKey: BEST_SELLING, query: "available_for_sale:true") {\n      nodes {\n        ...CartSuggestionProduct\n      }\n    }\n  }\n': {
         return: CartSuggestionsQuery;
         variables: CartSuggestionsQueryVariables;
     };
@@ -3161,15 +3428,15 @@ interface GeneratedQueryTypes {
         return: StoreRobotsQuery;
         variables: StoreRobotsQueryVariables;
     };
-    "#graphql\n  fragment CuratedProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    tags\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CuratedCollections($country: CountryCode, $language: LanguageCode)\n    @inContext(country: $country, language: $language) {\n    collections(first: 20) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 6) {\n          nodes {\n            ...CuratedProduct\n          }\n        }\n      }\n    }\n  }\n": {
+    "#graphql\n  fragment CuratedProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    tags\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    media(first: 5) {\n      nodes {\n        __typename\n        ... on MediaImage {\n          id\n          alt\n          image {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          id\n          alt\n          sources {\n            url\n            mimeType\n            width\n            height\n          }\n          previewImage {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CuratedCollections($country: CountryCode, $language: LanguageCode)\n    @inContext(country: $country, language: $language) {\n    collections(first: 20) {\n      nodes {\n        id\n        handle\n        title\n        products(first: 6) {\n          nodes {\n            ...CuratedProduct\n          }\n        }\n      }\n    }\n  }\n": {
         return: CuratedCollectionsQuery;
         variables: CuratedCollectionsQueryVariables;
     };
-    "#graphql\n  query HomeRecentlyViewedProducts(\n    $ids: [ID!]!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    nodes(ids: $ids) {\n      ... on Product {\n        __typename\n        id\n        title\n        handle\n        availableForSale\n        tags\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n          maxVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        compareAtPriceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        images(first: 10) {\n          nodes {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        variants(first: 100) {\n          nodes {\n            id\n            title\n            availableForSale\n            selectedOptions {\n              name\n              value\n            }\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
+    "#graphql\n  query HomeRecentlyViewedProducts(\n    $ids: [ID!]!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    nodes(ids: $ids) {\n      ... on Product {\n        __typename\n        id\n        title\n        handle\n        availableForSale\n        tags\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n          maxVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        compareAtPriceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        images(first: 10) {\n          nodes {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        media(first: 5) {\n          nodes {\n            __typename\n            ... on MediaImage {\n              id\n              alt\n              image {\n                id\n                url\n                altText\n                width\n                height\n              }\n            }\n            ... on Video {\n              id\n              alt\n              sources {\n                url\n                mimeType\n                width\n                height\n              }\n              previewImage {\n                id\n                url\n                altText\n                width\n                height\n              }\n            }\n          }\n        }\n        variants(first: 100) {\n          nodes {\n            id\n            title\n            availableForSale\n            selectedOptions {\n              name\n              value\n            }\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
         return: HomeRecentlyViewedProductsQuery;
         variables: HomeRecentlyViewedProductsQueryVariables;
     };
-    "#graphql\n  query AllProducts(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 250) {\n      nodes {\n        id\n        title\n        handle\n        availableForSale\n        tags\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n          maxVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        compareAtPriceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        images(first: 10) {\n          nodes {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        variants(first: 100) {\n          nodes {\n            id\n            title\n            availableForSale\n            selectedOptions {\n              name\n              value\n            }\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
+    "#graphql\n  query AllProducts(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 250) {\n      nodes {\n        id\n        title\n        handle\n        availableForSale\n        tags\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n          maxVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        compareAtPriceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        images(first: 10) {\n          nodes {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        media(first: 5) {\n          nodes {\n            __typename\n            ... on MediaImage {\n              id\n              alt\n              image {\n                id\n                url\n                altText\n                width\n                height\n              }\n            }\n            ... on Video {\n              id\n              alt\n              sources {\n                url\n                mimeType\n                width\n                height\n              }\n              previewImage {\n                id\n                url\n                altText\n                width\n                height\n              }\n            }\n          }\n        }\n        variants(first: 100) {\n          nodes {\n            id\n            title\n            availableForSale\n            selectedOptions {\n              name\n              value\n            }\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n    }\n  }\n": {
         return: AllProductsQuery;
         variables: AllProductsQueryVariables;
     };
@@ -3241,7 +3508,7 @@ interface GeneratedQueryTypes {
         return: BlogFeedQuery;
         variables: BlogFeedQueryVariables;
     };
-    "#graphql\n  #graphql\n  fragment MoneyProductItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment ProductItem on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n      maxVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          ...MoneyProductItem\n        }\n        compareAtPrice {\n          ...MoneyProductItem\n        }\n      }\n    }\n  }\n\n  query Collection(\n    $handle: String!\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n    $sortKey: ProductCollectionSortKeys\n    $reverse: Boolean\n    $filters: [ProductFilter!]\n  ) @inContext(country: $country, language: $language) {\n    collection(handle: $handle) {\n      id\n      handle\n      title\n      description\n      seo {\n        title\n        description\n      }\n      image {\n        url\n        altText\n        width\n        height\n      }\n      products(\n        first: $first\n        last: $last\n        before: $startCursor\n        after: $endCursor\n        sortKey: $sortKey\n        reverse: $reverse\n        filters: $filters\n      ) {\n        nodes {\n          ...ProductItem\n        }\n        pageInfo {\n          hasNextPage\n          hasPreviousPage\n          startCursor\n          endCursor\n        }\n      }\n    }\n  }\n": {
+    "#graphql\n  #graphql\n  fragment MoneyProductItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment ProductItem on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    media(first: 5) {\n      nodes {\n        __typename\n        ... on MediaImage {\n          id\n          alt\n          image {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          id\n          alt\n          sources {\n            url\n            mimeType\n            width\n            height\n          }\n          previewImage {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n      maxVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          ...MoneyProductItem\n        }\n        compareAtPrice {\n          ...MoneyProductItem\n        }\n      }\n    }\n  }\n\n  query Collection(\n    $handle: String!\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n    $sortKey: ProductCollectionSortKeys\n    $reverse: Boolean\n    $filters: [ProductFilter!]\n  ) @inContext(country: $country, language: $language) {\n    collection(handle: $handle) {\n      id\n      handle\n      title\n      description\n      seo {\n        title\n        description\n      }\n      image {\n        url\n        altText\n        width\n        height\n      }\n      products(\n        first: $first\n        last: $last\n        before: $startCursor\n        after: $endCursor\n        sortKey: $sortKey\n        reverse: $reverse\n        filters: $filters\n      ) {\n        nodes {\n          ...ProductItem\n        }\n        pageInfo {\n          hasNextPage\n          hasPreviousPage\n          startCursor\n          endCursor\n        }\n      }\n    }\n  }\n": {
         return: CollectionQuery;
         variables: CollectionQueryVariables;
     };
@@ -3261,7 +3528,7 @@ interface GeneratedQueryTypes {
         return: SaleProductsQuery;
         variables: SaleProductsQueryVariables;
     };
-    "#graphql\n  query Catalog(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n    $sortKey: ProductSortKeys\n    $reverse: Boolean\n  ) @inContext(country: $country, language: $language) {\n    products(\n      first: $first\n      last: $last\n      before: $startCursor\n      after: $endCursor\n      sortKey: $sortKey\n      reverse: $reverse\n    ) {\n      nodes {\n        ...CollectionItem\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment MoneyCollectionItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment CollectionItem on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n      maxVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          ...MoneyCollectionItem\n        }\n        compareAtPrice {\n          ...MoneyCollectionItem\n        }\n      }\n    }\n  }\n\n": {
+    "#graphql\n  query Catalog(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n    $sortKey: ProductSortKeys\n    $reverse: Boolean\n  ) @inContext(country: $country, language: $language) {\n    products(\n      first: $first\n      last: $last\n      before: $startCursor\n      after: $endCursor\n      sortKey: $sortKey\n      reverse: $reverse\n    ) {\n      nodes {\n        ...CollectionItem\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment MoneyCollectionItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment CollectionItem on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    media(first: 5) {\n      nodes {\n        __typename\n        ... on MediaImage {\n          id\n          alt\n          image {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          id\n          alt\n          sources {\n            url\n            mimeType\n            width\n            height\n          }\n          previewImage {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n      maxVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...MoneyCollectionItem\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          ...MoneyCollectionItem\n        }\n        compareAtPrice {\n          ...MoneyCollectionItem\n        }\n      }\n    }\n  }\n\n": {
         return: CatalogQuery;
         variables: CatalogQueryVariables;
     };
@@ -3289,7 +3556,7 @@ interface GeneratedQueryTypes {
         return: SidebarCollectionsProductQuery;
         variables: SidebarCollectionsProductQueryVariables;
     };
-    "#graphql\n  query ProductPageRecommendations(\n    $productId: ID!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    productRecommendations(productId: $productId) {\n      ...RecommendedProduct\n    }\n  }\n  #graphql\n  fragment RecommendedProduct on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n": {
+    "#graphql\n  query ProductPageRecommendations(\n    $productId: ID!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    productRecommendations(productId: $productId) {\n      ...RecommendedProduct\n    }\n  }\n  #graphql\n  fragment RecommendedProduct on Product {\n    id\n    handle\n    title\n    availableForSale\n    tags\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    media(first: 5) {\n      nodes {\n        __typename\n        ... on MediaImage {\n          id\n          alt\n          image {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          id\n          alt\n          sources {\n            url\n            mimeType\n            width\n            height\n          }\n          previewImage {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n": {
         return: ProductPageRecommendationsQuery;
         variables: ProductPageRecommendationsQueryVariables;
     };
@@ -3305,11 +3572,11 @@ interface GeneratedQueryTypes {
         return: SearchCollectionsQuery;
         variables: SearchCollectionsQueryVariables;
     };
-    "#graphql\n  query RegularSearch(\n    $country: CountryCode\n    $language: LanguageCode\n    $term: String!\n    $productFirst: Int!\n    $productAfter: String\n    $articleFirst: Int!\n    $articleAfter: String\n  ) @inContext(country: $country, language: $language) {\n    products: search(\n      query: $term,\n      types: [PRODUCT],\n      first: $productFirst,\n      after: $productAfter,\n      sortKey: RELEVANCE,\n      unavailableProducts: SHOW,\n    ) {\n      nodes {\n        ...on Product {\n          ...SearchProduct\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n      totalCount\n    }\n    articles: search(\n      query: $term,\n      types: [ARTICLE],\n      first: $articleFirst,\n      after: $articleAfter,\n    ) {\n      nodes {\n        ...on Article {\n          ...SearchArticle\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n      totalCount\n    }\n  }\n  #graphql\n  fragment SearchProduct on Product {\n    __typename\n    handle\n    id\n    title\n    trackingParameters\n    availableForSale\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment SearchArticle on Article {\n    __typename\n    handle\n    id\n    title\n    trackingParameters\n    excerpt(truncateAt: 150)\n    publishedAt\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n    blog {\n      handle\n      title\n    }\n  }\n\n  #graphql\n  fragment PageInfoFragment on PageInfo {\n    hasNextPage\n    hasPreviousPage\n    startCursor\n    endCursor\n  }\n\n": {
+    "#graphql\n  query RegularSearch(\n    $country: CountryCode\n    $language: LanguageCode\n    $term: String!\n    $productFirst: Int!\n    $productAfter: String\n    $articleFirst: Int!\n    $articleAfter: String\n  ) @inContext(country: $country, language: $language) {\n    products: search(\n      query: $term,\n      types: [PRODUCT],\n      first: $productFirst,\n      after: $productAfter,\n      sortKey: RELEVANCE,\n      unavailableProducts: SHOW,\n    ) {\n      nodes {\n        ...on Product {\n          ...SearchProduct\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n      totalCount\n    }\n    articles: search(\n      query: $term,\n      types: [ARTICLE],\n      first: $articleFirst,\n      after: $articleAfter,\n    ) {\n      nodes {\n        ...on Article {\n          ...SearchArticle\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n      totalCount\n    }\n  }\n  #graphql\n  fragment SearchProduct on Product {\n    __typename\n    handle\n    id\n    title\n    trackingParameters\n    availableForSale\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    media(first: 5) {\n      nodes {\n        __typename\n        ... on MediaImage {\n          id\n          alt\n          image {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          id\n          alt\n          sources {\n            url\n            mimeType\n            width\n            height\n          }\n          previewImage {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment SearchArticle on Article {\n    __typename\n    handle\n    id\n    title\n    trackingParameters\n    excerpt(truncateAt: 150)\n    publishedAt\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n    blog {\n      handle\n      title\n    }\n  }\n\n  #graphql\n  fragment PageInfoFragment on PageInfo {\n    hasNextPage\n    hasPreviousPage\n    startCursor\n    endCursor\n  }\n\n": {
         return: RegularSearchQuery;
         variables: RegularSearchQueryVariables;
     };
-    "#graphql\n  query SearchProducts(\n    $country: CountryCode\n    $language: LanguageCode\n    $term: String!\n    $first: Int!\n    $after: String\n  ) @inContext(country: $country, language: $language) {\n    products: search(\n      query: $term,\n      types: [PRODUCT],\n      first: $first,\n      after: $after,\n      sortKey: RELEVANCE,\n      unavailableProducts: SHOW,\n    ) {\n      nodes {\n        ...on Product {\n          ...SearchProduct\n        }\n      }\n      pageInfo {\n        hasNextPage\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment SearchProduct on Product {\n    __typename\n    handle\n    id\n    title\n    trackingParameters\n    availableForSale\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n": {
+    "#graphql\n  query SearchProducts(\n    $country: CountryCode\n    $language: LanguageCode\n    $term: String!\n    $first: Int!\n    $after: String\n  ) @inContext(country: $country, language: $language) {\n    products: search(\n      query: $term,\n      types: [PRODUCT],\n      first: $first,\n      after: $after,\n      sortKey: RELEVANCE,\n      unavailableProducts: SHOW,\n    ) {\n      nodes {\n        ...on Product {\n          ...SearchProduct\n        }\n      }\n      pageInfo {\n        hasNextPage\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment SearchProduct on Product {\n    __typename\n    handle\n    id\n    title\n    trackingParameters\n    availableForSale\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    images(first: 10) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    media(first: 5) {\n      nodes {\n        __typename\n        ... on MediaImage {\n          id\n          alt\n          image {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          id\n          alt\n          sources {\n            url\n            mimeType\n            width\n            height\n          }\n          previewImage {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 100) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n": {
         return: SearchProductsQuery;
         variables: SearchProductsQueryVariables;
     };
