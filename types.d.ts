@@ -608,6 +608,15 @@ export interface FeaturedProductSection {
         width?: number | null;
         height?: number | null;
     } | null;
+    /**
+     * Raw Shopify media nodes (MediaImage | Video) for video-first rendering.
+     * Forwarded to QuickAddButton / QuickAddDialog / QuickAddSheet which
+     * inspect the first node via getCardVideoMedia to decide between video
+     * and image rendering. Keeps the storefront in parity with product cards.
+     */
+    media?: {
+        nodes: Array<{ __typename?: string | null; [key: string]: unknown }>;
+    } | null;
     priceRange: {
         minVariantPrice: { amount: string; currencyCode: string };
         maxVariantPrice: { amount: string; currencyCode: string };
