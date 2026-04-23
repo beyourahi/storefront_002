@@ -165,7 +165,9 @@ export async function loader({context, request}: Route.LoaderArgs) {
     // Fetch collections suitable for hero card display (with images and descriptions)
     let randomHeroCollection: HeroCollection | null = null;
     try {
-        const heroCollectionsResponse = await context.dataAdapter.query(HERO_COLLECTIONS_QUERY);
+        const heroCollectionsResponse = await context.dataAdapter.query(HERO_COLLECTIONS_QUERY, {
+            cache: context.dataAdapter.CacheLong()
+        });
         if (heroCollectionsResponse?.collections?.nodes) {
             // Type guard to ensure collection has required image and description
             const isValidHeroCollection = (collection: any): collection is HeroCollection => {
@@ -219,7 +221,8 @@ export async function loader({context, request}: Route.LoaderArgs) {
     if (recentlyViewedIds.length > 0) {
         try {
             const response = await context.dataAdapter.query(RECENTLY_VIEWED_PRODUCTS_QUERY, {
-                variables: {ids: recentlyViewedIds}
+                variables: {ids: recentlyViewedIds},
+                cache: context.dataAdapter.CacheShort()
             });
 
             if (response?.nodes) {
@@ -245,7 +248,9 @@ export async function loader({context, request}: Route.LoaderArgs) {
     // Fetch all available products for client-side use (API-level filter applied)
     let allProductsData: CuratedProductFragment[] = [];
     try {
-        const response = await context.dataAdapter.query(ALL_PRODUCTS_QUERY);
+        const response = await context.dataAdapter.query(ALL_PRODUCTS_QUERY, {
+            cache: context.dataAdapter.CacheShort()
+        });
         if (response?.products?.nodes) {
             allProductsData = response.products.nodes;
         }
@@ -256,7 +261,9 @@ export async function loader({context, request}: Route.LoaderArgs) {
     // Fetch collections for Explore Collections section
     let exploreCollections: ExploreCollectionFragment[] = [];
     try {
-        const response = await context.dataAdapter.query(EXPLORE_COLLECTIONS_QUERY);
+        const response = await context.dataAdapter.query(EXPLORE_COLLECTIONS_QUERY, {
+            cache: context.dataAdapter.CacheLong()
+        });
         if (response?.collections?.nodes) {
             exploreCollections = response.collections.nodes;
         }
@@ -329,7 +336,9 @@ export async function loader({context, request}: Route.LoaderArgs) {
     let recentArticles: HomepageArticle[] = [];
 
     try {
-        const blogsResponse = await context.dataAdapter.query(RECENT_BLOG_ARTICLES_QUERY);
+        const blogsResponse = await context.dataAdapter.query(RECENT_BLOG_ARTICLES_QUERY, {
+            cache: context.dataAdapter.CacheLong()
+        });
         if (blogsResponse?.blogs?.nodes) {
             // Flatten articles from all blogs and get the most recent ones
             const allArticles: HomepageArticle[] = [];
