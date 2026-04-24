@@ -1215,7 +1215,7 @@ const SEARCH_PRODUCT_FRAGMENT = `#graphql
       width
       height
     }
-    images(first: 10) {
+    images(first: 3) {
       nodes {
         id
         url
@@ -1273,7 +1273,7 @@ const SEARCH_PRODUCT_FRAGMENT = `#graphql
         currencyCode
       }
     }
-    variants(first: 100) {
+    variants(first: 20) {
       nodes {
         id
         title

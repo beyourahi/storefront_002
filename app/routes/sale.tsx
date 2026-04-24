@@ -346,14 +346,14 @@ const SIDEBAR_COLLECTIONS_QUERY = `#graphql
         id
         handle
         title
-        products(first: 250) {
+        products(first: 100) {
           nodes {
             id
           }
         }
       }
     }
-    allProducts: products(first: 250, query: "available_for_sale:true") {
+    allProducts: products(first: 50, query: "available_for_sale:true") {
       nodes {
         id
         availableForSale

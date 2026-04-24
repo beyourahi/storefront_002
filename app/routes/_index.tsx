@@ -161,6 +161,13 @@ export const meta: Route.MetaFunction = ({matches}) => {
     );
 };
 
+export function links({data}: {data: Awaited<ReturnType<typeof loader>> | null}) {
+    // Preload hero collection image for LCP — shown in VideoHero card overlay
+    const href = (data?.randomHeroCollection as any)?.image?.url;
+    if (!href) return [];
+    return [{rel: "preload", as: "image", href}] as const;
+}
+
 export async function loader({context, request}: Route.LoaderArgs) {
     // Fetch collections suitable for hero card display (with images and descriptions)
     let randomHeroCollection: HeroCollection | null = null;
@@ -637,7 +644,7 @@ const CURATED_COLLECTIONS_QUERY = `#graphql
       width
       height
     }
-    images(first: 10) {
+    images(first: 3) {
       nodes {
         id
         url
@@ -679,7 +686,7 @@ const CURATED_COLLECTIONS_QUERY = `#graphql
         }
       }
     }
-    variants(first: 100) {
+    variants(first: 5) {
       nodes {
         id
         title
@@ -755,7 +762,7 @@ const RECENTLY_VIEWED_PRODUCTS_QUERY = `#graphql
           width
           height
         }
-        images(first: 10) {
+        images(first: 3) {
           nodes {
             id
             url
@@ -797,7 +804,7 @@ const RECENTLY_VIEWED_PRODUCTS_QUERY = `#graphql
             }
           }
         }
-        variants(first: 100) {
+        variants(first: 5) {
           nodes {
             id
             title
@@ -827,7 +834,7 @@ const ALL_PRODUCTS_QUERY = `#graphql
     $country: CountryCode
     $language: LanguageCode
   ) @inContext(country: $country, language: $language) {
-    products(first: 250) {
+    products(first: 100) {
       nodes {
         id
         title
@@ -857,7 +864,7 @@ const ALL_PRODUCTS_QUERY = `#graphql
           width
           height
         }
-        images(first: 10) {
+        images(first: 3) {
           nodes {
             id
             url
@@ -899,7 +906,7 @@ const ALL_PRODUCTS_QUERY = `#graphql
             }
           }
         }
-        variants(first: 100) {
+        variants(first: 5) {
           nodes {
             id
             title
