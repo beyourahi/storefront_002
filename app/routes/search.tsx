@@ -1215,7 +1215,7 @@ const SEARCH_PRODUCT_FRAGMENT = `#graphql
       width
       height
     }
-    images(first: 10) {
+    images(first: 3) {
       nodes {
         id
         url
