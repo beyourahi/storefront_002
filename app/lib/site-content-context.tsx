@@ -63,9 +63,9 @@ import type {
     GeneratedTheme,
     ContactInfo
 } from "types";
-import {DEFAULT_SITE_SETTINGS, DEFAULT_THEME_CONFIG} from "./metaobject-parsers";
-import {generateTheme} from "./theme-utils";
-import {getSwatchBorderColor, getSmartSwatchBorderColor} from "./color";
+import {DEFAULT_SITE_SETTINGS, DEFAULT_THEME_CONFIG} from "~/lib/metaobject-parsers";
+import {generateTheme} from "~/lib/theme-utils";
+import {getSwatchBorderColor, getSmartSwatchBorderColor} from "~/lib/color";
 
 // =============================================================================
 // CONTEXT

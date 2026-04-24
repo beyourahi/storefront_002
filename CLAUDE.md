@@ -325,7 +325,7 @@ Read all comments before editing. Update when changing code. Add for complex log
 
 **Metaobject CMS**:
 
-- `site_settings` (singleton): Brand, hero, testimonials, FAQs, Instagram, shipping
+- `site_settings` (singleton): Brand, hero, testimonials, FAQs, Instagram, shipping, search content (labels, placeholders, filter text)
 - `theme_settings` (singleton): Fonts (Google), colors (OKLCH/HEX)
 - 80/20 architecture: High-value content only
 - Files: `lib/metaobject-queries.ts`, `lib/metaobject-parsers.ts`, `lib/site-content-context.tsx`
@@ -353,7 +353,7 @@ Read all comments before editing. Update when changing code. Add for complex log
 
 **Animations**: 26 `@keyframes` in `tailwind.css` - product (fade-in, image-hover), cart (cart-item-enter, success-pulse, price-dot), wishlist (heart-beat, heart-glow, burst-ring), hero (shimmer), GPU-accelerated, respects `prefers-reduced-motion`
 
-**Search**: Regular (full data), predictive (autocomplete), popular terms, recent (LocalStorage), keyboard (Cmd/Ctrl+K), full-screen overlay
+**Search**: Regular (full data), predictive (autocomplete), popular terms, recent (LocalStorage), keyboard (Cmd/Ctrl+K), full-screen overlay. Availability/in-stock filter labels and all UI text are CMS-configurable via `site_settings` search content fields (with hardcoded fallbacks in `metaobject-parsers.ts`)
 
 **Blog**: 7 components in `components/blog/` - ArticleCard, ArticleHero, AuthorBio, ReadingTime, RelatedArticles, ShareButtons, TagBadge. SEO-optimized (JSON-LD), tag filtering. Routes: `/blogs`, `/blogs/:blogHandle`, `/blogs/:blogHandle/:articleHandle`
 
