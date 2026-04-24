@@ -364,42 +364,4 @@ const DISCOUNTS_QUERY = `#graphql
   ${DISCOUNT_PRODUCT_FRAGMENT}
 ` as const;
 
-/**
- * Fetches collections for sidebar navigation.
- *
- * Also fetches all products to calculate accurate counts
- * for "All Products" and discount count in sidebar.
- */
-const SIDEBAR_COLLECTIONS_QUERY = `#graphql
-  query SidebarCollectionsForDiscounts(
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    collections(first: 50, sortKey: TITLE) {
-      nodes {
-        id
-        handle
-        title
-        products(first: 100) {
-          nodes {
-            id
-          }
-        }
-      }
-    }
-    allProducts: products(first: 50, query: "available_for_sale:true") {
-      nodes {
-        id
-        availableForSale
-        variants(first: 10) {
-          nodes {
-            availableForSale
-          }
-        }
-      }
-    }
-  }
-` as const;
-
-
 export {RouteErrorBoundary as ErrorBoundary} from "~/components/RouteErrorBoundary";

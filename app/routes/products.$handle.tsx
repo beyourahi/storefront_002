@@ -223,9 +223,21 @@ function loadDeferredData({context}: Route.LoaderArgs, productId: string) {
         .then((data: any) => (data.product?.reviews?.references?.nodes ?? []) as ReviewNode[])
         .catch(() => [] as ReviewNode[]);
 
+    const sidebarData = withTimeoutAndFallback(
+        dataAdapter
+            .query(SIDEBAR_COLLECTIONS_QUERY, {cache: dataAdapter.CacheLong()})
+            .catch((error: unknown) => {
+                console.error("Failed to load sidebar collections:", error);
+                return null;
+            }),
+        null,
+        TIMEOUT_DEFAULTS.API
+    );
+
     return {
         recommendations,
-        reviews
+        reviews,
+        sidebarData
     };
 }
 
