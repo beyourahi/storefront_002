@@ -153,13 +153,16 @@ export function useSocialLinks(): SocialLink[] {
  */
 export function useSectionHeadings(): SectionHeadings {
     const settings = useSiteSettings();
-    return {
-        blogSectionTitle: settings.blogSectionTitle,
-        collectionsTitle: settings.collectionsTitle,
-        relatedProductsTitle: settings.relatedProductsTitle,
-        recommendedTitle: settings.recommendedTitle,
-        instagramTitle: settings.instagramTitle
-    };
+    return useMemo(
+        () => ({
+            blogSectionTitle: settings.blogSectionTitle,
+            collectionsTitle: settings.collectionsTitle,
+            relatedProductsTitle: settings.relatedProductsTitle,
+            recommendedTitle: settings.recommendedTitle,
+            instagramTitle: settings.instagramTitle
+        }),
+        [settings]
+    );
 }
 
 /**
@@ -168,7 +171,7 @@ export function useSectionHeadings(): SectionHeadings {
  */
 export function useBrandMarquee(): {words: string[]} {
     const {brandWords} = useSiteSettings();
-    return {words: brandWords};
+    return useMemo(() => ({words: brandWords}), [brandWords]);
 }
 
 // =============================================================================
@@ -185,11 +188,14 @@ export function usePromotionalBanners(): {
     bannerTwoMedia?: HeroMedia;
 } {
     const settings = useSiteSettings();
-    return {
-        announcement: settings.announcementBanner,
-        bannerOneMedia: settings.promotionalBannerOneMedia,
-        bannerTwoMedia: settings.promotionalBannerTwoMedia
-    };
+    return useMemo(
+        () => ({
+            announcement: settings.announcementBanner,
+            bannerOneMedia: settings.promotionalBannerOneMedia,
+            bannerTwoMedia: settings.promotionalBannerTwoMedia
+        }),
+        [settings]
+    );
 }
 
 // =============================================================================
@@ -244,10 +250,13 @@ export function useContactInfo(): ContactInfo {
  */
 export function useShopLocation(): {embedUrls: string[]; shareLinks: string[]} {
     const settings = useSiteSettings();
-    return {
-        embedUrls: settings.googleMapsEmbed,
-        shareLinks: settings.googleMapsLink
-    };
+    return useMemo(
+        () => ({
+            embedUrls: settings.googleMapsEmbed,
+            shareLinks: settings.googleMapsLink
+        }),
+        [settings]
+    );
 }
 
 // =============================================================================
