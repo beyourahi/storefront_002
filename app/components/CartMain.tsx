@@ -71,7 +71,6 @@ import {Empty, EmptyHeader, EmptyMedia, EmptyTitle} from "~/components/ui/empty"
 import {type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext} from "~/components/ui/carousel";
 import {Skeleton} from "~/components/ui/skeleton";
 import {cn} from "~/lib/utils";
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "~/components/ui/accordion";
 import {ProductItem} from "~/components/ProductItem";
 import type {CartSuggestionProductFragment, CartApiQueryFragment} from "storefrontapi.generated";
 
@@ -479,9 +478,6 @@ function CartSuggestions({products, layout, cartLines}: CartSuggestionsProps) {
                                 />
                             </Carousel>
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
         </section>
     );
 }
