@@ -12,7 +12,7 @@
  * - THEME_SETTINGS_FRAGMENT - Theme customization fields (8 fields)
  *
  * Note: UI content fragments (product, cart, account, search, etc.) have been removed.
- * These use fallback constants from fallback-data.ts instead, as they represent standard
+ * These use fallback constants from metaobject-parsers.ts instead, as they represent standard
  * UI patterns that rarely need merchant customization. This follows the 80/20 rule:
  * only high-value, frequently-changed content needs Shopify Admin control.
  *
@@ -40,7 +40,7 @@
  * @related
  * - app/lib/metaobject-queries.ts - Uses these fragments in queries
  * - app/lib/metaobject-parsers.ts - Parses fields into TypeScript types
- * - app/lib/fallback-data.ts - Fallback values for all UI content
+ * - app/lib/metaobject-parsers.ts - Fallback values for all UI content
  * - app/lib/site-content-context.tsx - Provides parsed data via React Context
  */
 

@@ -10,7 +10,7 @@
  * @architecture
  * Parser Strategy (Simplified - 80/20 Rule):
  * - Defensive parsing with type guards and validation
- * - Graceful fallbacks to centralized defaults from fallback-data.ts
+ * - Graceful fallbacks to centralized defaults defined in this file
  * - Format conversion (OKLCH to HEX, JSON strings to typed objects)
  * - Collection handling (social links, testimonials, FAQs, Instagram media)
  *
@@ -20,7 +20,7 @@
  *
  * Note: UI content parsers (product, cart, account, search, etc.) are preserved
  * for type definitions but not used at runtime. Components import FALLBACK_*
- * constants directly from fallback-data.ts for standard UI labels.
+ * constants directly from this file (metaobject-parsers.ts) for standard UI labels.
  *
  * Field Types:
  * - Social links: JSON array of {label, url} → SocialLink[]
@@ -31,12 +31,12 @@
  *
  * @dependencies
  * - TypeScript types from types/index.ts
- * - Centralized fallback data from ./fallback-data.ts
+ * - Fallback constants defined in this file
  *
  * @related
  * - app/lib/metaobject-queries.ts - GraphQL queries that provide the raw data
  * - app/lib/metaobject-fragments.ts - GraphQL fragments for metaobject fields
- * - app/lib/fallback-data.ts - Default values and FALLBACK_* constants
+ * - FALLBACK_* constants are defined directly in this file
  * - app/lib/site-content-context.tsx - Provides parsed data via React Context
  * - app/root.tsx - Uses parseSiteContent to transform query results
  */
@@ -77,7 +77,7 @@ type MetaobjectField = {
 type MetaobjectData = Record<string, MetaobjectField | undefined>;
 
 // =============================================================================
-// FALLBACK CONSTANTS (previously in fallback-data.ts)
+// FALLBACK CONSTANTS
 // =============================================================================
 
 const FALLBACK_BRAND_WORDS: string[] = [
@@ -152,13 +152,13 @@ const FALLBACK_SOCIAL_LINKS: SocialLink[] = [
     }
 ];
 
-const FALLBACK_THEME_FONTS = {
+const FALLBACK_THEME_FONTS: ThemeFonts = {
     sans: "Inter",
     serif: "Georgia",
     mono: "Courier New"
 };
 
-const FALLBACK_THEME_COLORS = {
+const FALLBACK_THEME_COLORS: ThemeCoreColors = {
     primary: "oklch(0.2 0 0)",
     secondary: "oklch(0.9 0 0)",
     background: "oklch(1 0 0)",
@@ -174,7 +174,7 @@ const FALLBACK_SECTION_HEADINGS = {
     instagramTitle: "Follow Us"
 };
 
-const FALLBACK_SITE_SETTINGS = {
+const FALLBACK_SITE_SETTINGS: SiteSettings = {
     brandName: "",
     brandLogo: null,
     ogImage: null,
@@ -475,18 +475,18 @@ const FALLBACK_WISHLIST_CONTENT: WishlistContent = {
 // These export the centralized fallback values under their legacy names
 // =============================================================================
 
-/** Brand words for the marquee - sourced from centralized fallback-data.ts */
+/** Brand words for the marquee - defined in this file */
 // eslint-disable-next-line @typescript-eslint/naming-convention -- legacy export name for backwards compatibility
 export const DEFAULT_words_to_describe_your_brand = FALLBACK_BRAND_WORDS;
 
-/** Social links - sourced from centralized fallback-data.ts */
+/** Social links - defined in this file */
 export const DEFAULT_SOCIAL_LINKS = FALLBACK_SOCIAL_LINKS;
 
 /**
- * Default site settings - sourced from centralized fallback-data.ts
+ * Default site settings - defined in this file
  * Used when metaobject is not configured in Shopify Admin
  */
-export const DEFAULT_SITE_SETTINGS: SiteSettings = FALLBACK_SITE_SETTINGS as SiteSettings;
+export const DEFAULT_SITE_SETTINGS: SiteSettings = FALLBACK_SITE_SETTINGS;
 
 // =============================================================================
 // JSON PARSING HELPERS
@@ -571,21 +571,25 @@ function parseAnnouncementTexts(announcementField: MetaobjectField | undefined):
         return [];
     }
 
+    const raw = announcementField.value;
+
     try {
-        const parsed = JSON.parse(announcementField.value) as unknown;
-        if (
-            Array.isArray(parsed) &&
-            parsed.length > 0 &&
-            parsed.every((item): item is string => typeof item === "string")
-        ) {
+        const parsed = JSON.parse(raw) as unknown;
+        // JSON array — standard List of single line text field
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed.every((item): item is string => typeof item === "string")) {
             return parsed;
+        }
+        // JSON string (single item stored as quoted string)
+        if (typeof parsed === "string" && parsed.trim().length > 0) {
+            return [parsed.trim()];
         }
         return [];
     } catch {
-        // Field is single_line_text_field (plain string) rather than list.single_line_text_field
-        // (JSON array). Wrap it so the banner renders regardless of which field type the store uses.
-        const text = announcementField.value.trim();
-        return text ? [text] : [];
+        // Non-JSON plain string — treat as single announcement
+        if (raw.trim().length > 0) {
+            return [raw.trim()];
+        }
+        return [];
     }
 }
 
@@ -1007,7 +1011,7 @@ function parseThemeFonts(data: MetaobjectData): ThemeFonts {
  * OKLCH: oklch(0.6 0.1 45) or oklch(60% 0.1 45)
  * HEX: #rgb, #rrggbb, #rgba, #rrggbbaa
  */
-function isValidColor(color: string): boolean {
+function isValidColor(color: string | null | undefined): color is string {
     if (!color || typeof color !== "string") return false;
     const trimmed = color.trim();
 
@@ -1065,7 +1069,7 @@ export const DEFAULT_THEME_CONFIG: ThemeConfig = {
  * @returns Parsed theme configuration with fonts and colors
  */
 export function parseThemeSettings(rawData: unknown): ThemeConfig {
-    if (!rawData) return DEFAULT_THEME_CONFIG;
+    if (!rawData || typeof rawData !== "object") return DEFAULT_THEME_CONFIG;
 
     const data = rawData as MetaobjectData;
 
@@ -1101,7 +1105,7 @@ export function parseThemeSettings(rawData: unknown): ThemeConfig {
  * Now contains ALL site configuration including collections
  */
 export function parseSiteSettings(rawData: unknown): SiteSettings {
-    if (!rawData) return DEFAULT_SITE_SETTINGS;
+    if (!rawData || typeof rawData !== "object") return DEFAULT_SITE_SETTINGS;
 
     const data = rawData as MetaobjectData;
 
@@ -1696,10 +1700,10 @@ export function parseSiteContent(
 // REMOVED: parseEnhancedSiteContent
 // =============================================================================
 // The parseEnhancedSiteContent function was removed as part of the 80/20 simplification.
-// Components now import FALLBACK_* constants directly from fallback-data.ts.
+// Components now import FALLBACK_* constants directly from this file (metaobject-parsers.ts).
 // Only parseSiteContent (site_settings + theme_settings) is used by root.tsx.
 //
 // The UI content parser functions below are preserved because:
-// 1. They define the shape of FALLBACK_* constants in fallback-data.ts
+// 1. They define the shape of FALLBACK_* constants in metaobject-parsers.ts
 // 2. They could be useful if UI content metaobjects are ever needed in the future
 // =============================================================================

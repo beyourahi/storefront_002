@@ -14,7 +14,7 @@
  * - Hooks offer typed access to specific content sections
  *
  * Note: UI content hooks (useProductContent, useCartContent, etc.) have been removed.
- * Components now import FALLBACK_* constants directly from fallback-data.ts.
+ * Components now import FALLBACK_* constants directly from metaobject-parsers.ts.
  * This follows the 80/20 rule - only high-value, frequently-changed content
  * (brand, hero, promotions, theme) needs Shopify Admin control.
  *
@@ -43,7 +43,7 @@
  * - app/lib/metaobject-queries.ts - GraphQL queries for site content
  * - app/lib/metaobject-parsers.ts - Parses query results into typed objects
  * - app/lib/theme-utils.ts - Generates CSS variables from theme config
- * - app/lib/fallback-data.ts - FALLBACK_* constants for UI content (import directly)
+ * - app/lib/metaobject-parsers.ts - FALLBACK_* constants for UI content (import directly)
  * - app/components/* - All components can use hooks to access site content
  */
 
@@ -73,7 +73,7 @@ import {getSwatchBorderColor, getSmartSwatchBorderColor} from "~/lib/color";
 
 /**
  * Context provides SiteContent (site_settings + theme_settings)
- * UI content uses FALLBACK_* constants directly from fallback-data.ts
+ * UI content uses FALLBACK_* constants directly from metaobject-parsers.ts
  */
 const SiteContentContext = createContext<SiteContent | null>(null);
 
@@ -417,13 +417,13 @@ export function useSmartSwatchBorderColor(
 // UI CONTENT MIGRATION NOTE
 // =============================================================================
 // The following hooks were removed as part of the 80/20 simplification:
-// - useProductContent() - import FALLBACK_PRODUCT_CONTENT from fallback-data.ts
-// - useCartContent() - import FALLBACK_CART_CONTENT from fallback-data.ts
-// - useAccountContent() - import FALLBACK_ACCOUNT_CONTENT from fallback-data.ts
-// - useSearchContent() - import FALLBACK_SEARCH_CONTENT from fallback-data.ts
-// - useUIMessages() - import FALLBACK_UI_MESSAGES from fallback-data.ts
-// - useErrorContent() - import FALLBACK_ERROR_CONTENT from fallback-data.ts
-// - useWishlistContent() - import FALLBACK_WISHLIST_CONTENT from fallback-data.ts
+// - useProductContent() - import FALLBACK_PRODUCT_CONTENT from metaobject-parsers.ts
+// - useCartContent() - import FALLBACK_CART_CONTENT from metaobject-parsers.ts
+// - useAccountContent() - import FALLBACK_ACCOUNT_CONTENT from metaobject-parsers.ts
+// - useSearchContent() - import FALLBACK_SEARCH_CONTENT from metaobject-parsers.ts
+// - useUIMessages() - import FALLBACK_UI_MESSAGES from metaobject-parsers.ts
+// - useErrorContent() - import FALLBACK_ERROR_CONTENT from metaobject-parsers.ts
+// - useWishlistContent() - import FALLBACK_WISHLIST_CONTENT from metaobject-parsers.ts
 //
-// Components should now import these constants directly from '~/lib/fallback-data'
+// Components should now import these constants directly from '~/lib/metaobject-parsers'
 // This simplifies the architecture while maintaining the same functionality.

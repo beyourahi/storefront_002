@@ -28,7 +28,7 @@
  *
  * @dependencies
  * - schema-dts - TypeScript types for schema.org
- * - fallback-data.ts - Default SEO values
+ * - metaobject-parsers.ts - Default SEO values
  *
  * @related
  * - root.tsx - Uses getSeoMeta for base meta tags

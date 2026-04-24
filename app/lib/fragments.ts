@@ -364,6 +364,116 @@ export const CART_QUERY_FRAGMENT = `#graphql
 ` as const;
 
 // =============================================================================
+// CART SUGGESTION QUERIES
+// =============================================================================
+
+/**
+ * Cart suggestions query - fetches best-selling products for cart recommendations.
+ *
+ * Used to display product suggestions in the cart drawer when the cart is empty
+ * or as upsell recommendations alongside existing cart items.
+ *
+ * @param $country - Country code for localized pricing
+ * @param $language - Language code for localized content
+ *
+ * @note Fetches first 16 products sorted by BEST_SELLING, filtered to available only.
+ */
+export const CART_SUGGESTIONS_QUERY = `#graphql
+  fragment CartSuggestionProduct on Product {
+    id
+    title
+    handle
+    availableForSale
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+      maxVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    compareAtPriceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    featuredImage {
+      id
+      url
+      altText
+      width
+      height
+    }
+    media(first: 5) {
+      nodes {
+        __typename
+        ... on MediaImage {
+          id
+          alt
+          image {
+            id
+            url
+            altText
+            width
+            height
+          }
+        }
+        ... on Video {
+          id
+          alt
+          sources {
+            url
+            mimeType
+            width
+            height
+          }
+          previewImage {
+            id
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
+    }
+    variants(first: 20) {
+      nodes {
+        id
+        title
+        availableForSale
+        selectedOptions {
+          name
+          value
+        }
+        price {
+          amount
+          currencyCode
+        }
+        compareAtPrice {
+          amount
+          currencyCode
+        }
+      }
+    }
+  }
+
+  query CartSuggestions(
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    products(first: 16, sortKey: BEST_SELLING, query: "available_for_sale:true") {
+      nodes {
+        ...CartSuggestionProduct
+      }
+    }
+  }
+` as const;
+
+// =============================================================================
 // MENU FRAGMENTS
 // =============================================================================
 
@@ -479,9 +589,8 @@ export const FOOTER_QUERY = `#graphql
  * - Product type filters / popular search terms
  * - Discount count badge on the SALE link
  *
- * Deliberately minimal: products(first:1) per collection is enough to confirm
- * a collection is non-empty; allProducts(first:50) covers discount counting
- * and search term extraction without over-fetching the full catalog.
+ * allProducts includes featuredImage, handle, priceRange, and variant pricing
+ * so popularProducts can be derived from this single query without a separate request.
  */
 export const MENU_COLLECTIONS_QUERY = `#graphql
   query MenuCollections(
@@ -504,26 +613,48 @@ export const MENU_COLLECTIONS_QUERY = `#graphql
           nodes {
             id
           }
+          pageInfo {
+            hasNextPage
+          }
         }
       }
     }
     allProducts: products(first: 50, query: "available_for_sale:true") {
       nodes {
         id
+        handle
         title
         productType
         availableForSale
+        featuredImage {
+          id
+          url
+          altText
+          width
+          height
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
         variants(first: 3) {
           nodes {
             availableForSale
             price {
               amount
+              currencyCode
             }
             compareAtPrice {
               amount
+              currencyCode
             }
           }
         }
+      }
+      pageInfo {
+        hasNextPage
       }
     }
   }

@@ -24,9 +24,6 @@ import {formatPrice} from "~/lib/currency-formatter";
  * - Cart must reach or exceed threshold for free shipping
  * - UI shows progress toward free shipping goal
  *
- * @dependencies
- * - fallback-data.ts - Default threshold when metafield not set
- *
  * @related
  * - root.tsx - Fetches shipping config in loader
  * - CartSummary.tsx - Displays free shipping progress
