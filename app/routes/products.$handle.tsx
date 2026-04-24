@@ -625,7 +625,7 @@ const PRODUCT_FRAGMENT = `#graphql
     sizeChart: metafield(namespace: "custom", key: "size_chart") {
       value
     }
-    collections(first: 10) {
+    collections(first: 1) {
       nodes {
         handle
         title
@@ -640,13 +640,7 @@ const PRODUCT_FRAGMENT = `#graphql
         height
       }
     }
-    collections(first: 10) {
-      nodes {
-        handle
-        title
-      }
-    }
-    media(first: 20) {
+    media(first: 10) {
       nodes {
         __typename
         mediaContentType
@@ -742,7 +736,7 @@ const PRODUCT_FRAGMENT = `#graphql
       title
     }
     requiresSellingPlan
-    sellingPlanGroups(first: 10) {
+    sellingPlanGroups(first: 5) {
       nodes {
         name
         appName

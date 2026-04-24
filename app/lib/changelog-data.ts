@@ -31,6 +31,13 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-24",
         category: "Performance",
+        headline: "Fonts and product pages load without blocking the screen",
+        summary:
+            "Custom fonts now load in the background instead of holding up the first paint, so text appears sooner on slower connections. The product page also fetches a smaller set of data — fewer media items, one collection lookup instead of ten, and no duplicate fields. Both changes combine to make pages feel noticeably faster on first visit."
+    },
+    {
+        date: "2026-04-24",
+        category: "Performance",
         headline: "Faster browsing with leaner product queries and CDN image optimisation",
         summary: "Product reviews now load separately from product details so the buy button and images appear sooner. The homepage, cart, and search now request fewer product variants, reducing data on every page load. Images use Shopify's CDN transforms for the right size on any screen. Page transitions between products use smooth native browser animations."
     },

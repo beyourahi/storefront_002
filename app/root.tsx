@@ -435,6 +435,25 @@ function ThemeStyleTag({css}: {css: string}) {
     return <style dangerouslySetInnerHTML={{__html: css}} />;
 }
 
+/**
+ * Loads the Google Fonts stylesheet asynchronously to avoid render-blocking.
+ * Renders null on the server — the <link rel="preload"> in <head> is the server hint.
+ * On the client, useEffect appends the stylesheet after hydration so it never blocks
+ * the initial paint. The &display=swap URL param in the href ensures Google Fonts
+ * includes font-display:swap in all generated @font-face rules.
+ */
+function NonBlockingFontLoader({url}: {url?: string}) {
+    useEffect(() => {
+        if (!url) return;
+        if (document.querySelector(`link[href="${url}"][rel="stylesheet"]`)) return;
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = url;
+        document.head.appendChild(link);
+    }, [url]);
+    return null;
+}
+
 export function Layout({children}: {children?: React.ReactNode}) {
     const nonce = useNonce();
     const data = useRouteLoaderData<RootLoader>("root");
@@ -468,9 +487,11 @@ export function Layout({children}: {children?: React.ReactNode}) {
                 {/* PWA install capture - MUST be first script, loaded synchronously (no async/defer)
                     to catch beforeinstallprompt event before React hydration on mobile browsers */}
                 <script src="/pwa-install-capture.js" nonce={nonce} suppressHydrationWarning />
-                {/* Dynamic Google Fonts — preload first, then stylesheet, loaded BEFORE Tailwind for font-family availability */}
+                {/* Google Fonts: preload hints the browser to fetch CSS early, NonBlockingFontLoader appends
+                    the actual <link rel="stylesheet"> via useEffect on the client — never render-blocking.
+                    The &display=swap URL param makes Google Fonts include font-display:swap in @font-face rules. */}
                 {generatedTheme?.googleFontsUrl && <link rel="preload" as="style" href={generatedTheme.googleFontsUrl} />}
-                {generatedTheme?.googleFontsUrl && <link rel="stylesheet" href={generatedTheme.googleFontsUrl} />}
+                <NonBlockingFontLoader url={generatedTheme?.googleFontsUrl} />
                 <link rel="stylesheet" href={tailwindCss}></link>
                 {/* Dynamic CSS variables - injected AFTER Tailwind to override defaults */}
                 {generatedTheme?.cssVariables && <ThemeStyleTag css={generatedTheme.cssVariables} />}
