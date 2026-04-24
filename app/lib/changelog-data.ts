@@ -31,6 +31,12 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
         date: "2026-04-24",
         category: "Performance",
+        headline: "Faster browsing with leaner product queries and CDN image optimisation",
+        summary: "Product reviews now load separately from product details so the buy button and images appear sooner. The homepage, cart, and search now request fewer product variants, reducing data on every page load. Images use Shopify's CDN transforms for the right size on any screen. Page transitions between products use smooth native browser animations."
+    },
+    {
+        date: "2026-04-24",
+        category: "Performance",
         headline: "Faster page loads with smarter Shopify API caching",
         summary: "The homepage and gallery now cache their Shopify data instead of fetching it fresh on every visit. Collections, blog articles, and product lists are held in a long-lived cache so repeat visits load almost instantly. Recently viewed products and gallery pages use a shorter cache so they stay up to date without hitting the API every time. Navigation links on error pages now prefetch their destination the moment you hover, so the next page feels instant when you click."
     },
