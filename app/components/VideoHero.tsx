@@ -486,8 +486,8 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                                     ? `${randomCollection.title} collection`
                                     : cardImage?.altText || "Collection preview"
                             }
-                            width={(cardImage as {width?: number} | null)?.width ?? 400}
-                            height={(cardImage as {height?: number} | null)?.height ?? 280}
+                            width={400}
+                            height={280}
                             className="w-full h-full object-cover border border-r-0 border-foreground/15 rounded-l-2xl"
                             sizes="(min-width: 1024px) 176px, 144px"
                         />
