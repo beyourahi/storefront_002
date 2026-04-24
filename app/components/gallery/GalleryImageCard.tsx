@@ -103,6 +103,7 @@ export function GalleryImageCard({image, index = 0}: GalleryImageCardProps) {
         <Link
             to={`/products/${image.productHandle}`}
             prefetch="intent"
+            viewTransition
             aria-label={image.productTitle}
             className={cn(
                 "group sleek relative block w-full break-inside-avoid",

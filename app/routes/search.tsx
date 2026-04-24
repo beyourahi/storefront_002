@@ -612,6 +612,7 @@ function SearchPageInitialState({
                                 key={collection.id}
                                 to={`/collections/${collection.handle}`}
                                 prefetch="viewport"
+                                viewTransition
                                 className="group"
                             >
                                 <div className="aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-muted/50 mb-2 sm:mb-3">
@@ -768,6 +769,7 @@ function SearchProductItem({
             <Link
                 to={productUrl}
                 prefetch="viewport"
+                viewTransition
                 className={cn(
                     "flex items-center gap-4 md:gap-6 py-4 pl-4 border-b border-border/50 no-underline",
                     canHover ? "group hover:bg-muted/30" : "motion-press active:bg-muted/30",
@@ -816,6 +818,7 @@ function SearchProductItem({
         <Link
             to={productUrl}
             prefetch="viewport"
+            viewTransition
             className={cn(
                 "block no-underline animate-product-fade-in",
                 canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
@@ -916,6 +919,7 @@ function SearchCollectionCard({
             <Link
                 to={`/collections/${collection.handle}`}
                 prefetch="viewport"
+                viewTransition
                 className={cn(
                     "flex items-center gap-4 md:gap-6 py-4 border-b border-border/50 no-underline",
                     canHover ? "group hover:bg-muted/30" : "motion-press active:bg-muted/30",
@@ -958,6 +962,7 @@ function SearchCollectionCard({
         <Link
             to={`/collections/${collection.handle}`}
             prefetch="viewport"
+            viewTransition
             className={cn(
                 "block animate-product-fade-in",
                 canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
@@ -1072,6 +1077,7 @@ function SearchArticleCard({
             <Link
                 to={articleUrl}
                 prefetch="viewport"
+                viewTransition
                 className={cn(
                     "flex items-center gap-4 md:gap-6 py-4 border-b border-border/50 no-underline",
                     canHover ? "group hover:bg-muted/30" : "motion-press active:bg-muted/30",
@@ -1121,6 +1127,7 @@ function SearchArticleCard({
         <Link
             to={articleUrl}
             prefetch="viewport"
+            viewTransition
             className={cn(
                 "block no-underline animate-product-fade-in",
                 canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"

@@ -276,6 +276,7 @@ function CollectionCard({collection, index}: {collection: CollectionFragment; in
         <Link
             to={linkTo}
             prefetch="viewport"
+            viewTransition
             className="group block no-underline animate-product-fade-in"
             style={{animationDelay: `${staggerDelay}ms`}}
         >

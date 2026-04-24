@@ -140,6 +140,7 @@ export function ExploreCollectionsSection({collections}: ExploreCollectionsSecti
                 <div className="mt-6 flex justify-center sm:hidden">
                     <Link
                         to="/collections"
+                        viewTransition
                         className={cn(
                             "motion-interactive motion-press rounded-[var(--radius-pill-raw)] border-2 border-primary px-3 sm:px-4 py-2 font-sans text-sm font-medium text-primary active:scale-[var(--motion-press-scale)] cursor-pointer",
                             canHover

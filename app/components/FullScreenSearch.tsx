@@ -517,6 +517,7 @@ function SearchInitialState({
                                 to={`/collections/${collection.handle}`}
                                 onClick={onClose}
                                 prefetch="viewport"
+                                viewTransition
                                 className={cn(
                                     "motion-link cursor-pointer",
                                     canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
@@ -982,6 +983,7 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
                 to={`/collections/${collection.handle}`}
                 onClick={onClick}
                 prefetch="viewport"
+                viewTransition
                 className={cn(
                     "motion-interactive flex items-center gap-4 border-b border-border/50 py-4 pl-4 no-underline cursor-pointer md:gap-6 md:pl-6",
                     canHover ? "group hover:bg-muted/30" : "motion-press active:bg-muted/30",
@@ -1033,6 +1035,7 @@ function SearchCollectionCard({collection, onClick, index, variant = "card"}: Se
             to={`/collections/${collection.handle}`}
             onClick={onClick}
             prefetch="viewport"
+            viewTransition
             className={cn(
                 "motion-link block animate-product-fade-in cursor-pointer",
                 canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
@@ -1107,6 +1110,7 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
                 to={articleUrl}
                 onClick={onClick}
                 prefetch="viewport"
+                viewTransition
                 className={cn(
                     "motion-interactive flex items-center gap-4 border-b border-border/50 py-4 pl-4 no-underline cursor-pointer md:gap-6 md:pl-6",
                     canHover ? "group hover:bg-muted/30" : "motion-press active:bg-muted/30",
@@ -1165,6 +1169,7 @@ function SearchArticleItem({article, term, onClick, index = 0, variant = "card"}
             to={articleUrl}
             onClick={onClick}
             prefetch="viewport"
+            viewTransition
             className={cn(
                 "motion-link block no-underline animate-product-fade-in cursor-pointer",
                 canHover ? "group" : "motion-press active:scale-[var(--motion-press-scale)]"
