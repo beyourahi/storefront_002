@@ -104,6 +104,12 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     );
 };
 
+export function links({data}: {data: Awaited<ReturnType<typeof loader>> | null}) {
+    const href = data?.collection?.products?.nodes?.[0]?.featuredImage?.url;
+    if (!href) return [];
+    return [{rel: "preload", as: "image", href}] as const;
+}
+
 export async function loader(args: Route.LoaderArgs) {
     // Start fetching non-critical data without blocking time to first byte
     const deferredData = loadDeferredData(args);
@@ -493,14 +499,14 @@ const SIDEBAR_COLLECTIONS_QUERY = `#graphql
         id
         handle
         title
-        products(first: 250) {
+        products(first: 100) {
           nodes {
             id
           }
         }
       }
     }
-    allProducts: products(first: 250, query: "available_for_sale:true") {
+    allProducts: products(first: 50, query: "available_for_sale:true") {
       nodes {
         id
         availableForSale

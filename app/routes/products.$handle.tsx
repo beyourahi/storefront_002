@@ -125,6 +125,12 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     return seoMeta;
 };
 
+export function links({data}: {data: Awaited<ReturnType<typeof loader>> | null}) {
+    const href = data?.product?.images?.nodes?.[0]?.url;
+    if (!href) return [];
+    return [{rel: "preload", as: "image", href}] as const;
+}
+
 export async function loader(args: Route.LoaderArgs) {
     // Await the critical data required to render initial state of the page
     const criticalData = await loadCriticalData(args);

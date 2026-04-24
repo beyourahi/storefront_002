@@ -161,6 +161,13 @@ export const meta: Route.MetaFunction = ({matches}) => {
     );
 };
 
+export function links({data}: {data: Awaited<ReturnType<typeof loader>> | null}) {
+    // Preload hero collection image for LCP — shown in VideoHero card overlay
+    const href = (data?.randomHeroCollection as any)?.image?.url;
+    if (!href) return [];
+    return [{rel: "preload", as: "image", href}] as const;
+}
+
 export async function loader({context, request}: Route.LoaderArgs) {
     // Fetch collections suitable for hero card display (with images and descriptions)
     let randomHeroCollection: HeroCollection | null = null;
