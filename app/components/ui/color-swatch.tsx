@@ -210,7 +210,7 @@ export const ColorSwatch = forwardRef<HTMLSpanElement, ColorSwatchProps>(functio
                 borderColor
             }}
         >
-            {image && <img src={image} alt={name} className="size-full object-cover" />}
+            {image && <img src={image} alt={name} className="size-full object-cover" loading="lazy" decoding="async" />}
         </span>
     );
 });
