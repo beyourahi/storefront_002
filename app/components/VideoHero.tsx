@@ -24,6 +24,7 @@
 
 import {useEffect, useReducer, useRef} from "react";
 import {Link} from "react-router";
+import {Image} from "@shopify/hydrogen";
 import {CircleArrowOutUpRight, Search} from "lucide-react";
 import {useBrandAnimation, AnimatedBrandText} from "~/components/BrandAnimation";
 import {useAside} from "~/components/Aside";
@@ -173,10 +174,13 @@ function HeroBackgroundMedia({
 
     if (activeMedia?.mediaType === "image") {
         return (
-            <img
+            <Image
                 src={activeMedia.url}
                 alt={activeMedia.altText || "Hero background"}
+                width={activeMedia.width ?? 1920}
+                height={activeMedia.height ?? 1080}
                 className="size-full object-cover"
+                sizes="100vw"
             />
         );
     }
@@ -475,14 +479,17 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                 >
                     {/* Image container with fixed aspect ratio - prevents flex stretching */}
                     <div className="w-36 lg:w-44 shrink-0 aspect-video overflow-hidden">
-                        <img
+                        <Image
                             src={cardImage?.url || "/hero-image.avif"}
                             alt={
                                 randomCollection
                                     ? `${randomCollection.title} collection`
                                     : cardImage?.altText || "Collection preview"
                             }
+                            width={(cardImage as {width?: number} | null)?.width ?? 400}
+                            height={(cardImage as {height?: number} | null)?.height ?? 280}
                             className="w-full h-full object-cover border border-r-0 border-foreground/15 rounded-l-2xl"
+                            sizes="(min-width: 1024px) 176px, 144px"
                         />
                     </div>
                     {/* Text container: flex-1 takes remaining space, min-w-0 prevents flex blowout */}
