@@ -689,6 +689,19 @@ export interface SiteSettings {
     whatsappNumber: string;
 
     // ─────────────────────────────────────────────────────────────────────────
+    // CONTACT INFORMATION
+    // ─────────────────────────────────────────────────────────────────────────
+    contactEmail: string;
+    contactPhone: string;
+    businessHours: string;
+    address: {
+        street: string;
+        city: string;
+        state: string;
+        zip: string;
+    };
+
+    // ─────────────────────────────────────────────────────────────────────────
     // SECTION HEADINGS
     // ─────────────────────────────────────────────────────────────────────────
     blogSectionTitle: string;
@@ -743,10 +756,26 @@ export interface SiteSettings {
     // SHOP LOCATIONS (Google Maps)
     // Index-paired arrays — zip embedUrls[i] with shareLinks[i]
     // ─────────────────────────────────────────────────────────────────────────
-    /** Array of Google Maps embed src URLs, index-paired with googleMapsLinks */
-    googleMapsEmbedUrls: string[];
-    /** Array of Google Maps share links (maps.app.goo.gl/…), index-paired with googleMapsEmbedUrls */
-    googleMapsLinks: string[];
+    /** Array of Google Maps embed src URLs, index-paired with googleMapsLink */
+    googleMapsEmbed: string[];
+    /** Array of Google Maps share links (maps.app.goo.gl/…), index-paired with googleMapsEmbed */
+    googleMapsLink: string[];
+}
+
+/**
+ * Contact information derived from SiteSettings
+ * Provides a typed, focused view of contact/address fields
+ */
+export interface ContactInfo {
+    email: string;
+    phone: string;
+    businessHours: string;
+    address: {
+        street: string;
+        city: string;
+        state: string;
+        zip: string;
+    };
 }
 
 /**

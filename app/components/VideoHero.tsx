@@ -150,6 +150,8 @@ function HeroBackgroundMedia({
                     width={effectiveMobile.width}
                     height={effectiveMobile.height}
                     className="size-full object-cover"
+                    loading="eager"
+                    fetchPriority="high"
                 />
             </picture>
         );
@@ -181,6 +183,8 @@ function HeroBackgroundMedia({
                 height={activeMedia.height ?? 1080}
                 className="size-full object-cover"
                 sizes="100vw"
+                loading="eager"
+                fetchPriority="high"
             />
         );
     }
@@ -490,6 +494,7 @@ export function VideoHero({randomCollection}: {randomCollection?: HeroCollection
                             height={280}
                             className="w-full h-full object-cover border border-r-0 border-foreground/15 rounded-l-2xl"
                             sizes="(min-width: 1024px) 176px, 144px"
+                            loading="eager"
                         />
                     </div>
                     {/* Text container: flex-1 takes remaining space, min-w-0 prevents flex blowout */}

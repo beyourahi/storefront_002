@@ -315,6 +315,17 @@ export const SITE_SETTINGS_FRAGMENT = `#graphql
     # WhatsApp phone number (digits only, or international format)
     whatsappNumber: field(key: "whatsapp_number") { value }
 
+    # ─────────────────────────────────────────────────────────────────────────
+    # CONTACT INFORMATION
+    # ─────────────────────────────────────────────────────────────────────────
+    contactEmail: field(key: "contact_email") { value }
+    contactPhone: field(key: "contact_phone") { value }
+    businessHours: field(key: "business_hours") { value }
+    streetAddress: field(key: "street_address") { value }
+    city: field(key: "city") { value }
+    state: field(key: "state_province") { value }
+    zipCode: field(key: "postal_code") { value }
+
     # List of links field - Shopify returns [{text, url}, ...] where text is the platform name
     socialLinksData: field(key: "social_links_data") { value }
 

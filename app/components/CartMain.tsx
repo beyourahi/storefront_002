@@ -58,7 +58,7 @@
  */
 
 import {Suspense, useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {useOptimisticCart, Image} from "@shopify/hydrogen";
+import {useOptimisticCart, Image, type OptimisticCartLine} from "@shopify/hydrogen";
 import {ShoppingCart, Sparkles} from "lucide-react";
 import {Button} from "~/components/ui/button";
 import {Await, Link, useRouteLoaderData} from "react-router";
@@ -72,7 +72,7 @@ import {type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselPrevi
 import {Skeleton} from "~/components/ui/skeleton";
 import {cn} from "~/lib/utils";
 import {ProductItem} from "~/components/ProductItem";
-import type {CartSuggestionProductFragment} from "storefrontapi.generated";
+import type {CartSuggestionProductFragment, CartApiQueryFragment} from "storefrontapi.generated";
 
 export type {CartLayout, CartMainProps};
 
@@ -115,7 +115,7 @@ export function CartMain({layout, cart: originalCart, isLoggedIn, hasStoreCredit
                             className="space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6"
                         >
                             {(cart?.lines?.nodes ?? []).map(line => (
-                                <CartLineItem key={line.id} line={line} layout={layout} />
+                                <CartLineItem key={line.id} line={line as OptimisticCartLine<CartApiQueryFragment>} layout={layout} />
                             ))}
                         </div>
                         {/* Cart summary - sticky on desktop with responsive top offset */}
@@ -154,7 +154,7 @@ export function CartMain({layout, cart: originalCart, isLoggedIn, hasStoreCredit
                                 className="animate-cart-item-enter"
                                 style={{animationDelay: `${Math.min(index, 5) * 50}ms`}}
                             >
-                                <CartLineItem line={line} layout={layout} />
+                                <CartLineItem line={line as OptimisticCartLine<CartApiQueryFragment>} layout={layout} />
                             </div>
                         ))}
                     </div>

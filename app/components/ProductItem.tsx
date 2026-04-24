@@ -61,6 +61,7 @@ import {cn} from "~/lib/utils";
 import type {GridColumns} from "~/lib/gridColumns";
 import {usePointerCapabilities} from "~/hooks/usePointerCapabilities";
 import {ProductImagePlaceholder} from "~/components/ProductImagePlaceholder";
+import {extractImagesFromMedia} from "~/lib/media-utils";
 
 // =============================================================================
 // TYPOGRAPHY UTILITIES
@@ -392,10 +393,13 @@ export function ProductItem({
 
     const layoutClasses = getLayoutVariantClasses();
 
-    // Get all product images for carousel (with type narrowing)
+    // Get all product images for carousel — prefer media nodes (already fetched, includes videos)
     const productImages =
-        "images" in product && product.images?.nodes?.length > 0
-            ? product.images.nodes
+        "media" in product
+            ? extractImagesFromMedia(
+                  (product as {media?: {nodes?: Parameters<typeof extractImagesFromMedia>[0]}}).media
+                      ?.nodes as Parameters<typeof extractImagesFromMedia>[0]
+              )
             : featuredImage
               ? [featuredImage]
               : [];

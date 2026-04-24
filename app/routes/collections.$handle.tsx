@@ -37,9 +37,10 @@
  * - ProductItem.tsx - Product card display
  */
 
-import {redirect, useLoaderData, useRouteError, isRouteErrorResponse} from "react-router";
+import {redirect, useLoaderData, useRouteError, isRouteErrorResponse, Await} from "react-router";
 import type {Route} from "./+types/collections.$handle";
 import {Analytics, getSeoMeta, getPaginationVariables} from "@shopify/hydrogen";
+import {Suspense} from "react";
 import {InfiniteScrollSection} from "~/components/InfiniteScrollSection";
 import {redirectIfHandleIsLocalized} from "~/lib/redirect";
 import {ProductItem} from "~/components/ProductItem";
@@ -53,6 +54,9 @@ import {
 } from "~/components/CollectionPageLayout";
 import {AnimatedSection} from "~/components/AnimatedSection";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
+import {withTimeoutAndFallback, TIMEOUT_DEFAULTS} from "~/lib/promise-utils";
+import {SIDEBAR_COLLECTIONS_QUERY} from "~/lib/fragments";
+import {CollectionSidebar, type CollectionWithCount} from "~/components/CollectionSidebar";
 import type {ProductItemFragment} from "storefrontapi.generated";
 import type {ProductCollectionSortKeys} from "@shopify/hydrogen/storefront-api-types";
 import {
@@ -140,7 +144,7 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     // Use official Hydrogen pagination pattern (24 items per page)
     const paginationVariables = getPaginationVariables(request, {pageBy: 24});
 
-    const [{collection}, sidebarData, collectionCountData] = await Promise.all([
+    const [{collection}, collectionCountData] = await Promise.all([
         // Collection products - availability and prices (cached: short for availability)
         dataAdapter.query(COLLECTION_QUERY, {
             variables: {
@@ -150,10 +154,6 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
                 reverse
             },
             cache: dataAdapter.CacheShort()
-        }),
-        // Sidebar collections with product counts (cached: catalog metadata)
-        dataAdapter.query(SIDEBAR_COLLECTIONS_QUERY, {
-            cache: dataAdapter.CacheLong()
         }),
         // Lightweight count query for accurate collection product count (cached: catalog metadata)
         dataAdapter.query(COLLECTION_COUNT_QUERY, {
@@ -171,34 +171,13 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     // The API handle might be localized, so redirect to the localized handle
     redirectIfHandleIsLocalized(request, {handle, data: collection});
 
-    // Process collections to get individual product counts
-    // Filter out collections with no available products (API already filters unavailable)
-    const {collections, allProducts} = sidebarData!;
-    const collectionsWithCounts = collections.nodes
-        .map((col: any) => ({
-            handle: col.handle,
-            title: col.title,
-            productsCount: col.products.nodes.length
-        }))
-        .filter((col: any) => col.productsCount > 0);
-
-    // Count all available products directly (includes products not in any collection)
-    // API-level filter (query: "available_for_sale:true") ensures only available products are returned
-    const totalProductCount = allProducts.nodes.length;
-
-    // Count discounted products for sidebar
-    const discountCount = countDiscountedProducts(allProducts.nodes as LightweightProduct[]);
-
     // Accurate collection product count from lightweight count query (up to 250)
     // The main COLLECTION_QUERY paginates at 24, so its .nodes.length would be inaccurate
     const collectionProductCount = collectionCountData?.collection?.products?.nodes?.length ?? 0;
 
     return {
         collection,
-        collectionsWithCounts,
-        totalProductCount,
-        collectionProductCount,
-        discountCount
+        collectionProductCount
     };
 }
 
@@ -208,12 +187,33 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
  * Make sure to not throw any errors here, as it will cause the page to 500.
  */
 function loadDeferredData({context}: Route.LoaderArgs) {
-    return {};
+    const {dataAdapter} = context;
+
+    // Sidebar collections - deferred so it doesn't block collection above-fold rendering
+    const sidebarData = withTimeoutAndFallback(
+        dataAdapter
+            .query(SIDEBAR_COLLECTIONS_QUERY, {cache: dataAdapter.CacheLong()})
+            .catch((error: unknown) => {
+                console.error("Failed to load sidebar collections:", error);
+                return null;
+            }),
+        null,
+        TIMEOUT_DEFAULTS.API
+    );
+
+    return {sidebarData};
 }
 
+const SidebarSkeleton = () => (
+    <div className="space-y-1">
+        {Array.from({length: 6}).map((_, i) => (
+            <div key={i} className="h-8 rounded-md bg-foreground/5 animate-pulse" />
+        ))}
+    </div>
+);
+
 export default function Collection() {
-    const {collection, collectionsWithCounts, totalProductCount, collectionProductCount, discountCount} =
-        useLoaderData<typeof loader>();
+    const {collection, sidebarData, collectionProductCount} = useLoaderData<typeof loader>();
     const [gridColumns, setGridColumns] = useGridColumns();
     const [sortOption, setSortOption] = useSortOption("newest");
     const [layoutMode, setLayoutMode] = useLayoutMode();
@@ -255,17 +255,41 @@ export default function Collection() {
         <CollectionPageLayout
             title={collection.title}
             description={collection.description}
-            collections={collectionsWithCounts ?? []}
             activeHandle={collection.handle}
-            totalProductCount={totalProductCount ?? 0}
             collectionProductCount={collectionProductCount}
-            discountCount={discountCount ?? 0}
             gridColumns={gridColumns}
             onGridColumnsChange={setGridColumns}
             sortOption={sortOption}
             onSortChange={setSortOption}
             layoutMode={layoutMode}
             onLayoutModeChange={setLayoutMode}
+            sidebarSlot={
+                <Suspense fallback={<SidebarSkeleton />}>
+                    <Await resolve={sidebarData}>
+                        {(sidebar: any) => {
+                            if (!sidebar) return null;
+                            const {collections, allProducts} = sidebar;
+                            const collectionsWithCounts: CollectionWithCount[] = collections.nodes
+                                .map((col: any) => ({
+                                    handle: col.handle,
+                                    title: col.title,
+                                    productsCount: col.products.nodes.length
+                                }))
+                                .filter((col: any) => col.productsCount > 0);
+                            const totalProductCount = allProducts.nodes.length;
+                            const discountCount = countDiscountedProducts(allProducts.nodes as LightweightProduct[]);
+                            return (
+                                <CollectionSidebar
+                                    collections={collectionsWithCounts}
+                                    activeHandle={collection.handle}
+                                    totalProductCount={totalProductCount}
+                                    discountCount={discountCount}
+                                />
+                            );
+                        }}
+                    </Await>
+                </Suspense>
+            }
         >
             <AnimatedSection animation="slide-up" threshold={0.12}>
                 <InfiniteScrollSection<ProductItemFragment>
@@ -414,7 +438,7 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
         ...MoneyProductItem
       }
     }
-    variants(first: 100) {
+    variants(first: 5) {
       nodes {
         id
         title
@@ -487,46 +511,7 @@ const COLLECTION_QUERY = `#graphql
   }
 ` as const;
 
-// Query to fetch all collections with product counts for sidebar
-// Also fetches all products directly for accurate "All" count (includes products not in any collection)
-const SIDEBAR_COLLECTIONS_QUERY = `#graphql
-  query SidebarCollectionsHandle(
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    collections(first: 50, sortKey: TITLE) {
-      nodes {
-        id
-        handle
-        title
-        products(first: 100) {
-          nodes {
-            id
-          }
-        }
-      }
-    }
-    allProducts: products(first: 50, query: "available_for_sale:true") {
-      nodes {
-        id
-        availableForSale
-        variants(first: 10) {
-          nodes {
-            availableForSale
-            price {
-              amount
-              currencyCode
-            }
-            compareAtPrice {
-              amount
-              currencyCode
-            }
-          }
-        }
-      }
-    }
-  }
-` as const;
+
 
 // Lightweight query to get accurate product count for a collection
 // The main COLLECTION_QUERY paginates at 24, so .nodes.length caps at page size

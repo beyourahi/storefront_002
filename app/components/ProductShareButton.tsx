@@ -18,7 +18,7 @@
  * - Event bubbling prevention (works inside clickable cards)
  *
  * @props
- * - product: Pick<ProductFragment, "id" | "handle" | "title" | "description" | "images">
+ * - product: Pick<ProductFragment, "id" | "handle" | "title" | "description" | "media">
  * - selectedVariant: ProductFragment["selectedOrFirstAvailableVariant"]
  * - className: string (optional) - Additional Tailwind classes
  *
@@ -63,6 +63,7 @@ import {
     type SocialSharePlatform
 } from "~/lib/social-share";
 import type {ProductFragment} from "storefrontapi.generated";
+import {extractImagesFromMedia} from "~/lib/media-utils";
 import {parseProductTitle} from "~/lib/product";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -70,7 +71,7 @@ import {parseProductTitle} from "~/lib/product";
 // ═══════════════════════════════════════════════════════════════════════════
 
 interface ProductShareButtonProps {
-    product: Pick<ProductFragment, "id" | "handle" | "title" | "description" | "images">;
+    product: Pick<ProductFragment, "id" | "handle" | "title" | "description" | "media">;
     selectedVariant: ProductFragment["selectedOrFirstAvailableVariant"];
     className?: string;
 }
@@ -237,7 +238,7 @@ export function ProductShareButton({product, selectedVariant, className}: Produc
     const copyPlatform = platforms.find(p => p.id === "copy");
 
     // Get product info for dialog preview
-    const firstImage = product.images?.nodes?.[0];
+    const firstImage = extractImagesFromMedia(product.media?.nodes)?.[0];
     const {primary, secondary} = parseProductTitle(product.title);
 
     /**

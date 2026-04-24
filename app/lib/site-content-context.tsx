@@ -60,7 +60,8 @@ import type {
     ThemeFonts,
     ThemeCoreColors,
     ThemeConfig,
-    GeneratedTheme
+    GeneratedTheme,
+    ContactInfo
 } from "types";
 import {DEFAULT_SITE_SETTINGS, DEFAULT_THEME_CONFIG} from "./metaobject-parsers";
 import {generateTheme} from "./theme-utils";
@@ -220,15 +221,32 @@ export function useInstagramMedia(): InstagramMedia[] {
 }
 
 /**
+ * Hook to access contact information (email, phone, hours, address).
+ * Returns typed ContactInfo derived from site_settings metaobject.
+ */
+export function useContactInfo(): ContactInfo {
+    const settings = useSiteSettings();
+    return useMemo(
+        () => ({
+            email: settings.contactEmail,
+            phone: settings.contactPhone,
+            businessHours: settings.businessHours,
+            address: settings.address
+        }),
+        [settings]
+    );
+}
+
+/**
  * Hook to access shop location data (Google Maps embeds + share links).
  * Returns index-paired arrays — consumers zip them and skip incomplete pairs.
  * Both arrays are empty when no locations are configured in Shopify Admin.
  */
-export function useShopLocations(): {embedUrls: string[]; shareLinks: string[]} {
+export function useShopLocation(): {embedUrls: string[]; shareLinks: string[]} {
     const settings = useSiteSettings();
     return {
-        embedUrls: settings.googleMapsEmbedUrls,
-        shareLinks: settings.googleMapsLinks
+        embedUrls: settings.googleMapsEmbed,
+        shareLinks: settings.googleMapsLink
     };
 }
 

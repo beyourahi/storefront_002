@@ -85,9 +85,12 @@ import {hasSpecialTag, getSpecialTags} from "~/lib/product-tags";
 import {ProductBadgeStack} from "~/components/product/ProductBadge";
 import {ProductTagList} from "~/components/product/ProductTagList";
 import {countDiscountedProducts, type LightweightProduct} from "~/lib/discounts";
+import {withTimeoutAndFallback, TIMEOUT_DEFAULTS} from "~/lib/promise-utils";
+import {SIDEBAR_COLLECTIONS_QUERY} from "~/lib/fragments";
 import {formatShopifyMoney} from "~/lib/currency-formatter";
 import {parseProductTitle} from "~/lib/product";
 import {ProductReviews, type ReviewNode} from "~/components/ProductReviews";
+import {extractImagesFromMedia} from "~/lib/media-utils";
 
 // =============================================================================
 // META FUNCTION
@@ -103,7 +106,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     const {primary, secondary} = parseProductTitle(product.title);
     const title = product.seo?.title || (secondary ? `${primary} + ${secondary}` : primary);
     const description = truncateDescription(product.seo?.description || stripHtml(product.description));
-    const image = variant?.image || product.images?.nodes?.[0];
+    const image = variant?.image || extractImagesFromMedia(product.media?.nodes)?.[0];
 
     const seoMeta =
         getSeoMeta({
@@ -153,17 +156,10 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
         throw new Error("Expected product handle to be defined");
     }
 
-    const [{product}, sidebarData] = await Promise.all([
-        // Product data - variants, prices, inventory (cached: short for availability)
-        dataAdapter.query(PRODUCT_QUERY, {
-            variables: {handle, selectedOptions: getSelectedProductOptions(request)},
-            cache: dataAdapter.CacheShort()
-        }),
-        // Sidebar collections with product counts (cached: catalog metadata)
-        dataAdapter.query(SIDEBAR_COLLECTIONS_QUERY, {
-            cache: dataAdapter.CacheLong()
-        })
-    ]);
+    const {product} = await dataAdapter.query(PRODUCT_QUERY, {
+        variables: {handle, selectedOptions: getSelectedProductOptions(request)},
+        cache: dataAdapter.CacheShort()
+    });
 
     if (!product?.id) {
         throw new Response(null, {status: 404});
@@ -172,25 +168,8 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     // The API handle might be localized, so redirect to the localized handle
     redirectIfHandleIsLocalized(request, {handle, data: product});
 
-    // Process collections to get individual product counts
-    // Filter out collections with no available products (API already filters unavailable)
-    const {collections, allProducts} = sidebarData;
-    const collectionsWithCounts: CollectionWithCount[] = collections.nodes
-        .map((col: any) => ({
-            handle: col.handle,
-            title: col.title,
-            productsCount: col.products.nodes.length
-        }))
-        .filter((col: any) => col.productsCount > 0);
-
-    // Count all available products directly (includes products not in any collection)
-    // API-level filter (query: "available_for_sale:true") ensures only available products are returned
-    const totalProductCount = allProducts.nodes.length;
-
-    // Count discounted products for sidebar SALE link
-    const discountCount = countDiscountedProducts(allProducts.nodes as LightweightProduct[]);
-
     // Get the first collection handle this product belongs to (for sidebar active state)
+    // Derived from product.collections — must stay in critical data, not in deferred sidebar
     const productCollectionHandles = product.collections?.nodes?.map((c: any) => c.handle) ?? [];
     const activeCollectionHandle = productCollectionHandles[0] || "all-products";
 
@@ -212,9 +191,6 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
     return {
         product,
         selectedSellingPlan,
-        collectionsWithCounts,
-        totalProductCount,
-        discountCount,
         activeCollectionHandle
     };
 }
@@ -253,14 +229,20 @@ function loadDeferredData({context}: Route.LoaderArgs, productId: string) {
     };
 }
 
+const SidebarSkeleton = () => (
+    <div className="space-y-1">
+        {Array.from({length: 6}).map((_, i) => (
+            <div key={i} className="h-8 rounded-md bg-foreground/5 animate-pulse" />
+        ))}
+    </div>
+);
+
 export default function Product() {
     const {
         product,
         recommendations,
         reviews,
-        collectionsWithCounts,
-        totalProductCount,
-        discountCount,
+        sidebarData,
         activeCollectionHandle,
         selectedSellingPlan
     } = useLoaderData<typeof loader>();
@@ -294,7 +276,7 @@ export default function Product() {
     useEffect(() => {
         if (product?.id && product?.handle && product?.title) {
             const timeoutId = setTimeout(() => {
-                const firstImage = product.images?.nodes?.[0];
+                const firstImage = extractImagesFromMedia(product.media?.nodes)?.[0];
 
                 // Format price using the shared CurrencyFormatter for consistent symbol display
                 const formatPrice = (price: {amount: string; currencyCode: string} | null | undefined) => {
@@ -317,7 +299,7 @@ export default function Product() {
 
             return () => clearTimeout(timeoutId);
         }
-    }, [product?.id, product?.handle, product?.title, product?.images, selectedVariant, addProduct]);
+    }, [product?.id, product?.handle, product?.title, product.media?.nodes, selectedVariant, addProduct]);
 
     const {title, descriptionHtml} = product;
     const {badgeTypes} = getSpecialTags(product.tags);
@@ -392,12 +374,33 @@ export default function Product() {
                                     : "top-[calc(var(--total-header-height)+var(--page-breathing-room))]"
                             )}
                         >
-                            <CollectionSidebar
-                                collections={collectionsWithCounts}
-                                activeHandle={activeCollectionHandle}
-                                totalProductCount={totalProductCount}
-                                discountCount={discountCount}
-                            />
+                            <Suspense fallback={<SidebarSkeleton />}>
+                                <Await resolve={sidebarData}>
+                                    {(sidebar: any) => {
+                                        if (!sidebar) return null;
+                                        const {collections, allProducts} = sidebar;
+                                        const collectionsWithCounts: CollectionWithCount[] = collections.nodes
+                                            .map((col: any) => ({
+                                                handle: col.handle,
+                                                title: col.title,
+                                                productsCount: col.products.nodes.length
+                                            }))
+                                            .filter((col: any) => col.productsCount > 0);
+                                        const totalProductCount = allProducts.nodes.length;
+                                        const discountCount = countDiscountedProducts(
+                                            allProducts.nodes as LightweightProduct[]
+                                        );
+                                        return (
+                                            <CollectionSidebar
+                                                collections={collectionsWithCounts}
+                                                activeHandle={activeCollectionHandle}
+                                                totalProductCount={totalProductCount}
+                                                discountCount={discountCount}
+                                            />
+                                        );
+                                    }}
+                                </Await>
+                            </Suspense>
                         </div>
                     </div>
 
@@ -625,6 +628,12 @@ const PRODUCT_FRAGMENT = `#graphql
         height
       }
     }
+    collections(first: 10) {
+      nodes {
+        handle
+        title
+      }
+    }
     media(first: 20) {
       nodes {
         __typename
@@ -679,7 +688,7 @@ const PRODUCT_FRAGMENT = `#graphql
         }
       }
     }
-    variants(first: 100) {
+    variants(first: 10) {
       nodes {
         id
         availableForSale
@@ -781,45 +790,7 @@ const PRODUCT_QUERY = `#graphql
   ${PRODUCT_FRAGMENT}
 ` as const;
 
-// Query to fetch all collections with product counts for sidebar
-const SIDEBAR_COLLECTIONS_QUERY = `#graphql
-  query SidebarCollectionsProduct(
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    collections(first: 50, sortKey: TITLE) {
-      nodes {
-        id
-        handle
-        title
-        products(first: 100) {
-          nodes {
-            id
-          }
-        }
-      }
-    }
-    allProducts: products(first: 50, query: "available_for_sale:true") {
-      nodes {
-        id
-        availableForSale
-        variants(first: 10) {
-          nodes {
-            availableForSale
-            price {
-              amount
-              currencyCode
-            }
-            compareAtPrice {
-              amount
-              currencyCode
-            }
-          }
-        }
-      }
-    }
-  }
-` as const;
+
 
 // Fragment for recommended products
 const RECOMMENDED_PRODUCT_FRAGMENT = `#graphql
@@ -835,15 +806,6 @@ const RECOMMENDED_PRODUCT_FRAGMENT = `#graphql
       url
       width
       height
-    }
-    images(first: 10) {
-      nodes {
-        id
-        url
-        altText
-        width
-        height
-      }
     }
     media(first: 5) {
       nodes {
@@ -894,7 +856,7 @@ const RECOMMENDED_PRODUCT_FRAGMENT = `#graphql
         currencyCode
       }
     }
-    variants(first: 100) {
+    variants(first: 3) {
       nodes {
         id
         title

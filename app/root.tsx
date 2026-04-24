@@ -373,6 +373,9 @@ function loadDeferredData({context}: Route.LoaderArgs) {
     // Cart data with 10 second timeout
     // Falls back to null if API hangs (stale cart ID, network issues)
     // This is the most critical promise - hung cart causes permanent loading
+    // cart.get() is typed as Promise<CartReturn | null> (the SDK's native return type).
+    // CartReturn includes metafields (required by Analytics.Provider), so we keep the
+    // full type here instead of casting down to CartApiQueryFragment.
     const cartWithTimeout = withTimeoutAndFallback(
         cart.get(),
         null, // Fallback: empty cart state

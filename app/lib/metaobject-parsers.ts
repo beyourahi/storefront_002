@@ -123,32 +123,39 @@ const FALLBACK_SOCIAL_LINKS: SocialLink[] = [
         displayOrder: 4
     },
     {
+        id: "social-whatsapp",
+        platform: "WhatsApp",
+        handle: "+15551234567",
+        url: "https://wa.me/15551234567",
+        displayOrder: 5
+    },
+    {
         id: "social-youtube",
         platform: "YouTube",
         handle: "@yourbrand",
         url: "https://youtube.com/@yourbrand",
-        displayOrder: 5
+        displayOrder: 6
     },
     {
         id: "social-linkedin",
         platform: "LinkedIn",
         handle: "company/yourbrand",
         url: "https://linkedin.com/company/yourbrand",
-        displayOrder: 6
+        displayOrder: 7
     },
     {
         id: "social-pinterest",
         platform: "Pinterest",
         handle: "@yourbrand",
         url: "https://pinterest.com/yourbrand",
-        displayOrder: 7
+        displayOrder: 8
     }
 ];
 
 const FALLBACK_THEME_FONTS = {
     sans: "Inter",
-    serif: "Inter",
-    mono: "Inter"
+    serif: "Georgia",
+    mono: "Courier New"
 };
 
 const FALLBACK_THEME_COLORS = {
@@ -182,6 +189,15 @@ const FALLBACK_SITE_SETTINGS = {
     siteUrl: "",
     messengerPageId: "",
     whatsappNumber: "",
+    contactEmail: "hello@yourbrand.com",
+    contactPhone: "+1 (555) 000-0000",
+    businessHours: "Mon–Fri: 9am–5pm",
+    address: {
+        street: "123 Brand Street",
+        city: "Your City",
+        state: "NY",
+        zip: "10001"
+    },
     ...FALLBACK_SECTION_HEADINGS,
     galleryPageHeading: "The Gallery",
     galleryPageDescription:
@@ -217,8 +233,8 @@ const FALLBACK_SITE_SETTINGS = {
         }
     ],
     instagramMedia: [],
-    googleMapsEmbedUrls: [],
-    googleMapsLinks: [],
+    googleMapsEmbed: [],
+    googleMapsLink: [],
     faviconUrl: null,
     icon192Url: null,
     icon512Url: null,
@@ -1112,6 +1128,17 @@ export function parseSiteSettings(rawData: unknown): SiteSettings {
         messengerPageId: data.messengerId?.value || DEFAULT_SITE_SETTINGS.messengerPageId,
         whatsappNumber: data.whatsappNumber?.value || DEFAULT_SITE_SETTINGS.whatsappNumber,
 
+        // Contact Information
+        contactEmail: data.contactEmail?.value || DEFAULT_SITE_SETTINGS.contactEmail,
+        contactPhone: data.contactPhone?.value || DEFAULT_SITE_SETTINGS.contactPhone,
+        businessHours: data.businessHours?.value || DEFAULT_SITE_SETTINGS.businessHours,
+        address: {
+            street: data.streetAddress?.value || DEFAULT_SITE_SETTINGS.address.street,
+            city: data.city?.value || DEFAULT_SITE_SETTINGS.address.city,
+            state: data.state?.value || DEFAULT_SITE_SETTINGS.address.state,
+            zip: data.zipCode?.value || DEFAULT_SITE_SETTINGS.address.zip
+        },
+
         // Section Headings
         blogSectionTitle: data.blogSectionTitle?.value || DEFAULT_SITE_SETTINGS.blogSectionTitle,
         collectionsTitle: data.collectionsTitle?.value || DEFAULT_SITE_SETTINGS.collectionsTitle,
@@ -1140,8 +1167,8 @@ export function parseSiteSettings(rawData: unknown): SiteSettings {
         // google_maps_embed: list.single_line_text — each entry is the full <iframe> HTML from
         //   Google Maps "Share > Embed a map". Parser extracts the src URL from the HTML.
         // google_maps_link: list.url — each entry is the maps.app.goo.gl/… share URL.
-        googleMapsEmbedUrls: parseEmbedUrlList(data.googleMapsEmbed),
-        googleMapsLinks: parseUrlList(data.googleMapsLink),
+        googleMapsEmbed: parseEmbedUrlList(data.googleMapsEmbed),
+        googleMapsLink: parseUrlList(data.googleMapsLink),
 
         // Favicon - extracted from file reference
         faviconUrl: extractImageUrl(data.favicon),
