@@ -1657,7 +1657,8 @@ async function regularSearch({
                 articleFirst: 12,
                 sortKey: searchSortOption.sortKey,
                 reverse: searchSortOption.reverse
-            }
+            },
+            cache: dataAdapter.CacheShort()
         }),
         fetchCollections(dataAdapter, term)
     ]);
@@ -1714,7 +1715,8 @@ async function fetchMoreProducts({request, context}: Pick<Route.LoaderArgs, "req
             after: cursor,
             sortKey: searchSortOption.sortKey,
             reverse: searchSortOption.reverse
-        }
+        },
+        cache: dataAdapter.CacheShort()
     })) as {products: {nodes: SearchProduct[]; pageInfo: {hasNextPage: boolean; endCursor: string | null}}};
 
     // Keep promoted products pinned first even when the backend sort changes.

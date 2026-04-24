@@ -77,17 +77,17 @@ Backend behavior, data flow, and Hydrogen conventions **must remain consistent**
 storefront_002/
 ├── app/
 │   ├── routes/              # 51 routes
-│   ├── components/          # 132 components
+│   ├── components/          # 135 components
 │   │   ├── ui/              # 27 shadcn
 │   │   ├── blog/            # 7 blog
 │   │   ├── changelog/       # 2 changelog
 │   │   ├── pwa/             # 5 PWA
-│   │   ├── product/         # ShoppingSummary, ProductBadge
+│   │   ├── product/         # ShoppingSummary, ProductBadge, ProductTagList
 │   │   ├── motion/          # Parallax
 │   │   ├── gallery/         # Gallery grid
 │   │   ├── icons/           # Custom icons
 │   │   └── ProductLightbox/ # Lightbox system
-│   ├── lib/                 # 70 utilities
+│   ├── lib/                 # 71 utilities
 │   │   ├── metaobject-*.ts  # CMS
 │   │   ├── pwa-*.ts         # PWA
 │   │   ├── changelog-data.ts # Static changelog entries
