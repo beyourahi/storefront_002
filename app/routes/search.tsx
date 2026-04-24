@@ -1273,7 +1273,7 @@ const SEARCH_PRODUCT_FRAGMENT = `#graphql
         currencyCode
       }
     }
-    variants(first: 100) {
+    variants(first: 20) {
       nodes {
         id
         title

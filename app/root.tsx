@@ -765,7 +765,7 @@ const CART_SUGGESTIONS_QUERY = `#graphql
         }
       }
     }
-    variants(first: 250) {
+    variants(first: 20) {
       nodes {
         id
         title
