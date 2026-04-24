@@ -206,6 +206,7 @@ For portfolio Workers deploys, demo-store credentials live in `wrangler.jsonc`. 
 **GraphQL**: `storefrontapi.generated.d.ts`, `customer-accountapi.generated.d.ts`
 **Solutions**: `lib/color/contrast.ts` (WCAG), `lib/wishlist-context.tsx` (SSR), `lib/smoothScroll.ts` (Lenis), `lib/cart-utils.ts` (global cart fetcher key + mutation hooks — `CART_FETCHER_KEY` must be passed to all CartForm components; `useCartMutationPending()` checks if any cart op is in flight; `useLineItemMutating(lineId)` scopes loading state to a specific line item only)
 **Shared UI Patterns**: `components/PageHeading.tsx` — unified page heading + optional description used across all content pages (changelog, gallery, search, blog, FAQ, policies, etc.); use this instead of ad-hoc heading markup
+**Skeleton Library**: `components/skeletons.tsx` — comprehensive skeleton loading components for all content types (products, articles, collections, cart, orders); use this instead of ad-hoc loading states
 **Data Source Resolver**: `app/lib/data-source.ts` — validates store env and proxies Shopify queries used by the app context
 **Content Defaults**: `app/lib/metaobject-parsers.ts` — fallback UI and content constants used when metaobject fields are missing
 
@@ -297,6 +298,8 @@ Read all comments before editing. Update when changing code. Add for complex log
 ## Performance
 
 **Lenis**: GPU-accelerated smooth scrolling, `LenisProvider` in `PageLayout.tsx`, scroll hooks: `lib/useScrolled.ts`, `lib/useScrollProgress.ts`
+
+**View Transitions + Prefetch**: All nav and product links use React Router 7's `viewTransition` prop for native browser page transitions, paired with `prefetch="viewport"` (links visible in the viewport) or `prefetch="intent"` (hover-intent). Any new `Link` or `NavLink` in navigation, product grids, or collection layouts MUST include both props to stay consistent with the established pattern (55 usages across the app).
 
 **Service Worker**: Workbox 7.0.0, 5 caching strategies:
 
