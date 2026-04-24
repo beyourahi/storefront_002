@@ -153,6 +153,7 @@ function FooterLogo() {
         <NavLink
             to="/"
             prefetch="viewport"
+            viewTransition
             className="block motion-link hover:opacity-80 hover:no-underline cursor-pointer"
         >
             {/* Fluid display sizing via text-fluid-display — scales continuously using clamp(),
@@ -322,6 +323,7 @@ function FooterLinks() {
                                     <NavLink
                                         to={link.url}
                                         prefetch="viewport"
+                                        viewTransition
                                         className="inline-flex items-center min-h-11 sm:min-h-0 py-1 sm:py-0.5 text-sm text-primary-foreground/80 hover:text-primary-foreground hover:no-underline cursor-pointer"
                                     >
                                         {link.title}
@@ -355,6 +357,7 @@ function NewsletterSection() {
                 <NavLink
                     to="/account"
                     prefetch="viewport"
+                    viewTransition
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-foreground text-primary text-sm font-medium hover:bg-primary-foreground/90 hover:no-underline transition-colors"
                 >
                     <span>Log in to your account</span>
