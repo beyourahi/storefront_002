@@ -432,7 +432,8 @@ export function ProductItem({
             <Link
                 to={linkUrl}
                 target={linkTarget}
-                prefetch="viewport"
+                prefetch="intent"
+                viewTransition
                 className={cn(
                     "flex items-center gap-4 md:gap-6 py-4 md:pl-6 no-underline cursor-pointer",
                     canHover ? "group motion-interactive motion-surface hover:bg-muted/30" : "motion-press active:bg-muted/30",
@@ -609,7 +610,8 @@ export function ProductItem({
         <Link
             to={linkUrl}
             target={linkTarget}
-            prefetch="viewport"
+            prefetch="intent"
+            viewTransition
             className={cn(
                 "block no-underline animate-product-fade-in cursor-pointer relative overflow-visible rounded-lg",
                 canHover ? "group motion-surface" : "motion-press active:scale-[var(--motion-press-scale)]",
