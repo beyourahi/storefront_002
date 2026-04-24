@@ -144,6 +144,7 @@ function HeroBackgroundMedia({
                     width={effectiveLargeScreen.width}
                     height={effectiveLargeScreen.height}
                 />
+                {/* img: kept — fallback inside <picture>; Hydrogen Image CDN transforms conflict with <source> responsive selection */}
                 <img
                     src={effectiveMobile.url}
                     alt={effectiveMobile.altText || "Hero background"}
