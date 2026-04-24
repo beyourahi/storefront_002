@@ -152,6 +152,8 @@ export function links() {
         {rel: "preconnect", href: "https://shop.app"},
         {rel: "preconnect", href: "https://fonts.googleapis.com"},
         {rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" as const},
+        // Preload Tailwind CSS — fires during initial HTML parse, before Layout body renders
+        {rel: "preload", as: "style", href: tailwindCss},
         // Note: Google Fonts link is now dynamically generated in Layout from metaobject theme settings
         // Favicon - dynamic route that redirects to Shopify CDN or static fallback
         {rel: "icon", href: "/favicon.ico"},
