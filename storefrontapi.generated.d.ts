@@ -419,6 +419,94 @@ export type CartApiQueryFragment = Pick<
     discountCodes: Array<Pick<StorefrontAPI.CartDiscountCode, "code" | "applicable">>;
 };
 
+export type CartSuggestionProductFragment = Pick<
+    StorefrontAPI.Product,
+    "id" | "title" | "handle" | "availableForSale"
+> & {
+    priceRange: {
+        minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+        maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+    };
+    compareAtPriceRange: {minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">};
+    featuredImage?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>;
+    media: {
+        nodes: Array<
+            | {__typename: "ExternalVideo" | "Model3d"}
+            | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                      image?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+            | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                      sources: Array<Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">>;
+                      previewImage?: StorefrontAPI.Maybe<
+                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                      >;
+                  })
+        >;
+    };
+    variants: {
+        nodes: Array<
+            Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
+                selectedOptions: Array<Pick<StorefrontAPI.SelectedOption, "name" | "value">>;
+                price: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+                compareAtPrice?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">>;
+            }
+        >;
+    };
+};
+
+export type CartSuggestionsQueryVariables = StorefrontAPI.Exact<{
+    country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+    language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+}>;
+
+export type CartSuggestionsQuery = {
+    products: {
+        nodes: Array<
+            Pick<StorefrontAPI.Product, "id" | "title" | "handle" | "availableForSale"> & {
+                priceRange: {
+                    minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+                    maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+                };
+                compareAtPriceRange: {minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">};
+                featuredImage?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                >;
+                media: {
+                    nodes: Array<
+                        | {__typename: "ExternalVideo" | "Model3d"}
+                        | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
+                                  image?: StorefrontAPI.Maybe<
+                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                  >;
+                              })
+                        | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
+                                  sources: Array<
+                                      Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">
+                                  >;
+                                  previewImage?: StorefrontAPI.Maybe<
+                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                                  >;
+                              })
+                    >;
+                };
+                variants: {
+                    nodes: Array<
+                        Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
+                            selectedOptions: Array<Pick<StorefrontAPI.SelectedOption, "name" | "value">>;
+                            price: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+                            compareAtPrice?: StorefrontAPI.Maybe<
+                                Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">
+                            >;
+                        }
+                    >;
+                };
+            }
+        >;
+    };
+};
+
 export type MenuItemFragment = Pick<StorefrontAPI.MenuItem, "id" | "resourceId" | "tags" | "title" | "type" | "url">;
 
 export type ChildMenuItemFragment = Pick<
@@ -498,23 +586,33 @@ export type MenuCollectionsQuery = {
         nodes: Array<
             Pick<StorefrontAPI.Collection, "id" | "handle" | "title"> & {
                 image?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>;
-                products: {nodes: Array<Pick<StorefrontAPI.Product, "id">>};
+                products: {
+                    nodes: Array<Pick<StorefrontAPI.Product, "id">>;
+                    pageInfo: Pick<StorefrontAPI.PageInfo, "hasNextPage">;
+                };
             }
         >;
     };
     allProducts: {
         nodes: Array<
-            Pick<StorefrontAPI.Product, "id" | "title" | "productType" | "availableForSale"> & {
+            Pick<StorefrontAPI.Product, "id" | "handle" | "title" | "productType" | "availableForSale"> & {
+                featuredImage?: StorefrontAPI.Maybe<
+                    Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
+                >;
+                priceRange: {minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">};
                 variants: {
                     nodes: Array<
                         Pick<StorefrontAPI.ProductVariant, "availableForSale"> & {
-                            price: Pick<StorefrontAPI.MoneyV2, "amount">;
-                            compareAtPrice?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MoneyV2, "amount">>;
+                            price: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
+                            compareAtPrice?: StorefrontAPI.Maybe<
+                                Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">
+                            >;
                         }
                     >;
                 };
             }
         >;
+        pageInfo: Pick<StorefrontAPI.PageInfo, "hasNextPage">;
     };
 };
 
@@ -1199,94 +1297,6 @@ export type PwaManifestQuery = {
 
 export type ShopShippingMetafieldFragment = {
     freeShippingThreshold?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, "value" | "type">>;
-};
-
-export type CartSuggestionProductFragment = Pick<
-    StorefrontAPI.Product,
-    "id" | "title" | "handle" | "availableForSale"
-> & {
-    priceRange: {
-        minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
-        maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
-    };
-    compareAtPriceRange: {minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">};
-    featuredImage?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">>;
-    media: {
-        nodes: Array<
-            | {__typename: "ExternalVideo" | "Model3d"}
-            | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
-                      image?: StorefrontAPI.Maybe<
-                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
-                      >;
-                  })
-            | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
-                      sources: Array<Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">>;
-                      previewImage?: StorefrontAPI.Maybe<
-                          Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
-                      >;
-                  })
-        >;
-    };
-    variants: {
-        nodes: Array<
-            Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
-                selectedOptions: Array<Pick<StorefrontAPI.SelectedOption, "name" | "value">>;
-                price: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
-                compareAtPrice?: StorefrontAPI.Maybe<Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">>;
-            }
-        >;
-    };
-};
-
-export type CartSuggestionsQueryVariables = StorefrontAPI.Exact<{
-    country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
-    language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
-}>;
-
-export type CartSuggestionsQuery = {
-    products: {
-        nodes: Array<
-            Pick<StorefrontAPI.Product, "id" | "title" | "handle" | "availableForSale"> & {
-                priceRange: {
-                    minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
-                    maxVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
-                };
-                compareAtPriceRange: {minVariantPrice: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">};
-                featuredImage?: StorefrontAPI.Maybe<
-                    Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
-                >;
-                media: {
-                    nodes: Array<
-                        | {__typename: "ExternalVideo" | "Model3d"}
-                        | ({__typename: "MediaImage"} & Pick<StorefrontAPI.MediaImage, "id" | "alt"> & {
-                                  image?: StorefrontAPI.Maybe<
-                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
-                                  >;
-                              })
-                        | ({__typename: "Video"} & Pick<StorefrontAPI.Video, "id" | "alt"> & {
-                                  sources: Array<
-                                      Pick<StorefrontAPI.VideoSource, "url" | "mimeType" | "width" | "height">
-                                  >;
-                                  previewImage?: StorefrontAPI.Maybe<
-                                      Pick<StorefrontAPI.Image, "id" | "url" | "altText" | "width" | "height">
-                                  >;
-                              })
-                    >;
-                };
-                variants: {
-                    nodes: Array<
-                        Pick<StorefrontAPI.ProductVariant, "id" | "title" | "availableForSale"> & {
-                            selectedOptions: Array<Pick<StorefrontAPI.SelectedOption, "name" | "value">>;
-                            price: Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">;
-                            compareAtPrice?: StorefrontAPI.Maybe<
-                                Pick<StorefrontAPI.MoneyV2, "amount" | "currencyCode">
-                            >;
-                        }
-                    >;
-                };
-            }
-        >;
-    };
 };
 
 export type ShopShippingConfigQueryVariables = StorefrontAPI.Exact<{
@@ -3488,6 +3498,10 @@ export type SharedWishlistProductsQuery = {
 };
 
 interface GeneratedQueryTypes {
+    '#graphql\n  fragment CartSuggestionProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    media(first: 5) {\n      nodes {\n        __typename\n        ... on MediaImage {\n          id\n          alt\n          image {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          id\n          alt\n          sources {\n            url\n            mimeType\n            width\n            height\n          }\n          previewImage {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    variants(first: 20) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CartSuggestions(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 16, sortKey: BEST_SELLING, query: "available_for_sale:true") {\n      nodes {\n        ...CartSuggestionProduct\n      }\n    }\n  }\n': {
+        return: CartSuggestionsQuery;
+        variables: CartSuggestionsQueryVariables;
+    };
     "#graphql\n  fragment Shop on Shop {\n    id\n    name\n    description\n    primaryDomain {\n      url\n    }\n    brand {\n      logo {\n        image {\n          url\n        }\n      }\n    }\n  }\n  query Header(\n    $country: CountryCode\n    $headerMenuHandle: String!\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    shop {\n      ...Shop\n    }\n    menu(handle: $headerMenuHandle) {\n      ...Menu\n    }\n  }\n  #graphql\n  fragment MenuItem on MenuItem {\n    id\n    resourceId\n    tags\n    title\n    type\n    url\n  }\n  fragment ChildMenuItem on MenuItem {\n    ...MenuItem\n  }\n  fragment ParentMenuItem on MenuItem {\n    ...MenuItem\n    items {\n      ...ChildMenuItem\n    }\n  }\n  fragment Menu on Menu {\n    id\n    items {\n      ...ParentMenuItem\n    }\n  }\n\n": {
         return: HeaderQuery;
         variables: HeaderQueryVariables;
@@ -3496,7 +3510,7 @@ interface GeneratedQueryTypes {
         return: FooterQuery;
         variables: FooterQueryVariables;
     };
-    '#graphql\n  query MenuCollections(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        products(first: 1, filters: [{available: true}]) {\n          nodes {\n            id\n          }\n        }\n      }\n    }\n    allProducts: products(first: 50, query: "available_for_sale:true") {\n      nodes {\n        id\n        title\n        productType\n        availableForSale\n        variants(first: 3) {\n          nodes {\n            availableForSale\n            price {\n              amount\n            }\n            compareAtPrice {\n              amount\n            }\n          }\n        }\n      }\n    }\n  }\n': {
+    '#graphql\n  query MenuCollections(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(language: $language, country: $country) {\n    collections(first: 50, sortKey: TITLE) {\n      nodes {\n        id\n        handle\n        title\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        products(first: 1, filters: [{available: true}]) {\n          nodes {\n            id\n          }\n          pageInfo {\n            hasNextPage\n          }\n        }\n      }\n    }\n    allProducts: products(first: 50, query: "available_for_sale:true") {\n      nodes {\n        id\n        handle\n        title\n        productType\n        availableForSale\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n        priceRange {\n          minVariantPrice {\n            amount\n            currencyCode\n          }\n        }\n        variants(first: 3) {\n          nodes {\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n          }\n        }\n      }\n      pageInfo {\n        hasNextPage\n      }\n    }\n  }\n': {
         return: MenuCollectionsQuery;
         variables: MenuCollectionsQueryVariables;
     };
@@ -3519,10 +3533,6 @@ interface GeneratedQueryTypes {
     '#graphql\n  query PwaManifest(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    # Site settings for brand identity and PWA icons\n    siteSettings: metaobject(handle: {type: "site_settings", handle: "main"}) {\n      ...SiteSettings\n    }\n    # Theme settings for colors (converted to HEX for manifest)\n    themeSettings: metaobject(handle: {type: "theme_settings", handle: "main"}) {\n      ...ThemeSettings\n    }\n    shop {\n      name\n      description\n      primaryDomain {\n        url\n      }\n      brand {\n        logo {\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        coverImage {\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        shortDescription\n      }\n    }\n  }\n  #graphql\n  fragment SiteSettings on Metaobject {\n    id\n    handle\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # BRAND IDENTITY\n    # ─────────────────────────────────────────────────────────────────────────\n    # List of single line text - Shopify returns JSON array of strings\n    brandWords: field(key: "words_to_describe_your_brand") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # HERO SECTION\n    # ─────────────────────────────────────────────────────────────────────────\n    heroHeading: field(key: "hero_main_heading") { value }\n    heroDescription: field(key: "hero_description_text") { value }\n    featuredProductSection: field(key: "featured_product_section") {\n      reference {\n        ... on Product {\n          __typename\n          id\n          handle\n          title\n          vendor\n          description\n          availableForSale\n          featuredImage {\n            url\n            altText\n            width\n            height\n          }\n          media(first: 5) {\n            nodes {\n              __typename\n              ... on MediaImage {\n                id\n                image {\n                  id\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n              ... on Video {\n                id\n                alt\n                sources {\n                  url\n                  mimeType\n                  width\n                  height\n                }\n                previewImage {\n                  id\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n          }\n          priceRange {\n            minVariantPrice {\n              amount\n              currencyCode\n            }\n            maxVariantPrice {\n              amount\n              currencyCode\n            }\n          }\n          compareAtPriceRange {\n            minVariantPrice {\n              amount\n              currencyCode\n            }\n          }\n          tags\n          selectedOrFirstAvailableVariant(\n            selectedOptions: []\n            ignoreUnknownOptions: true\n            caseInsensitiveMatch: true\n          ) {\n            id\n            availableForSale\n            price {\n              amount\n              currencyCode\n            }\n            compareAtPrice {\n              amount\n              currencyCode\n            }\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n          variants(first: 100) {\n            nodes {\n              id\n              title\n              availableForSale\n              selectedOptions {\n                name\n                value\n              }\n              price {\n                amount\n                currencyCode\n              }\n              compareAtPrice {\n                amount\n                currencyCode\n              }\n            }\n          }\n        }\n      }\n    }\n    heroMediaMobile: field(key: "hero_background_media_mobile") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    heroMediaLargeScreen: field(key: "hero_background_media_large_screen") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SHOP LOCATIONS (Google Maps)\n    # Index-paired list fields: embed URLs zipped with share links.\n    # ─────────────────────────────────────────────────────────────────────────\n    googleMapsEmbed: field(key: "google_maps_embed") { value }\n    googleMapsLink: field(key: "google_maps_link") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # SECTION HEADINGS\n    # ─────────────────────────────────────────────────────────────────────────\n    blogSectionTitle: field(key: "blog_section_heading") { value }\n    collectionsTitle: field(key: "collections_section_heading") { value }\n    relatedProductsTitle: field(key: "related_products_heading") { value }\n    recommendedTitle: field(key: "recommended_products_heading") { value }\n    instagramTitle: field(key: "instagram_section_heading") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PAGE HEADINGS (Gallery & Blog)\n    # ─────────────────────────────────────────────────────────────────────────\n    galleryPageHeading: field(key: "gallery_page_heading") { value }\n    galleryPageDescription: field(key: "gallery_page_description") { value }\n    blogPageHeading: field(key: "blog_page_heading") { value }\n    blogPageDescription: field(key: "blog_page_description") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PROMOTIONAL BANNERS\n    # ─────────────────────────────────────────────────────────────────────────\n    # announcement_banner_text is now a "List of single line text" field in Shopify\n    # Returns JSON array of strings: ["text1", "text2", ...]\n    announcementBanner: field(key: "announcement_banner_text") { value }\n    promotionalBannerOneMedia: field(key: "promotional_banner_one_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n    promotionalBannerTwoMedia: field(key: "promotional_banner_two_media") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          __typename\n          sources {\n            url\n            mimeType\n          }\n          previewImage {\n            url\n            altText\n          }\n          alt\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # COLLECTIONS\n    # ─────────────────────────────────────────────────────────────────────────\n\n    # Messenger Page ID for Facebook Customer Chat plugin\n    messengerId: field(key: "messenger_page_id") { value }\n\n    # WhatsApp phone number (digits only, or international format)\n    whatsappNumber: field(key: "whatsapp_number") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # CONTACT INFORMATION\n    # ─────────────────────────────────────────────────────────────────────────\n    contactEmail: field(key: "contact_email") { value }\n    contactPhone: field(key: "contact_phone") { value }\n    businessHours: field(key: "business_hours") { value }\n    streetAddress: field(key: "street_address") { value }\n    city: field(key: "city") { value }\n    state: field(key: "state_province") { value }\n    zipCode: field(key: "postal_code") { value }\n\n    # List of links field - Shopify returns [{text, url}, ...] where text is the platform name\n    socialLinksData: field(key: "social_links_data") { value }\n\n    # JSON array: [{customerName, location, rating, text, avatarUrl}, ...]\n    testimonialsData: field(key: "testimonials_data") { value }\n\n    # JSON array: [{question, answer}, ...]\n    faqItemsData: field(key: "faq_items_data") { value }\n\n    # List of file references (images/videos)\n    instagramMediaData: field(key: "instagram_images_data") {\n      references(first: 20) {\n        nodes {\n          ... on MediaImage {\n            __typename\n            id\n            image {\n              url\n              altText\n              width\n              height\n            }\n          }\n          ... on Video {\n            __typename\n            id\n            sources {\n              url\n              mimeType\n            }\n            previewImage {\n              url\n              altText\n            }\n            alt\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # FAVICON (File reference - MediaImage only)\n    # Dynamic favicon served from /favicon.ico route\n    # ─────────────────────────────────────────────────────────────────────────\n    favicon: field(key: "favicon") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n          }\n        }\n      }\n    }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # PWA ICONS (File references - MediaImage only)\n    # Required for Progressive Web App installability\n    # ─────────────────────────────────────────────────────────────────────────\n    icon192: field(key: "icon_192") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon512: field(key: "icon_512") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    icon180Apple: field(key: "icon_180_apple") {\n      reference {\n        ... on MediaImage {\n          __typename\n          image {\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment ThemeSettings on Metaobject {\n    id\n    handle\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # FONTS (Google Font family names)\n    # These semantic names map to CSS variable roles:\n    # - body_font → --font-sans (paragraphs, buttons, labels, UI text)\n    # - heading_font → --font-serif (h1-h6, hero text, section titles)\n    # - price_font → --font-mono (prices, quantities, codes, tabular data)\n    # ─────────────────────────────────────────────────────────────────────────\n    fontBody: field(key: "body_font") { value }\n    fontHeading: field(key: "heading_font") { value }\n    fontPrice: field(key: "price_font") { value }\n    borderRadius: field(key: "border_radius") { value }\n\n    # ─────────────────────────────────────────────────────────────────────────\n    # COLORS (OKLCH or HEX format)\n    # 5 core colors that derive 25+ CSS variables via theme-utils.ts\n    # ─────────────────────────────────────────────────────────────────────────\n    colorPrimary: field(key: "color_primary") { value }\n    colorSecondary: field(key: "color_secondary") { value }\n    colorBackground: field(key: "color_background") { value }\n    colorForeground: field(key: "color_foreground") { value }\n    colorAccent: field(key: "color_accent") { value }\n  }\n\n': {
         return: PwaManifestQuery;
         variables: PwaManifestQueryVariables;
-    };
-    '#graphql\n  fragment CartSuggestionProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n      maxVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    media(first: 5) {\n      nodes {\n        __typename\n        ... on MediaImage {\n          id\n          alt\n          image {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n        ... on Video {\n          id\n          alt\n          sources {\n            url\n            mimeType\n            width\n            height\n          }\n          previewImage {\n            id\n            url\n            altText\n            width\n            height\n          }\n        }\n      }\n    }\n    variants(first: 20) {\n      nodes {\n        id\n        title\n        availableForSale\n        selectedOptions {\n          name\n          value\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n\n  query CartSuggestions(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(first: 16, sortKey: BEST_SELLING, query: "available_for_sale:true") {\n      nodes {\n        ...CartSuggestionProduct\n      }\n    }\n  }\n': {
-        return: CartSuggestionsQuery;
-        variables: CartSuggestionsQueryVariables;
     };
     '#graphql\n  query ShopShippingConfig(\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    shop {\n      freeShippingThreshold: metafield(namespace: "custom", key: "free_shipping_threshold") {\n        value\n        type\n      }\n      paymentSettings {\n        currencyCode\n      }\n    }\n  }\n': {
         return: ShopShippingConfigQuery;

@@ -227,6 +227,9 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
             variables: {
                 headerMenuHandle: "main-menu"
             }
+        }).catch((error: unknown) => {
+            console.error("Failed to load header:", error);
+            return null;
         }),
         // Menu collections with product counts (cached: catalog metadata)
         dataAdapter.query(MENU_COLLECTIONS_QUERY, {

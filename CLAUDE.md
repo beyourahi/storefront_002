@@ -209,6 +209,7 @@ For portfolio Workers deploys, demo-store credentials live in `wrangler.jsonc`. 
 **Skeleton Library**: `components/skeletons.tsx` — comprehensive skeleton loading components for all content types (products, articles, collections, cart, orders); use this instead of ad-hoc loading states
 **Data Source Resolver**: `app/lib/data-source.ts` — validates store env and proxies Shopify queries used by the app context
 **Content Defaults**: `app/lib/metaobject-parsers.ts` — fallback UI and content constants used when metaobject fields are missing
+**Promise Utils**: `lib/promise-utils.ts` — timeout and fallback wrappers for deferred data; `withTimeoutAndFallback` prevents permanent loading states when promises hang (used in `root.tsx` for all deferred loaders — cart, footer, suggestions, auth)
 
 ## Critical Warnings
 
@@ -360,6 +361,8 @@ Read all comments before editing. Update when changing code. Add for complex log
 **Gallery**: Responsive grid + lightbox, route: `/gallery`, components: GalleryGrid, GalleryImageCard, metaobject-driven
 
 **Changelog**: Changelog page for shoppers, route: `/changelog`, components: ChangelogEntry, ChangelogPage, hook: `useChangelogFilter`. Entries live in `lib/changelog-data.ts` (static file — add entries manually at commit time, see Changelog Entries section). The loader returns static entries directly — no external API calls.
+
+**Recently Viewed**: Cookie-based product tracking across sessions. `lib/recently-viewed.ts` reads/writes product IDs via a cookie. `components/RecentlyViewedSection.tsx` renders a personalized product row on the homepage; products are fetched server-side in `routes/_index.tsx` by resolving the stored IDs against the Storefront API.
 
 ---
 
