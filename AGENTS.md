@@ -326,7 +326,7 @@ Read all comments before editing. Update when changing code. Add for complex log
 
 **Metaobject CMS**:
 
-- `site_settings` (singleton): Brand, hero, testimonials, FAQs, Instagram, shipping, search content (labels, placeholders, filter text)
+- `site_settings` (singleton): Brand, hero, testimonials, FAQs, Instagram, shipping, search content (labels, placeholders, filter text), messaging widgets (Messenger page_id, WhatsApp number — powers FloatingChatWidget)
 - `theme_settings` (singleton): Fonts (Google), colors (OKLCH/HEX)
 - 80/20 architecture: High-value content only
 - Files: `lib/metaobject-queries.ts`, `lib/metaobject-parsers.ts`, `lib/site-content-context.tsx`
@@ -363,6 +363,20 @@ Read all comments before editing. Update when changing code. Add for complex log
 **Changelog**: Changelog page for shoppers, route: `/changelog`, components: ChangelogEntry, ChangelogPage, hook: `useChangelogFilter`. Entries live in `lib/changelog-data.ts` (static file — add entries manually at commit time, see Changelog Entries section). The loader returns static entries directly — no external API calls.
 
 **Recently Viewed**: Cookie-based product tracking across sessions. `lib/recently-viewed.ts` reads/writes product IDs via a cookie. `components/RecentlyViewedSection.tsx` renders a personalized product row on the homepage; products are fetched server-side in `routes/_index.tsx` by resolving the stored IDs against the Storefront API.
+
+**Homepage Hero System**: `VideoHero.tsx` — full-viewport hero with separate mobile/desktop media from `site_settings`, integrated collection card overlay, and scroll-driven brand text animation via `BrandAnimationProvider` (`lib/brand-animation-layout.ts`, `lib/brand-name-sizes.ts`). `BrandMarquee.tsx` renders a scrolling marquee of trust signals below the hero. These three components form the homepage's above-the-fold section in `routes/_index.tsx`.
+
+**Subscriptions**: Customer subscription contract management. Routes: `/account/subscriptions` (list), `/account/subscriptions/:id` (detail/management). `SellingPlanSelector.tsx` on the PDP renders delivery frequency options for products with selling plans; state is managed via the `?selling_plan=` URL query parameter (variant-aware filtering, price adjustment display).
+
+**Size Chart**: Metafield-driven size chart dialog for clothing products. `lib/size-chart.ts` parses the `custom.size_chart` JSON product metafield — supports multiple garment categories, international size conversions (US/UK/EU/Asia), metric/imperial units, fit notes. Components: `SizeChartButton.tsx` (trigger) + `SizeChartDialog.tsx` (modal).
+
+**Chat Widgets**: `FloatingChatWidget.tsx` — floating column of Messenger + WhatsApp buttons, driven entirely by `site_settings.messengerPageId` and `site_settings.whatsappNumber`. Returns null and leaves no DOM trace when both fields are empty.
+
+**Infinite Scroll**: `InfiniteScrollSection.tsx` — Hydrogen Pagination-based infinite scroll; navigates to next page URL when the "Load more" link enters viewport (replace mode, preserves history). `InfiniteScrollGrid.tsx` wraps the grid layout. Used by collections, search, and the sale page.
+
+**Sale Page**: `/sale` route — auto-filters all products to those with compare-at pricing (on-sale items), sorted by highest discount percentage. Shows max discount in page title/meta. Uses `InfiniteScrollSection` + collection sidebar layout.
+
+**Newsletter**: `api.newsletter.tsx` — POST endpoint that creates a Shopify customer with `acceptsMarketing: true`. Components: `NewsletterForm.tsx` (email input + submission) + `NewsletterSection.tsx` (section wrapper that also renders `PromotionalBanner.tsx` above the form). `PromotionalBanner.tsx` renders full-width media (image or video, 90dvh) for hero/campaign banners on the homepage and newsletter section.
 
 ---
 
