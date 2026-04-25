@@ -88,7 +88,7 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
     const description = collection.seo?.description || truncateDescription(collection.description);
     const products = collection.products?.nodes || [];
 
-    return (
+    const seoMeta =
         getSeoMeta({
             title,
             titleTemplate: `%s | ${brandName}`,
@@ -104,15 +104,13 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
                   }
                 : undefined,
             jsonLd: generateCollectionSchema(collection, products, siteUrl) as any
-        }) ?? []
-    );
-};
+        }) ?? [];
 
-export function links({data}: {data: Awaited<ReturnType<typeof loader>> | null}) {
-    const href = data?.collection?.products?.nodes?.[0]?.featuredImage?.url;
-    if (!href) return [];
-    return [{rel: "preload", as: "image", href}] as const;
-}
+    const preloadHref = collection.products?.nodes?.[0]?.featuredImage?.url;
+    return preloadHref
+        ? [...seoMeta, {tagName: "link" as const, rel: "preload", as: "image", href: preloadHref}]
+        : seoMeta;
+};
 
 export async function loader(args: Route.LoaderArgs) {
     // Start fetching non-critical data without blocking time to first byte
