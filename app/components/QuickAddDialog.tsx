@@ -538,13 +538,13 @@ function QuickAddCartButton({
                 cartFormInput: JSON.stringify({
                     action: CartForm.ACTIONS.LinesAdd,
                     inputs: {
-                        lines: [{merchandiseId: variant.id, quantity}]
+                        lines: [{merchandiseId: variant.id, quantity, selectedVariant: variant}]
                     }
                 })
             },
             {method: "POST", action: "/cart"}
         );
-    }, [fetcher, isLoading, variant.availableForSale, variant.id, quantity]);
+    }, [fetcher, isLoading, variant, quantity]);
 
     return (
         <button

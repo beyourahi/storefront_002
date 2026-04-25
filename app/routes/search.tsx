@@ -1397,6 +1397,7 @@ export const SEARCH_QUERY = `#graphql
     $articleAfter: String
     $sortKey: SearchSortKeys!
     $reverse: Boolean!
+    $unavailableProducts: SearchUnavailableProductsType
   ) @inContext(country: $country, language: $language) {
     products: search(
       query: $term,
@@ -1405,7 +1406,7 @@ export const SEARCH_QUERY = `#graphql
       after: $productAfter,
       sortKey: $sortKey,
       reverse: $reverse,
-      unavailableProducts: SHOW,
+      unavailableProducts: $unavailableProducts,
     ) {
       nodes {
         ...on Product {
@@ -1449,6 +1450,7 @@ const SEARCH_PRODUCTS_QUERY = `#graphql
     $after: String
     $sortKey: SearchSortKeys!
     $reverse: Boolean!
+    $unavailableProducts: SearchUnavailableProductsType
   ) @inContext(country: $country, language: $language) {
     products: search(
       query: $term,
@@ -1457,7 +1459,7 @@ const SEARCH_PRODUCTS_QUERY = `#graphql
       after: $after,
       sortKey: $sortKey,
       reverse: $reverse,
-      unavailableProducts: SHOW,
+      unavailableProducts: $unavailableProducts,
     ) {
       nodes {
         ...on Product {
@@ -1646,6 +1648,7 @@ async function regularSearch({
     const url = new URL(request.url);
     const term = String(url.searchParams.get("q") || "");
     const searchSortOption = getSearchSortOption(url.searchParams.get("sort"));
+    const unavailableProducts = url.searchParams.get("availability") === "in-stock" ? "HIDE" : "SHOW";
 
     // Execute search and collections queries in parallel
     // Collections query is wrapped with error handling to prevent cascading failures
@@ -1656,7 +1659,8 @@ async function regularSearch({
                 productFirst: 24,
                 articleFirst: 12,
                 sortKey: searchSortOption.sortKey,
-                reverse: searchSortOption.reverse
+                reverse: searchSortOption.reverse,
+                unavailableProducts
             },
             cache: dataAdapter.CacheShort()
         }),
@@ -1707,6 +1711,7 @@ async function fetchMoreProducts({request, context}: Pick<Route.LoaderArgs, "req
     const term = String(url.searchParams.get("q") || "");
     const cursor = url.searchParams.get("cursor");
     const searchSortOption = getSearchSortOption(url.searchParams.get("sort"));
+    const unavailableProducts = url.searchParams.get("availability") === "in-stock" ? "HIDE" : "SHOW";
 
     const {products} = (await dataAdapter.query(SEARCH_PRODUCTS_QUERY, {
         variables: {
@@ -1714,7 +1719,8 @@ async function fetchMoreProducts({request, context}: Pick<Route.LoaderArgs, "req
             first: 24,
             after: cursor,
             sortKey: searchSortOption.sortKey,
-            reverse: searchSortOption.reverse
+            reverse: searchSortOption.reverse,
+            unavailableProducts
         },
         cache: dataAdapter.CacheShort()
     })) as {products: {nodes: SearchProduct[]; pageInfo: {hasNextPage: boolean; endCursor: string | null}}};
