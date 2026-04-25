@@ -29,6 +29,12 @@ import type {ChangelogEntry} from "~/lib/types/changelog";
 // Newest entries at the top. Add new entries here in the same commit that ships the change.
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     {
+        date: "2026-04-25",
+        category: "Fix",
+        headline: "Homepage, product pages, and collection pages load reliably again",
+        summary: "A recent update accidentally broke three of the most important pages in the store — the homepage, individual product pages, and every collection page would all crash with a server error instead of showing content. This has been corrected. All pages load normally again, including the collection sidebar which was also causing a flicker during page transitions."
+    },
+    {
         date: "2026-04-24",
         category: "Performance",
         headline: "Fonts and product pages load without blocking the screen",
