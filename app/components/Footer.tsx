@@ -129,7 +129,6 @@ export function Footer({footer: footerPromise, header: _header}: FooterProps) {
                                     <span className="pl-2.5 pr-1.5 py-1.5 font-semibold text-primary-foreground transition-colors duration-[220ms] ease-[var(--motion-ease-standard)] group-hover:text-primary-foreground">
                                         Rahi Khan
                                     </span>
-                                    <span aria-hidden="true" className="mr-2.5 text-sm transition-transform duration-[220ms] ease-[var(--motion-ease-standard)] group-hover:scale-125 inline-block">🔥</span>
                                 </a>
                             </div>
                         </div>
