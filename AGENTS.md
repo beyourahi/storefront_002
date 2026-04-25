@@ -260,6 +260,11 @@ For portfolio Workers deploys, demo-store credentials live in `wrangler.jsonc`. 
 - **Status**: TODO - refactor to comply
 - **Disabled**: `set-state-in-effect`, `refs`, `purity`
 
+**10. `links()` in React Router 7**
+
+- **Problem**: React Router 7 calls `links()` with zero arguments — destructuring `{data}` from `undefined` throws TypeError, causing 500s on every page load
+- **Solution**: Never export `links()` that accesses loader data. For `<link rel="preload">`, add a `{tagName: "link", rel: "preload", ...}` descriptor inside `meta()` using resolved loader data instead
+
 ## Execution Strategy
 
 - Use **multiple sub-agents** for independent tasks (research, implementation, review)
@@ -356,7 +361,7 @@ Read all comments before editing. Update when changing code. Add for complex log
 
 **Search**: Regular (full data), predictive (autocomplete), popular terms, recent (LocalStorage), keyboard (Cmd/Ctrl+K), full-screen overlay. Availability/in-stock filter labels and all UI text are CMS-configurable via `site_settings` search content fields (with hardcoded fallbacks in `metaobject-parsers.ts`)
 
-**Blog**: 7 components in `components/blog/` - ArticleCard, ArticleHero, AuthorBio, ReadingTime, RelatedArticles, ShareButtons, TagBadge. SEO-optimized (JSON-LD), tag filtering. Routes: `/blogs`, `/blogs/:blogHandle`, `/blogs/:blogHandle/:articleHandle`
+**Blog**: 7 components in `components/blog/` - ArticleCard, ArticleHero, AuthorBio, ReadingTime, RelatedArticles, ShareButtons, TagBadge. SEO-optimized (JSON-LD), tag filtering. Routes: `/blogs`, `/blogs/:blogHandle`, `/blogs/:blogHandle/:articleHandle`, `/blogs/feed.xml` (RSS feed, returns XML with last 50 articles)
 
 **Gallery**: Responsive grid + lightbox, route: `/gallery`, components: GalleryGrid, GalleryImageCard, metaobject-driven
 
